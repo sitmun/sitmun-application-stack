@@ -1,0 +1,5 @@
+"pap_id","pap_name","pap_type","pap_value","pap_appid"
+"60","A3 - Vertical","PRINT_TEMPLATE","A3V.jasper","12"
+"61","A4 - Horitzontal","PRINT_TEMPLATE","A4H.jasper","12"
+"62","A3 - Horitzontal","PRINT_TEMPLATE","A3H.jasper","12"
+"63","A4 - Vertical","PRINT_TEMPLATE","A4V.jasper","12"

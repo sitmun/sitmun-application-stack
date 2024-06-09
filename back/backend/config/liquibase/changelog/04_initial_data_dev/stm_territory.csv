@@ -1,0 +1,8 @@
+"ter_id","ter_blocked","ter_codter","ter_created","ter_extent","ter_center","ter_legal","ter_zoom","ter_name","ter_note","ter_scope","ter_address","ter_email","ter_logo","ter_admname","ter_gtypid","ter_typid"
+"4","false","07000","2023-07-27T08:02:14.129","564669 4405298 628044 4439292","593750 4425293","NULL","7","Menorca","NULL","NULL","NULL","NULL","NULL","NULL","NULL","4"
+"5","false","31","2023-11-02T08:45:38.999","540412 4635616 687612 4800000","611292 4740688","NULL","10","Navarra","NULL","NULL","NULL","NULL","NULL","NULL","NULL","8"
+"7","false","08112","2024-03-08T07:41:47.548","437496 4648500 443018 4654040","440257 4651270","NULL","NULL","Manlleu","NULL","NULL","NULL","NULL","NULL","NULL","NULL","6"
+"8","false","08246","2024-03-08T07:49:27.528","438704 4638421 442381 4641938","440257 4651270","NULL","NULL","Santa Eugènia de Berga","NULL","NULL","NULL","NULL","NULL","NULL","NULL","6"
+"9","false","08004","2024-03-08T07:58:42.723","422477 4661389 428413 4666360","425445 4663874.5","NULL","NULL","Alpens","NULL","NULL","NULL","NULL","NULL","NULL","NULL","6"
+"10","false","0000","2024-03-10T16:26:38.295","687612 540412 4800000 4635616","null null","NULL","NULL","Test Park","NULL","NULL","NULL","NULL","NULL","NULL","NULL","5"
+"6","false","80008","2024-03-06T16:59:58.334","363487 4561229 481617 4686464","418186 4623052","NULL","10","- Província de Barcelona -","NULL","NULL","NULL","NULL","https://media.diba.cat/diba/maqueta/logos/logo-diba.png","NULL","NULL","8"
