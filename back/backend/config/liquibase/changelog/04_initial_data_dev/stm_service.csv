@@ -1,0 +1,29 @@
+"ser_id","ser_blocked","ser_created","ser_abstract","ser_infourl","ser_legend","ser_name","ser_nat_prot","ser_url","ser_projects","ser_protocol","ser_auth_mod","ser_user","ser_pwd"
+"165","false","2024-02-20T13:18:36.582","Servei de mapes amb informació sobre infraestructures, equipaments i serveis públics del Consell Insular i Ajuntaments de Menorca. Conté la informació de l'enquesta d'infraestructures i equipaments locals (EIEL). Així mateix inclou informació sobre ","NULL","NULL","IDEMenorca - Equipaments","NULL","https://ide.cime.es/geoserver/equipaments/wms/","EPSG:25831,EPSG:4326,EPSG:3857,EPSG:25830,CRS:84","WMS","None","admin","admin"
+"171","false","2024-06-06T12:20:01.706","Dominio Público Marítimo Terrestre
+","NULL","NULL","DPMT Costas","NULL","http://wms.mapama.es/sig/Costas/DPMT/wms.aspx","","WMS","None","NULL","NULL"
+"174","false","2024-06-06T13:04:23.535","(CA) Zones gestionades, reglamentades o utilitzades en ordenació territorial: Delimitacions de les figures definides a la Llei 1/91 d'Espais Naturals (LEN) de les Illes Balears i actualitzades segons les diferents normatives que s'han aprovat fins a","NULL","NULL","Figures LEN","NULL","https://ideib.caib.es/geoserveis/services/public/GOIB_OrdTerr_IB/MapServer/WMSServer/","CRS:84,EPSG:4326,EPSG:25831,EPSG:25828,EPSG:25829,EPSG:25830,EPSG:32628,EPSG:32629,EPSG:32630,EPSG:32631,EPSG:4258,EPSG:3857,EPSG:102100,EPSG:4230,EPSG:23029,EPSG:23030,EPSG:23031","WMS","None","NULL","NULL"
+"166","false","NULL","IDEBarcelona - CAE1M_GM (OGC Web Map Service) - Cartografia d'eixos i portals a escala 1:1000 (DIBA) de diversos municipis de la província de Barcelona. Per donar continuïtat al territori s'hi ha afegit algunes capes de la cartografia topogràfica a ","https://sitmun.diba.cat/metadades/srv/cat/catalog.search#/metadata/SPADBCA08000E1M","NULL","DIBA - Adreces","NULL","https://sitmun.diba.cat/wms/servlet/CAE1M","","WMS","None","NULL","NULL"
+"5","false","NULL","NULL","NULL","NULL","ICC - BT50M","NULL","https://geoserveis.icgc.cat/icc_bt50m/wms/service","NULL","WMS","NULL","NULL","NULL"
+"161","true","NULL","Ortofoto 2018 Illes Balears","NULL","NULL","GOIB - Ortofoto 2018 Illes Balears","NULL","https://ideib.caib.es/geoserveis/rest/services/imatges/GOIB_Ortofoto_2018_IB/MapServer/WMTS","EPSG:25831","WMTS","None","NULL","NULL"
+"168","true","NULL","DIBA - Delimitacions administratives (ICGC)","NULL","NULL","ICGC - Delimitacions administratives","NULL","https://geoserveis.icgc.cat/servei/catalunya/divisions-administratives/wms","CRS:84,EPSG:4326,EPSG:3857,EPSG:102100,EPSG:25831,EPSG:4258,EPSG:4230,EPSG:32631,EPSG:23031","WMS","None","NULL","NULL"
+"4","false","NULL","WMS","NULL","NULL","ICC - BT25M","NULL","https://geoserveis.icgc.cat/icc_bt25m/wms/service","EPSG:25831,CRS:84,EPSG:4326,EPSG:3857,EPSG:4230,EPSG:4258,EPSG:32631,EPSG:23031","WMS","None","NULL","NULL"
+"167","false","NULL","Font: ICGC","NULL","NULL","ICGC - Mapes fons","NULL","https://geoserveis.icgc.cat/map/bases/service?","EPSG:25831,EPSG:23031,EPSG:32631","WMS","None","NULL","NULL"
+"162","false","2023-11-09T12:29:31.941","Ortofoto 2015 Illes Balears","NULL","NULL","GOIB - Ortofoto 2015 Illes Balears","NULL","https://ideib.caib.es/geoserveis/rest/services/imatges/GOIB_Ortofoto_2015_IB/MapServer/WMTS","EPSG:25831","WMTS","None","NULL","NULL"
+"6","false","NULL","NULL","NULL","NULL","ICC - Mapesbase","NULL","https://geoserveis.icgc.cat/icc_mapesbase/wms/service","NULL","WMS","NULL","NULL","NULL"
+"153","false","NULL","Servei de mapes de turisme i patrimoni del Consell Insular de Menorca. Aquest servei WMS inclou dades espacials que provenen de diferents fonts de l'administració local (ajuntaments i Consell Insular) o organismes dependents com la Fundació Foment d","NULL","NULL","IDEMenorca - turisme","NULL","https://ide.cime.es/geoserver/turisme/wms/","","WMS","None","admin","NULL"
+"155","false","NULL","WMTS Base de referència Menorca","NULL","NULL","IDEMenorca - WMTS Base de referència Menorca","NULL","http://ide.cime.es/geoserver2/gwc/service/wmts","EPSG:25831","WMTS","None","admin","NULL"
+"2","false","NULL","NULL","NULL","NULL","IGN - PNOA","NULL","https://www.ign.es/wms-inspire/pnoa-ma","NULL","WMS","NULL","NULL","NULL"
+"1","false","NULL","ICC Mapesmultibase","NULL","NULL","ICC - Mapesmultibase","NULL","https://geoserveis.icgc.cat/icc_mapesmultibase/utm/wmts/service","EPSG:25831,EPSG:23031,EPSG:32631","WMS","None","NULL","NULL"
+"158","false","NULL","IDENA
+-
+Infraestructura de Datos Espaciales de Navarra
+-
+Spatial Data Infrastructure of Navarre
+-
+Gobierno de Navarra","NULL","NULL","IDENA - WMS Navarra","NULL","https://idena.navarra.es/ogc/wms","","WMS","None","admin","NULL"
+"160","false","NULL","PNOA WMTS","NULL","NULL","IGN - PNOA WMTS","NULL","https://www.ign.es/wmts/pnoa-ma","EPSG:25830","WMTS","None","NULL","NULL"
+"159","false","NULL","IGN WMTS Mapas base","NULL","NULL","IGN - WMTS Mapas base","NULL","https://www.ign.es/wmts/ign-base","EPSG:25830","WMTS","None","admin","NULL"
+"164","false","2024-02-19T15:21:28.297","Servei de mapes del projecte IDE menorca que conté la cartografia dels instruments d'ordenació del territori, aprovats o en tramitació, del Consell Insular de Menorca. 
+
+La descripció de cada un dels grups conté informació sobre la data d'aprovaci","NULL","NULL","IDEMenorca - Ordenacio","NULL","https://ide.cime.es/geoserver/ordenacio/wms/","EPSG:25831,EPSG:3857,EPSG:4326,CRS:84","WMS","None","admin","12345"

@@ -1,0 +1,4 @@
+"app_id","app_entrym","app_entrys","app_created","app_template","app_name","app_scales","app_project","app_theme","app_title","app_refresh","app_type","app_ggiid"
+"15","NULL","NULL","2024-03-06T16:55:43.591"," ","Visor IDEBarcelona","2000000,1000000,700000,600000,500000,250000,100000,75000,50000,25000,20000,15000,10000,5000,2000,1000,500","EPSG:25831","sitmun-base","Visor IDEBarcelona","true","I","NULL"
+"12","NULL","NULL","2023-07-31T09:26:33.494","  ","IDE genèric Menorca","2000000,1000000,700000,600000,500000,250000,100000,75000,50000,25000,20000,15000,10000,5000,2000,1000,500","EPSG:25831","sitmun-base","IDE genèric Menorca","true","I","3"
+"18","NULL","NULL","2024-06-04T14:55:24.483","aaa","A","NULL","NULL","NULL","NULL","NULL","I","NULL"

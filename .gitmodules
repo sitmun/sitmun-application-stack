@@ -1,0 +1,12 @@
+[submodule "front/admin/sitmun-admin-app"]
+	path = front/admin/sitmun-admin-app
+	url = https://github.com/sitmun/sitmun-admin-app.git
+[submodule "front/viewer/sitmun-viewer-app"]
+	path = front/viewer/sitmun-viewer-app
+	url = https://github.com/sitmun/sitmun-viewer-app.git
+[submodule "back/backend/sitmun-backend-core"]
+	path = back/backend/sitmun-backend-core
+	url = https://github.com/sitmun/sitmun-backend-core.git
+[submodule "back/proxy/sitmun-proxy-middleware"]
+	path = back/proxy/sitmun-proxy-middleware
+	url = https://github.com/sitmun/sitmun-proxy-middleware.git

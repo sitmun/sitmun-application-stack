@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: sitmun
+      context: dev,prod
+      changes:
+        - loadData:
+            encoding: UTF-8
+            file: 07_sequences/stm_sequence.csv
+            relativeToChangelogFile: true
+            tableName: STM_SEQUENCE
+            columns:
+              - column:
+                  name: SEQ_NAME
+                  type: STRING
+              - column:
+                  name: SEQ_COUNT
+                  type: NUMERIC

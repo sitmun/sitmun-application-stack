@@ -1,0 +1,46 @@
+services:
+  front:
+    build: 
+      context: ./front
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    ports:
+      - "9000:80"
+    volumes:
+      - ./front/config:/etc/nginx/conf.d
+    depends_on:
+      - backend
+
+  backend:
+    build: ./back/backend
+    ports:
+      - "9001:8080"
+    depends_on:
+      - persistence
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://persistence:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=example
+      - spring.datasource.driver-class-name=org.postgresql.Driver
+      - sitmun.proxy.force=false
+      - sitmun.proxy.url=http://localhost:9000/middleware
+    volumes:
+      - ./back/backend/config:/usr/src/config
+
+  proxy:
+    build:
+      context: ./back/proxy
+    ports:
+      - "9003:8080"
+    depends_on:
+      - backend
+    environment:
+      - sitmun.config.url=http://backend:8080/api/config/proxy
+
+  persistence:
+    image: postgres
+    restart: always
+    ports:
+      - "9002:5432"
+    environment:
+      POSTGRES_PASSWORD: example
