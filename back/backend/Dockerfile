@@ -3,7 +3,7 @@ FROM openjdk:11 AS build-backend-core
 COPY sitmun-backend-core /usr/src/sitmun-backend-core
 RUN rm -rf /usr/src/sitmun-backend-core/deploy/heroku-dev-full/src/main/resources/config
 WORKDIR /usr/src/sitmun-backend-core
-RUN ./gradlew stage
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i stage
 
 # Stage 1, based on OpenJDK, to have only the compiled app, ready for production with Nginx
 FROM openjdk:11

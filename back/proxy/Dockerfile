@@ -2,7 +2,7 @@
 FROM openjdk:11 AS build-proxy-middleware
 COPY sitmun-proxy-middleware /usr/src/sitmun-proxy-middleware
 WORKDIR /usr/src/sitmun-proxy-middleware
-RUN ./gradlew clean build -x test
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i clean build -x test
 
 # Stage 1, based on OpenJDK, to have only the compiled app
 FROM openjdk:11
