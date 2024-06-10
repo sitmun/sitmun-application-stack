@@ -11,8 +11,8 @@
 "167","false","NULL","Font: ICGC","NULL","NULL","ICGC - Mapes fons","NULL","https://geoserveis.icgc.cat/map/bases/service?","EPSG:25831,EPSG:23031,EPSG:32631","WMS","None","NULL","NULL"
 "162","false","2023-11-09T12:29:31.941","Ortofoto 2015 Illes Balears","NULL","NULL","GOIB - Ortofoto 2015 Illes Balears","NULL","https://ideib.caib.es/geoserveis/rest/services/imatges/GOIB_Ortofoto_2015_IB/MapServer/WMTS","EPSG:25831","WMTS","None","NULL","NULL"
 "6","false","NULL","NULL","NULL","NULL","ICC - Mapesbase","NULL","https://geoserveis.icgc.cat/icc_mapesbase/wms/service","NULL","WMS","NULL","NULL","NULL"
-"153","false","NULL","Servei de mapes de turisme i patrimoni del Consell Insular de Menorca. Aquest servei WMS inclou dades espacials que provenen de diferents fonts de l'administració local (ajuntaments i Consell Insular) o organismes dependents com la Fundació Foment d","NULL","NULL","IDEMenorca - turisme","NULL","https://ide.cime.es/geoserver/turisme/wms/","","WMS","None","NULL","NULL"
-"155","false","NULL","WMTS Base de referència Menorca","NULL","NULL","IDEMenorca - WMTS Base de referència Menorca","NULL","http://ide.cime.es/geoserver2/gwc/service/wmts","EPSG:25831","WMTS","None","NULL","NULL"
+"153","false","NULL","Servei de mapes de turisme i patrimoni del Consell Insular de Menorca. Aquest servei WMS inclou dades espacials que provenen de diferents fonts de l'administració local (ajuntaments i Consell Insular) o organismes dependents com la Fundació Foment d","NULL","NULL","IDEMenorca - turisme","NULL","https://ide.cime.es/geoserver/turisme/wms/","","WMS","None",NULL,"NULL"
+"155","false","NULL","WMTS Base de referència Menorca","NULL","NULL","IDEMenorca - WMTS Base de referència Menorca","NULL","http://ide.cime.es/geoserver2/gwc/service/wmts","EPSG:25831","WMTS","None",NULL,"NULL"
 "2","false","NULL","NULL","NULL","NULL","IGN - PNOA","NULL","https://www.ign.es/wms-inspire/pnoa-ma","NULL","WMS","NULL","NULL","NULL"
 "1","false","NULL","ICC Mapesmultibase","NULL","NULL","ICC - Mapesmultibase","NULL","https://geoserveis.icgc.cat/icc_mapesmultibase/utm/wmts/service","EPSG:25831,EPSG:23031,EPSG:32631","WMS","None","NULL","NULL"
 "158","false","NULL","IDENA
@@ -21,9 +21,9 @@ Infraestructura de Datos Espaciales de Navarra
 -
 Spatial Data Infrastructure of Navarre
 -
-Gobierno de Navarra","NULL","NULL","IDENA - WMS Navarra","NULL","https://idena.navarra.es/ogc/wms","","WMS","None","NULL","NULL"
+Gobierno de Navarra","NULL","NULL","IDENA - WMS Navarra","NULL","https://idena.navarra.es/ogc/wms","","WMS","None",NULL,"NULL"
 "160","false","NULL","PNOA WMTS","NULL","NULL","IGN - PNOA WMTS","NULL","https://www.ign.es/wmts/pnoa-ma","EPSG:25830","WMTS","None","NULL","NULL"
-"159","false","NULL","IGN WMTS Mapas base","NULL","NULL","IGN - WMTS Mapas base","NULL","https://www.ign.es/wmts/ign-base","EPSG:25830","WMTS","None","NULL","NULL"
+"159","false","NULL","IGN WMTS Mapas base","NULL","NULL","IGN - WMTS Mapas base","NULL","https://www.ign.es/wmts/ign-base","EPSG:25830","WMTS","None",NULL,"NULL"
 "164","false","2024-02-19T15:21:28.297","Servei de mapes del projecte IDE menorca que conté la cartografia dels instruments d'ordenació del territori, aprovats o en tramitació, del Consell Insular de Menorca. 
 
-La descripció de cada un dels grups conté informació sobre la data d'aprovaci","NULL","NULL","IDEMenorca - Ordenacio","NULL","https://ide.cime.es/geoserver/ordenacio/wms/","EPSG:25831,EPSG:3857,EPSG:4326,CRS:84","WMS","None","NULL","NULL"
+La descripció de cada un dels grups conté informació sobre la data d'aprovaci","NULL","NULL","IDEMenorca - Ordenacio","NULL","https://ide.cime.es/geoserver/ordenacio/wms/","EPSG:25831,EPSG:3857,EPSG:4326,CRS:84","WMS","None",NULL,NULL

@@ -58,7 +58,7 @@ The following services are available:
 - `backend`: SITMUN API
 - `proxy`: SITMUN proxy
 
-For testing purposes, the use of the `proxy` is controlled by the `sitmun.proxy.force` environment variable in `backend` which by default is false.
+For testing purposes, the use of the `proxy` is controlled by the `sitmun.proxy.force` environment variable in `backend` which by default is `true`.
 
 ## Contributing to SITMUN Application Stack
 

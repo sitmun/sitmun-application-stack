@@ -22,7 +22,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=example
       - spring.datasource.driver-class-name=org.postgresql.Driver
-      - sitmun.proxy.force=false
+      - sitmun.proxy.force=true
       - sitmun.proxy.url=http://localhost:9000/middleware
     volumes:
       - ./back/backend/config:/usr/src/config
