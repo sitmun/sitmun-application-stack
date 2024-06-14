@@ -8,3 +8,4 @@
 # Other files to be ignored
 *.properties
 *.jar
+.DS_Store

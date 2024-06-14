@@ -31,7 +31,7 @@ services:
     build:
       context: ./back/proxy
     ports:
-      - "9003:8080"
+      - "9002:8080"
     depends_on:
       - backend
     environment:
@@ -41,6 +41,6 @@ services:
     image: postgres
     restart: always
     ports:
-      - "9002:5432"
+      - "9003:5432"
     environment:
       POSTGRES_PASSWORD: example
