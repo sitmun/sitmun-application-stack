@@ -15,10 +15,10 @@ Before you begin, ensure you have met the following requirements:
 
 To install SITMUN Application Stack, follow these steps:
 
-1. Clone the repository:
+1. Clone the repository and fetch and checkout nested SITMUN projects:
 
     ```bash
-    git clone https://github.com/sitmun/sitmun-application-stack.git
+    git clone --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
     ```
 
 2. Change to the directory of the repository:
@@ -27,15 +27,21 @@ To install SITMUN Application Stack, follow these steps:
     cd sitmun-application-stack
     ```
 
-3. Start the SITMUN Application Stack:
+3. Create a new file named `.env` inside. Open the `.env` file in a text editor and add your GitHub personal access token (classic) (`GITHUB_TOKEN`) in the following format:
+
+    ```properties
+    GITHUB_TOKEN=your_personal_access_token
+    ```
+
+4. Start the SITMUN Application Stack:
 
     ```bash
     docker-compose up
     ```
     
-4. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer)
+5. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer)
 
-5. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin)
+6. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin)
 
 ## Configuration
 
