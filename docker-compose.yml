@@ -18,9 +18,9 @@ services:
     depends_on:
       - persistence
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://persistence:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=example
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://persistence:5432/sitmun3
+      - SPRING_DATASOURCE_USERNAME=sitmun3
+      - SPRING_DATASOURCE_PASSWORD=sitmun3
       - spring.datasource.driver-class-name=org.postgresql.Driver
       - sitmun.proxy.force=true
       - sitmun.proxy.url=http://localhost:9000/middleware
@@ -38,9 +38,16 @@ services:
       - sitmun.config.url=http://backend:8080/api/config/proxy
 
   persistence:
-    image: postgres
+    image: postgres:16-alpine
     restart: always
     ports:
       - "9003:5432"
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_DB: sitmun3
+      POSTGRES_USER: sitmun3
+      POSTGRES_PASSWORD: sitmun3
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

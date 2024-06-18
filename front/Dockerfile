@@ -27,6 +27,6 @@ COPY --chown=node:node viewer/index.html ./src/index.html
 RUN npm run build -- --configuration=testdeployment --base-href=/viewer/ --source-map=true
 
 # Stage 2, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:latest
+FROM nginx:1.27-alpine
 COPY --from=build-admin-app /home/node/app/dist/admin-app/ /usr/share/nginx/html/admin
 COPY --from=build-viewer-app /home/node/app/dist/viewer-app/ /usr/share/nginx/html/viewer
