@@ -5,7 +5,7 @@ WORKDIR /usr/src/sitmun-proxy-middleware
 RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i clean build -x test
 
 # Stage 1, based on OpenJDK, to have only the compiled app
-FROM openjdk:11
+FROM openjdk:11-jre-slim-buster
 COPY --from=build-proxy-middleware /usr/src/sitmun-proxy-middleware/build/libs/*.jar /usr/src/proxy.jar
 WORKDIR /usr/src
 ENTRYPOINT ["java", "-jar", "proxy.jar"]
