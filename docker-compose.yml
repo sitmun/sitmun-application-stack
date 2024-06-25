@@ -6,10 +6,13 @@ services:
         GITHUB_TOKEN: ${GITHUB_TOKEN}
     ports:
       - "9000:80"
+    environment:
+      - EXPOSED_PORT=9000
     volumes:
       - ./front/config:/etc/nginx/conf.d
     depends_on:
       - backend
+    command: /bin/sh -c "envsubst '$${EXPOSED_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
   backend:
     build: ./back/backend
