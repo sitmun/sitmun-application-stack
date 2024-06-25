@@ -9,3 +9,6 @@
 *.properties
 *.jar
 .DS_Store
+
+# Generated files
+front/config/default.conf

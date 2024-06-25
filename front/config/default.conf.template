@@ -1,19 +1,32 @@
 server {
   listen 80;
   server_name localhost;
-
   root /usr/share/nginx/html;
+
+  # Admin paths
   location /admin/ {
+    try_files $uri $uri/ =404;
     index index.html index.htm;
     include /etc/nginx/mime.types;
   }
 
+  location = /admin {
+    return 301 http://$host:${EXPOSED_PORT}/admin/;
+  }
+
+  # Viewer paths
   location /viewer/ {
+    try_files $uri $uri/ =404;
     index index.html index.htm;
     include /etc/nginx/mime.types;
     add_header 'Service-Worker-Allowed' '/viewer/';
   }
 
+  location = /viewer {
+    return 301 http://$host:${EXPOSED_PORT}/viewer/;
+  }
+
+  # API paths
   location /backend/ {
     proxy_pass http://backend:8080/;
   }
