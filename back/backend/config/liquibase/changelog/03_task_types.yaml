@@ -6,7 +6,7 @@ databaseChangeLog:
       changes:
         - loadData:
             encoding: UTF-8
-            file: 03_task_types/STM_TSK_TYP.csv
+            file: 03_task_types/stm_tsk_typ.csv
             relativeToChangelogFile: true
             tableName: STM_TSK_TYP
             quotchar: "\""

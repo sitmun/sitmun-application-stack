@@ -7,7 +7,7 @@ databaseChangeLog:
       changes:
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TER_TYP.csv
+            file: 04_initial_data_dev/stm_ter_typ.csv
             relativeToChangelogFile: true
             tableName: STM_TER_TYP
             usePreparedStatements: false
@@ -30,7 +30,7 @@ databaseChangeLog:
                   type: BOOLEAN
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_USER.csv
+            file: 04_initial_data_dev/stm_user.csv
             relativeToChangelogFile: true
             tableName: STM_USER
             usePreparedStatements: false
@@ -65,7 +65,7 @@ databaseChangeLog:
                   type: DATETIME
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_CONNECT.csv
+            file: 04_initial_data_dev/stm_connect.csv
             relativeToChangelogFile: true
             tableName: STM_CONNECT
             usePreparedStatements: false
@@ -91,7 +91,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_ROLE.csv
+            file: 04_initial_data_dev/stm_role.csv
             relativeToChangelogFile: true
             tableName: STM_ROLE
             usePreparedStatements: false
@@ -108,7 +108,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TERRITORY.csv
+            file: 04_initial_data_dev/stm_territory.csv
             relativeToChangelogFile: true
             tableName: STM_TERRITORY
             usePreparedStatements: false
@@ -167,7 +167,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_USR_CONF.csv
+            file: 04_initial_data_dev/stm_usr_conf.csv
             relativeToChangelogFile: true
             tableName: STM_USR_CONF
             usePreparedStatements: false
@@ -193,7 +193,7 @@ databaseChangeLog:
                   type: DATETIME
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_GTER_TYP.csv
+            file: 04_initial_data_dev/stm_gter_typ.csv
             relativeToChangelogFile: true
             tableName: STM_GTER_TYP
             usePreparedStatements: false
@@ -207,7 +207,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_GRP_GI.csv
+            file: 04_initial_data_dev/stm_grp_gi.csv
             relativeToChangelogFile: true
             tableName: STM_GRP_GI
             usePreparedStatements: false
@@ -224,7 +224,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TREE.csv
+            file: 04_initial_data_dev/stm_tree.csv
             relativeToChangelogFile: true
             tableName: STM_TREE
             usePreparedStatements: false
@@ -241,7 +241,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TREE_ROL.csv
+            file: 04_initial_data_dev/stm_tree_rol.csv
             relativeToChangelogFile: true
             tableName: STM_TREE_ROL
             usePreparedStatements: false
@@ -255,7 +255,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_SERVICE.csv
+            file: 04_initial_data_dev/stm_service.csv
             relativeToChangelogFile: true
             tableName: STM_SERVICE
             usePreparedStatements: false
@@ -287,7 +287,7 @@ databaseChangeLog:
                   type: BOOLEAN
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_GEOINFO.csv
+            file: 04_initial_data_dev/stm_geoinfo.csv
             relativeToChangelogFile: true
             tableName: STM_GEOINFO
             usePreparedStatements: false
@@ -373,7 +373,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_PAR_GI.csv
+            file: 04_initial_data_dev/stm_par_gi.csv
             relativeToChangelogFile: true
             tableName: STM_PAR_GI
             usePreparedStatements: false
@@ -402,7 +402,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_PAR_SGI.csv
+            file: 04_initial_data_dev/stm_par_sgi.csv
             relativeToChangelogFile: true
             tableName: STM_PAR_SGI
             usePreparedStatements: false
@@ -431,7 +431,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_GGI_GI.csv
+            file: 04_initial_data_dev/stm_ggi_gi.csv
             relativeToChangelogFile: true
             tableName: STM_GGI_GI
             usePreparedStatements: false
@@ -445,7 +445,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_ROL_GGI.csv
+            file: 04_initial_data_dev/stm_rol_ggi.csv
             relativeToChangelogFile: true
             tableName: STM_ROL_GGI
             usePreparedStatements: false
@@ -459,7 +459,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_APP.csv
+            file: 04_initial_data_dev/stm_app.csv
             relativeToChangelogFile: true
             tableName: STM_APP
             usePreparedStatements: false
@@ -506,7 +506,7 @@ databaseChangeLog:
                   type: BOOLEAN
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_APP_TREE.csv
+            file: 04_initial_data_dev/stm_app_tree.csv
             relativeToChangelogFile: true
             tableName: STM_APP_TREE
             usePreparedStatements: false
@@ -520,7 +520,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_APP_ROL.csv
+            file: 04_initial_data_dev/stm_app_rol.csv
             relativeToChangelogFile: true
             tableName: STM_APP_ROL
             usePreparedStatements: false
@@ -534,7 +534,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_PAR_APP.csv
+            file: 04_initial_data_dev/stm_par_app.csv
             relativeToChangelogFile: true
             tableName: STM_PAR_APP
             usePreparedStatements: false
@@ -557,7 +557,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_BACKGRD.csv
+            file: 04_initial_data_dev/stm_backgrd.csv
             relativeToChangelogFile: true
             tableName: STM_BACKGRD
             usePreparedStatements: false
@@ -583,7 +583,7 @@ databaseChangeLog:
                   type: DATETIME
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_APP_BCKG.csv
+            file: 04_initial_data_dev/stm_app_bckg.csv
             relativeToChangelogFile: true
             tableName: STM_APP_BCKG
             usePreparedStatements: false
@@ -603,7 +603,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_AVAIL_GI.csv
+            file: 04_initial_data_dev/stm_avail_gi.csv
             relativeToChangelogFile: true
             tableName: STM_AVAIL_GI
             usePreparedStatements: false
@@ -625,7 +625,7 @@ databaseChangeLog:
             sql: ALTER TABLE STM_TREE_NOD DROP CONSTRAINT STM_TNO_FK_TNO;
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TREE_NOD.csv
+            file: 04_initial_data_dev/stm_tree_nod.csv
             relativeToChangelogFile: true
             tableName: STM_TREE_NOD
             usePreparedStatements: false
@@ -675,7 +675,7 @@ databaseChangeLog:
             sql: ALTER TABLE STM_TREE_NOD ADD CONSTRAINT STM_TNO_FK_TNO FOREIGN KEY (TNO_PARENTID) REFERENCES STM_TREE_NOD (TNO_ID);
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_GRP_TSK.csv
+            file: 04_initial_data_dev/stm_grp_tsk.csv
             relativeToChangelogFile: true
             tableName: STM_GRP_TSK
             usePreparedStatements: false
@@ -689,7 +689,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TSK_UI.csv
+            file: 04_initial_data_dev/stm_tsk_ui.csv
             relativeToChangelogFile: true
             tableName: STM_TSK_UI
             usePreparedStatements: false
@@ -709,7 +709,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_TASK.csv
+            file: 04_initial_data_dev/stm_task.csv
             relativeToChangelogFile: true
             tableName: STM_TASK
             usePreparedStatements: false
@@ -747,7 +747,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_DOWNLOAD.csv
+            file: 04_initial_data_dev/stm_donwload.csv
             relativeToChangelogFile: true
             tableName: STM_DOWNLOAD
             usePreparedStatements: false
@@ -767,7 +767,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_QUERY.csv
+            file: 04_initial_data_dev/stm_query.csv
             relativeToChangelogFile: true
             tableName: STM_QUERY
             usePreparedStatements: false
@@ -790,7 +790,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_ROL_TSK.csv
+            file: 04_initial_data_dev/stm_rol_task.csv
             relativeToChangelogFile: true
             tableName: STM_ROL_TSK
             usePreparedStatements: false
@@ -804,7 +804,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_POST.csv
+            file: 04_initial_data_dev/stm_post.csv
             relativeToChangelogFile: true
             tableName: STM_POST
             usePreparedStatements: false
@@ -836,7 +836,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_COMMENT.csv
+            file: 04_initial_data_dev/stm_comment.csv
             relativeToChangelogFile: true
             tableName: STM_COMMENT
             usePreparedStatements: false
@@ -874,7 +874,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_AVAIL_TSK.csv
+            file: 04_initial_data_dev/stm_avail_tsk.csv
             relativeToChangelogFile: true
             tableName: STM_AVAIL_TSK
             usePreparedStatements: false
@@ -891,7 +891,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_PAR_SER.csv
+            file: 04_initial_data_dev/stm_par_ser.csv
             relativeToChangelogFile: true
             tableName: STM_PAR_SER
             usePreparedStatements: false
@@ -914,7 +914,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_PAR_TSK.csv
+            file: 04_initial_data_dev/stm_par_tsk.csv
             relativeToChangelogFile: true
             tableName: STM_PAR_TSK
             usePreparedStatements: false
@@ -952,7 +952,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_THEMATIC.csv
+            file: 04_initial_data_dev/stm_thematic.csv
             relativeToChangelogFile: true
             tableName: STM_THEMATIC
             usePreparedStatements: false
@@ -1008,7 +1008,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_THE_RANK.csv
+            file: 04_initial_data_dev/stm_the_rank.csv
             relativeToChangelogFile: true
             tableName: STM_THE_RANK
             usePreparedStatements: false
@@ -1058,7 +1058,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/STM_STY_GI.csv
+            file: 04_initial_data_dev/stm_sty_si.csv
             relativeToChangelogFile: true
             tableName: STM_STY_GI
             quotchar: '"'
