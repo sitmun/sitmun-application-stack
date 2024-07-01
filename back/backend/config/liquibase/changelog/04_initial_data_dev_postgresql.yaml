@@ -747,7 +747,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/stm_donwload.csv
+            file: 04_initial_data_dev/stm_download.csv
             relativeToChangelogFile: true
             tableName: STM_DOWNLOAD
             usePreparedStatements: false
@@ -790,7 +790,7 @@ databaseChangeLog:
                   type: NUMERIC
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/stm_rol_task.csv
+            file: 04_initial_data_dev/stm_rol_tsk.csv
             relativeToChangelogFile: true
             tableName: STM_ROL_TSK
             usePreparedStatements: false
@@ -1058,7 +1058,7 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/stm_sty_si.csv
+            file: 04_initial_data_dev/stm_sty_gi.csv
             relativeToChangelogFile: true
             tableName: STM_STY_GI
             quotchar: '"'
