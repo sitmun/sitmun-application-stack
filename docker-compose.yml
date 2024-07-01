@@ -38,7 +38,8 @@ services:
     depends_on:
       - backend
     environment:
-      - sitmun.config.url=http://backend:8080/api/config/proxy
+      - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
+      - SITMUN_BACKEND_CONFIG_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
 
   persistence:
     image: postgres:16-alpine
