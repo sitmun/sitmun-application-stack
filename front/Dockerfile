@@ -4,13 +4,12 @@ ARG GITHUB_TOKEN
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY admin/sitmun-admin-app/package*.json ./
-COPY admin/sitmun-admin-app/.npmrc ./
-RUN npm set //npm.pkg.github.com/:_authToken $GITHUB_TOKEN
+#COPY admin/sitmun-admin-app/.npmrc ./
+#RUN npm set //npm.pkg.github.com/:_authToken $GITHUB_TOKEN
+RUN npm install
 RUN npm ci
 COPY --chown=node:node admin/sitmun-admin-app/*.json admin/sitmun-admin-app/*.js ./
 COPY --chown=node:node admin/sitmun-admin-app/src/ ./src/
-COPY --chown=node:node admin/sitmun-admin-app/dist/sitmun-frontend-gui ./dist/sitmun-frontend-gui/
-COPY --chown=node:node admin/sitmun-admin-app/dist/sitmun-frontend-core ./dist/sitmun-frontend-core/
 COPY --chown=node:node admin/environment.testdeployment.ts ./src/environments/environment.testdeployment.ts
 RUN npm run build -- --configuration=testdeployment --baseHref=/admin/ --source-map=true
 

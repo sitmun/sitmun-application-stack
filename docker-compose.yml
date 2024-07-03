@@ -2,8 +2,6 @@ services:
   front:
     build: 
       context: ./front
-      args:
-        GITHUB_TOKEN: ${GITHUB_TOKEN}
     ports:
       - "9000:80"
     environment:
