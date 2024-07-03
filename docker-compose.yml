@@ -1,7 +1,7 @@
 services:
   front:
-    build: 
-      context: ./front
+    build: ./front
+    restart: always
     ports:
       - "9000:80"
     environment:
@@ -14,6 +14,7 @@ services:
 
   backend:
     build: ./back/backend
+    restart: always
     ports:
       - "9001:8080"
     depends_on:
@@ -22,15 +23,15 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://persistence:5432/sitmun3
       - SPRING_DATASOURCE_USERNAME=sitmun3
       - SPRING_DATASOURCE_PASSWORD=sitmun3
-      - spring.datasource.driver-class-name=org.postgresql.Driver
-      - sitmun.proxy.force=true
-      - sitmun.proxy.url=http://localhost:9000/middleware
+      - SITMUN_PROXY_FORCE=true
+      - SITMUN_PROXY_URL=http://localhost:9000/middleware
+      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
     volumes:
       - ./back/backend/config:/usr/src/config
 
   proxy:
-    build:
-      context: ./back/proxy
+    build: ./back/proxy
+    restart: always
     ports:
       - "9002:8080"
     depends_on:

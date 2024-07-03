@@ -61,7 +61,7 @@ The SITMUN Application Stack uses Docker Compose to define the services, specifi
 
 ### Configuration Notes
 
-For testing purposes, the use of the `proxy` is controlled by the `sitmun.proxy.force` environment variable in `backend`, which by default is `true`.
+For testing purposes, the use of the `proxy` is controlled by the `SITMUN_PROXY_FORCE` environment variable in `backend`, which by default is `true`.
 
 Data is stored in the `pgdata` volume, which is used by the `postgres` service.
 
