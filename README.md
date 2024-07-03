@@ -1,19 +1,17 @@
 # SITMUN Application Stack
 
-The **SITMUN Application Stack** is an example of how to deploy SITMUN as a multi-container application.
-It is designed to work in development and testing environments.
+The **SITMUN Application Stack** is an example of how to deploy SITMUN as a multi-container application, designed to work in development and testing environments.
 
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
-- You have a `Windows/Linux/Mac` machine.
-- You have installed the latest version of [Docker CE](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/), or [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+- A `Windows/Linux/Mac` machine.
+- Installed the latest version of [Docker CE](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/), or [Docker Desktop](https://www.docker.com/products/docker-desktop/).
   Docker CE is fully open-source, while Docker Desktop is a commercial product.
-- You have installed [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) on your machine.
-- You have a GitHub account to [create a personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
-- You have a basic understanding of Docker, Docker Compose, and Git.
-- You have internet access on your machine to pull Docker images and Git repositories.
+- Installed [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) on your machine.
+- Basic understanding of Docker, Docker Compose, and Git.
+- Internet access to pull Docker images and Git repositories.
 
 ## Installing SITMUN Application Stack
 
@@ -29,57 +27,73 @@ To install the SITMUN Application Stack, follow these steps:
     cd sitmun-application-stack
     ```
 
-3. Create a new file named `.env` inside the directory.
-   Open the `.env` file in a text editor and add your GitHub personal access token (`GITHUB_TOKEN`) in the following format:
-    ```properties
-    GITHUB_TOKEN=your_personal_access_token
-    ```
-
-4. Start the SITMUN Application Stack:
+3. Start the SITMUN Application Stack:
     ```bash
-    docker compose up
+    docker compose up -d
     ```
    This command will build and start all the services defined in the `docker-compose.yml` file.
 
-5. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer). 
+4. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer). 
    Use the public access which does not require authentication.
 
-6. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin).
+5. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin).
    This requires authentication. The default username is `admin` and the default password is `admin`.
 
-7. If the source code of the SITMUN stack is changed, fetch changes and rebuild the services:
+6. If the source code of the SITMUN stack is changed, fetch changes and rebuild the services:
     ```bash
     git pull --recurse-submodules
-    docker compose up --build
+    docker-compose build --no-cache
+    docker compose up -d
     ```
 
-## Configuration
+## Docker Compose Configuration
 
-### Environment Variables
+The SITMUN Application Stack uses Docker Compose to define the services, specified in the `docker-compose.yml` file.
 
-The SITMUN Application Stack uses environment variables to configure the services.
-The environment variables are defined in the `.env` file.
+### Available services
 
-The following environment variables are available:
+- `front`: SITMUN front-end services
+  - `viewer`: SITMUN viewer application at <http://localhost:9000/viewer>
+  - `admin`: SITMUN administrative application at <http://localhost:9000/admin>
+  - Also, it acts as reverse proxy for `backend` and `proxy` services at <http://localhost:9000/backend/> and <http://localhost:9000/middleware/> endpoints respectively. 
+- `backend`: SITMUN API at [http://localhost:9001/](http://localhost:9001/)
+- `proxy`: SITMUN proxy at [http://localhost:9002/](http://localhost:9002/)
 
-- `GITHUB_TOKEN`: [GitHub personal access token (classic)](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages).
-  The token is required to get `npm` packages from [GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#about-github-packages).
-
-### Docker Compose Configuration
-
-The SITMUN Application Stack uses Docker Compose to define the services.
-The services are defined in the `docker-compose.yml` file.
-
-The following services are available:
-
-- `viewer`: SITMUN viewer application
-- `admin`: SITMUN administrative application
-- `backend`: SITMUN API
-- `proxy`: SITMUN proxy
+### Configuration Notes
 
 For testing purposes, the use of the `proxy` is controlled by the `sitmun.proxy.force` environment variable in `backend`, which by default is `true`.
 
 Data is stored in the `pgdata` volume, which is used by the `postgres` service.
+
+## Working with submodules
+
+SITMUN Application Stack uses Git submodules to include the source code of the SITMUN viewer and administrative applications, the SITMUN Backend and the SITMUN Proxy middleware.
+
+| Submodule                 | GitHub repository                                                                   | Docker service |
+|---------------------------|-------------------------------------------------------------------------------------|----------------|
+| `sitmun-admin-app`        | [SITMUN Administration application](https://github.com/sitmun/sitmun-admin-app.git) | `front`        |
+| `sitmun-viewer-app`       | [SITMUN Viewer application](https://github.com/sitmun/sitmun-viewer-app.git)        | `front`        |
+| `sitmun-backend-core`     | [SITMUN Backend](https://github.com/sitmun/sitmun-backend-core.git)                 | `backend`      |
+| `sitmun-proxy-middleware` | [SITMUN Proxy middleware](https://github.com/sitmun/sitmun-proxy-middleware.git)    | `proxy`        |
+
+### Changing Submodule Branches
+
+To change the branch of a submodule, use the following command:
+
+```bash
+git submodule set-branch -b branch_name submodule_name
+git submodule sync
+git submodule update --init submodule_name
+```
+
+The update command updates the registered submodule to match the expected configuration by cloning it if missing, fetching missing commits and updating the working tree to the specified branch.
+
+Next, rebuild and restarts the affected docker service:
+
+```bash
+docker compose build --no-cache service_name
+docker compose up service_name -d
+```
 
 ## Uninstalling SITMUN Application Stack
 
