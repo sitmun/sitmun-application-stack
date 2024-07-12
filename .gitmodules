@@ -5,7 +5,7 @@
 [submodule "sitmun-viewer-app"]
 	path = front/viewer/sitmun-viewer-app
 	url = https://github.com/sitmun/sitmun-viewer-app.git
-	branch = main
+	branch = feature-8
 [submodule "sitmun-backend-core"]
 	path = back/backend/sitmun-backend-core
 	url = https://github.com/sitmun/sitmun-backend-core.git
