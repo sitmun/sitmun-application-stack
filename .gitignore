@@ -2,9 +2,6 @@
 *.iml
 .idea
 
-# Ignore environment files
-.env
-
 # Other files to be ignored
 *.properties
 *.jar

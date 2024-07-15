@@ -39,4 +39,3 @@ server {
     proxy_pass http://proxy:8080/;
   }
 }
-
