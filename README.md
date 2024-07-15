@@ -6,11 +6,11 @@ The **SITMUN Application Stack** is an example of how to deploy SITMUN as a mult
 
 Before you begin, ensure you have met the following requirements:
 
-- A `Windows/Linux/Mac` machine.
-- Installed the latest version of [Docker CE](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/), or [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-  Docker CE is fully open-source, while Docker Desktop is a commercial product.
-- Installed [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) on your machine.
-- Basic understanding of Docker, Docker Compose, and Git.
+- A `Windows/Mac/Linux` machine.
+- Installed the latest version of `Docker`. Installation scenarios:
+  - Scenario one: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/). 
+  - Scenario two: Install [Docker Desktop](https://docs.docker.com/desktop/) (one-click-install commercial product), which includes `Docker Engine` and `Docker Compose.
+- Installed Git.  See [Installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 - Internet access to pull Docker images and Git repositories.
 
 ## Installing SITMUN Application Stack
@@ -46,26 +46,40 @@ To install the SITMUN Application Stack, follow these steps:
     docker compose up -d
     ```
 
-## Docker Compose Configuration
+## Available services
+
+| Application                | URL                                                              | 
+|----------------------------|------------------------------------------------------------------|
+| Viewer application         | <http://localhost:9000/viewer>                                   | 
+| Administrative application | <http://localhost:9000/admin>                                    |
+| Backend API                | <http://localhost:9000/backend/> and <http://localhost:9001/>    | 
+| Proxy Middleware API       | <http://localhost:9000/middleware/> and <http://localhost:9002/> | 
+                                 |
+
+## Configuration Notes
 
 The SITMUN Application Stack uses Docker Compose to define the services, specified in the `docker-compose.yml` file.
 
-### Available services
-
-- `front`: SITMUN front-end services
-  - `viewer`: SITMUN viewer application at <http://localhost:9000/viewer>
-  - `admin`: SITMUN administrative application at <http://localhost:9000/admin>
-  - Also, it acts as reverse proxy for `backend` and `proxy` services at <http://localhost:9000/backend/> and <http://localhost:9000/middleware/> endpoints respectively. 
-- `backend`: SITMUN API at [http://localhost:9001/](http://localhost:9001/)
-- `proxy`: SITMUN proxy at [http://localhost:9002/](http://localhost:9002/)
-
-### Configuration Notes
-
-For testing purposes, the use of the `proxy` is controlled by the `SITMUN_PROXY_FORCE` environment variable in `backend`, which by default is `true`.
-
 Data is stored in the `pgdata` volume, which is used by the `postgres` service.
 
-## Working with submodules
+Environment variables are defined in the `.env` file. The following variables can be modified.
+
+| Variable             | Description                              | Default value                         |
+|----------------------|------------------------------------------|---------------------------------------|
+| `SERVICE_PORT`       | The port where the services are exposed. | `9000`                                |
+| `DATABASE`           | The name of the database.                | `sitmun3`                             |
+| `DATABASE_URL`       | The JDBC URL of the database.            | `jdbc:postgresql://persistence:5432/` |
+| `DATABASE_USERNAME`  | The username to access the database.     | `sitmun3`                             |
+| `DATABASE_PASSWORD`  | The password to access the database.     | `sitmun3`                             |
+| `FORCE_USE_OF_PROXY` | Forces the use of the proxy middleware.  | `true`                                |
+
+Notes:
+
+- The default value of `DATABASE_URL` points to `persistence`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
+- The effective JDBC URL is composed by the concatenation of `DATABASE_URL` and `DATABASE`. 
+- `FORCE_USE_OF_PROXY` is enabled by default for testing purposes.
+
+## Developing SITMUN
 
 SITMUN Application Stack uses Git submodules to include the source code of the SITMUN viewer and administrative applications, the SITMUN Backend and the SITMUN Proxy middleware.
 
@@ -76,14 +90,12 @@ SITMUN Application Stack uses Git submodules to include the source code of the S
 | `sitmun-backend-core`     | [SITMUN Backend](https://github.com/sitmun/sitmun-backend-core.git)                 | `backend`      |
 | `sitmun-proxy-middleware` | [SITMUN Proxy middleware](https://github.com/sitmun/sitmun-proxy-middleware.git)    | `proxy`        |
 
-### Changing Submodule Branches
-
 To change the branch of a submodule, use the following command:
 
 ```bash
 git submodule set-branch -b branch_name submodule_name
 git submodule sync
-git submodule update --init submodule_name
+git submodule update --init
 ```
 
 The update command updates the registered submodule to match the expected configuration by cloning it if missing, fetching missing commits and updating the working tree to the specified branch.
@@ -93,13 +105,6 @@ Next, rebuild and restarts the affected docker service:
 ```bash
 docker compose build --no-cache service_name
 docker compose up service_name -d
-```
-
-## Uninstalling SITMUN Application Stack
-
-To stop and remove all services, volumes, and networks defined in the `docker-compose.yml` file, use:
-```bash
-docker compose down -v
 ```
 
 ## Contributing to SITMUN Application Stack

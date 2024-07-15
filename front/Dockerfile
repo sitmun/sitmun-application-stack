@@ -29,3 +29,4 @@ RUN npm run build -- --configuration=testdeployment --base-href=/viewer/ --sourc
 FROM nginx:1.27-alpine
 COPY --from=build-admin-app /home/node/app/dist/admin-app/ /usr/share/nginx/html/admin
 COPY --from=build-viewer-app /home/node/app/dist/viewer-app/ /usr/share/nginx/html/viewer
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl --fail http://localhost:8080/actuator/health || exit 1
