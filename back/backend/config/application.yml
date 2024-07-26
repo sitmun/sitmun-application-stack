@@ -107,8 +107,6 @@ spring:
   liquibase:
     change-log: file:/usr/src/config/liquibase/master.xml
     contexts: dev
-    run-async: true
-    sync-legacy: true
   main:
     allow-bean-definition-overriding: true
   task:
