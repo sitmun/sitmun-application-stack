@@ -21,7 +21,6 @@ services:
 
   backend:
     build: ./back/backend
-    restart: always
     ports:
       - "9001:8080"
     depends_on:

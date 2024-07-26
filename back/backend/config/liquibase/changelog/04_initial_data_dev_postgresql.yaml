@@ -707,12 +707,15 @@ databaseChangeLog:
               - column:
                   name: TUI_ORDER
                   type: NUMERIC
+              - column:
+                  name: TUI_TYPE
+                  type: STRING
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_task.csv
             relativeToChangelogFile: true
             tableName: STM_TASK
-            usePreparedStatements: false
+            usePreparedStatements: true
             quotchar: '"'
             columns:
               - column:
@@ -743,8 +746,14 @@ databaseChangeLog:
                   name: TAS_GIID
                   type: NUMERIC
               - column:
-                  name: tas_order
+                  name: TAS_ORDER
                   type: NUMERIC
+              - column:
+                  name: TAS_SERID
+                  type: NUMERIC
+              - column:
+                  name: TAS_PARAMS
+                  type: STRING
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_download.csv
@@ -765,29 +774,6 @@ databaseChangeLog:
               - column:
                   name: DOW_PATH
                   type: STRING
-        - loadData:
-            encoding: UTF-8
-            file: 04_initial_data_dev/stm_query.csv
-            relativeToChangelogFile: true
-            tableName: STM_QUERY
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: QUE_ID
-                  type: NUMERIC
-              - column:
-                  name: QUE_COMMAND
-                  type: STRING
-              - column:
-                  name: QUE_TYPE
-                  type: STRING
-              - column:
-                  name: QUE_DESC
-                  type: STRING
-              - column:
-                  name: que_taskid
-                  type: NUMERIC
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_rol_tsk.csv
