@@ -6,6 +6,7 @@
 *.properties
 *.jar
 .DS_Store
+.vscode
 
 # Generated files
 front/config/default.conf

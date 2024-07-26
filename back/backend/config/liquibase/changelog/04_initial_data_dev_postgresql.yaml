@@ -1054,8 +1054,29 @@ databaseChangeLog:
                   name: SGI_ID
                   type: NUMERIC
               - column:
+                  name: SGI_ABSTRACT
+                  type: STRING
+              - column:
+                  name: SGI_LURL_FORMAT
+                  type: STRING
+              - column:
+                  name: SGI_LURL_HEIGHT
+                  type: NUMERIC
+              - column:
+                  name: SGI_LURL_URL
+                  type: STRING
+              - column:
+                  name: SGI_LURL_WIDTH
+                  type: NUMERIC
+              - column:
                   name: SGI_NAME
                   type: STRING
+              - column:
+                  name: SGI_TITLE
+                  type: STRING
+              - column:
+                  name: SGI_DEFAULT
+                  type: BOOLEAN
               - column:
                   name: SGI_GIID
                   type: NUMERIC

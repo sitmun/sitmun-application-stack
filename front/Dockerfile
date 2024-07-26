@@ -1,17 +1,14 @@
 # Stage 0, "build-admin-app", based on Node.js, to build and compile the frontend
-FROM node:12 AS build-admin-app
-ARG GITHUB_TOKEN
+FROM node:18 AS build-admin-app
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY admin/sitmun-admin-app/package*.json ./
-#COPY admin/sitmun-admin-app/.npmrc ./
-#RUN npm set //npm.pkg.github.com/:_authToken $GITHUB_TOKEN
 RUN npm install
 RUN npm ci
 COPY --chown=node:node admin/sitmun-admin-app/*.json admin/sitmun-admin-app/*.js ./
 COPY --chown=node:node admin/sitmun-admin-app/src/ ./src/
 COPY --chown=node:node admin/environment.testdeployment.ts ./src/environments/environment.testdeployment.ts
-RUN npm run build -- --configuration=testdeployment --baseHref=/admin/ --source-map=true
+RUN npm run build -- --configuration=testdeployment --base-href=/admin/ --source-map=true
 
 # Stage 1, "build-viewer-app", based on Node.js, to build and compile the frontend
 FROM node:18 AS build-viewer-app
