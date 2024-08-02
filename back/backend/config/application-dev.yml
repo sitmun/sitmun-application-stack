@@ -26,6 +26,8 @@ management:
   endpoints:
     web:
       base-path: /api/dashboard
+      exposure:
+              include: info
 
 spring:
   jackson:
