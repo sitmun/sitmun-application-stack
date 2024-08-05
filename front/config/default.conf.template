@@ -29,6 +29,10 @@ server {
   # API paths
   location /backend/ {
     proxy_pass http://backend:8080/;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port ${EXPOSED_PORT};
+    proxy_set_header X-Forwarded-Prefix /backend;
   }
 
   location /middleware/ {
