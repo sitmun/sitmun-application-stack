@@ -8,7 +8,7 @@ Before you begin, ensure you have met the following requirements:
 
 - A `Windows/Mac/Linux` machine.
 - Installed the latest version of `Docker`. Installation scenarios:
-  - Scenario one: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/). 
+  - Scenario one: Install [Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/).
   - Scenario two: Install [Docker Desktop](https://docs.docker.com/desktop/) (one-click-install commercial product), which includes `Docker Engine` and `Docker Compose.
 - Installed Git.  See [Installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 - Internet access to pull Docker images and Git repositories.
@@ -18,28 +18,33 @@ Before you begin, ensure you have met the following requirements:
 To install the SITMUN Application Stack, follow these steps:
 
 1. Clone the repository and fetch and checkout nested SITMUN projects:
+
     ```bash
     git clone --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
     ```
 
 2. Change to the directory of the repository:
+
     ```bash
     cd sitmun-application-stack
     ```
 
 3. Start the SITMUN Application Stack:
+
     ```bash
     docker compose up -d
     ```
+
    This command will build and start all the services defined in the `docker-compose.yml` file.
 
-4. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer). 
+4. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer).
    Use the public access which does not require authentication.
 
 5. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin).
    This requires authentication. The default username is `admin` and the default password is `admin`.
 
 6. If the source code of the SITMUN stack is changed, fetch changes and rebuild the services:
+
     ```bash
     git pull --recurse-submodules
     docker-compose build --no-cache
@@ -48,13 +53,14 @@ To install the SITMUN Application Stack, follow these steps:
 
 ## Available services
 
-| Application                | URL                                                              | 
-|----------------------------|------------------------------------------------------------------|
-| Viewer application         | <http://localhost:9000/viewer>                                   | 
-| Administrative application | <http://localhost:9000/admin>                                    |
-| Backend API                | <http://localhost:9000/backend/> and <http://localhost:9001/>    | 
-| Proxy Middleware API       | <http://localhost:9000/middleware/> and <http://localhost:9002/> | 
-                                 |
+If the `BASE_URL` is `http://localhost:9000/`, the following services are available:
+
+| Application                | URL                                                                                            |
+|----------------------------|------------------------------------------------------------------------------------------------|
+| Viewer application         | `${BASE_URL}viewer` (e.g. <http://localhost:9000/viewer>)                                      |
+| Administrative application | `${BASE_URL}admin` (e.g. <http://localhost:9000/admin>)                                        |
+| Backend API                | `${BASE_URL}backend` (e.g. <http://localhost:9000/backend>) and <http://localhost:9001/>       |
+| Proxy Middleware API       | `${BASE_URL}middleware` (e.g. <http://localhost:9000/middleware>) and <http://localhost:9002/> |
 
 ## Configuration Notes
 
@@ -64,20 +70,24 @@ Data is stored in the `pgdata` volume, which is used by the `postgres` service.
 
 Environment variables are defined in the `.env` file. The following variables can be modified.
 
-| Variable             | Description                              | Default value                         |
-|----------------------|------------------------------------------|---------------------------------------|
-| `SERVICE_PORT`       | The port where the services are exposed. | `9000`                                |
-| `DATABASE`           | The name of the database.                | `sitmun3`                             |
-| `DATABASE_URL`       | The JDBC URL of the database.            | `jdbc:postgresql://persistence:5432/` |
-| `DATABASE_USERNAME`  | The username to access the database.     | `sitmun3`                             |
-| `DATABASE_PASSWORD`  | The password to access the database.     | `sitmun3`                             |
-| `FORCE_USE_OF_PROXY` | Forces the use of the proxy middleware.  | `true`                                |
+| Variable             | Description                                                 | Default value                         |
+|----------------------|-------------------------------------------------------------|---------------------------------------|
+| `SITMUN_PROTOCOL`    | The protocol used.                                          | `http`                                |
+| `SITMUN_HOST`        | The hostname or IP address where the application is hosted. | `localhost`                           |
+| `SITMUN_PORT`        | The port where the services are exposed.                    | `9000`                                |
+| `SITMUN_CONTEXT_PATH`| The context path of the application.                        | `/`                                   |
+| `DATABASE`           | The name of the database.                                   | `sitmun3`                             |
+| `DATABASE_URL`       | The JDBC URL of the database.                               | `jdbc:postgresql://persistence:5432/` |
+| `DATABASE_USERNAME`  | The username to access the database.                        | `sitmun3`                             |
+| `DATABASE_PASSWORD`  | The password to access the database.                        | `sitmun3`                             |
+| `FORCE_PROXY_USE`    | Forces the use of the proxy middleware.                     | `true`                                |
 
 Notes:
 
+- The full **Base URL** is computed by concatenating these variables `SITMUN_PROTOCOL`, `SITMUN_HOST`, `SITMUN_PORT` and `SITMUN_CONTEXT_PATH`: `${SITMUN_PROTOCOL}://${SITMUN_HOST}:${SITMUN_PORT}${SITMUN_CONTEXT_PATH}`
+- The effective **JDBC URL** is composed by the concatenation of `DATABASE_URL` and `DATABASE`: `${DATABASE_URL}${DATABASE}`	
 - The default value of `DATABASE_URL` points to `persistence`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
-- The effective JDBC URL is composed by the concatenation of `DATABASE_URL` and `DATABASE`. 
-- `FORCE_USE_OF_PROXY` is enabled by default for testing purposes.
+- `FORCE_PROXY_USE` is enabled by default for testing purposes.
 
 ## Developing SITMUN
 
