@@ -7,7 +7,9 @@
 *.jar
 .DS_Store
 .vscode
+.env.*
 
 # Generated files
 front/config/default.conf
 logs/
+

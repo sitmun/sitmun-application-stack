@@ -11,31 +11,35 @@ server {
   }
 
   location = /admin {
-    return 301 http://$host:${EXPOSED_PORT}/admin/;
+    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}:${FRONT_PORT}${FRONT_CONTEXT_PATH}admin/;
   }
 
   # Viewer paths
   location /viewer/ {
-    try_files $uri $uri/ =404;
+    try_files $uri $uri/ /viewer/index.html;
     index index.html index.htm;
     include /etc/nginx/mime.types;
     add_header 'Service-Worker-Allowed' '/viewer/';
   }
 
   location = /viewer {
-    return 301 http://$host:${EXPOSED_PORT}/viewer/;
+    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}:${FRONT_PORT}${FRONT_CONTEXT_PATH}viewer/;
   }
 
   # API paths
   location /backend/ {
     proxy_pass http://backend:8080/;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Forwarded-Port ${EXPOSED_PORT};
-    proxy_set_header X-Forwarded-Prefix /backend;
+    proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
+    proxy_set_header X-Forwarded-Host ${FRONT_HOST};
+    proxy_set_header X-Forwarded-Port ${FRONT_PORT};
+    proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}backend; 
   }
 
   location /middleware/ {
     proxy_pass http://proxy:8080/;
+    proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
+    proxy_set_header X-Forwarded-Host ${FRONT_HOST};
+    proxy_set_header X-Forwarded-Port ${FRONT_PORT};
+    proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}middleware; 
   }
 }
