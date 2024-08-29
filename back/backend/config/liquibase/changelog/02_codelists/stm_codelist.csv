@@ -103,3 +103,4 @@
 "106","service.authenticationMode","HTTP Basic authentication","true","false","HTTP Basic authentication"
 "107","service.type","WMTS","false","false","WMTS"
 "108","serviceParameter.type","WMTS","false","false","WMTS"
+"109","databaseConnection.driver","PostgreSQL","false","false","org.postgresql.Driver"
