@@ -6,7 +6,7 @@ databaseChangeLog:
       changes:
         - loadData:
             encoding: UTF-8
-            file: 02_codelists/STM_CODELIST.csv
+            file: 02_codelists/stm_codelist.csv
             relativeToChangelogFile: true
             tableName: STM_CODELIST
             columns:
