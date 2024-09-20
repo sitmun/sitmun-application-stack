@@ -11,7 +11,7 @@ server {
   }
 
   location = /admin {
-    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}:${FRONT_PORT}${FRONT_CONTEXT_PATH}admin/;
+    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}${FRONT_PORT}${FRONT_CONTEXT_PATH}admin/;
   }
 
   # Viewer paths
@@ -23,7 +23,7 @@ server {
   }
 
   location = /viewer {
-    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}:${FRONT_PORT}${FRONT_CONTEXT_PATH}viewer/;
+    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}${FRONT_PORT}${FRONT_CONTEXT_PATH}viewer/;
   }
 
   # API paths
@@ -31,7 +31,7 @@ server {
     proxy_pass http://backend:8080/;
     proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
     proxy_set_header X-Forwarded-Host ${FRONT_HOST};
-    proxy_set_header X-Forwarded-Port ${FRONT_PORT};
+    proxy_set_header X-Forwarded-Port ${FRONT_FORWARDED_PORT};
     proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}backend; 
   }
 
@@ -39,7 +39,7 @@ server {
     proxy_pass http://proxy:8080/;
     proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
     proxy_set_header X-Forwarded-Host ${FRONT_HOST};
-    proxy_set_header X-Forwarded-Port ${FRONT_PORT};
+    proxy_set_header X-Forwarded-Port ${FRONT_FORWARDED_PORT};
     proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}middleware; 
   }
 }
