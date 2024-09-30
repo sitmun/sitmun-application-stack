@@ -1,5 +1,5 @@
 export const environment = {
     production: false,
-    apiBaseURL: '${FRONT_CONTEXT_PATH}backend',
+    apiBaseURL: '${PUBLIC_BASE_PATH}backend',
   };
   
