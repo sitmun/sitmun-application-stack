@@ -3,22 +3,23 @@ services:
     build: 
       context: ./front
       args:
-        - FRONT_CONTEXT_PATH=${SITMUN_PUBLIC_CONTEXT_PATH:-/}
+        - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
     restart: always
     ports:
-      - "${SITMUN_LOCAL_PORT:-9000}:80"
+      - "${LOCAL_PORT:-9000}:80"
     environment:
-      - FRONT_PROTOCOL=${SITMUN_PUBLIC_PROTOCOL:-http}
-      - FRONT_HOST=${SITMUN_PUBLIC_HOST:-localhost}
-      - FRONT_PORT=${SITMUN_PUBLIC_PORT:-:9000}
-      - FRONT_CONTEXT_PATH=${SITMUN_PUBLIC_CONTEXT_PATH:-/}
-      - FRONT_FORWARDED_PORT=${SITMUN_PUBLIC_FORWARDED_PORT:-9000}
+      - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME:-http}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME:-localhost}
+      - PUBLIC_PORT=${PUBLIC_PORT:-9000}
+      - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+      - LOCAL_PORT=${LOCAL_PORT:-9000}
+      - LOCAL_BASE_PATH=${LOCAL_BASE_PATH:-/}
     volumes:
       - ./front/config:/etc/nginx/conf.d
       - ./logs/front/nginx:/var/log/nginx
     depends_on:
       - backend
-    command: /bin/sh -c "envsubst '$${FRONT_PROTOCOL},$${FRONT_HOST},$${FRONT_PORT},$${FRONT_FORWARDED_PORT},$${FRONT_CONTEXT_PATH}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '$${PUBLIC_URL_SCHEME},$${PUBLIC_HOSTNAME},$${PUBLIC_PORT},$${PUBLIC_BASE_PATH},$${LOCAL_BASE_PATH}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost"]
       interval: 30s
@@ -37,7 +38,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
       - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-true}
-      - SITMUN_PROXY_URL=${SITMUN_PUBLIC_PROTOCOL:-http}://${SITMUN_PUBLIC_HOST:-localhost}${SITMUN_PUBLIC_PORT:-:9000}${SITMUN_PUBLIC_CONTEXT_PATH:-/}middleware
+      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_PORT_PREFIX:-:}${PUBLIC_PORT:-9000}${PUBLIC_BASE_PATH:-/}middleware
       - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
     volumes:
       - ./back/backend/config:/usr/src/config

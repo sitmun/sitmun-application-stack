@@ -1,45 +1,63 @@
+# Map to set $public_port to empty for default ports
+map "$public_url_scheme:$public_port" $mapped_port {
+    default   ":$public_port";
+    "http:80"  "";
+    "https:443" "";
+}
+
 server {
   listen 80;
   server_name localhost;
-  root /usr/share/nginx/html;
+ 
+  set $public_url_scheme "${PUBLIC_URL_SCHEME}";
+  set $public_hostname "${PUBLIC_HOSTNAME}";
+  set $public_port "${PUBLIC_PORT}";
+  set $public_base_path "${PUBLIC_BASE_PATH}";
+  set $public_path "${public_url_scheme}://${public_hostname}${mapped_port}${public_base_path}";
 
-  # Admin paths
-  location /admin/ {
-    try_files $uri $uri/ =404;
-    index index.html index.htm;
+  location / {
+    root /usr/share/nginx/html;
+    index index.html;
     include /etc/nginx/mime.types;
-  }
 
-  location = /admin {
-    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}${FRONT_PORT}${FRONT_CONTEXT_PATH}admin/;
-  }
+    # Redirect /admin to /admin/ (permanent redirect)
+    location = ${LOCAL_BASE_PATH}admin {
+      return 301 "${public_path}admin/";
+    }
 
-  # Viewer paths
-  location /viewer/ {
-    try_files $uri $uri/ /viewer/index.html;
-    index index.html index.htm;
-    include /etc/nginx/mime.types;
-    add_header 'Service-Worker-Allowed' '/viewer/';
-  }
+    # Handle request to /admin/
+    location ${LOCAL_BASE_PATH}admin/ {
+      rewrite ^${LOCAL_BASE_PATH}(.*)$ /$1 break;
+      try_files $uri $uri/ /index.html =404;      
+    }
 
-  location = /viewer {
-    return 301 ${FRONT_PROTOCOL}://${FRONT_HOST}${FRONT_PORT}${FRONT_CONTEXT_PATH}viewer/;
-  }
+    # Redirect /viewer to /viewer/ (permanent redirect)
+    location = ${LOCAL_BASE_PATH}viewer {
+      return 301 "${public_path}viewer/";
+    }
 
-  # API paths
-  location /backend/ {
-    proxy_pass http://backend:8080/;
-    proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
-    proxy_set_header X-Forwarded-Host ${FRONT_HOST};
-    proxy_set_header X-Forwarded-Port ${FRONT_FORWARDED_PORT};
-    proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}backend; 
-  }
+    # Handle request to /viewer/
+    location ${LOCAL_BASE_PATH}viewer/ {
+      rewrite ^${LOCAL_BASE_PATH}(.*)$ /$1 break;
+      try_files $uri $uri/ /index.html =404;      
+      add_header 'Service-Worker-Allowed' "${PUBLIC_BASE_PATH}viewer/";
+    }
 
-  location /middleware/ {
-    proxy_pass http://proxy:8080/;
-    proxy_set_header X-Forwarded-Proto ${FRONT_PROTOCOL};
-    proxy_set_header X-Forwarded-Host ${FRONT_HOST};
-    proxy_set_header X-Forwarded-Port ${FRONT_FORWARDED_PORT};
-    proxy_set_header X-Forwarded-Prefix ${FRONT_CONTEXT_PATH}middleware; 
+    # API paths
+    location ${LOCAL_BASE_PATH}backend/ {
+      proxy_pass http://backend:8080/;
+      proxy_set_header X-Forwarded-Proto $public_url_scheme;
+      proxy_set_header X-Forwarded-Host $public_hostname;
+      proxy_set_header X-Forwarded-Port $public_port;
+      proxy_set_header X-Forwarded-Prefix "${PUBLIC_BASE_PATH}backend"; 
+    }
+
+    location ${LOCAL_BASE_PATH}middleware/ {
+      proxy_pass http://proxy:8080/;
+      proxy_set_header X-Forwarded-Proto $public_url_scheme;
+      proxy_set_header X-Forwarded-Host $public_hostname;
+      proxy_set_header X-Forwarded-Port $public_port;
+      proxy_set_header X-Forwarded-Prefix "${PUBLIC_BASE_PATH}middleware"; 
+    }
   }
 }

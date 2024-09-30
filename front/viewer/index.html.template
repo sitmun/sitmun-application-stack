@@ -18,7 +18,7 @@
             }
           });
 
-          navigator.serviceWorker.register('ServiceWorker.js', { scope: '${FRONT_CONTEXT_PATH}viewer/'})
+          navigator.serviceWorker.register('ServiceWorker.js', { scope: '${PUBLIC_BASE_PATH}viewer/'})
             .then(() => {
               console.log("Service worker registered");
             })

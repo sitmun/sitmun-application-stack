@@ -1,7 +1,7 @@
 # Stage 0, "build-admin-app", based on Node.js, to build and compile the frontend
 FROM node:18 AS build-admin-app
-ARG FRONT_CONTEXT_PATH=/
-RUN export FRONT_CONTEXT_PATH=${FRONT_CONTEXT_PATH}
+ARG PUBLIC_BASE_PATH=/
+RUN export PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
 RUN apt-get update && apt-get install -y gettext
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
@@ -12,12 +12,12 @@ COPY --chown=node:node admin/sitmun-admin-app/*.json admin/sitmun-admin-app/*.js
 COPY --chown=node:node admin/sitmun-admin-app/src/ ./src/
 COPY --chown=node:node admin/environment.testdeployment.ts.template ./src/environments/environment.testdeployment.ts.template
 RUN envsubst < ./src/environments/environment.testdeployment.ts.template > ./src/environments/environment.testdeployment.ts
-RUN npm run build -- --configuration=testdeployment --base-href=${FRONT_CONTEXT_PATH}admin/ --source-map=true
+RUN npm run build -- --configuration=testdeployment --base-href=${PUBLIC_BASE_PATH}admin/ --source-map=true
 
 # Stage 1, "build-viewer-app", based on Node.js, to build and compile the frontend
 FROM node:18 AS build-viewer-app
-ARG FRONT_CONTEXT_PATH=/
-RUN export FRONT_CONTEXT_PATH=${FRONT_CONTEXT_PATH}
+ARG PUBLIC_BASE_PATH=/
+RUN export PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
 RUN apt-get update && apt-get install -y gettext
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
@@ -29,7 +29,7 @@ COPY --chown=node:node viewer/environment.testdeployment.ts.template ./src/envir
 COPY --chown=node:node viewer/index.html.template ./src/index.html.template
 RUN envsubst < ./src/environments/environment.testdeployment.ts.template > ./src/environments/environment.testdeployment.ts
 RUN envsubst < ./src/index.html.template > ./src/index.html
-RUN npm run build -- --configuration=testdeployment --base-href=${FRONT_CONTEXT_PATH}viewer/ --source-map=true
+RUN npm run build -- --configuration=testdeployment --base-href=${PUBLIC_BASE_PATH}viewer/ --source-map=true
 
 # Stage 2, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.27-alpine
