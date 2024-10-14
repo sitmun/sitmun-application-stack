@@ -62,6 +62,7 @@
 Són les següents: diferents tipus d'aparcaments (taxis, correus, bicis, motos, farmàcies, càrrega i descàrrega, discapacitats...), carril bici, linies i paredes de bus regular, lini","NULL","NULL","NULL","https://ide.cime.es/descarregues/09_IN007EIE_transport.zip","Transport públic, mobilitat i camins públics","3","NULL","NULL","Transport públic, mobilitat i camins públics","NULL","12336","33","NULL"
 "12240","NULL","NULL","Conjunt de capes relacionades amb la Gestió de residus i ubicació dels contenidors dels municipis de tota Menorca. Les capes s'han creat per donar compliment als requeriments del Ministeri d'Hisenda y Administracions Públiques d'elaboració de l'enqu","NULL","NULL","NULL","https://ide.cime.es/descarregues/07_IN007EIE_residus.zip","Gestió de residus i ubicació contenidors","8","NULL","NULL","Gestió de residus i ubicació contenidors","NULL","12336","33","NULL"
 "12337","true","NULL","NULL","NULL","NULL","NULL","NULL","Topo 25.000","7","NULL","NULL","NULL","5","12103","33","NULL"
+"12053","true","NULL","NULL","NULL","NULL","NULL","NULL","Projecte Turisme0CO2. Zones marítimes","0","NULL","NULL","Projecte Turisme0CO2. Zones marítimes","4158","12040","33","NULL"
 "12061","NULL","NULL","Conjunt de capes relacionades amb els serveis de turisme, com són els punts de venta i restaurants de productes locals (agroxerxa), establiments d'activitats esportives (nàutiques, hípiques, golf,...), establiments de venta i/o lloguer de bicicletes","NULL","NULL","NULL","https://ide.cime.es/descarregues/TU007POI_serveisturistics.zip","Serveis turístics","1","NULL","NULL","Serveis turístics","NULL","12102","33","NULL"
 "12024","NULL","NULL","Conjunt de dades culturals publicades a la pàgina web http://www.culturamenorca.org 
 
@@ -121,7 +122,7 @@ Le capes són les següents: pobles de Menorca, ruta britànica, ruta fortificad
 "12654","true","NULL","NULL","NULL","NULL","NULL","NULL","Platges Costa Sud","0","NULL","NULL","Platges Costa Sud","4147","12641","38","NULL"
 "12037","true","NULL","NULL","NULL","NULL","NULL","NULL","Esdeveniments culturals","0","NULL","NULL","Esdeveniments culturals","4113","12024","33","NULL"
 "12046","true","NULL","NULL","NULL","NULL","NULL","NULL","Apartaments","4","NULL","NULL","Apartaments","4153","12028","33","NULL"
-"12053","true","NULL","NULL","NULL","NULL","NULL","NULL","Projecte Turisme0CO2. Zones marítimes","0","NULL","NULL","Projecte Turisme0CO2. Zones marítimes","4158","12040","33","NULL"
+"12633","true","NULL","NULL","NULL","NULL","NULL","NULL","Fotos de Menorca britànica","20","NULL","NULL","Fotos de Menorca britànica","4123","12596","38","NULL"
 "12054","true","NULL","NULL","NULL","NULL","NULL","NULL","Projecte Turisme0CO2. Manteniment_lin","3","NULL","NULL","Projecte Turisme0CO2. Manteniment_lin","4160","12040","33","NULL"
 "12065","true","NULL","NULL","NULL","NULL","NULL","NULL","Punts interès geològic","3","NULL","NULL","Punts interès geològic","4170","12060","33","NULL"
 "12075","true","NULL","NULL","NULL","NULL","NULL","NULL","Teatres","12","NULL","NULL","Teatres","4114","12060","33","NULL"
@@ -242,7 +243,6 @@ Menorca Reserva de Biosfera – Turisme 0CO2.
 Aquest projecte h","NULL","NULL","NULL","https://ide.cime.es/descarregues/TU_ptoturisme0co2.zip","Rutes Projecte Turisme 0co2","10","NULL","NULL","Rutes Projecte Turisme 0co2","NULL","12102","33","NULL"
 "12615","true","NULL","NULL","NULL","NULL","NULL","NULL","Llocs d'interès ornitològic","0","NULL","NULL","Llocs d'interès ornitològic","4148","12594","38","NULL"
 "12624","true","NULL","NULL","NULL","NULL","NULL","NULL","Parkings","9","NULL","NULL","Parkings","4174","12596","38","NULL"
-"12633","true","NULL","NULL","NULL","NULL","NULL","NULL","Fotos de Menorca britànica","20","NULL","NULL","Fotos de Menorca britànica","4123","12596","38","NULL"
 "12649","true","NULL","NULL","NULL","NULL","NULL","NULL","Ruta Museística","3","NULL","NULL","Ruta Museística","4145","12639","38","NULL"
 "12069","true","NULL","NULL","NULL","NULL","NULL","NULL","Fars","4","NULL","NULL","Fars","4169","12060","33","NULL"
 "12080","true","NULL","NULL","NULL","NULL","NULL","NULL","Platges urbanes de Menorca","17","NULL","NULL","Platges urbanes de Menorca","4121","12060","33","NULL"
@@ -457,3 +457,4 @@ Consulta els do","NULL","NULL","NULL","https://ide.cime.es/descarregues/OR007RPT
 "12239","true","NULL","NULL","NULL","NULL","NULL","NULL","sol rústic","0","NULL","NULL","NULL","4294","12221","33","NULL"
 "12593","NULL","NULL","Conjunt de capes que ofereixen informació de les diferents rutes turístiques existents a Menorca, com són les rutes saludables, els trams del camí de cavalls, rutes de cicloturisme, culturals, eqüestres, geològiques, de natura, de kaiac, de senderis","NULL","NULL","NULL","https://ide.cime.es/descarregues/TU_rutesturisme.zip","Rutes turístiques","2","NULL","NULL","Rutes turístiques","NULL","12590","38","NULL"
 "12596","NULL","NULL","Conjunt de capes relacionades amb els punts d'interès, com són de natura, paisatgístics, vincultas a una ruta, geològics, fars, benzineres, biblioteques, oficines de correus, hospitals, aparcaments, policia, museus, teatres, esglésies, patrimoni his","NULL","NULL","NULL","https://ide.cime.es/descarregues/TU_puntsinteres.zip","Punts interès turístic (POI)","3","NULL","NULL","Punts interès turístic (POI)","NULL","12590","38","NULL"
+"12753","true","NULL","NULL","NULL","NULL","NULL","NULL","or032urb_expedientes","9","NULL","NULL","NULL","4675","12103","33","NULL"

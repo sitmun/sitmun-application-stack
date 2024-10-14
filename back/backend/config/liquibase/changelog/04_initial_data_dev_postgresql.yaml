@@ -1080,3 +1080,18 @@ databaseChangeLog:
               - column:
                   name: SGI_GIID
                   type: NUMERIC
+        - loadData:
+            encoding: UTF-8
+            file: 04_initial_data_dev/stm_grp_ter.csv
+            relativeToChangelogFile: true
+            tableName: STM_GRP_TER
+            quotchar: '"'
+            usePreparedStatements: true
+            columns:
+              - column:
+                  name: GTE_TERID
+                  type: NUMERIC
+              - column:
+                  name: GTE_TERMID
+                  type: NUMERIC
+ 
