@@ -15,7 +15,7 @@
 "17","offlineMapMaker","NULL","NULL","NULL","NULL","1","1","17","NULL","NULL"
 "18","overviewMap","NULL","NULL","NULL","NULL","1","1","18","NULL","NULL"
 "19","popup","NULL","NULL","NULL","NULL","1","1","19","NULL","NULL"
-"20","printMap.sitna","NULL","NULL","NULL","NULL","1","1","20","NULL","{""div"":""print"",""logo"":""http://sitmun.org/Imas/General/logo.png"",""legend"":{""visible"":true}}"
+"20","printMap.sitna","NULL","NULL","NULL","NULL","1","1","20","NULL","{""div"":""print"",""logo"":""https://ide.cime.es/stm3/admin/assets/img/logos/logo_sitmun.svg"",""legend"":{""visible"":true}}"
 "22","scaleBar","NULL","NULL","NULL","NULL","1","1","22","NULL","NULL"
 "23","scaleSelector","NULL","NULL","NULL","NULL","1","1","23","NULL","NULL"
 "25","share","NULL","NULL","NULL","NULL","1","1","25","NULL","NULL"
