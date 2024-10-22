@@ -756,26 +756,6 @@ databaseChangeLog:
                   type: STRING
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_dev/stm_download.csv
-            relativeToChangelogFile: true
-            tableName: STM_DOWNLOAD
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: DOW_ID
-                  type: NUMERIC
-              - column:
-                  name: DOW_EXT
-                  type: STRING
-              - column:
-                  name: DOW_TYPE
-                  type: STRING
-              - column:
-                  name: DOW_PATH
-                  type: STRING
-        - loadData:
-            encoding: UTF-8
             file: 04_initial_data_dev/stm_rol_tsk.csv
             relativeToChangelogFile: true
             tableName: STM_ROL_TSK
@@ -898,44 +878,6 @@ databaseChangeLog:
               - column:
                   name: PSE_VALUE
                   type: STRING
-        - loadData:
-            encoding: UTF-8
-            file: 04_initial_data_dev/stm_par_tsk.csv
-            relativeToChangelogFile: true
-            tableName: STM_PAR_TSK
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: PTT_ID
-                  type: NUMERIC
-              - column:
-                  name: PTT_NAME
-                  type: STRING
-              - column:
-                  name: PTT_VALUE
-                  type: STRING
-              - column:
-                  name: PTT_TYPE
-                  type: STRING
-              - column:
-                  name: PTT_ORDER
-                  type: STRING
-              - column:
-                  name: PTT_TASKID
-                  type: NUMERIC
-              - column:
-                  name: ptt_editable
-                  type: BOOLEAN
-              - column:
-                  name: ptt_required
-                  type: BOOLEAN
-              - column:
-                  name: ptt_selectabl
-                  type: BOOLEAN
-              - column:
-                  name: ptt_maxlen
-                  type: NUMERIC
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_thematic.csv
