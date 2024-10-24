@@ -507,6 +507,9 @@ databaseChangeLog:
               - column:
                   name: APP_LOGO
                   type: STRING
+              - column:
+                  name: APP_DESCRIPTION
+                  type: STRING
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_app_tree.csv
