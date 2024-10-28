@@ -70,19 +70,19 @@ Data is stored in the `pgdata` volume, which is used by the `postgres` service.
 
 Environment variables are defined in the `.env` file. The following variables can be modified.
 
-| Variable                    | Description                                                 | Default value                         |
-|-----------------------------|-------------------------------------------------------------|---------------------------------------|
-| `SITMUN_PUBLIC_PROTOCOL`    | The protocol used.                                          | `http`                                |
-| `SITMUN_PUBLIC_HOST`        | The hostname or IP address where the application is hosted. | `localhost`                           |
-| `SITMUN_PUBLIC_PORT`        | The port where the services are exposed with `:`.           | `:9000`                               |
-| `SITMUN_PUBLIC_FORWARDED_PORT` | The port where the services are exposed without `:`.     | `9000`                               |
-| `SITMUN_PUBLIC_CONTEXT_PATH`| The context path of the application.                        | `/`                                   |
-| `SITMUN_LOCAL_PORT`         | The local port where the services are exposed.              | `9000`                                |
-| `DATABASE`                  | The name of the database.                                   | `sitmun3`                             |
-| `DATABASE_URL`              | The JDBC URL of the database.                               | `jdbc:postgresql://persistence:5432/` |
-| `DATABASE_USERNAME`         | The username to access the database.                        | `sitmun3`                             |
-| `DATABASE_PASSWORD`         | The password to access the database.                        | `sitmun3`                             |
-| `FORCE_PROXY_USE`           | Forces the use of the proxy middleware.                     | `true`                                |
+| Variable                       | Description                                                 | Default value                         |
+|--------------------------------|-------------------------------------------------------------|---------------------------------------|
+| `SITMUN_PUBLIC_PROTOCOL`       | The protocol used.                                          | `http`                                |
+| `SITMUN_PUBLIC_HOST`           | The hostname or IP address where the application is hosted. | `localhost`                           |
+| `SITMUN_PUBLIC_PORT`           | The port where the services are exposed with `:`.           | `:9000`                               |
+| `SITMUN_PUBLIC_FORWARDED_PORT` | The port where the services are exposed without `:`.        | `9000`                                |
+| `SITMUN_PUBLIC_CONTEXT_PATH`   | The context path of the application.                        | `/`                                   |
+| `SITMUN_LOCAL_PORT`            | The local port where the services are exposed.              | `9000`                                |
+| `DATABASE`                     | The name of the database.                                   | `sitmun3`                             |
+| `DATABASE_URL`                 | The JDBC URL of the database.                               | `jdbc:postgresql://persistence:5432/` |
+| `DATABASE_USERNAME`            | The username to access the database.                        | `sitmun3`                             |
+| `DATABASE_PASSWORD`            | The password to access the database.                        | `sitmun3`                             |
+| `FORCE_USE_OF_PROXY`           | Forces the use of the proxy middleware.                     | `false`                               |
 
 Notes:
 
@@ -90,7 +90,7 @@ Notes:
 - When the public address of the service uses standards ports (80 for http and 443 for https), `SITMUN_PUBLIC_PORT` is empty.
 - The effective **JDBC URL** is composed by the concatenation of `DATABASE_URL` and `DATABASE`: `${DATABASE_URL}${DATABASE}`.
 - The default value of `DATABASE_URL` points to `persistence`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
-- `FORCE_PROXY_USE` is enabled by default for testing purposes.
+- `FORCE_USE_OF_PROXY` is disabled by default.
 
 ## Developing SITMUN
 
