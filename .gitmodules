@@ -9,7 +9,7 @@
 [submodule "sitmun-backend-core"]
 	path = back/backend/sitmun-backend-core
 	url = https://github.com/sitmun/sitmun-backend-core.git
-	branch = app-stack-feature-4
+	branch = main
 [submodule "sitmun-proxy-middleware"]
 	path = back/proxy/sitmun-proxy-middleware
 	url = https://github.com/sitmun/sitmun-proxy-middleware.git
