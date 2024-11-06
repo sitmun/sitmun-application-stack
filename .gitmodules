@@ -1,7 +1,7 @@
 [submodule "sitmun-admin-app"]
 	path = front/admin/sitmun-admin-app
 	url = https://github.com/sitmun/sitmun-admin-app.git
-	branch = Updates
+	branch = main
 [submodule "sitmun-viewer-app"]
 	path = front/viewer/sitmun-viewer-app
 	url = https://github.com/sitmun/sitmun-viewer-app.git
