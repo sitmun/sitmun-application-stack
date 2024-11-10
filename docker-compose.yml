@@ -3,16 +3,29 @@ services:
     build: 
       context: ./front
       args:
-        GITHUB_TOKEN: ${GITHUB_TOKEN}
+        - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+    restart: always
     ports:
-      - "9000:80"
+      - "${LOCAL_PORT:-9000}:80"
     environment:
-      - EXPOSED_PORT=9000
+      - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME:-http}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME:-localhost}
+      - PUBLIC_PORT=${PUBLIC_PORT:-9000}
+      - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+      - LOCAL_PORT=${LOCAL_PORT:-9000}
+      - LOCAL_BASE_PATH=${LOCAL_BASE_PATH:-/}
     volumes:
       - ./front/config:/etc/nginx/conf.d
+      - ./logs/front/nginx:/var/log/nginx
     depends_on:
       - backend
-    command: /bin/sh -c "envsubst '$${EXPOSED_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: /bin/sh -c "envsubst '$${PUBLIC_URL_SCHEME},$${PUBLIC_HOSTNAME},$${PUBLIC_PORT},$${PUBLIC_BASE_PATH},$${LOCAL_BASE_PATH}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
 
   backend:
     build: ./back/backend
@@ -21,18 +34,24 @@ services:
     depends_on:
       - persistence
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://persistence:5432/sitmun3
-      - SPRING_DATASOURCE_USERNAME=sitmun3
-      - SPRING_DATASOURCE_PASSWORD=sitmun3
-      - spring.datasource.driver-class-name=org.postgresql.Driver
-      - sitmun.proxy.force=true
-      - sitmun.proxy.url=http://localhost:9000/middleware
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://persistence:5432/}${DATABASE:-sitmun3}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
+      - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
+      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_PORT_PREFIX:-:}${PUBLIC_PORT:-9000}${PUBLIC_BASE_PATH:-/}middleware
+      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
     volumes:
       - ./back/backend/config:/usr/src/config
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
 
   proxy:
-    build:
-      context: ./back/proxy
+    build: ./back/proxy
+    restart: always
     ports:
       - "9002:8080"
     depends_on:
@@ -40,6 +59,12 @@ services:
     environment:
       - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
       - SITMUN_BACKEND_CONFIG_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
 
   persistence:
     image: postgres:16-alpine
@@ -47,11 +72,17 @@ services:
     ports:
       - "9003:5432"
     environment:
-      POSTGRES_DB: sitmun3
-      POSTGRES_USER: sitmun3
-      POSTGRES_PASSWORD: sitmun3
+      POSTGRES_DB: ${DATABASE:-sitmun3}
+      POSTGRES_USER: ${DATABASE_USERNAME:-sitmun3}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-sitmun3}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DATABASE_USERNAME:-sitmun3}"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
 
 volumes:
   pgdata:

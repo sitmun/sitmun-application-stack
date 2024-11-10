@@ -504,6 +504,12 @@ databaseChangeLog:
               - column:
                   name: app_entrys
                   type: BOOLEAN
+              - column:
+                  name: APP_LOGO
+                  type: STRING
+              - column:
+                  name: APP_DESCRIPTION
+                  type: STRING
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_app_tree.csv
@@ -707,12 +713,15 @@ databaseChangeLog:
               - column:
                   name: TUI_ORDER
                   type: NUMERIC
+              - column:
+                  name: TUI_TYPE
+                  type: STRING
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_task.csv
             relativeToChangelogFile: true
             tableName: STM_TASK
-            usePreparedStatements: false
+            usePreparedStatements: true
             quotchar: '"'
             columns:
               - column:
@@ -743,51 +752,14 @@ databaseChangeLog:
                   name: TAS_GIID
                   type: NUMERIC
               - column:
-                  name: tas_order
-                  type: NUMERIC
-        - loadData:
-            encoding: UTF-8
-            file: 04_initial_data_dev/stm_download.csv
-            relativeToChangelogFile: true
-            tableName: STM_DOWNLOAD
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: DOW_ID
+                  name: TAS_ORDER
                   type: NUMERIC
               - column:
-                  name: DOW_EXT
-                  type: STRING
-              - column:
-                  name: DOW_TYPE
-                  type: STRING
-              - column:
-                  name: DOW_PATH
-                  type: STRING
-        - loadData:
-            encoding: UTF-8
-            file: 04_initial_data_dev/stm_query.csv
-            relativeToChangelogFile: true
-            tableName: STM_QUERY
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: QUE_ID
+                  name: TAS_SERID
                   type: NUMERIC
               - column:
-                  name: QUE_COMMAND
+                  name: TAS_PARAMS
                   type: STRING
-              - column:
-                  name: QUE_TYPE
-                  type: STRING
-              - column:
-                  name: QUE_DESC
-                  type: STRING
-              - column:
-                  name: que_taskid
-                  type: NUMERIC
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_rol_tsk.csv
@@ -912,44 +884,6 @@ databaseChangeLog:
               - column:
                   name: PSE_VALUE
                   type: STRING
-        - loadData:
-            encoding: UTF-8
-            file: 04_initial_data_dev/stm_par_tsk.csv
-            relativeToChangelogFile: true
-            tableName: STM_PAR_TSK
-            usePreparedStatements: false
-            quotchar: '"'
-            columns:
-              - column:
-                  name: PTT_ID
-                  type: NUMERIC
-              - column:
-                  name: PTT_NAME
-                  type: STRING
-              - column:
-                  name: PTT_VALUE
-                  type: STRING
-              - column:
-                  name: PTT_TYPE
-                  type: STRING
-              - column:
-                  name: PTT_ORDER
-                  type: STRING
-              - column:
-                  name: PTT_TASKID
-                  type: NUMERIC
-              - column:
-                  name: ptt_editable
-                  type: BOOLEAN
-              - column:
-                  name: ptt_required
-                  type: BOOLEAN
-              - column:
-                  name: ptt_selectabl
-                  type: BOOLEAN
-              - column:
-                  name: ptt_maxlen
-                  type: NUMERIC
         - loadData:
             encoding: UTF-8
             file: 04_initial_data_dev/stm_thematic.csv
@@ -1094,3 +1028,18 @@ databaseChangeLog:
               - column:
                   name: SGI_GIID
                   type: NUMERIC
+        - loadData:
+            encoding: UTF-8
+            file: 04_initial_data_dev/stm_grp_ter.csv
+            relativeToChangelogFile: true
+            tableName: STM_GRP_TER
+            quotchar: '"'
+            usePreparedStatements: true
+            columns:
+              - column:
+                  name: GTE_TERID
+                  type: NUMERIC
+              - column:
+                  name: GTE_TERMID
+                  type: NUMERIC
+ 

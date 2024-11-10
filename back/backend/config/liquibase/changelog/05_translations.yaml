@@ -6,7 +6,7 @@ databaseChangeLog:
       changes:
         - loadData:
             encoding: UTF-8
-            file: 05_translations/STM_LANGUAGE.csv
+            file: 05_translations/stm_language.csv
             relativeToChangelogFile: true
             tableName: STM_LANGUAGE
             columns:

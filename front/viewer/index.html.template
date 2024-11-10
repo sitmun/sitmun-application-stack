@@ -18,7 +18,7 @@
             }
           });
 
-          navigator.serviceWorker.register('ServiceWorker.js', { scope: '/viewer/'})
+          navigator.serviceWorker.register('ServiceWorker.js', { scope: '${PUBLIC_BASE_PATH}viewer/'})
             .then(() => {
               console.log("Service worker registered");
             })
@@ -30,20 +30,6 @@
         console.log("Service worker not supported");
       }
     </script>
-<!--    <script src="assets/js/patch/controls/LayerCatalogSilme.js"></script>-->
-<!--    <script src="assets/js/patch/SilmeModal.js"></script>-->
-<!--    <script src="assets/js/patch/SilmeUtils.js"></script>-->
-<!--    <script src="assets/js/patch/SilmeTree.js"></script>-->
-<!--    <script src="assets/js/patch/SilmeMap.js"></script>-->
-<!--    <script src="assets/js/patch/SilmeSecondBaseLayer.js"></script>-->
-<!--    <script src="assets/js/patch/controls/ExternalWMSSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/WorkLayerManagerSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/DrawMeasureModifySilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/BasemapSelectorSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/SearchSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/StreetViewSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/FeatureInfoSilme.js"></script>-->
-<!--    <script src="assets/js/patch/controls/Popup.js"></script>-->
     <link rel="stylesheet" href="assets/js/toastr/toastr.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/toastr/toastr.min.js"></script>
