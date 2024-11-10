@@ -36,13 +36,6 @@ server {
       return 301 "${public_path}viewer/";
     }
 
-    # Handle request to /viewer/
-    location ${LOCAL_BASE_PATH}viewer/ {
-      rewrite ^${LOCAL_BASE_PATH}(.*)$ /$1 break;
-      try_files $uri $uri/ /index.html =404;      
-      add_header 'Service-Worker-Allowed' "${PUBLIC_BASE_PATH}viewer/";
-    }
-
     # API paths
     location ${LOCAL_BASE_PATH}backend/ {
       proxy_pass http://backend:8080/;
