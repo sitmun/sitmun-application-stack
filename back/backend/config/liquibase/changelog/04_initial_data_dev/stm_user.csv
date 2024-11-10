@@ -1,4 +1,4 @@
 "use_id","use_adm","use_blocked","use_created","use_updated","use_name","use_generic","use_ident","use_identtype","use_surname","use_pwd","use_user"
-"1","true","false","NULL","2023-11-06T00:36:58.164","Administrator","NULL","NULL","NULL","NULL",$2a$10$fxkKe8bLwlWNitI49I6DBeNtOhjTqkMw2KKWg8pPd8k2jOT5dYc/W,"admin"
+"1","true","false","NULL","2023-11-06T00:36:58.164","Administrator","NULL","NULL","NULL","NULL","$2a$10$fxkKe8bLwlWNitI49I6DBeNtOhjTqkMw2KKWg8pPd8k2jOT5dYc/W","admin"
 "4","false","false","NULL","2024-02-19T14:28:42.137","Ricard","NULL","NULL","NULL","Cots Torrelles","$2y$10$/eaDr1MoA126Pio7bFLkfeSMXYfSnEAiVX0TLMIwbGovxNyO5jJdS","restringit - Menorca"
 "2","false","false","NULL","2024-03-06T17:27:40.377","Public","NULL","NULL","NULL","NULL","NULL","public"

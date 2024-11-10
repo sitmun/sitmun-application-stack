@@ -2,13 +2,14 @@
 *.iml
 .idea
 
-# Ignore environment files
-.env
-
 # Other files to be ignored
 *.properties
 *.jar
 .DS_Store
+.vscode
+.env.*
 
 # Generated files
 front/config/default.conf
+logs/
+

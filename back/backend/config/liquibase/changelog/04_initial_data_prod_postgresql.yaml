@@ -7,7 +7,7 @@ databaseChangeLog:
       changes:
         - loadData:
             encoding: UTF-8
-            file: 04_initial_data_prod/STM_USER.csv
+            file: 04_initial_data_prod/stm_user.csv
             relativeToChangelogFile: true
             tableName: STM_USER
             usePreparedStatements: false
