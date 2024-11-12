@@ -53,14 +53,17 @@ To install the SITMUN Application Stack, follow these steps:
 
 ## Available services
 
-If the `BASE_URL` is `http://localhost:9000/`, the following services are available:
+If the `BASE_URL` is `http://localhost:9000/`, the following services are available:
 
-| Application                | URL                                                                                            |
-|----------------------------|------------------------------------------------------------------------------------------------|
-| Viewer application         | `${BASE_URL}viewer` (e.g. <http://localhost:9000/viewer>)                                      |
-| Administrative application | `${BASE_URL}admin` (e.g. <http://localhost:9000/admin>)                                        |
-| Backend API                | `${BASE_URL}backend` (e.g. <http://localhost:9000/backend>) and <http://localhost:9001/>       |
-| Proxy Middleware API       | `${BASE_URL}middleware` (e.g. <http://localhost:9000/middleware>) and <http://localhost:9002/> |
+| Application                | URL                                                                |
+|----------------------------|--------------------------------------------------------------------|
+| Viewer application         | `${BASE_URL}viewer` (e.g. <http://localhost:9000/viewer>)          |
+| Administrative application | `${BASE_URL}admin` (e.g. <http://localhost:9000/admin>)            |
+
+| Web API                    | URL                                                                |
+|----------------------------|--------------------------------------------------------------------|
+| Backend API                | `${BASE_URL}backend` (e.g. <http://localhost:9001/backend>)        |
+| Proxy Middleware API       | `${BASE_URL}middleware` (e.g. <http://localhost:9002/middleware>)  |
 
 ## Configuration Notes
 
