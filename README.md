@@ -103,22 +103,35 @@ SITMUN Application Stack uses Git submodules to include the source code of the S
 | `sitmun-backend-core`     | [SITMUN Backend](https://github.com/sitmun/sitmun-backend-core.git)                 | `backend`      |
 | `sitmun-proxy-middleware` | [SITMUN Proxy middleware](https://github.com/sitmun/sitmun-proxy-middleware.git)    | `proxy`        |
 
-To change the branch of a submodule, use the following command:
+### Instructions for Updating a Submodule and Docker Service
 
-```bash
-git submodule set-branch -b branch_name submodule_name
-git submodule sync
-git submodule update --init
-```
+1. **Update the repository and submodules**
+   Ensure the repository and its submodules are up-to-date before rebuilding the Docker service:
 
-The update command updates the registered submodule to match the expected configuration by cloning it if missing, fetching missing commits and updating the working tree to the specified branch.
+    ```bash
+   git pull origin dev
+   git checkout dev
+   git submodule update --recursive --remote
+   ```
 
-Next, rebuild and restarts the affected docker service:
+2. **Change the branch of a submodule (if needed)**
+   To switch a submodule (e.g. `submodule_name`) to a specific branch (e.g. to `branch_name`), use the following commands:
 
-```bash
-docker compose build --no-cache service_name
-docker compose up service_name -d
-```
+    ```bash
+    git submodule set-branch -b branch_name submodule_name
+    git submodule sync
+    git submodule update --init
+    ```
+
+    The `git submodule update` command ensures the submodule is cloned if missing, fetches any missing commits, and updates the working tree to the specified branch.
+
+3. **Rebuild and restart the affected Docker service**
+    Replace `service_name` with the name of the service you want to update:
+
+    ```bash
+    docker compose build --no-cache service_name
+    docker compose up service_name -d
+    ```
 
 ## Contributing to SITMUN Application Stack
 
