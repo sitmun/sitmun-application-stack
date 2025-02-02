@@ -80,7 +80,7 @@ Environment variables are defined in the `.env` file. The following variables ca
 | `SITMUN_LOCAL_PORT`            | The local port where the services are exposed.              | `9000`                                |
 | `COMPOSE_PROFILES`             | The active profiles (postgres or oracle)                    | `postgres`                            |
 | `DATABASE`                     | The name of the database.                                   | `sitmun3`                             |
-| `DATABASE_URL`                 | The JDBC URL of the database.                               | `jdbc:postgresql://persistence:5432/` |
+| `DATABASE_URL`                 | The JDBC URL of the database.                               | `jdbc:postgresql://postgres:5432/` |
 | `DATABASE_USERNAME`            | The username to access the database.                        | `sitmun3`                             |
 | `DATABASE_PASSWORD`            | The password to access the database.                        | `sitmun3`                             |
 | `FORCE_USE_OF_PROXY`           | Forces the use of the proxy middleware.                     | `false`                               |
@@ -90,7 +90,7 @@ Notes:
 - The full **Base URL** is computed by concatenating these variables `SITMUN_PUBLIC_PROTOCOL`, `SITMUN_PUBLIC_HOST`, `SITMUN_PUBLIC_PORT` and `SITMUN_PUBLIC_CONTEXT_PATH`: `${SITMUN_PUBLIC_PROTOCOL}://${SITMUN_PUBLIC_HOST}${SITMUN_PUBLIC_PORT}${SITMUN_PUBLIC_CONTEXT_PATH}`
 - When the public address of the service uses standards ports (80 for http and 443 for https), `SITMUN_PUBLIC_PORT` is empty.
 - The effective **JDBC URL** is composed by the concatenation of `DATABASE_URL` and `DATABASE`: `${DATABASE_URL}${DATABASE}`.
-- The default value of `DATABASE_URL` points to `persistence`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
+- The default value of `DATABASE_URL` points to `postgres`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
 - `FORCE_USE_OF_PROXY` is disabled by default.
 
 ## Running modes
