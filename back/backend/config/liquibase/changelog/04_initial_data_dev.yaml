@@ -3,7 +3,6 @@ databaseChangeLog:
       id: 4
       author: sitmun
       context: dev
-      dbms: postgresql
       changes:
         - loadData:
             encoding: UTF-8

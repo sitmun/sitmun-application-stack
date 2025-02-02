@@ -53,7 +53,7 @@ To install the SITMUN Application Stack, follow these steps:
 
 ## Available services
 
-If the `BASE_URL` is `http://localhost:9000/`, the following services are available:
+If the `BASE_URL` is `http://localhost:9000/`, the following services are available:
 
 | Application                | URL                                                                                            |
 |----------------------------|------------------------------------------------------------------------------------------------|
@@ -78,6 +78,7 @@ Environment variables are defined in the `.env` file. The following variables ca
 | `SITMUN_PUBLIC_FORWARDED_PORT` | The port where the services are exposed without `:`.        | `9000`                                |
 | `SITMUN_PUBLIC_CONTEXT_PATH`   | The context path of the application.                        | `/`                                   |
 | `SITMUN_LOCAL_PORT`            | The local port where the services are exposed.              | `9000`                                |
+| `COMPOSE_PROFILES`             | The active profiles (postgres or oracle)                    | `postgres`                            |
 | `DATABASE`                     | The name of the database.                                   | `sitmun3`                             |
 | `DATABASE_URL`                 | The JDBC URL of the database.                               | `jdbc:postgresql://persistence:5432/` |
 | `DATABASE_USERNAME`            | The username to access the database.                        | `sitmun3`                             |
@@ -91,6 +92,31 @@ Notes:
 - The effective **JDBC URL** is composed by the concatenation of `DATABASE_URL` and `DATABASE`: `${DATABASE_URL}${DATABASE}`.
 - The default value of `DATABASE_URL` points to `persistence`, which is one of the services defined in the `docker-compose.yml` file. It is a PostgreSQL database.
 - `FORCE_USE_OF_PROXY` is disabled by default.
+
+## Running modes
+
+### Postgres 17 Container
+
+The **PostgreSQL** database is used as the default database. This is the default configuration in the `.env` file. PostgreSQL is an object-relational database system known for its reliability and data integrity.
+
+The image used is [postgres:17-alpine](https://hub.docker.com/_/postgres), which is a **Docker Official Image**.
+
+To use this configuration, set the `COMPOSE_PROFILES` variable to `postgres` and ensure the `DATABASE_URL` variable is uncommented in the `.env` file.
+
+### Oracle Database 23ai Free Container
+
+**Oracle Database 23c Free** allows you to experience Oracle Database, which is relied upon by businesses worldwide for their mission-critical workloads. The resource limits for Oracle Database Free are up to 2 CPUs for foreground processes, 2 GB of RAM, and 12 GB of user data on disk.
+
+
+The image used is [gvenzl/oracle-free:23-slim](https://hub.docker.com/r/gvenzl/oracle-free), which is the version used by [Spring Data](https://github.com/spring-projects/spring-data-relational/commit/3cac9d145618a073736393b62961c94dae77117f).
+
+To use this configuration, set the `COMPOSE_PROFILES` variable to `oracle` and ensure the `DATABASE_URL` variable is set to `jdbc:oracle:thin:@//oracle:1521/` in the `.env` file.
+
+### External Database
+
+To use an external database, modify the `DATABASE`, `DATABASE_URL`, `DATABASE_USERNAME`, and `DATABASE_PASSWORD` variables in the `.env` file.
+
+The `COMPOSE_PROFILES` variable must be commented out.
 
 ## Developing SITMUN
 
@@ -109,7 +135,7 @@ SITMUN Application Stack uses Git submodules to include the source code of the S
    Ensure the repository and its submodules are up-to-date before rebuilding the Docker service:
 
     ```bash
-   git pull origin dev
+   git fetch origin dev
    git checkout dev
    git submodule update --recursive --remote
    ```

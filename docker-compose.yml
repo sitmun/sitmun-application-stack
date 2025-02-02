@@ -31,10 +31,9 @@ services:
     build: ./back/backend
     ports:
       - "9001:8080"
-    depends_on:
-      - persistence
+    restart: always
     environment:
-      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://persistence:5432/}${DATABASE:-sitmun3}
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
       - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
@@ -66,9 +65,10 @@ services:
       start_period: 5s
       retries: 3
 
-  persistence:
-    image: postgres:16-alpine
-    restart: always
+  postgres:
+    profiles:
+      - postgres
+    image: postgres:17-alpine
     ports:
       - "9003:5432"
     environment:
@@ -84,5 +84,26 @@ services:
       start_period: 5s
       retries: 3
 
+  oracle:
+    profiles:
+      - oracle
+    image: gvenzl/oracle-free:23-slim
+    ports:
+      - "9004:1521"
+    environment:
+      ORACLE_PASSWORD: password
+      APP_USER: ${DATABASE_USERNAME:-sitmun3}
+      APP_USER_PASSWORD: ${DATABASE_PASSWORD:-sitmun3}
+      ORACLE_DATABASE: ${DATABASE:-sitmun3}
+    volumes:
+        - oradata:/opt/oracle/oradata
+    healthcheck:
+        test: ["CMD", "healthcheck.sh"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
+        start_period: 5s
+        start_interval: 5s
 volumes:
   pgdata:
+  oradata:
