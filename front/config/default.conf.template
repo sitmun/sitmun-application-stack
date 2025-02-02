@@ -1,7 +1,9 @@
 # Map to set $public_port to empty for default ports
 map "$public_url_scheme:$public_port" $mapped_port {
     default   ":$public_port";
+    "http:"  "";
     "http:80"  "";
+    "https:" "";
     "https:443" "";
 }
 
