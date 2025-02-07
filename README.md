@@ -29,7 +29,21 @@ To install the SITMUN Application Stack, follow these steps:
     cd sitmun-application-stack
     ```
 
-3. Start the SITMUN Application Stack:
+3. Setup the environment using the appropriate script for your system:
+
+   For Unix-based systems (Linux/macOS):
+
+   ```bash
+   ./setup.sh
+   ```
+
+   For Windows systems:
+
+   ```powershell
+   ./setup.ps1
+   ```
+
+4. Start the SITMUN Application Stack:
 
     ```bash
     docker compose up -d
@@ -37,13 +51,13 @@ To install the SITMUN Application Stack, follow these steps:
 
    This command will build and start all the services defined in the `docker-compose.yml` file.
 
-4. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer).
+5. Access the SITMUN viewer application at [http://localhost:9000/viewer](http://localhost:9000/viewer).
    Use the public access which does not require authentication.
 
-5. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin).
+6. Access the SITMUN administrative application at [http://localhost:9000/admin](http://localhost:9000/admin).
    This requires authentication. The default username is `admin` and the default password is `admin`.
 
-6. If the source code of the SITMUN stack is changed, fetch changes and rebuild the services:
+7. If the source code of the SITMUN stack is changed, fetch changes and rebuild the services:
 
     ```bash
     git pull --recurse-submodules
