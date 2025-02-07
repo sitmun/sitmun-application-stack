@@ -1,12 +1,15 @@
-# Stage 0, "build-proxy-middleware", based on OpenJDK 11, to build and compile the frontend
-FROM openjdk:11 AS build-proxy-middleware
+ARG JDK_TAG=0.26
+ARG ALPINE_TAG=3.21
+
+# Stage 0, "build-proxy-middleware", based on Amazon Corretto 11, to build and compile the frontend
+FROM amazoncorretto:11.${JDK_TAG} AS build-proxy-middleware
 COPY sitmun-proxy-middleware /usr/src/sitmun-proxy-middleware
 WORKDIR /usr/src/sitmun-proxy-middleware
 RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i clean build -x test
 
-# Stage 1, based on OpenJDK, to have only the compiled app
-FROM openjdk:11-jre-slim-buster
-RUN apt-get update && apt-get install -y curl
+# Stage 1, based on Amazon Corretto 11, to have only the compiled app
+FROM amazoncorretto:11.${JDK_TAG}-alpine${ALPINE_TAG}
+RUN apk add --no-cache curl
 COPY --from=build-proxy-middleware /usr/src/sitmun-proxy-middleware/build/libs/*.jar /usr/src/proxy.jar
 WORKDIR /usr/src
 ENTRYPOINT ["java", "-jar", "proxy.jar"]
