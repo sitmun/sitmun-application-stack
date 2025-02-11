@@ -89,7 +89,6 @@ spring:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     properties:
-      hibernate.dialect: org.sitmun.infrastructure.persistence.dialect.PostgresSQL93DialectFixed
       hibernate.jdbc.time_zone: UTC
       hibernate.id.new_generator_mappings: true
       hibernate.connection.provider_disables_autocommit: true
