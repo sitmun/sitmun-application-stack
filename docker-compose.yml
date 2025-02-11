@@ -67,7 +67,7 @@ services:
   postgres:
     profiles:
       - postgres
-    image: postgres:17-alpine
+    image: postgres:16-alpine
     ports:
       - "9003:5432"
     environment:
