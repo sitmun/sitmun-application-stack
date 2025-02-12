@@ -32,6 +32,7 @@ services:
       - "9001:8080"
     restart: always
     environment:
+      - SPRING_PROFILES_ACTIVE=${COMPOSE_PROFILES:-postgres}
       - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}

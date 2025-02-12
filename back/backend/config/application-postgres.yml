@@ -1,0 +1,8 @@
+# ===================================================================
+# Spring Boot
+# ===================================================================
+
+spring:
+  jpa:
+    properties:
+      hibernate.dialect: org.sitmun.infrastructure.persistence.dialect.PostgresSQL93DialectFixed
