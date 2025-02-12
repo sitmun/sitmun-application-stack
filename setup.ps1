@@ -48,7 +48,7 @@ function Update-FromRemote {
     git fetch origin $CURRENT_BRANCH
 
     # Check if local is up to date
-    $LOCAL_COMMIT = git rev-parse @
+    $LOCAL_COMMIT = git rev-parse "@"
     $REMOTE_COMMIT = git rev-parse "@{u}"
 
     if ($LOCAL_COMMIT -eq $REMOTE_COMMIT) {
