@@ -20,7 +20,7 @@ To install the SITMUN Application Stack, follow these steps:
 1. Clone the repository and fetch and checkout nested SITMUN projects:
 
     ```bash
-    git clone --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
+    git clone --branch dev --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
     ```
 
 2. Change to the directory of the repository:
