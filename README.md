@@ -43,6 +43,14 @@ To install the SITMUN Application Stack, follow these steps:
    ./setup.ps1
    ```
 
+   If the script fails, you must create an `.env` file with the following content:
+
+    ```env
+    PUBLIC_PORT=9000
+    PUBLIC_NON_STANDARD_PORT=1
+    COMPOSE_PROFILES=postgres    
+    ```
+
 4. Start the SITMUN Application Stack:
 
     ```bash
