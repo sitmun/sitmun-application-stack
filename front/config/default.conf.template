@@ -21,6 +21,7 @@ server {
     root /usr/share/nginx/html;
     index index.html;
     include /etc/nginx/mime.types;
+    try_files $uri $uri/ ${LOCAL_BASE_PATH}viewer/index.html =404;      
 
     # Redirect /admin to /admin/ (permanent redirect)
     location = ${LOCAL_BASE_PATH}admin {
@@ -36,6 +37,11 @@ server {
     # Redirect /viewer to /viewer/ (permanent redirect)
     location = ${LOCAL_BASE_PATH}viewer {
       return 301 "${public_path}viewer/";
+    }
+
+    location ${LOCAL_BASE_PATH}viewer/ {
+      alias /usr/share/nginx/html/viewer/;
+      try_files $uri $uri/ ${LOCAL_BASE_PATH}viewer/index.html;      
     }
 
     # API paths
