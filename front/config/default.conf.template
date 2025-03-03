@@ -19,10 +19,9 @@ server {
 
   location / {
     root /usr/share/nginx/html;
-    index index.html;
     include /etc/nginx/mime.types;
-    try_files $uri $uri/ ${LOCAL_BASE_PATH}viewer/index.html =404;      
-
+    return 301 "${public_path}viewer/";
+    
     # Redirect /admin to /admin/ (permanent redirect)
     location = ${LOCAL_BASE_PATH}admin {
       return 301 "${public_path}admin/";
