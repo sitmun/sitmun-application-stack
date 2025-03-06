@@ -5,6 +5,7 @@
 sitmun:
   module: SITMUN Core
   version: 3.0-SNAPSHOT
+  language:
   proxy:
     config-response-validity-in-seconds: 3600
   dashboard:
