@@ -13,17 +13,12 @@
         "required": true
       },
       "group": {
-        "label": "tasksEntity.group",
-        "control": "selector",
-        "selector": {
-          "data": "taskGroup",
-          "name": "name",
-          "value": "id"
-        },
+        "hidden": true,
+        "value": 2,
         "required": true
       },
       "scope": {
-        "label": "tasksEntity.accesType",
+        "label": "tasksEntity.accessType",
         "control": "selector",
         "selector": {
           "data": "codelist-values",
@@ -47,16 +42,21 @@
         },
         "hidden": [
           {
-            "scope": "WS",
+            "scope": "sql-query",
+            "hidden": false
+          },
+          {
+            "scope": "web-api-query",
             "hidden": true
           },
           {
-            "scope": "URL",
+            "scope": "cartography-query",
             "hidden": true
           }
         ]
       },
       "cartography": {
+        "condition": "scope",
         "label": "tasksEntity.cartography",
         "control": "selectorPopup",
         "selectorPopup": {
@@ -72,36 +72,56 @@
               "editable": "true"
             }
           }
-        }
+        },
+        "hidden": [
+          {
+            "scope": "sql-query",
+            "hidden": true
+          },
+          {
+            "scope": "web-api-query",
+            "hidden": true
+          },
+          {
+            "scope": "cartography-query",
+            "hidden": false
+          }
+        ]
       },
       "command": {
         "condition": "scope",
         "label": [
           {
-            "scope": "SQL",
+            "scope": "sql-query",
             "text": "tasksEntity.sql"
           },
           {
-            "scope": "WS",
-            "text": "tasksEntity.url"
-          },
-          {
-            "scope": "URL",
+            "scope": "web-api-query",
             "text": "tasksEntity.url"
           }
         ],
         "control": [
           {
-            "scope": "SQL",
+            "scope": "sql-query",
             "control": "textArea"
           },
           {
-            "scope": "WS",
-            "control": "INPUT"
+            "scope": "web-api-query",
+            "control": "textArea"
+          }
+        ],
+        "hidden": [
+          {
+            "scope": "sql-query",
+            "hidden": false
           },
           {
-            "scope": "URL",
-            "control": "INPUT"
+            "scope": "web-api-query",
+            "hidden": false
+          },
+          {
+            "scope": "cartography-query",
+            "hidden": true
           }
         ]
       }
@@ -112,11 +132,6 @@
       "link": "parameters",
       "label": "tasksEntity.parameters",
       "columns": {
-        "type": {
-          "label": "tasksEntity.type",
-          "typeColumn": "string",
-          "editable": "false"
-        },
         "label": {
           "label": "tasksEntity.parameter",
           "typeColumn": "string",
