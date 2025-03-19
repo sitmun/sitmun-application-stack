@@ -13,4 +13,5 @@
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/08_add_territory_description.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
