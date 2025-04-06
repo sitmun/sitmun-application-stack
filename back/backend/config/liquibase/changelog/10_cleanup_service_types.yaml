@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: sitmun
+      context: dev,prod
+      changes:
+        - delete:
+            tableName: STM_CODELIST
+            where: "COD_LIST = 'service.type' AND COD_VALUE NOT IN ('WMS', 'WFS', 'WMTS')" 
