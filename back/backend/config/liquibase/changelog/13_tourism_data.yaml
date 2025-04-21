@@ -1,0 +1,384 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13
+      author: sitmun
+      context: dev,prod
+      changes:
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_app.csv
+            relativeToChangelogFile: true
+            tableName: STM_APP
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: APP_ID
+                  type: NUMERIC
+              - column:
+                  name: APP_ENTRYM
+                  type: BOOLEAN
+              - column:
+                  name: APP_ENTRYS
+                  type: BOOLEAN
+              - column:
+                  name: APP_CREATED
+                  type: DATETIME
+              - column:
+                  name: APP_TEMPLATE
+                  type: STRING
+              - column:
+                  name: APP_NAME
+                  type: STRING
+              - column:
+                  name: APP_SCALES
+                  type: STRING
+              - column:
+                  name: APP_PROJECT
+                  type: STRING
+              - column:
+                  name: APP_THEME
+                  type: STRING
+              - column:
+                  name: APP_LOGO
+                  type: STRING
+              - column:
+                  name: APP_DESCRIPTION
+                  type: STRING
+              - column:
+                  name: APP_TITLE
+                  type: STRING
+              - column:
+                  name: APP_REFRESH
+                  type: BOOLEAN
+              - column:
+                  name: APP_TYPE
+                  type: STRING
+              - column:
+                  name: APP_GGIID
+                  type: NUMERIC
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_tree.csv
+            relativeToChangelogFile: true
+            tableName: STM_TREE
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: TRE_ID
+                  type: NUMERIC
+              - column:
+                  name: TRE_NAME
+                  type: STRING
+              - column:
+                  name: TRE_FILTER_GFI
+                  type: BOOLEAN
+              - column:
+                  name: TRE_FILTER_GM
+                  type: BOOLEAN
+              - column:
+                  name: TRE_FILTER_SE
+                  type: BOOLEAN
+              - column:
+                  name: TRE_TYPE
+                  type: STRING
+              - column:
+                  name: TRE_CREATED
+                  type: DATETIME
+              - column:
+                  name: TRE_MAP_IMAGE
+                  type: STRING
+              - column:
+                  name: TRE_INITIAL_EXTENT
+                  type: STRING
+              - column:
+                  name: TRE_INITIAL_ZOOM
+                  type: NUMERIC
+              - column:
+                  name: TRE_VERTICAL_ORDER
+                  type: BOOLEAN
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_app_rol.csv
+            relativeToChangelogFile: true
+            tableName: STM_APP_ROL
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: ARO_APPID
+                  type: NUMERIC
+              - column:
+                  name: ARO_ROLEID
+                  type: NUMERIC
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_app_tree.csv
+            relativeToChangelogFile: true
+            tableName: STM_APP_TREE
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: ATR_APPID
+                  type: NUMERIC
+              - column:
+                  name: ATR_TREEID
+                  type: NUMERIC
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_connect.csv
+            relativeToChangelogFile: true
+            tableName: STM_CONNECT
+            usePreparedStatements: true
+            quotchar: '"'
+            columns:
+              - column:
+                  name: CON_ID
+                  type: NUMERIC
+              - column:
+                  name: CON_NAME
+                  type: STRING
+              - column:
+                  name: CON_DRIVER
+                  type: STRING
+              - column:
+                  name: CON_USER
+                  type: STRING
+              - column:
+                  name: CON_PWD
+                  type: STRING
+              - column:
+                  name: CON_CONNECTION
+                  type: STRING
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_task.csv
+            relativeToChangelogFile: true
+            tableName: STM_TASK
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: TAS_ID
+                  type: NUMERIC
+              - column:
+                  name: TAS_NAME
+                  type: STRING
+              - column:
+                  name: TAS_CREATED
+                  type: DATETIME
+              - column:
+                  name: TAS_ORDER
+                  type: NUMERIC
+              - column:
+                  name: TAS_GIID
+                  type: NUMERIC
+              - column:
+                  name: TAS_SERID
+                  type: NUMERIC
+              - column:
+                  name: TAS_GTASKID
+                  type: NUMERIC
+              - column:
+                  name: TAS_TTASKID
+                  type: NUMERIC
+              - column:
+                  name: TAS_TUIID
+                  type: NUMERIC
+              - column:
+                  name: TAS_CONNID
+                  type: NUMERIC
+              - column:
+                  name: TAS_PARAMS
+                  type: STRING
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_avail_tsk.csv
+            relativeToChangelogFile: true
+            tableName: STM_AVAIL_TSK
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: ATS_ID
+                  type: NUMERIC
+              - column:
+                  name: ATS_CREATED
+                  type: DATETIME
+              - column:
+                  name: ATS_TASKID
+                  type: NUMERIC
+              - column:
+                  name: ATS_TERID
+                  type: NUMERIC
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_rol_tsk.csv
+            relativeToChangelogFile: true
+            tableName: STM_ROL_TSK
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: RTS_ROLEID
+                  type: NUMERIC
+              - column:
+                  name: RTS_TASKID
+                  type: NUMERIC
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_tree_nod.csv
+            relativeToChangelogFile: true
+            tableName: STM_TREE_NOD
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: TNO_ID
+                  type: NUMERIC
+              - column:
+                  name: TNO_ACTIVE
+                  type: BOOLEAN
+              - column:
+                  name: TNO_DATAURL
+                  type: STRING
+              - column:
+                  name: TNO_ABSTRACT
+                  type: STRING
+              - column:
+                  name: TNO_FILTER_GFI
+                  type: BOOLEAN
+              - column:
+                  name: TNO_FILTER_GM
+                  type: BOOLEAN
+              - column:
+                  name: TNO_FILTER_SE
+                  type: BOOLEAN
+              - column:
+                  name: TNO_METAURL
+                  type: STRING
+              - column:
+                  name: TNO_NAME
+                  type: STRING
+              - column:
+                  name: TNO_ORDER
+                  type: NUMERIC
+              - column:
+                  name: TNO_QUERYACT
+                  type: BOOLEAN
+              - column:
+                  name: TNO_RADIO
+                  type: BOOLEAN
+              - column:
+                  name: TNO_LOAD_DATA
+                  type: BOOLEAN
+              - column:
+                  name: TNO_TOOLTIP
+                  type: STRING
+              - column:
+                  name: TNO_GIID
+                  type: NUMERIC
+              - column:
+                  name: TNO_PARENTID
+                  type: NUMERIC
+              - column:
+                  name: TNO_TREEID
+                  type: NUMERIC
+              - column:
+                  name: TNO_STYLE
+                  type: STRING
+              - column:
+                  name: TNO_TYPE
+                  type: STRING
+              - column:
+                  name: TNO_IMAGE_NAME
+                  type: STRING
+              - column:
+                  name: TNO_IMAGE
+                  type: STRING
+              - column:
+                  name: TNO_VIEW_MODE
+                  type: STRING
+              - column:
+                  name: TNO_TASKID
+                  type: NUMERIC
+              - column:
+                  name: TNO_FILTERABLE
+                  type: BOOLEAN
+              - column:
+                  name: TNO_MAPPING
+                  type: STRING
+
+        - loadData:
+            encoding: UTF-8
+            file: 13_tourism_data/stm_tree_rol.csv
+            relativeToChangelogFile: true
+            tableName: STM_TREE_ROL
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: TRO_TREEID
+                  type: NUMERIC
+              - column:
+                  name: TRO_ROLEID
+                  type: NUMERIC
+
+        # Update sequence for APP_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'APP_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 19
+        # Update sequence for ATS_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'ATS_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 139
+        # Update sequence for TAS_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'TAS_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 32287
+        # Update sequence for TRE_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'TRE_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 41
+        # Update sequence for TNO_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'TNO_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 12774
+        # Update sequence for CON_ID
+        - update:
+            tableName: STM_SEQUENCE
+            where: SEQ_NAME = 'CON_ID'
+            columns:
+              - column:
+                  name: SEQ_COUNT
+                  valueNumeric: 2
