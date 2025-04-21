@@ -18,4 +18,5 @@
   <include file="changelog/10_cleanup_service_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/11_update_service_abstract_length.sql" relativeToChangelogFile="true"/>
   <include file="changelog/12_translations.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/13_tourism_data.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

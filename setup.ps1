@@ -53,6 +53,7 @@ function Update-FromRemote {
 
     if ($LOCAL_COMMIT -eq $REMOTE_COMMIT) {
         Write-Host "${Green}Your $CURRENT_BRANCH branch is already up to date.${Reset}"
+        git submodule update --recursive --remote
     } else {
         Write-Host "${Yellow}Pulling latest changes from remote...${Reset}"
 

@@ -56,6 +56,7 @@ update_from_remote() {
 
     if [ "$LOCAL_COMMIT" = "$REMOTE_COMMIT" ]; then
         echo -e "${GREEN}Your $CURRENT_BRANCH branch is already up to date.${NC}"
+        git submodule update --recursive --remote
     else
         echo -e "${YELLOW}Pulling latest changes from remote...${NC}"
 
