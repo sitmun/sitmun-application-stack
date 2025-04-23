@@ -105,6 +105,20 @@ services:
         retries: 10
         start_period: 5s
         start_interval: 5s
+
+  example: 
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: example
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+    ports:
+      - "9005:5432"
+    volumes:
+      - example_data:/var/lib/postgresql/data
+      - ./back/demo-data:/docker-entrypoint-initdb.d
+
 volumes:
   pgdata:
   oradata:
+  example_data:
