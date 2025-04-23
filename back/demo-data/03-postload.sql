@@ -1,0 +1,1 @@
+REFRESH MATERIALIZED VIEW CONCURRENTLY silme.agenda_cultural_mat;
