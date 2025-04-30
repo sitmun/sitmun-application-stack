@@ -1,1 +1,2 @@
 REFRESH MATERIALIZED VIEW CONCURRENTLY silme.agenda_cultural_mat;
+REFRESH MATERIALIZED VIEW CONCURRENTLY dbo.publications_by_location;

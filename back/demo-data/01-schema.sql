@@ -162,6 +162,72 @@ CREATE INDEX idx_webpubvalors_nparam ON silme.webpubvalors(nparam);
 -- Combined index for common query pattern seen in the materialized view
 CREATE INDEX idx_webpubvalors_pub_param ON silme.webpubvalors(idpublicacio, nparam);
 
+-- GESMATERIAS table for categorizing content
+CREATE TABLE dbo.GESMATERIAS (
+    ID int4 NOT NULL,
+    NOMBRE1 varchar(255) NULL,
+    NOMBRE2 varchar(255) NULL,
+    NOMBRE3 varchar(255) NULL,
+    NOMBRE4 varchar(255) NULL,
+    DESCRIP1 varchar(500) NULL,
+    DESCRIP2 varchar(500) NULL,
+    DESCRIP3 varchar(500) NULL,
+    DESCRIP4 varchar(500) NULL,
+    TIPO varchar(10) NULL,
+    ORDEN int4 NULL,
+    CODESTANDARD varchar(10) NULL,
+    NOMBRE5 varchar(255) NULL,
+    NOMBRE6 varchar(255) NULL,
+    DESCRIP5 varchar(500) NULL,
+    DESCRIP6 varchar(500) NULL,
+    CONSTRAINT gesmaterias_pk PRIMARY KEY (ID)
+);
+-- Add indexes for GESMATERIAS
+CREATE INDEX idx_gesmaterias_tipo ON dbo.GESMATERIAS(TIPO);
+CREATE INDEX idx_gesmaterias_codestandard ON dbo.GESMATERIAS(CODESTANDARD);
+CREATE INDEX idx_gesmaterias_orden ON dbo.GESMATERIAS(ORDEN);
+
+-- Add comments for GESMATERIAS table and columns
+COMMENT ON TABLE dbo.GESMATERIAS IS 'Categories and materials for classifying content';
+COMMENT ON COLUMN dbo.GESMATERIAS.ID IS 'Primary key identifier';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE1 IS 'Catalan name';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE2 IS 'Spanish name';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE3 IS 'English name';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE4 IS 'Fourth language name';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP1 IS 'Catalan description';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP2 IS 'Spanish description';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP3 IS 'English description';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP4 IS 'Fourth language description';
+COMMENT ON COLUMN dbo.GESMATERIAS.TIPO IS 'Category type (1=Theme, 2=Format, 3=Space, 4=Location)';
+COMMENT ON COLUMN dbo.GESMATERIAS.ORDEN IS 'Sort order';
+COMMENT ON COLUMN dbo.GESMATERIAS.CODESTANDARD IS 'Standardized code';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE5 IS 'Fifth language name';
+COMMENT ON COLUMN dbo.GESMATERIAS.NOMBRE6 IS 'Sixth language name';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP5 IS 'Fifth language description';
+COMMENT ON COLUMN dbo.GESMATERIAS.DESCRIP6 IS 'Sixth language description';
+
+-- WEBRELPUBMAT table for relating publications to categories/materials
+CREATE TABLE dbo.WEBRELPUBMAT (
+    ID int4 NOT NULL,
+    IDPUBLICACIO int4 NULL,
+    NPUBLICACIO varchar(255) NULL,
+    IDMATERIA int4 NULL,
+    NMATERIA varchar(255) NULL,
+    CONSTRAINT webrelpubmat_pk PRIMARY KEY (ID)
+);
+-- Add indexes for WEBRELPUBMAT
+CREATE INDEX idx_webrelpubmat_idpublicacio ON dbo.WEBRELPUBMAT(IDPUBLICACIO);
+CREATE INDEX idx_webrelpubmat_idmateria ON dbo.WEBRELPUBMAT(IDMATERIA);
+CREATE INDEX idx_webrelpubmat_pub_mat ON dbo.WEBRELPUBMAT(IDPUBLICACIO, IDMATERIA);
+
+-- Add comments for WEBRELPUBMAT table and columns
+COMMENT ON TABLE dbo.WEBRELPUBMAT IS 'Relationship table connecting publications with materials/categories';
+COMMENT ON COLUMN dbo.WEBRELPUBMAT.ID IS 'Primary key identifier';
+COMMENT ON COLUMN dbo.WEBRELPUBMAT.IDPUBLICACIO IS 'Publication ID from webpublicacions';
+COMMENT ON COLUMN dbo.WEBRELPUBMAT.NPUBLICACIO IS 'Publication name for convenience';
+COMMENT ON COLUMN dbo.WEBRELPUBMAT.IDMATERIA IS 'Material/category ID from GESMATERIAS';
+COMMENT ON COLUMN dbo.WEBRELPUBMAT.NMATERIA IS 'Material/category name for convenience';
+
 CREATE MATERIALIZED VIEW silme.agenda_cultural_mat
 TABLESPACE pg_default
 AS SELECT w.id,
@@ -231,3 +297,28 @@ CREATE INDEX idx_agenda_cultural_mat_dates ON silme.agenda_cultural_mat(des_de, 
 
 -- Add unique index to enable REFRESH MATERIALIZED VIEW CONCURRENTLY
 CREATE UNIQUE INDEX idx_agenda_cultural_mat_unique ON silme.agenda_cultural_mat(id);
+
+-- Materialized view for publications with location categories
+CREATE MATERIALIZED VIEW dbo.publications_by_location
+TABLESPACE pg_default
+AS SELECT DISTINCT
+    w.IDPUBLICACIO, 
+    g.ID AS location_id  -- Added to ensure uniqueness
+    g.NOMBRE1 AS location_name,
+FROM 
+    dbo.WEBRELPUBMAT w
+    INNER JOIN dbo.GESMATERIAS g ON g.ID = w.IDMATERIA 
+WHERE 
+    g.TIPO = '4'
+WITH DATA;
+
+-- Add indexes for faster queries
+CREATE INDEX idx_publications_by_location_idpub ON dbo.publications_by_location(IDPUBLICACIO);
+
+-- Add unique index to enable REFRESH MATERIALIZED VIEW CONCURRENTLY
+CREATE UNIQUE INDEX idx_publications_by_location_unique ON dbo.publications_by_location(IDPUBLICACIO, location_id);
+
+-- Add comments
+COMMENT ON MATERIALIZED VIEW dbo.publications_by_location IS 'Publications linked to location categories (TIPO=4)';
+COMMENT ON COLUMN dbo.publications_by_location.IDPUBLICACIO IS 'Publication ID reference';
+COMMENT ON COLUMN dbo.publications_by_location.location_name IS 'Name of the location in the official language';
