@@ -303,8 +303,8 @@ CREATE MATERIALIZED VIEW dbo.publications_by_location
 TABLESPACE pg_default
 AS SELECT DISTINCT
     w.IDPUBLICACIO, 
-    g.ID AS location_id  -- Added to ensure uniqueness
-    g.NOMBRE1 AS location_name,
+    g.ID AS location_id,  -- Added to ensure uniqueness
+    g.NOMBRE1 AS location_name
 FROM 
     dbo.WEBRELPUBMAT w
     INNER JOIN dbo.GESMATERIAS g ON g.ID = w.IDMATERIA 
