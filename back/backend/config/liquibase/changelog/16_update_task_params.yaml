@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15
+      author: sitmun
+      context: dev,prod
+      changes:
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"parameters":[],"scope":"sql-query"}'
+            where: TAS_ID=32281
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"command":"https://ide.cime.es/api_ide/Mobilitat/stops/distance/{longitud}/{latitud}","parameters":[{"name":"longitud","type":"template","required":true,"label":"Longitud"},{"name":"latitud","type":"template","required":true,"label":"Latitud"}],"scope":"web-api-query"}'
+            where: TAS_ID=32282
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"command":"https://ide.cime.es/api_ide/Mobilitat/stops/Stopcode/{codigo}","parameters":[{"name":"codigo","type":"template","required":true,"label":"Codigo"}],"scope":"web-api-query"}'
+            where: TAS_ID=32283
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"parameters":[{"name":"limit","type":"query","required":false,"label":"Límite"}],"scope":"sql-query"}'
+            where: TAS_ID=32285
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"parameters":[],"scope":"sql-query"}'
+            where: TAS_ID=32286
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_PARAMS
+                  value: '{"parameters":[],"scope":"sql-query"}'
+            where: TAS_ID=32287 

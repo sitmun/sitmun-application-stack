@@ -42,6 +42,8 @@ services:
       - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
     volumes:
       - ./back/backend/config:/usr/src/config
+    depends_on:
+      - ${COMPOSE_PROFILES:-postgres}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
       interval: 30s
@@ -99,12 +101,11 @@ services:
     volumes:
         - oradata:/opt/oracle/oradata
     healthcheck:
-        test: ["CMD", "healthcheck.sh"]
-        interval: 10s
-        timeout: 5s
-        retries: 10
-        start_period: 5s
-        start_interval: 5s
+        test: ["CMD", "sqlplus", "-L", "${DATABASE_USERNAME:-sitmun3}/${DATABASE_PASSWORD:-sitmun3}@//localhost:1521/${DATABASE:-sitmun3}", "-c", "SELECT 1 FROM DUAL;"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 60s
 
   example: 
     image: postgres:16-alpine
