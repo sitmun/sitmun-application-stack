@@ -5,7 +5,7 @@ ARG ALPINE_TAG=3.21
 FROM amazoncorretto:11.${JDK_TAG} AS build-backend-core
 COPY sitmun-backend-core /usr/src/sitmun-backend-core
 WORKDIR /usr/src/sitmun-backend-core
-RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i stage
+RUN --mount=type=cache,target=/root/.gradle-backend ./gradlew --no-daemon -i stage
 
 # Stage 1, based on Amazon Corretto 11, to have only the compiled app, ready for production with Nginx
 FROM amazoncorretto:11.${JDK_TAG}-alpine${ALPINE_TAG}
