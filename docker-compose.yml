@@ -72,6 +72,7 @@ services:
     profiles:
       - postgres
     image: postgres:16-alpine
+    restart: always
     ports:
       - "9003:5432"
     environment:
@@ -109,6 +110,7 @@ services:
 
   example: 
     image: postgres:16-alpine
+    restart: always
     environment:
       POSTGRES_DB: example
       POSTGRES_USER: example
