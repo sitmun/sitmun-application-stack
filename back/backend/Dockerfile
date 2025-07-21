@@ -1,14 +1,15 @@
-ARG JDK_TAG=0.26
-ARG ALPINE_TAG=3.21
+ARG JDK_VERSION=17
+ARG JDK_TAG=0.16
+ARG ALPINE_TAG=3.22
 
-# Stage 0, "build-admin-core", based on Amazon Corretto 11, to build and compile the frontend
-FROM amazoncorretto:11.${JDK_TAG} AS build-backend-core
+# Stage 0, "build-admin-core", based on Amazon Corretto, to build and compile the frontend
+FROM amazoncorretto:${JDK_VERSION}.${JDK_TAG} AS build-backend-core
 COPY sitmun-backend-core /usr/src/sitmun-backend-core
 WORKDIR /usr/src/sitmun-backend-core
 RUN --mount=type=cache,target=/root/.gradle-backend ./gradlew --no-daemon -i stage
 
-# Stage 1, based on Amazon Corretto 11, to have only the compiled app, ready for production with Nginx
-FROM amazoncorretto:11.${JDK_TAG}-alpine${ALPINE_TAG}
+# Stage 1, based on Amazon Corretto, to have only the compiled app, ready for production with Nginx
+FROM amazoncorretto:${JDK_VERSION}.${JDK_TAG}-alpine${ALPINE_TAG}
 RUN apk add --no-cache curl
 COPY --from=build-backend-core /usr/src/sitmun-backend-core/build/libs/*.jar /usr/src/sitmun.jar
 WORKDIR /usr/src
