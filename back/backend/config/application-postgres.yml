@@ -1,8 +1,5 @@
-# ===================================================================
-# Spring Boot
-# ===================================================================
-
+# JPA Configuration for PostgreSQL
 spring:
   jpa:
     properties:
-      hibernate.dialect: org.sitmun.infrastructure.persistence.dialect.PostgresSQL93DialectFixed
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
