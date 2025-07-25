@@ -24,4 +24,5 @@
   <include file="changelog/16_update_task_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/17_update_applications_table.sql" relativeToChangelogFile="true"/>
   <include file="changelog/18_fix_tourism_data.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/19_add_app_enhancements.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
