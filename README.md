@@ -13,6 +13,25 @@ Before you begin, ensure you have met the following requirements:
 - Installed Git.  See [Installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 - Internet access to pull Docker images and Git repositories.
 
+## Technology Stack
+
+The SITMUN Application Stack is built with modern technologies:
+
+- **Backend**: Java 17, Spring Boot 3.1.12, Gradle
+- **Frontend**: TypeScript, Angular, Node.js
+- **Database**: PostgreSQL 17, Oracle 23c
+- **Security**: JWT authentication, role-based access control
+- **Containerization**: Docker, Docker Compose
+
+## Key Features
+
+- **Application Privacy Controls**: Applications can be marked as private to restrict public user access
+- **Token-based Authentication**: Enhanced security with token-based user authentication
+- **Multi-database Support**: PostgreSQL, Oracle, and H2 database support
+- **Geospatial Processing**: Advanced MBTiles generation and processing capabilities
+- **Comprehensive API**: RESTful APIs with OpenAPI/Swagger documentation
+- **Role-based Access**: Granular permission system with territory-based restrictions
+
 ## Installing SITMUN Application Stack
 
 To install the SITMUN Application Stack, follow these steps:
@@ -140,16 +159,27 @@ To use an external database, modify the `DATABASE`, `DATABASE_URL`, `DATABASE_US
 
 The `COMPOSE_PROFILES` variable must be commented out.
 
+## Security Features
+
+The SITMUN Application Stack includes comprehensive security features:
+
+- **JWT Authentication**: Token-based authentication for secure API access
+- **Application Privacy**: Applications can be marked as private to restrict public user access
+- **Role-based Access Control**: Granular permissions based on user roles and territories
+- **Token User Management**: Enhanced user authentication with token-based access
+- **CORS Support**: Cross-origin resource sharing configuration
+- **Database Security**: Secure database connections with proper credential management
+
 ## Developing SITMUN
 
 SITMUN Application Stack uses Git submodules to include the source code of the SITMUN viewer and administrative applications, the SITMUN Backend and the SITMUN Proxy middleware.
 
-| Submodule                 | GitHub repository                                                                   | Docker service |
-|---------------------------|-------------------------------------------------------------------------------------|----------------|
-| `sitmun-admin-app`        | [SITMUN Administration application](https://github.com/sitmun/sitmun-admin-app.git) | `front`        |
-| `sitmun-viewer-app`       | [SITMUN Viewer application](https://github.com/sitmun/sitmun-viewer-app.git)        | `front`        |
-| `sitmun-backend-core`     | [SITMUN Backend](https://github.com/sitmun/sitmun-backend-core.git)                 | `backend`      |
-| `sitmun-proxy-middleware` | [SITMUN Proxy middleware](https://github.com/sitmun/sitmun-proxy-middleware.git)    | `proxy`        |
+| Submodule                 | GitHub repository                                                                   | Docker service | Technology Stack |
+|---------------------------|-------------------------------------------------------------------------------------|----------------|------------------|
+| `sitmun-admin-app`        | [SITMUN Administration application](https://github.com/sitmun/sitmun-admin-app.git) | `front`        | Angular, TypeScript |
+| `sitmun-viewer-app`       | [SITMUN Viewer application](https://github.com/sitmun/sitmun-viewer-app.git)        | `front`        | Angular, TypeScript |
+| `sitmun-backend-core`     | [SITMUN Backend](https://github.com/sitmun/sitmun-backend-core.git)                 | `backend`      | Java 17, Spring Boot 3.1.12 |
+| `sitmun-proxy-middleware` | [SITMUN Proxy middleware](https://github.com/sitmun/sitmun-proxy-middleware.git)    | `proxy`        | Java 17, Spring Boot 3.1.12 |
 
 ### Instructions for Updating a Submodule and Docker Service
 
@@ -180,6 +210,16 @@ SITMUN Application Stack uses Git submodules to include the source code of the S
     docker compose build --no-cache service_name
     docker compose up service_name -d
     ```
+
+## API Documentation
+
+Each service provides comprehensive API documentation:
+
+- **Backend API**: [http://localhost:9001/swagger-ui/index.html](http://localhost:9001/swagger-ui/index.html)
+- **Proxy Middleware**: Available through the backend configuration endpoints
+- **Health Checks**: 
+  - Backend: `http://localhost:9001/api/dashboard/health`
+  - Proxy: `http://localhost:9002/actuator/health`
 
 ## Contributing to SITMUN Application Stack
 
