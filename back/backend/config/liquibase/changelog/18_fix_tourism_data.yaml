@@ -1,0 +1,128 @@
+databaseChangeLog:
+  - changeSet:
+      id: 18
+      author: sitmun
+      context: dev,prod
+      changes:
+        - loadUpdateData:
+            encoding: UTF-8
+            file: 18_fix_tourism_data/stm_tree.csv
+            relativeToChangelogFile: true
+            tableName: STM_TREE
+            usePreparedStatements: true
+            quotchar: ''''
+            columns:
+              - column:
+                  name: TRE_ID
+                  type: NUMERIC
+              - column:
+                  name: TRE_TYPE
+                  type: STRING
+            primaryKey:
+              - TRE_ID
+        - update:
+            tableName: STM_TREE
+            columns:
+              - column:
+                  name: TRE_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_tre_image_row2.txt
+            where: TRE_ID=41
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row3.txt
+            where: TNO_ID=12762
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row4.txt
+            where: TNO_ID=12754
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row7.txt
+            where: TNO_ID=12759
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row9.txt
+            where: TNO_ID=12758
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row2.txt
+            where: TNO_ID=12763
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row13.txt
+            where: TNO_ID=12764
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row5.txt
+            where: TNO_ID=12766
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row11.txt
+            where: TNO_ID=12767
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row6.txt
+            where: TNO_ID=12768
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row15.txt
+            where: TNO_ID=12769
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row12.txt
+            where: TNO_ID=12770
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row14.txt
+            where: TNO_ID=12771
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row19.txt
+            where: TNO_ID=12772
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_IMAGE
+                  valueClobFile: 13_tourism_data/clob_files/stm_tree_nod_tno_image_row16.txt
+            where: TNO_ID=12773
+

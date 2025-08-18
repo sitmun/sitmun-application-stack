@@ -8,9 +8,22 @@
   <include file="changelog/01_schema.postgresql.sql" relativeToChangelogFile="true"/>
   <include file="changelog/02_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/03_task_types.yaml" relativeToChangelogFile="true"/>
-  <include file="changelog/04_initial_data_dev_postgresql.yaml" relativeToChangelogFile="true"/>
-  <include file="changelog/04_initial_data_prod_postgresql.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/04_initial_data_dev.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/04_initial_data_prod.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/08_add_territory_description.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/09_add_tree_node_mapping.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/10_cleanup_service_types.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/11_update_service_abstract_length.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/12_translations.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/13_tourism_data.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/14_update_sequences.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/15_update_task_params.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/16_update_task_params.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/17_update_applications_table.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/18_fix_tourism_data.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/19_add_app_enhancements.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/20_remove_stm_pos_user_ter_uk.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

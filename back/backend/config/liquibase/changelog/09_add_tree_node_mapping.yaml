@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: sitmun
+      changes:
+        - addColumn:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_MAPPING
+                  type: clob
+                  remarks: Tree node mapping
+                  constraints:
+                    nullable: true 
+      modifySql:
+        - dbms:
+            type: postgresql
+            replace:
+              replace: clob
+              with: text 

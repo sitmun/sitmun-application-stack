@@ -10,9 +10,8 @@ services:
     environment:
       - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME:-http}
       - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME:-localhost}
-      - PUBLIC_PORT=${PUBLIC_PORT:-9000}
+      - PUBLIC_PORT=${PUBLIC_PORT:-}
       - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
-      - LOCAL_PORT=${LOCAL_PORT:-9000}
       - LOCAL_BASE_PATH=${LOCAL_BASE_PATH:-/}
     volumes:
       - ./front/config:/etc/nginx/conf.d
@@ -31,17 +30,20 @@ services:
     build: ./back/backend
     ports:
       - "9001:8080"
-    depends_on:
-      - persistence
+    restart: always
     environment:
-      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://persistence:5432/}${DATABASE:-sitmun3}
+      - SPRING_PROFILES_ACTIVE=${COMPOSE_PROFILES:-postgres}
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
       - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
-      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_PORT_PREFIX:-:}${PUBLIC_PORT:-9000}${PUBLIC_BASE_PATH:-/}middleware
+      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}middleware
+      - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}backend
       - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
     volumes:
       - ./back/backend/config:/usr/src/config
+    depends_on:
+      - ${COMPOSE_PROFILES:-postgres}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
       interval: 30s
@@ -66,7 +68,9 @@ services:
       start_period: 5s
       retries: 3
 
-  persistence:
+  postgres:
+    profiles:
+      - postgres
     image: postgres:16-alpine
     restart: always
     ports:
@@ -84,5 +88,40 @@ services:
       start_period: 5s
       retries: 3
 
+  oracle:
+    profiles:
+      - oracle
+    image: gvenzl/oracle-free:23-slim
+    ports:
+      - "9004:1521"
+    environment:
+      ORACLE_PASSWORD: password
+      APP_USER: ${DATABASE_USERNAME:-sitmun3}
+      APP_USER_PASSWORD: ${DATABASE_PASSWORD:-sitmun3}
+      ORACLE_DATABASE: ${DATABASE:-sitmun3}
+    volumes:
+        - oradata:/opt/oracle/oradata
+    healthcheck:
+        test: ["CMD", "sqlplus", "-L", "${DATABASE_USERNAME:-sitmun3}/${DATABASE_PASSWORD:-sitmun3}@//localhost:1521/${DATABASE:-sitmun3}", "-c", "SELECT 1 FROM DUAL;"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 60s
+
+  example: 
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: example
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+    ports:
+      - "9005:5432"
+    volumes:
+      - example_data:/var/lib/postgresql/data
+      - ./back/demo-data:/docker-entrypoint-initdb.d
+
 volumes:
   pgdata:
+  oradata:
+  example_data:
