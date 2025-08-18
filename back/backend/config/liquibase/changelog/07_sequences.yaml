@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 6
+      id: 7
       author: sitmun
       context: dev,prod
       changes:

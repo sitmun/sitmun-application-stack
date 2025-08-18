@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset sitmun:1 context:dev,prod
+--changeset sitmun:14 context:dev,prod
 
 UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TTY_ID), 0) + 1 FROM STM_TSK_TYP) WHERE SEQ_NAME = 'TTY_ID';
 UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TET_ID), 0) + 1 FROM STM_TER_TYP) WHERE SEQ_NAME = 'TET_ID';
