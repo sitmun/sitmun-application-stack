@@ -1,0 +1,2 @@
+"con_id","con_driver","con_name","con_pwd","con_connection","con_user"
+"2","org.postgresql.Driver","Demo data","example_reader","jdbc:postgresql://example/example","example_reader"

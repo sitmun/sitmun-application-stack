@@ -13,13 +13,8 @@
         "required": true
       },
       "group": {
-        "label": "tasksEntity.group",
-        "control": "selector",
-        "selector": {
-          "data": "taskGroup",
-          "name": "name",
-          "value": "id"
-        },
+        "hidden": true,
+        "value": 1,
         "required": true
       },
       "ui": {
