@@ -25,4 +25,5 @@
   <include file="changelog/17_update_applications_table.sql" relativeToChangelogFile="true"/>
   <include file="changelog/18_fix_tourism_data.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/19_add_app_enhancements.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/20_remove_stm_pos_user_ter_uk.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
