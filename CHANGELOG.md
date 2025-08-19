@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+#### Backend Core
+
+- Reverted test data to the state previous to the merge with the `main` branch
+- Fixed the changelog for dropping the constraint `stm_pos_user_ter_uk`.
+
 ## [1.1.0] - 2025-08-18
 
 ### Added
