@@ -1,0 +1,12 @@
+--liquibase formatted sql
+--changeset sitmun:20 dbms:postgresql
+
+ALTER TABLE STM_POST DROP CONSTRAINT UKT67T88DOKIXQN9VEHTT1AEJ1X;
+
+--changeset sitmun:20 dbms:oracle
+
+ALTER TABLE STM_POST DROP CONSTRAINT UKT67T88DOKIXQN9VEHTT1AEJ1X;
+
+--changeset sitmun:20 dbms:h2
+
+ALTER TABLE STM_POST DROP CONSTRAINT STM_POS_UK;
