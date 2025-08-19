@@ -6,7 +6,8 @@ ARG ALPINE_TAG=3.22
 FROM amazoncorretto:${JDK_VERSION}.${JDK_TAG} AS build-proxy-middleware
 COPY sitmun-proxy-middleware /usr/src/sitmun-proxy-middleware
 WORKDIR /usr/src/sitmun-proxy-middleware
-RUN --mount=type=cache,target=/root/.gradle-proxy ./gradlew --no-daemon -i clean build -x test -x :setupGitHooks
+RUN --mount=type=cache,target=/root/.gradle-proxy ./gradlew --no-daemon -i clean build \
+    -x check -x setupGitHooks
 
 # Stage 1, based on Amazon Corretto, to have only the compiled app
 FROM amazoncorretto:${JDK_VERSION}.${JDK_TAG}-alpine${ALPINE_TAG}
