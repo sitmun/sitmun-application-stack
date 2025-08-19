@@ -1,0 +1,20 @@
+<databaseChangeLog>
+    <changeSet id="20a" author="sitmun">
+        <preConditions onFail="WARN">
+            <dbms type="oracle,postgresql"/>
+        </preConditions>
+        <dropUniqueConstraint
+                tableName="STM_POST"
+                constraintName="UKT67T88DOKIXQN9VEHTT1AEJ1X">
+        </dropUniqueConstraint>
+    </changeSet>
+    <changeSet id="20b" author="sitmun">
+        <preConditions onFail="WARN">
+            <dbms type="h2"/>
+        </preConditions>
+        <dropUniqueConstraint
+                tableName="STM_POST"
+                constraintName="STM_POS_UK">
+        </dropUniqueConstraint>
+    </changeSet>
+</databaseChangeLog>
