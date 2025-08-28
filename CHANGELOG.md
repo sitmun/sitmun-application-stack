@@ -6,12 +6,72 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-08-28
+
+### Added
+
+#### Backend Core
+- **Configuration**: Default header parameters configuration for SITMUN applications
+- **Testing**: Comprehensive test coverage for authorization components, test coverage for application default values functionality
+
+#### Admin Application
+- **Header Configuration**: Application header parameter configuration with customizable left and right sections, header display controls for SITMUN logo, application switcher, home menu, language selector, profile and logout buttons
+- **Task Management**: Enhanced task selection functionality on tree nodes with improved validation
+- **Application Controls**: Application privacy controls through `appPrivate` property configuration
+
+#### Viewer Application
+- **Navigation**: New territories list component for better territory management, enhanced navigation bar with app/territory switching functionality
+- **UI Components**: New UI icons for improved user interface (change, check, menu, dropdown), map section navigation controls with show/hide navbar functionality
+- **Internationalization**: Additional internationalization strings for new features
+- **Development**: GitHub workflow for managing stale issues and pull requests
+
+#### Proxy Middleware
+- **HTTP Support**: HTTP POST request support for proxy endpoints, enhanced HTTP protocol interface with method and body accessor methods
+- **Testing**: Comprehensive test suite for HTTP protocol components with SSL/TLS testing, extended test coverage for request configuration services
+
+### Changed
+
+#### Backend Core
+- **Architecture**: Reorganized authorization package structure into client and proxy subpackages
+- **Performance**: Enhanced SQL generation robustness in QueryVaryFiltersDecorator
+
+#### Admin Application
+- **Component Architecture**: Modernized territory form component with BaseFormComponent pattern for consistency, enhanced tree node task selection with better validation and error messaging
+- **UI Components**: Improved warnings panel component with expandable interface and badge notifications
+
+#### Viewer Application
+- **Navigation**: Enhanced navigation bar component with improved functionality
+- **UI Components**: Updated secondary button component styling and behavior, improved notification component styling, enhanced map styles with updated CSS configurations
+
+#### Proxy Middleware
+- **Architecture**: Refactored HTTP request body decorator to use generic context interface, enhanced proxy controller with POST request handling capabilities
+- **Performance**: Improved HTTP request processing and execution, updated request configuration DTOs for better request support
+
 ### Fixed
 
 #### Backend Core
+- **Data Integrity**: QueryVaryFiltersDecorator: prevent mutation of input target map, HashMapConverter: add null safety to prevent NPE
+- **UI Components**: Filter out null tree nodes in profile's tree list
+- **Configuration**: Update application version to use project.version variable
 
-- Reverted test data to the state previous to the merge with the `main` branch
-- Fixed the changelog for dropping the constraint `stm_pos_user_ter_uk`.
+#### Admin Application
+- **Angular Issues**: Angular compiler strict template compliance issues across multiple components
+- **UI Components**: Background maps filtering in layers-permits grid to prevent display conflicts
+- **Error Handling**: Error handling with localized messages for initialization and service capabilities, fallback message translation handling for better internationalization
+- **Form Management**: Application form initialization to ensure `isUnavailable` property is properly set
+- **Authentication**: Route-driven authentication layout with simplified auth flow, core/HAL module with dropped Node polyfills and modernized RxJS error handling
+
+#### Viewer Application
+- **Navigation**: Fixed navbar not updating on in-app navigation, resolved navbar override issues on page refresh
+- **UI Components**: Fixed ChangeAppTerritory button visibility logic (now shows when there's one app and one territory)
+
+#### Proxy Middleware
+- **Request Processing**: Improved HTTP request body handling and processing, enhanced request method detection and routing
+
+### Removed
+
+#### Proxy Middleware
+- **Dependencies**: Apache HTTP Client 5.x dependency and related configuration
 
 ## [1.1.0] - 2025-08-18
 
@@ -219,6 +279,7 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sitmun/sitmun-application-stack/releases/tag/v1.0.0
