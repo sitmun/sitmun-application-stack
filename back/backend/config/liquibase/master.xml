@@ -28,4 +28,5 @@
   <include file="changelog/20_remove_stm_pos_user_ter_uk.sql" relativeToChangelogFile="true"/>
   <include file="changelog/21_add_app_headerparams.sql" relativeToChangelogFile="true"/>
   <include file="changelog/22_add_additional.data.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/23_update_recovery_token.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
