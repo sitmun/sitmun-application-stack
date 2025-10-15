@@ -29,7 +29,7 @@ COPY --chown=node:node viewer/environment.testdeployment.ts.template ./src/envir
 COPY --chown=node:node viewer/index.html.template ./src/index.html.template
 RUN envsubst < ./src/environments/environment.testdeployment.ts.template > ./src/environments/environment.testdeployment.ts
 RUN envsubst < ./src/index.html.template > ./src/index.html
-RUN npm run build -- --configuration=testdeployment --base-href=${PUBLIC_BASE_PATH}viewer/ --source-map=true
+RUN npm run build -- --configuration=testdeployment --base-href=${PUBLIC_BASE_PATH}viewer/
 
 # Stage 2, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.27-alpine
