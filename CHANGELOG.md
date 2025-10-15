@@ -6,6 +6,81 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Backend Core
+- **Language Controller**: New LanguageController to manage language-related endpoints
+- **MBTiles Service Configuration**: MBTiles service URL configuration support for enhanced mapping capabilities
+- **Tree Node View Mode**: New viewmode option for tree nodes in codelist configuration
+- **Enhanced User Management**: Comprehensive user management and security system with position tracking and OTP password reset functionality
+- **Test Coverage**: Comprehensive tests for MBTiles and security-related changes
+- **Recovery Token Management**: STM_TOKEN_USER table for managing user tokens with relevant fields, USE_LAST_PASSWORD_CHANGE column in STM_USER table
+
+#### Admin Application
+- **Tree Node View Mode**: New tree node view mode functionality
+- **Help Tooltips**: Help tooltips in node mapping and task edit attributes forms
+
+#### Viewer Application
+- **Basemap Selector**: Basemap selector and comparator component with improved UI
+- **Projection Data Patch**: Projection data patch for EPSG coordinate system handling with caching support
+- **SITNA Integration**: API Sitna integrated as npm module dependency
+- **Navigation Enhancement**: Navigation method that accepts both application and territory IDs for explicit routing
+- **Territory Count Display**: Territory count label displayed on application presentation page
+- **Animation Modules**: BrowserAnimation and MatExpansion modules for enhanced user interface
+- **Description Truncation**: Description max length truncation pipe for managing long text in cards
+
+### Changed
+
+#### Backend Core
+- **Password Verification**: Improved password verification implementation with enhanced security measures
+- **Language Endpoints**: Restructured language endpoints and improved password verification system
+- **Spring Boot Tests**: Modernized Spring Boot test annotations and removed deprecated testing patterns
+- **Code Quality**: Applied comprehensive code formatting and cleanup across the codebase
+
+#### Viewer Application
+- **SITNA API Upgrade**: SITNA API upgraded to version 4.1.0 with comprehensive asset updates
+- **Password Reset Flow**: Password reset flow consolidated and improved for better security
+- **UI/UX Enhancements**: Application presentation page now displays territory counts with orange hover effects, territory section background changed to white, dashboard card layout and visual design improvements
+- **Header Navigation**: Header navigation bar enhanced with improved menu component and language selection
+- **Territory List**: Territories list component accent color changed to orange
+- **Mobile View**: Card content on mobile view now uses expansion panels with text truncation
+- **Profile Security**: Profile update security improved by verifying user credentials directly in update function
+- **Dashboard Filtering**: Dashboard filtering changed to use appPrivate field instead of public field
+- **HTTP Methods**: User account and territory position update requests changed from PUT to POST method
+
+#### Stack-Level
+- **Workshop Data**: Updated with data required for the workshop in Girona
+
+### Fixed
+
+#### Backend Core
+- **Client Configuration i18n**: Prevented unnecessary internationalization updates on client configuration requests to improve performance
+- **Profile Security Updates**: Fixed profile update security issues with enhanced validation
+- **Password Reset Token Operations**: Fixed token password reset operation to ensure proper security handling
+- **Profile Security**: Updated profile update mechanism for enhanced security measures
+- **Tree Node View Mode Description**: Updated description for tree node viewmode in application configuration
+- **Code Formatting**: Improved code formatting and removed duplicate imports
+
+#### Admin Application
+- **WMS Capabilities**: Numeric layer names handling in WMS capabilities processing
+- **Translation Infrastructure**: Translation infrastructure with defensive programming and null checks
+- **Role Form**: Role form save payload to include form values via createObject
+- **Field Rename**: Field rename from spatialSelectionConnectionId to spatialSelectionServiceId in layers form
+
+#### Viewer Application
+- **Template Type Errors**: Template type errors in dashboard item and menu components
+- **Navigation Redirection**: Navigation redirection issues in dashboard item component
+- **Missing Selectors**: Missing nav-home selector in DrawMeasureModify component
+- **EPSG.io Endpoint**: EPSG.io broken endpoint with workaround patches
+- **Global TC Object**: Global TC object accessibility in patch files
+- **Template Syntax**: Invalid template syntax by removing this and .content references
+
+### Removed
+
+#### Viewer Application
+- **Unused Dependencies**: Unused library dependencies in basemap control
+- **Reset Password Component**: Reset password component in favor of consolidated forgot password flow
+
 ## [1.1.1] - 2025-08-28
 
 ### Added
