@@ -3,11 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <title>SitmunViewerApp</title>
-    <base href="/">
+    <base href="${PUBLIC_BASE_PATH}viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script src="assets/js/sitna/sitna.js"></script>
-    <script src="assets/js/patch/patch_main.js"></script>
+    <script>
+      window.SITNA_BASE_URL = '${PUBLIC_BASE_PATH}viewer/assets/js/api-sitna/';
+    </script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -30,9 +31,16 @@
         console.log("Service worker not supported");
       }
     </script>
-    <link rel="stylesheet" href="assets/js/toastr/toastr.min.css" />
+    <script>
+      window.onload = function() {
+        let script = document.createElement('script');
+        script.src = "${PUBLIC_BASE_PATH}viewer/assets/js/patch/patch_main.js";
+        document.head.appendChild(script)
+      }
+    </script>
+    <link rel="stylesheet" href="${PUBLIC_BASE_PATH}viewer/assets/js/toastr/toastr.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="assets/js/toastr/toastr.min.js"></script>
+    <script type="text/javascript" src=" ${PUBLIC_BASE_PATH}viewer/assets/js/toastr/toastr.min.js"></script>
   </head>
   <body>
     <sitmun-viewer-app-root></sitmun-viewer-app-root>
