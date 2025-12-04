@@ -1,0 +1,335 @@
+databaseChangeLog:
+  - changeSet:
+      id: 24
+      author: sitmun
+      context: dev,prod
+      changes:
+        # Update STM_TASK table with human-readable control names
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Map Attribution (API SITNA)'
+            where: TAS_ID=1
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Basemap Selector (API SITNA)'
+            where: TAS_ID=2
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Map Click (API SITNA)'
+            where: TAS_ID=3
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Coordinates Display (API SITNA)'
+            where: TAS_ID=4
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Data Loader (API SITNA)'
+            where: TAS_ID=5
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Download Data (API SITNA)'
+            where: TAS_ID=6
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Draw, Measure and Modify (SILME extension)'
+            where: TAS_ID=7
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Feature Information (SILME extension)'
+            where: TAS_ID=8
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Full Screen Mode (API SITNA)'
+            where: TAS_ID=9
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Geolocation and GPS Tracking (API SITNA)'
+            where: TAS_ID=10
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Layer Catalog (SILME extension)'
+            where: TAS_ID=11
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Map Legend (API SITNA)'
+            where: TAS_ID=12
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Loading Indicator (API SITNA)'
+            where: TAS_ID=13
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Measure Distance and Area (API SITNA)'
+            where: TAS_ID=14
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Multi Feature Information (API SITNA)'
+            where: TAS_ID=15
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Navigation Bar (API SITNA)'
+            where: TAS_ID=16
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Offline Map Maker (API SITNA)'
+            where: TAS_ID=17
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Overview Map (API SITNA)'
+            where: TAS_ID=18
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Popup Window (SILME patch)'
+            where: TAS_ID=19
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Print Map (API SITNA)'
+            where: TAS_ID=20
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Scale Display (API SITNA)'
+            where: TAS_ID=21
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Scale Bar (API SITNA)'
+            where: TAS_ID=22
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Scale Selector (API SITNA)'
+            where: TAS_ID=23
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Search (SILME extension)'
+            where: TAS_ID=24
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Share Map (API SITNA)'
+            where: TAS_ID=25
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Street View (SILME extension)'
+            where: TAS_ID=26
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: '3D View (API SITNA)'
+            where: TAS_ID=27
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Table of Contents (API SITNA)'
+            where: TAS_ID=28
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'WFS Feature Editor (API SITNA)'
+            where: TAS_ID=29
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'WFS Layer Query (API SITNA)'
+            where: TAS_ID=30
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Work Layer Manager (SILME extension)'
+            where: TAS_ID=31
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Welcome Panel (API SITNA)'
+            where: TAS_ID=32
+        - update:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_NAME
+                  value: 'Help Panel (API SITNA)'
+            where: TAS_ID=33
+        # Update STM_TSK_UI table: update control names to SILME extensions/patches
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.basemapSelector'
+            where: TUI_ID=2
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.drawMeasureModify.silme.extension'
+            where: TUI_ID=7
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.featureInfo.silme.extension'
+            where: TUI_ID=8
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.layerCatalog.silme.extension'
+            where: TUI_ID=11
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.popup.silme.patch'
+            where: TUI_ID=19
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.search.silme.extension'
+            where: TUI_ID=24
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.streetView.silme.extension'
+            where: TUI_ID=26
+        - update:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.workLayerManager.silme.extension'
+            where: TUI_ID=31
+        # Insert new entry for Basemap Selector (API SITNA)
+        - insert:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_ID
+                  valueNumeric: 34
+              - column:
+                  name: TUI_NAME
+                  value: 'sitna.basemapSelector.silme.extension'
+              - column:
+                  name: TUI_TOOLTIP
+                  value: 'basemapSelector'
+              - column:
+                  name: TUI_ORDER
+                  valueNumeric: 34
+        - insert:
+            tableName: STM_TASK
+            columns:
+              - column:
+                  name: TAS_ID
+                  valueNumeric: 34
+              - column:
+                  name: TAS_NAME
+                  value: 'Basemap Selector (SILME extension)'
+              - column:
+                  name: TAS_GTASKID
+                  valueNumeric: 1
+              - column:
+                  name: TAS_TTASKID
+                  valueNumeric: 1
+              - column:
+                  name: TAS_TUIID
+                  valueNumeric: 34
+        # Update sequences for TAS_ID and TUI_ID
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TAS_ID), 0) + 1 FROM STM_TASK) WHERE SEQ_NAME = 'TAS_ID'
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TUI_ID), 0) + 1 FROM STM_TSK_UI) WHERE SEQ_NAME = 'TUI_ID'
+
