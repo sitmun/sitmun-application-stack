@@ -29,4 +29,5 @@
   <include file="changelog/21_add_app_headerparams.sql" relativeToChangelogFile="true"/>
   <include file="changelog/22_add_additional.data.sql" relativeToChangelogFile="true"/>
   <include file="changelog/23_update_recovery_token.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/24_update_control_names.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
