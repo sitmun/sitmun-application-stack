@@ -1,0 +1,68 @@
+--liquibase formatted sql
+-- Ensure TUI_NAME column is large enough for the updated values
+--changeset sitmun:24-1 dbms:postgresql
+
+ALTER TABLE STM_TSK_UI ALTER COLUMN TUI_NAME TYPE VARCHAR(50);
+
+--changeset sitmun:24-1 dbms:oracle
+
+ALTER TABLE STM_TSK_UI MODIFY TUI_NAME VARCHAR2(50 CHAR);
+
+--changeset sitmun:24-1 dbms:h2
+
+ALTER TABLE STM_TSK_UI ALTER COLUMN TUI_NAME VARCHAR2(50);
+
+--changeset sitmun:24-2 context:dev,prod
+
+-- Update STM_TASK table with human-readable control names
+UPDATE STM_TASK SET TAS_NAME = 'Map Attribution (API SITNA)' WHERE TAS_ID = 1;
+UPDATE STM_TASK SET TAS_NAME = 'Basemap Selector (API SITNA)' WHERE TAS_ID = 2;
+UPDATE STM_TASK SET TAS_NAME = 'Map Click (API SITNA)' WHERE TAS_ID = 3;
+UPDATE STM_TASK SET TAS_NAME = 'Coordinates Display (API SITNA)' WHERE TAS_ID = 4;
+UPDATE STM_TASK SET TAS_NAME = 'Data Loader (API SITNA)' WHERE TAS_ID = 5;
+UPDATE STM_TASK SET TAS_NAME = 'Download Data (API SITNA)' WHERE TAS_ID = 6;
+UPDATE STM_TASK SET TAS_NAME = 'Draw, Measure and Modify (SILME extension)' WHERE TAS_ID = 7;
+UPDATE STM_TASK SET TAS_NAME = 'Feature Information (SILME extension)' WHERE TAS_ID = 8;
+UPDATE STM_TASK SET TAS_NAME = 'Full Screen Mode (API SITNA)' WHERE TAS_ID = 9;
+UPDATE STM_TASK SET TAS_NAME = 'Geolocation and GPS Tracking (API SITNA)' WHERE TAS_ID = 10;
+UPDATE STM_TASK SET TAS_NAME = 'Layer Catalog (SILME extension)' WHERE TAS_ID = 11;
+UPDATE STM_TASK SET TAS_NAME = 'Map Legend (API SITNA)' WHERE TAS_ID = 12;
+UPDATE STM_TASK SET TAS_NAME = 'Loading Indicator (API SITNA)' WHERE TAS_ID = 13;
+UPDATE STM_TASK SET TAS_NAME = 'Measure Distance and Area (API SITNA)' WHERE TAS_ID = 14;
+UPDATE STM_TASK SET TAS_NAME = 'Multi Feature Information (API SITNA)' WHERE TAS_ID = 15;
+UPDATE STM_TASK SET TAS_NAME = 'Navigation Bar (API SITNA)' WHERE TAS_ID = 16;
+UPDATE STM_TASK SET TAS_NAME = 'Offline Map Maker (API SITNA)' WHERE TAS_ID = 17;
+UPDATE STM_TASK SET TAS_NAME = 'Overview Map (API SITNA)' WHERE TAS_ID = 18;
+UPDATE STM_TASK SET TAS_NAME = 'Popup Window (SILME patch)' WHERE TAS_ID = 19;
+UPDATE STM_TASK SET TAS_NAME = 'Print Map (API SITNA)' WHERE TAS_ID = 20;
+UPDATE STM_TASK SET TAS_NAME = 'Scale Display (API SITNA)' WHERE TAS_ID = 21;
+UPDATE STM_TASK SET TAS_NAME = 'Scale Bar (API SITNA)' WHERE TAS_ID = 22;
+UPDATE STM_TASK SET TAS_NAME = 'Scale Selector (API SITNA)' WHERE TAS_ID = 23;
+UPDATE STM_TASK SET TAS_NAME = 'Search (SILME extension)' WHERE TAS_ID = 24;
+UPDATE STM_TASK SET TAS_NAME = 'Share Map (API SITNA)' WHERE TAS_ID = 25;
+UPDATE STM_TASK SET TAS_NAME = 'Street View (SILME extension)' WHERE TAS_ID = 26;
+UPDATE STM_TASK SET TAS_NAME = '3D View (API SITNA)' WHERE TAS_ID = 27;
+UPDATE STM_TASK SET TAS_NAME = 'Table of Contents (API SITNA)' WHERE TAS_ID = 28;
+UPDATE STM_TASK SET TAS_NAME = 'WFS Feature Editor (API SITNA)' WHERE TAS_ID = 29;
+UPDATE STM_TASK SET TAS_NAME = 'WFS Layer Query (API SITNA)' WHERE TAS_ID = 30;
+UPDATE STM_TASK SET TAS_NAME = 'Work Layer Manager (SILME extension)' WHERE TAS_ID = 31;
+UPDATE STM_TASK SET TAS_NAME = 'Welcome Panel (API SITNA)' WHERE TAS_ID = 32;
+UPDATE STM_TASK SET TAS_NAME = 'Help Panel (API SITNA)' WHERE TAS_ID = 33;
+
+-- Update STM_TSK_UI table: update control names to SILME extensions/patches
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.basemapSelector' WHERE TUI_ID = 2;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.drawMeasureModify.silme.extension' WHERE TUI_ID = 7;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.featureInfo.silme.extension' WHERE TUI_ID = 8;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.layerCatalog.silme.extension' WHERE TUI_ID = 11;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.popup.silme.patch' WHERE TUI_ID = 19;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.search.silme.extension' WHERE TUI_ID = 24;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.streetView.silme.extension' WHERE TUI_ID = 26;
+UPDATE STM_TSK_UI SET TUI_NAME = 'sitna.workLayerManager.silme.extension' WHERE TUI_ID = 31;
+
+-- Insert new entry for Basemap Selector (SILME extension)
+INSERT INTO STM_TSK_UI (TUI_ID, TUI_NAME, TUI_TOOLTIP, TUI_ORDER) VALUES (34, 'sitna.basemapSelector.silme.extension', 'basemapSelector', 34);
+INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_SERID, TAS_GTASKID, TAS_TTASKID, TAS_TUIID, TAS_CREATED, TAS_CONNID, TAS_GIID, TAS_PARAMS) VALUES (34, 'Basemap Selector (SILME extension)', NULL, 1, 1, 34, NULL, NULL, NULL, NULL);
+
+-- Update sequences for TAS_ID and TUI_ID
+UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TAS_ID), 0) + 1 FROM STM_TASK) WHERE SEQ_NAME = 'TAS_ID';
+UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TUI_ID), 0) + 1 FROM STM_TSK_UI) WHERE SEQ_NAME = 'TUI_ID';
