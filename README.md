@@ -142,7 +142,7 @@ Before you begin, ensure you have met the following requirements:
   - Or [Docker Desktop](https://docs.docker.com/desktop/) (includes both)
 - **Git**: Version control system ([Installation Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
 - **Internet Access**: Required for pulling Docker images and Git repositories
-- **Minimum 4GB RAM**: Recommended for development environment
+- **Minimum 16GB RAM**: Recommended for development environment
 
 ### Quick Setup
 
