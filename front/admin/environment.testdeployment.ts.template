@@ -4,4 +4,7 @@ export const environment = {
   production: false,
   apiBaseURL: '${PUBLIC_BASE_PATH}backend',
   logLevel: LogLevel.Info, // Set to Info for test deployment
+  version: '1.1.0',
+  buildTimestamp: new Date().toISOString(),
+  environmentName: 'testdeployment'
 };
