@@ -30,4 +30,5 @@
   <include file="changelog/22_add_additional.data.sql" relativeToChangelogFile="true"/>
   <include file="changelog/23_update_recovery_token.sql" relativeToChangelogFile="true"/>
   <include file="changelog/24_update_control_names.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/25_replace_silme_with_standard_controls.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
