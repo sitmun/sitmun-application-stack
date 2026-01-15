@@ -1,0 +1,60 @@
+# Root-level .dockerignore
+# Common exclusions for all Docker builds
+# Note: This applies to build contexts at the root level
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.cursor/
+.run/
+out/
+bin/
+
+# System files
+.DS_Store
+Thumbs.db
+.directory
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Documentation (not needed in build)
+**/*.md
+!README.md
+CHANGELOG.md
+docs/
+sitmun.github.io/
+
+# Generated configuration files
+front/config/default.conf
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Keep these files (DO NOT exclude):
+# package.json, package-lock.json (frontend)
+# build.gradle, settings.gradle, gradle.properties (backend)
+# gradlew, gradle/ (backend)
+# src/ (source code)
+# *.ts, *.js, *.java (source files)
+# docker-compose.yml, Dockerfile, .dockerignore

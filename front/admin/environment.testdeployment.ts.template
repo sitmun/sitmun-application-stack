@@ -5,6 +5,6 @@ export const environment = {
   apiBaseURL: '${PUBLIC_BASE_PATH}backend',
   logLevel: LogLevel.Info, // Set to Info for test deployment
   version: '1.1.0',
-  buildTimestamp: new Date().toISOString(),
+  buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
   environmentName: 'testdeployment'
 };

@@ -4,5 +4,12 @@ export const environment = {
   // but currently it interferes with SITNA map state management:
   // Map.js puts state changes in a hash fragment in the URL, but currently it
   // erases any other hash in that URL (a bug?)
-  apiUrl: '${PUBLIC_BASE_PATH}backend'
+  hideBackgroundImage: false,
+  hideDNIEAccess: false,
+  apiUrl: '${PUBLIC_BASE_PATH}backend',
+  version: '1.1.0',
+  environmentName: 'Test Deployment',
+  sitnaVersion: '4.8.0',
+  buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
+  loginBackgroundImageUrl: '/assets/logos/barcelona_background.jpg'
 };

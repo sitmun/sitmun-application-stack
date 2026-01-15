@@ -6,6 +6,12 @@
     <base href="${PUBLIC_BASE_PATH}viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      // Define SITNA_BASE_URL before any modules load (required by SITNA documentation)
+      // This ensures it's available when api-sitna module is imported
+      window.SITNA_BASE_URL = 'assets/js/api-sitna/';
+      globalThis.SITNA_BASE_URL = 'assets/js/api-sitna/';
+    </script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script>
       if ('serviceWorker' in navigator) {
@@ -19,14 +25,14 @@
 
           navigator.serviceWorker.register('ServiceWorker.js', { scope: '${PUBLIC_BASE_PATH}viewer/'})
             .then(() => {
-              console.log("Service worker registered");
+              console.log("SITMUN Service worker registered");
             })
             .catch((error) => {
-              console.error("Service worker registration failed:", error);
+              console.error("SITMUN Service worker registration failed:", error);
             })
         });
       } else {
-        console.log("Service worker not supported");
+        console.log("SITMUN Service worker not supported");
       }
     </script>
     <link rel="stylesheet" href="assets/js/toastr/toastr.min.css" />

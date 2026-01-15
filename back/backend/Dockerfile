@@ -6,7 +6,7 @@ ARG ALPINE_TAG=3.22
 FROM amazoncorretto:${JDK_VERSION}.${JDK_TAG} AS build-backend-core
 COPY sitmun-backend-core /usr/src/sitmun-backend-core
 WORKDIR /usr/src/sitmun-backend-core
-RUN --mount=type=cache,target=/root/.gradle-proxy ./gradlew --no-daemon -i clean build \
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon -i build \
     -x check -x setupGitHooks
 
 # Stage 1, based on Amazon Corretto, to have only the compiled app, ready for production with Nginx
