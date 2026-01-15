@@ -1,0 +1,72 @@
+# Dependencies (exclude installed, but KEEP package.json and package-lock.json)
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+**/dist/
+**/build/
+out-tsc/
+tmp/
+bazel-out/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.history/
+.cursor/
+
+# Test files
+**/*.spec.ts
+**/*.spec.js
+**/*.test.ts
+**/*.test.js
+**/e2e/
+coverage/
+testem.log
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+libpeerconnection.log
+
+# Documentation (not needed in build)
+**/*.md
+!README.md
+CHANGELOG.md
+docs/
+
+# Misc
+.DS_Store
+Thumbs.db
+.directory
+.sass-cache/
+connect.lock/
+typings/
+.angular/
+.scannerwork/
+reports/
+chrome-profiler-events*.json
+speed-measure-plugin*.json
+
+# Keep these files (DO NOT exclude):
+# package.json
+# package-lock.json
+# *.ts, *.js (source files)
+# angular.json
+# tsconfig.json
+# webpack.config.js

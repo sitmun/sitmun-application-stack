@@ -62,17 +62,18 @@ The SITMUN Application Stack consists of four main components:
 
 ### Component Architecture
 
-| Component | Technology | Purpose | Port |
-|-----------|------------|---------|------|
-| **SITMUN Viewer App** | Angular 16, TypeScript | Interactive map visualization and user interface | 4200 |
-| **SITMUN Admin App** | Angular 16, TypeScript | Administrative interface and configuration | 4200 |
-| **SITMUN Backend Core** | Spring Boot 3, Java 17 | Core REST API and business logic | 8080 |
-| **SITMUN Proxy Middleware** | Spring Boot 3, Java 17 | Secure proxy and middleware services | 8081 |
-| **Database** | PostgreSQL/Oracle/H2 | Data persistence and geospatial storage | 5432/1521 |
+| Component                   | Technology             | Purpose                                          | Port      |
+| --------------------------- | ---------------------- | ------------------------------------------------ | --------- |
+| **SITMUN Viewer App**       | Angular 16, TypeScript | Interactive map visualization and user interface | 4200      |
+| **SITMUN Admin App**        | Angular 16, TypeScript | Administrative interface and configuration       | 4200      |
+| **SITMUN Backend Core**     | Spring Boot 3, Java 17 | Core REST API and business logic                 | 8080      |
+| **SITMUN Proxy Middleware** | Spring Boot 3, Java 17 | Secure proxy and middleware services             | 8081      |
+| **Database**                | PostgreSQL/Oracle/H2   | Data persistence and geospatial storage          | 5432/1521 |
 
 ## Technology Stack
 
 ### Frontend Technologies
+
 - **Angular 16**: Modern web framework with TypeScript
 - **Angular Material**: UI component library for consistent design
 - **SITNA Library v3.0.1**: Advanced mapping capabilities
@@ -80,6 +81,7 @@ The SITMUN Application Stack consists of four main components:
 - **Node.js 16+**: JavaScript runtime environment
 
 ### Backend Technologies
+
 - **Spring Boot 3.5.4**: Java-based microservices framework
 - **Spring Security**: Authentication and authorization
 - **Spring Data JPA**: Data persistence layer
@@ -88,12 +90,14 @@ The SITMUN Application Stack consists of four main components:
 - **Gradle**: Build system and dependency management
 
 ### Database Technologies
+
 - **PostgreSQL 17**: Primary relational database
 - **Oracle 23c**: Enterprise database support
 - **H2**: In-memory database for development
 - **Liquibase**: Database migration and versioning
 
 ### Infrastructure Technologies
+
 - **Docker**: Containerization platform
 - **Docker Compose**: Multi-container orchestration
 - **Git Submodules**: Version control for component management
@@ -147,29 +151,34 @@ Before you begin, ensure you have met the following requirements:
 ### Quick Setup
 
 1. **Clone the repository with submodules**
+
    ```bash
    git clone --branch dev --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
    cd sitmun-application-stack
    ```
 
 2. **Setup the environment**
-   
+
    For Unix-based systems (Linux/macOS):
+
    ```bash
    ./setup.sh
    ```
-   
+
    For Windows systems:
+
    ```powershell
    ./setup.ps1
    ```
 
 3. **Start the SITMUN Application Stack**
+
    ```bash
    docker compose up -d
    ```
 
 4. **Access the applications**
+
    - **Viewer Application**: [http://localhost:9000/viewer](http://localhost:9000/viewer) (public access)
    - **Admin Application**: [http://localhost:9000/admin](http://localhost:9000/admin) (requires authentication)
    - **Backend API**: [http://localhost:9000/backend](http://localhost:9000/backend)
@@ -184,33 +193,37 @@ Before you begin, ensure you have met the following requirements:
 ### Development Installation
 
 1. **Clone the Repository**
+
    ```bash
    git clone --branch dev --recurse-submodules https://github.com/sitmun/sitmun-application-stack.git
    cd sitmun-application-stack
    ```
 
 2. **Setup Environment**
+
    ```bash
    # Unix-based systems
    ./setup.sh
-   
+
    # Windows systems
    ./setup.ps1
    ```
 
 3. **Start Services**
+
    ```bash
    docker compose up -d
    ```
 
 4. **Verify Installation**
+
    ```bash
    # Check service status
    docker compose ps
-   
+
    # Check backend health
    curl http://localhost:9001/api/dashboard/health
-   
+
    # Check proxy health
    curl http://localhost:9002/actuator/health
    ```
@@ -218,22 +231,28 @@ Before you begin, ensure you have met the following requirements:
 ### Production Installation
 
 1. **Environment Configuration**
+
    ```bash
    # Copy and configure environment file
    cp .env.example .env
-   
+
    # Edit environment variables for production
    nano .env
    ```
 
 2. **Database Setup**
+
+   Configure your database in the `.env` file (see [Database Configuration](#database-configuration) section for detailed instructions):
+
    ```bash
-   # For PostgreSQL
+   # For PostgreSQL (default)
    COMPOSE_PROFILES=postgres docker compose up -d
-   
+
    # For Oracle
    COMPOSE_PROFILES=oracle docker compose up -d
    ```
+
+   See the [Database Configuration](#database-configuration) section below for complete setup instructions, including environment variables and verification steps.
 
 3. **SSL Configuration**
    ```bash
@@ -248,67 +267,201 @@ Before you begin, ensure you have met the following requirements:
 
 The SITMUN Application Stack uses environment variables for configuration. Create a `.env` file with the following variables:
 
-| Variable | Description | Default Value |
-|----------|-------------|---------------|
-| `SITMUN_PUBLIC_PROTOCOL` | Protocol (http/https) | `http` |
-| `SITMUN_PUBLIC_HOST` | Public hostname | `localhost` |
-| `SITMUN_PUBLIC_PORT` | Public port with colon | `:9000` |
-| `SITMUN_PUBLIC_FORWARDED_PORT` | Public port without colon | `9000` |
-| `SITMUN_PUBLIC_CONTEXT_PATH` | Application context path | `/` |
-| `SITMUN_LOCAL_PORT` | Local port | `9000` |
-| `COMPOSE_PROFILES` | Active profiles (postgres/oracle) | `postgres` |
-| `DATABASE` | Database name | `sitmun3` |
-| `DATABASE_URL` | JDBC URL | `jdbc:postgresql://postgres:5432/` |
-| `DATABASE_USERNAME` | Database username | `sitmun3` |
-| `DATABASE_PASSWORD` | Database password | `sitmun3` |
-| `FORCE_USE_OF_PROXY` | Force proxy middleware | `false` |
+| Variable                       | Description                       | Default Value                      |
+| ------------------------------ | --------------------------------- | ---------------------------------- |
+| `SITMUN_PUBLIC_PROTOCOL`       | Protocol (http/https)             | `http`                             |
+| `SITMUN_PUBLIC_HOST`           | Public hostname                   | `localhost`                        |
+| `SITMUN_PUBLIC_PORT`           | Public port with colon            | `:9000`                            |
+| `SITMUN_PUBLIC_FORWARDED_PORT` | Public port without colon         | `9000`                             |
+| `SITMUN_PUBLIC_CONTEXT_PATH`   | Application context path          | `/`                                |
+| `SITMUN_LOCAL_PORT`            | Local port                        | `9000`                             |
+| `COMPOSE_PROFILES`             | Active profiles (postgres/oracle) | `postgres`                         |
+| `DATABASE`                     | Database name                     | `sitmun3`                          |
+| `DATABASE_URL`                 | JDBC URL                          | `jdbc:postgresql://postgres:5432/` |
+| `DATABASE_USERNAME`            | Database username                 | `sitmun3`                          |
+| `DATABASE_PASSWORD`            | Database password                 | `sitmun3`                          |
+| `FORCE_USE_OF_PROXY`           | Force proxy middleware            | `false`                            |
 
 ### Database Configuration
 
+The SITMUN Application Stack supports multiple database backends: **PostgreSQL 17** (default), **Oracle 23c**, and **H2** (development only). The database is selected using Docker Compose profiles and configured via environment variables.
+
+#### How Database Selection Works
+
+1. **COMPOSE_PROFILES** environment variable determines which database container is started:
+
+   - `postgres` - Starts PostgreSQL container and configures backend for PostgreSQL
+   - `oracle` - Starts Oracle container and configures backend for Oracle
+   - Omitted - No database container (use external database)
+
+2. **SPRING_PROFILES_ACTIVE** is automatically set to match `COMPOSE_PROFILES`, which activates the corresponding Spring Boot profile (`postgres` or `oracle`)
+
+3. The backend automatically loads the appropriate configuration from:
+   - `back/backend/config/application-postgres.yml` (for PostgreSQL)
+   - `back/backend/config/application-oracle.yml` (for Oracle)
+
 #### PostgreSQL 17 (Default)
-```env
-COMPOSE_PROFILES=postgres
-DATABASE_URL=jdbc:postgresql://postgres:5432/
-DATABASE=sitmun3
-DATABASE_USERNAME=sitmun3
-DATABASE_PASSWORD=sitmun3
-```
+
+**Step-by-step configuration:**
+
+1. Create or edit your `.env` file in the project root:
+
+   ```env
+   COMPOSE_PROFILES=postgres
+   DATABASE_URL=jdbc:postgresql://postgres:5432/
+   DATABASE=sitmun3
+   DATABASE_USERNAME=sitmun3
+   DATABASE_PASSWORD=sitmun3
+   ```
+
+2. Start the stack with PostgreSQL:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   Or explicitly:
+
+   ```bash
+   COMPOSE_PROFILES=postgres docker compose up -d
+   ```
+
+3. Verify PostgreSQL is running:
+   ```bash
+   docker compose ps postgres
+   curl http://localhost:9001/api/dashboard/health
+   ```
+
+**Configuration details:**
+
+- **Container name**: `postgres`
+- **Port**: `9003:5432` (external:internal)
+- **JDBC URL format**: `jdbc:postgresql://postgres:5432/`
+- **Spring profile**: `postgres`
+- **Hibernate dialect**: `org.hibernate.dialect.PostgreSQLDialect`
 
 #### Oracle Database 23c
-```env
-COMPOSE_PROFILES=oracle
-DATABASE_URL=jdbc:oracle:thin:@//oracle:1521/
-DATABASE=sitmun3
-DATABASE_USERNAME=sitmun3
-DATABASE_PASSWORD=sitmun3
-```
+
+**Step-by-step configuration:**
+
+1. Create or edit your `.env` file in the project root:
+
+   ```env
+   COMPOSE_PROFILES=oracle
+   DATABASE_URL=jdbc:oracle:thin:@//oracle:1521/
+   DATABASE=sitmun3
+   DATABASE_USERNAME=sitmun3
+   DATABASE_PASSWORD=sitmun3
+   ```
+
+2. Start the stack with Oracle:
+
+   ```bash
+   COMPOSE_PROFILES=oracle docker compose up -d
+   ```
+
+3. Wait for Oracle to initialize (may take 60+ seconds on first start):
+
+   ```bash
+   docker compose logs -f oracle
+   # Wait for "DATABASE IS READY TO USE!" message
+   ```
+
+4. Verify Oracle is running:
+   ```bash
+   docker compose ps oracle
+   curl http://localhost:9001/api/dashboard/health
+   ```
+
+**Configuration details:**
+
+- **Container name**: `oracle`
+- **Port**: `9004:1521` (external:internal)
+- **JDBC URL format**: `jdbc:oracle:thin:@//oracle:1521/`
+- **Spring profile**: `oracle`
+- **Hibernate dialect**: `org.hibernate.dialect.OracleDialect`
+- **Note**: Oracle container takes longer to start than PostgreSQL (60+ seconds)
+
+#### Switching Between Databases
+
+To switch from one database to another:
+
+1. **Stop all services:**
+
+   ```bash
+   docker compose down
+   ```
+
+2. **Update `.env` file** with the new database configuration (see sections above)
+
+3. **Start with the new profile:**
+
+   ```bash
+   # For PostgreSQL
+   COMPOSE_PROFILES=postgres docker compose up -d
+
+   # For Oracle
+   COMPOSE_PROFILES=oracle docker compose up -d
+   ```
+
+4. **Note**: Database migrations (Liquibase) will run automatically on backend startup
 
 #### External Database
-```env
-# Comment out COMPOSE_PROFILES
-# COMPOSE_PROFILES=postgres
 
-# Configure external database
-DATABASE_URL=jdbc:postgresql://your-db-host:5432/
-DATABASE=your_database
-DATABASE_USERNAME=your_username
-DATABASE_PASSWORD=your_password
-```
+To use an external database (not managed by Docker Compose):
+
+1. **Comment out or remove COMPOSE_PROFILES** in your `.env` file:
+
+   ```env
+   # COMPOSE_PROFILES=postgres
+   # COMPOSE_PROFILES=oracle
+   ```
+
+2. **Configure connection to external database:**
+
+   ```env
+   # For external PostgreSQL
+   DATABASE_URL=jdbc:postgresql://your-db-host:5432/
+   DATABASE=your_database
+   DATABASE_USERNAME=your_username
+   DATABASE_PASSWORD=your_password
+
+   # For external Oracle
+   DATABASE_URL=jdbc:oracle:thin:@//your-db-host:1521/
+   DATABASE=your_database
+   DATABASE_USERNAME=your_username
+   DATABASE_PASSWORD=your_password
+   ```
+
+3. **Set SPRING_PROFILES_ACTIVE** explicitly if needed:
+
+   ```env
+   SPRING_PROFILES_ACTIVE=postgres  # or 'oracle'
+   ```
+
+4. **Ensure network connectivity** from backend container to your database server
+
+5. **Start services** (database container will not start):
+   ```bash
+   docker compose up -d front backend proxy
+   ```
 
 ### Application Configuration
 
 #### Frontend Configuration
+
 ```typescript
 // Environment configuration for Angular apps
 export const environment = {
   production: boolean,
   apiBaseURL: string,
   logLevel: LogLevel,
-  hashLocationStrategy: boolean
+  hashLocationStrategy: boolean,
 };
 ```
 
 #### Backend Configuration
+
 ```yaml
 # Spring Boot application configuration
 spring:
@@ -333,16 +486,17 @@ sitmun:
 
 When the `BASE_URL` is `http://localhost:9000/`, the following services are available:
 
-| Application | URL | Description | Authentication |
-|-------------|-----|-------------|----------------|
-| **Viewer Application** | `${BASE_URL}viewer` | Interactive map viewer | Optional |
-| **Admin Application** | `${BASE_URL}admin` | Administrative interface | Required |
-| **Backend API** | `${BASE_URL}backend` | Core REST API | JWT Token |
-| **Proxy Middleware** | `${BASE_URL}middleware` | Proxy services | JWT Token |
+| Application            | URL                     | Description              | Authentication |
+| ---------------------- | ----------------------- | ------------------------ | -------------- |
+| **Viewer Application** | `${BASE_URL}viewer`     | Interactive map viewer   | Optional       |
+| **Admin Application**  | `${BASE_URL}admin`      | Administrative interface | Required       |
+| **Backend API**        | `${BASE_URL}backend`    | Core REST API            | JWT Token      |
+| **Proxy Middleware**   | `${BASE_URL}middleware` | Proxy services           | JWT Token      |
 
 ### Service Endpoints
 
 #### Backend Core API
+
 - **Health Check**: `http://localhost:9001/api/dashboard/health`
 - **Authentication**: `http://localhost:9001/api/authenticate`
 - **User Management**: `http://localhost:9001/api/account`
@@ -350,6 +504,7 @@ When the `BASE_URL` is `http://localhost:9000/`, the following services are avai
 - **API Documentation**: `http://localhost:9001/swagger-ui/index.html`
 
 #### Proxy Middleware API
+
 - **Health Check**: `http://localhost:9002/actuator/health`
 - **Proxy Configuration**: `http://localhost:9002/api/config/proxy`
 - **Service Proxy**: `http://localhost:9002/api/proxy/*`
@@ -369,16 +524,17 @@ Admin App ───┘
 
 The SITMUN Application Stack uses Git submodules to include the source code of all SITMUN components:
 
-| Submodule | GitHub Repository | Docker Service | Technology Stack |
-|-----------|-------------------|----------------|------------------|
-| `front/admin/sitmun-admin-app` | [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app.git) | `front` | Angular 16, TypeScript |
-| `front/viewer/sitmun-viewer-app` | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git) | `front` | Angular 16, TypeScript |
-| `back/backend/sitmun-backend-core` | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git) | `backend` | Spring Boot 3, Java 17 |
-| `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy` | Spring Boot 3, Java 17 |
+| Submodule                            | GitHub Repository                                                                | Docker Service | Technology Stack       |
+| ------------------------------------ | -------------------------------------------------------------------------------- | -------------- | ---------------------- |
+| `front/admin/sitmun-admin-app`       | [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app.git)               | `front`        | Angular 16, TypeScript |
+| `front/viewer/sitmun-viewer-app`     | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git)             | `front`        | Angular 16, TypeScript |
+| `back/backend/sitmun-backend-core`   | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git)         | `backend`      | Spring Boot 3, Java 17 |
+| `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy`        | Spring Boot 3, Java 17 |
 
 ### Development Workflow
 
 1. **Update Repository and Submodules**
+
    ```bash
    git fetch origin dev
    git checkout dev
@@ -386,6 +542,7 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
    ```
 
 2. **Change Submodule Branch (if needed)**
+
    ```bash
    # Switch submodule to specific branch
    git submodule set-branch -b branch_name submodule_name
@@ -394,11 +551,12 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
    ```
 
 3. **Rebuild and Restart Services**
+
    ```bash
    # Rebuild specific service
    docker compose build --no-cache service_name
    docker compose up service_name -d
-   
+
    # Rebuild all services
    docker compose build --no-cache
    docker compose up -d
@@ -407,6 +565,7 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
 ### Individual Component Development
 
 #### Frontend Development (Angular)
+
 ```bash
 # Navigate to admin app
 cd front/admin/sitmun-admin-app
@@ -420,6 +579,7 @@ npm start
 ```
 
 #### Backend Development (Spring Boot)
+
 ```bash
 # Navigate to backend core
 cd back/backend/sitmun-backend-core
@@ -459,6 +619,7 @@ cd back/proxy/sitmun-proxy-middleware
 The SITMUN Backend Core provides comprehensive REST API functionality:
 
 #### Authentication Endpoints
+
 ```http
 POST /api/authenticate
 Content-Type: application/json
@@ -475,6 +636,7 @@ Authorization: Bearer <jwt-token>
 ```
 
 #### User Management Endpoints
+
 ```http
 GET /api/account/all
 GET /api/account/{id}
@@ -486,6 +648,7 @@ GET /api/userTokenValid
 ```
 
 #### Configuration Endpoints
+
 ```http
 GET /api/config/client/application
 GET /api/config/client/territory
@@ -494,6 +657,7 @@ POST /api/config/proxy
 ```
 
 #### Health and Monitoring
+
 ```http
 GET /api/dashboard/health
 GET /api/dashboard/info
@@ -505,6 +669,7 @@ GET /api/dashboard/metrics
 The SITMUN Proxy Middleware provides secure proxy functionality:
 
 #### Proxy Endpoints
+
 ```http
 GET /actuator/health
 POST /api/config/proxy
@@ -512,6 +677,7 @@ GET /api/proxy/{service-type}/{service-id}
 ```
 
 #### Service Types Supported
+
 - **WMS**: Web Map Service proxy
 - **WFS**: Web Feature Service proxy
 - **WMTS**: Web Map Tile Service proxy
@@ -563,6 +729,7 @@ export class AuthInterceptor implements HttpInterceptor {
 ### Security Configuration
 
 #### JWT Configuration
+
 ```yaml
 sitmun:
   user:
@@ -571,6 +738,7 @@ sitmun:
 ```
 
 #### CORS Configuration
+
 ```yaml
 spring:
   web:
@@ -581,6 +749,7 @@ spring:
 ```
 
 #### Content Security Policy
+
 ```typescript
 // Angular CSP configuration
 {
@@ -599,6 +768,7 @@ spring:
 ### Common Issues
 
 #### Docker Issues
+
 ```bash
 # Clean up Docker resources
 docker compose down -v
@@ -611,16 +781,71 @@ docker compose logs -f service_name
 ```
 
 #### Database Connection Issues
-```bash
-# Check database connectivity
-docker exec sitmun-backend ping postgres
-docker exec sitmun-backend ping oracle
 
-# Verify database configuration
+**Check database container status:**
+
+```bash
+# Check if database container is running
+docker compose ps postgres  # For PostgreSQL
+docker compose ps oracle    # For Oracle
+
+# Check database logs
+docker compose logs postgres
+docker compose logs oracle
+```
+
+**Verify database connectivity from backend:**
+
+```bash
+# Test network connectivity
+docker exec sitmun-backend ping postgres  # For PostgreSQL
+docker exec sitmun-backend ping oracle    # For Oracle
+
+# Check backend health (includes database connection check)
 curl http://localhost:9001/api/dashboard/health
 ```
 
+**PostgreSQL-specific troubleshooting:**
+
+```bash
+# Connect to PostgreSQL container
+docker exec -it sitmun-postgres psql -U sitmun3 -d sitmun3
+
+# Check PostgreSQL logs
+docker compose logs postgres | grep -i error
+
+# Verify PostgreSQL is accepting connections
+docker exec sitmun-postgres pg_isready -U sitmun3
+```
+
+**Oracle-specific troubleshooting:**
+
+```bash
+# Oracle takes 60+ seconds to start on first run
+docker compose logs -f oracle
+# Wait for "DATABASE IS READY TO USE!" message
+
+# Connect to Oracle container
+docker exec -it sitmun-oracle sqlplus sitmun3/sitmun3@//localhost:1521/sitmun3
+
+# Check Oracle logs
+docker compose logs oracle | grep -i error
+
+# Verify Oracle is ready (may take time)
+docker exec sitmun-oracle sqlplus -L sitmun3/sitmun3@//localhost:1521/sitmun3 -c "SELECT 1 FROM DUAL;"
+```
+
+**Common database configuration errors:**
+
+- **Wrong COMPOSE_PROFILES**: Ensure `.env` file has `COMPOSE_PROFILES=postgres` or `COMPOSE_PROFILES=oracle`
+- **Incorrect DATABASE_URL format**:
+  - PostgreSQL: `jdbc:postgresql://postgres:5432/`
+  - Oracle: `jdbc:oracle:thin:@//oracle:1521/`
+- **Database not ready**: Wait for health checks to pass before starting backend
+- **Port conflicts**: Check if ports 9003 (PostgreSQL) or 9004 (Oracle) are already in use
+
 #### Authentication Issues
+
 ```bash
 # Check JWT token format
 curl -H "Authorization: Bearer your-token" http://localhost:9001/api/account
@@ -632,6 +857,7 @@ curl -X POST http://localhost:9001/api/authenticate \
 ```
 
 #### Frontend Build Issues
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -645,6 +871,7 @@ node --version  # Should be 16.x or higher
 ```
 
 #### Backend Build Issues
+
 ```bash
 # Clean Gradle cache
 ./gradlew clean
@@ -659,6 +886,7 @@ java --version  # Should be 17 or higher
 ### Debug Mode
 
 #### Enable Debug Logging
+
 ```bash
 # Backend debug logging
 export LOGGING_LEVEL_ORG_SITMUN=DEBUG
@@ -669,6 +897,7 @@ docker compose restart backend proxy
 ```
 
 #### Frontend Debug Mode
+
 ```bash
 # Angular debug mode
 ng serve --configuration=development --verbose
@@ -680,6 +909,7 @@ ng serve --configuration=development --verbose
 ### Performance Issues
 
 #### Memory Issues
+
 ```bash
 # Increase Docker memory limits
 docker compose down
@@ -691,6 +921,7 @@ export JAVA_OPTS="-Xmx4g -Xms2g"
 ```
 
 #### Database Performance
+
 ```bash
 # Check database performance
 docker exec sitmun-postgres psql -U sitmun3 -d sitmun3 -c "SELECT * FROM pg_stat_activity;"
@@ -712,17 +943,19 @@ docker exec sitmun-postgres psql -U sitmun3 -d sitmun3 -c "SELECT * FROM pg_stat
 3. **Write tests** for new functionality
 4. **Update documentation** as needed
 5. **Ensure quality checks pass**:
+
    ```bash
    # Frontend
    npm run lint
    npm test
    npm run build -- --configuration=production
-   
+
    # Backend
    ./gradlew test
    ./gradlew spotlessCheck
    ./gradlew build
    ```
+
 6. **Submit a pull request** with a clear description
 
 ### Conventional Commits
@@ -739,6 +972,7 @@ git commit -m "style(formatting): apply prettier formatting"
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -799,6 +1033,7 @@ This project is licensed under the **European Union Public Licence V. 1.2** (EUP
 ### License Compatibility
 
 The EUPL v1.2 is compatible with:
+
 - GNU General Public License (GPL) v2, v3
 - GNU Affero General Public License (AGPL) v3
 - Mozilla Public License (MPL) v2
@@ -812,12 +1047,14 @@ The EUPL v1.2 is compatible with:
 SITMUN is an open-source platform for territorial information management, designed to help organizations manage geographical data, services, and applications effectively.
 
 **Related Projects:**
+
 - [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core) - REST API and business logic
 - [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware) - Proxy and security middleware
 - [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app) - Administrative interface
 - [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app) - Map visualization frontend
 
 **Technology Stack:**
+
 - Frontend: Angular 16, TypeScript, Angular Material, SITNA Library
 - Backend: Spring Boot 3, Java 17, PostgreSQL/Oracle/H2
 - Infrastructure: Docker, Docker Compose, Git Submodules

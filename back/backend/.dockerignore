@@ -1,0 +1,69 @@
+# Dependencies (exclude installed, but KEEP build.gradle, settings.gradle, gradle.properties)
+.gradle/
+**/.gradle/
+build/
+**/build/
+target/
+**/target/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+.cursor/
+.run/
+out/
+bin/
+
+# Test files
+**/*Test.java
+**/*Tests.java
+**/*Spec.java
+**/test/
+**/tests/
+coverage/
+*.log
+
+# Documentation (not needed in build)
+**/*.md
+!README.md
+CHANGELOG.md
+docs/
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.idx
+
+# Misc
+.DS_Store
+Thumbs.db
+.directory
+.env
+*.xlsx
+*.sql
+src.zip
+update_db.sql
+
+# Keep these files (DO NOT exclude):
+# gradlew
+# gradle/
+# build.gradle
+# settings.gradle
+# gradle.properties
+# *.gradle
+# src/
+# pom.xml (if using Maven)

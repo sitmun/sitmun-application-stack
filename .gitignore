@@ -22,3 +22,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.pyc
+
+# Documentation site (separate repository)
+sitmun.github.io/
