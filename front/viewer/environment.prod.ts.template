@@ -1,0 +1,12 @@
+export const environment = {
+  production: true,
+  hashLocationStrategy: true,
+  hideBackgroundImage: false,
+  hideDNIEAccess: false,
+  apiUrl: '${PUBLIC_BASE_PATH}backend',
+  version: '1.2.0-rc.1',
+  environmentName: 'Production',
+  sitnaVersion: '4.8.0',
+  buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
+  loginBackgroundImageUrl: '/assets/logos/barcelona_background.jpg'
+};

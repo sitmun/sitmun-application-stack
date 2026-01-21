@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <title>SitmunViewerApp</title>
-    <base href="${PUBLIC_BASE_PATH}viewer">
+    <base href="${PUBLIC_BASE_PATH}viewer/">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <script src="assets/js/d3/d3.js"></script>
     <script>
       // Define SITNA_BASE_URL before any modules load (required by SITNA documentation)
       // This ensures it's available when api-sitna module is imported
@@ -40,6 +41,6 @@
     <script type="text/javascript" src="assets/js/toastr/toastr.min.js"></script>
   </head>
   <body>
-    <sitmun-viewer-app-root></sitmun-viewer-app-root>
+    <app-root></app-root>
   </body>
 </html>

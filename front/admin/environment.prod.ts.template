@@ -1,10 +1,10 @@
 import { LogLevel } from '@app/services/log-level.enum';
 
 export const environment = {
-  production: false,
+  production: true,
   apiBaseURL: '${PUBLIC_BASE_PATH}backend',
-  logLevel: LogLevel.Info, // Set to Info for test deployment
-  version: '1.1.0',
+  logLevel: LogLevel.Error,
+  version: '1.2.0-rc.1',
   buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
-  environmentName: 'testdeployment'
+  environmentName: 'production'
 };

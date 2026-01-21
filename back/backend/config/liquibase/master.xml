@@ -31,4 +31,11 @@
   <include file="changelog/23_update_recovery_token.sql" relativeToChangelogFile="true"/>
   <include file="changelog/24_update_control_names.sql" relativeToChangelogFile="true"/>
   <include file="changelog/25_replace_silme_with_standard_controls.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/26_update_task_names.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/27_align_controls_with_viewer.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/28_update_search_task_params.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/29_align_task_names_with_core.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/30_align_task_ids_with_core.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/31_align_task_ui_with_core.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/32_remove_div_from_task_params.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

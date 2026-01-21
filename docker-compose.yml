@@ -1,9 +1,11 @@
 services:
   front:
     build: 
-      context: ./front
+      context: .
+      dockerfile: front/Dockerfile
       args:
         - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+        - BUILD_MODE=${BUILD_MODE:-production}
     restart: always
     ports:
       - "${LOCAL_PORT:-9000}:80"
