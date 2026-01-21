@@ -1,8 +1,8 @@
-# SITMUN Application Stack
 
-[![Build Status](https://github.com/sitmun/sitmun-admin-app/workflows/CI/badge.svg)](https://github.com/sitmun/sitmun-admin-app/workflows/CI)
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=org.sitmun%3Asitmun-backend-core&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.sitmun%3Asitmun-backend-core)
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-1.2.0--rc.1-blue.svg)
+
+# SITMUN Application Stack
 
 The **SITMUN Application Stack** is a comprehensive multi-container geospatial platform that provides a complete solution for territorial information management, geographical services, and spatial applications. This stack integrates all SITMUN components into a unified, containerized environment designed for development, testing, and production deployment.
 
@@ -26,21 +26,11 @@ The **SITMUN Application Stack** is a comprehensive multi-container geospatial p
 
 ## About SITMUN
 
-SITMUN (Sistema de Información Territorial de la Mancomunidad de Municipios) is a comprehensive geospatial information management system designed for organizations that need to manage territorial information, geographical services, and spatial applications. The Application Stack provides:
-
-- **🗺️ Interactive Map Visualization**: High-performance web mapping with multiple base layers and SITNA integration
-- **👥 User and Role Management**: Complete user lifecycle, roles, and permission management
-- **🌍 Territory Administration**: Multi-level territorial organization and access control
-- **🔌 Service Integration**: WMS, WFS, WMTS, JDBC, and custom service connections
-- **📊 Layer Management**: Cartographic layers and background configuration
-- **⚙️ Task Configuration**: Workflow setup for spatial operations
-- **🔐 Security Layer**: JWT-based authentication with role-based access control
-- **📱 Responsive Design**: Mobile-first approach for any device
-- **🌐 Multi-language Support**: Internationalization for CA, ES, EN, FR, OC
+SITMUN (Sistema de Información Territorial de la Mancomunidad de Municipios) is a geospatial information management system for territorial data, services, and spatial applications.
 
 ## Architecture Overview
 
-The SITMUN Application Stack consists of four main components:
+The stack has four main components:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -72,81 +62,17 @@ The SITMUN Application Stack consists of four main components:
 
 ## Technology Stack
 
-### Frontend Technologies
-
-- **Angular 16**: Modern web framework with TypeScript
-- **Angular Material**: UI component library for consistent design
-- **SITNA Library v3.0.1**: Advanced mapping capabilities
-- **RxJS**: Reactive programming for asynchronous operations
-- **Node.js 16+**: JavaScript runtime environment
-
-### Backend Technologies
-
-- **Spring Boot 3.5.4**: Java-based microservices framework
-- **Spring Security**: Authentication and authorization
-- **Spring Data JPA**: Data persistence layer
-- **Spring Data REST**: REST API generation
-- **Java 17**: Modern Java features and performance
-- **Gradle**: Build system and dependency management
-
-### Database Technologies
-
-- **PostgreSQL 17**: Primary relational database
-- **Oracle 23c**: Enterprise database support
-- **H2**: In-memory database for development
-- **Liquibase**: Database migration and versioning
-
-### Infrastructure Technologies
-
-- **Docker**: Containerization platform
-- **Docker Compose**: Multi-container orchestration
-- **Git Submodules**: Version control for component management
-- **SonarCloud**: Code quality and security analysis
-
-## Key Features
-
-### Core Platform Features
-
-- 🔐 **Secure Authentication**: JWT-based authentication with role-based access control
-- 👥 **User Management**: Complete user lifecycle, roles, and permissions
-- 🗺️ **Application Management**: Geospatial application configuration and deployment
-- 🌍 **Territory Administration**: Territorial boundaries and geographic area management
-- 🔌 **Service Integration**: WMS, WFS, WMTS, JDBC, and custom service connections
-- 📊 **Layer Management**: Cartographic layers and background configuration
-- ⚙️ **Task Configuration**: Workflow setup for spatial operations
-
-### Mapping and Visualization Features
-
-- 🗺️ **Interactive Mapping**: High-performance web mapping using SITNA library
-- 🔍 **Search & Query**: Geographic search, feature queries, and WFS data access
-- 📊 **Layer Visualization**: Dynamic layer management with styling and transparency
-- 📏 **Measurement Tools**: Distance, area, and drawing/markup capabilities
-- 🖨️ **Map Export**: Print and download functionality for maps and data
-- 📱 **Street View Integration**: Google Street View integration for enhanced visualization
-
-### Technical Features
-
-- 📱 **Responsive Design**: Mobile-first approach with Angular Material
-- 🌐 **Internationalization**: Support for multiple languages (CA, ES, EN, FR, OC)
-- 🎨 **Modern UI/UX**: Clean, intuitive interface following Material Design
-- 🚀 **Performance Optimized**: Lazy loading, efficient data grids, and optimized builds
-- 🔧 **Developer Tools**: Comprehensive development and debugging tools
-- 📈 **Monitoring**: Integration with SonarCloud for code quality and coverage
-- 🔐 **ServiceWorker**: Authentication token management for API requests
+- Frontend: Angular 16, TypeScript, SITNA
+- Backend: Spring Boot 3, Java 17, Gradle
+- Database: PostgreSQL 17 (default), Oracle 23c, H2 (dev only), Liquibase
+- Infrastructure: Docker, Docker Compose, Git submodules, SonarCloud
 
 ## Quick Start
 
 ### Prerequisites
 
-Before you begin, ensure you have met the following requirements:
-
-- **Operating System**: Windows, macOS, or Linux
-- **Docker**: Latest version of Docker Engine or Docker Desktop
-  - [Docker Engine](https://docs.docker.com/engine/install/) + [Docker Compose](https://docs.docker.com/compose/install/)
-  - Or [Docker Desktop](https://docs.docker.com/desktop/) (includes both)
-- **Git**: Version control system ([Installation Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
-- **Internet Access**: Required for pulling Docker images and Git repositories
-- **Minimum 16GB RAM**: Recommended for development environment
+- Docker Engine + Docker Compose (or Docker Desktop)
+- Git
 
 ### Quick Setup
 
@@ -190,7 +116,7 @@ Before you begin, ensure you have met the following requirements:
 
 ## Installation
 
-### Development Installation
+### Development
 
 1. **Clone the Repository**
 
@@ -588,6 +514,72 @@ cd back/backend/sitmun-backend-core
 # Navigate to proxy middleware
 cd back/proxy/sitmun-proxy-middleware
 ./gradlew bootRun --args='--spring.profiles.active=dev'
+```
+
+### Frontend Build Configurations
+
+The frontend applications (Admin and Viewer) support three build configurations to cover different use cases:
+
+| Configuration | Use Case | API URL | Source Maps | Optimization |
+|---------------|----------|---------|-------------|--------------|
+| `development` | Local `ng serve` | `localhost:9000/backend` | Yes | No |
+| `docker-dev` | Docker debugging | Template-based | Yes | No |
+| `production` | Docker production | Template-based | No | Yes |
+
+#### Local Development
+
+For local development using `ng serve`, the `development` configuration uses `environment.ts` which points to the local docker-compose stack:
+
+```bash
+# Admin app
+cd front/admin/sitmun-admin-app
+npm install
+npm start  # Uses development configuration
+
+# Viewer app
+cd front/viewer/sitmun-viewer-app
+npm install
+npm start  # Uses development configuration
+```
+
+The API URL is set to `http://localhost:9000/backend` (the docker-compose stack backend).
+
+#### Docker Production Build
+
+For production Docker builds, the `production` configuration is used by default:
+
+```bash
+# Build production Docker image (default)
+docker compose build front
+```
+
+This creates optimized builds without source maps, using the `environment.prod.ts.template` which injects the API URL via `envsubst` at build time.
+
+#### Docker Development Build (Debugging)
+
+For debugging issues in a Docker environment, use the `docker-dev` configuration which includes source maps:
+
+```bash
+# Build Docker image with source maps for debugging
+BUILD_MODE=docker-dev docker compose build front
+```
+
+This creates unoptimized builds with source maps enabled, while still using the template-based API URL configuration for Docker.
+
+#### Environment Files
+
+```
+front/
+├── admin/
+│   ├── environment.prod.ts.template          # Docker builds (envsubst)
+│   └── sitmun-admin-app/src/environments/
+│       ├── environment.ts                    # Local development
+│       └── environment.prod.ts               # Production fallback
+└── viewer/
+    ├── environment.prod.ts.template          # Docker builds (envsubst)
+    └── sitmun-viewer-app/src/environments/
+        ├── environment.ts                    # Local development
+        └── environment.prod.ts               # Production fallback
 ```
 
 ### Code Quality

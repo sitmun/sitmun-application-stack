@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.0-rc.1] - 2026-01-21
+
 ### Added
 
 #### Backend Core
@@ -416,7 +418,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0-rc.1...HEAD
+[1.2.0-rc.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0-rc.1
 [1.1.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sitmun/sitmun-application-stack/releases/tag/v1.0.0
