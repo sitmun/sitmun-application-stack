@@ -1,5 +1,5 @@
 ARG JDK_VERSION=17
-ARG JDK_TAG=0.16
+ARG JDK_TAG=0.17
 ARG ALPINE_TAG=3.22
 
 # Stage 0, "build-admin-core", based on Amazon Corretto, to build and compile the frontend

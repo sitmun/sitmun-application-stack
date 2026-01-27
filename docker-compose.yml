@@ -41,7 +41,7 @@ services:
       - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
       - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}middleware
       - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}backend
-      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
+      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
     volumes:
       - ./back/backend/config:/usr/src/config
     depends_on:
@@ -62,7 +62,7 @@ services:
       - backend
     environment:
       - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
-      - SITMUN_BACKEND_CONFIG_SECRET=9ef80c644166846897f6a87d3cf6ab204d144229
+      - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
       interval: 30s

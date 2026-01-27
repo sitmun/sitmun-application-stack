@@ -1,5 +1,5 @@
 # Stage 0, "build-apps", based on Node.js, to build and compile both frontend apps sequentially
-FROM node:18 AS build-apps
+FROM node:20 AS build-apps
 ARG PUBLIC_BASE_PATH=/
 ARG BUILD_MODE=production
 ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
