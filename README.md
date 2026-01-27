@@ -1,6 +1,6 @@
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.0--rc.1-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 
 # SITMUN Application Stack
 
@@ -37,8 +37,8 @@ The stack has four main components:
 │                    SITMUN Application Stack                 │
 ├─────────────────────────────────────────────────────────────┤
 │  Frontend Layer                                             │
-│  ├── SITMUN Viewer App (Angular 16)                         │
-│  └── SITMUN Admin App (Angular 16)                          │
+│  ├── SITMUN Viewer App (Angular 19)                         │
+│  └── SITMUN Admin App (Angular 19)                          │
 ├─────────────────────────────────────────────────────────────┤
 │  Backend Layer                                              │
 │  ├── SITMUN Backend Core (Spring Boot 3)                    │
@@ -54,15 +54,15 @@ The stack has four main components:
 
 | Component                   | Technology             | Purpose                                          | Port      |
 | --------------------------- | ---------------------- | ------------------------------------------------ | --------- |
-| **SITMUN Viewer App**       | Angular 16, TypeScript | Interactive map visualization and user interface | 4200      |
-| **SITMUN Admin App**        | Angular 16, TypeScript | Administrative interface and configuration       | 4200      |
+| **SITMUN Viewer App**       | Angular 19, TypeScript | Interactive map visualization and user interface | 4200      |
+| **SITMUN Admin App**        | Angular 19, TypeScript | Administrative interface and configuration       | 4200      |
 | **SITMUN Backend Core**     | Spring Boot 3, Java 17 | Core REST API and business logic                 | 8080      |
 | **SITMUN Proxy Middleware** | Spring Boot 3, Java 17 | Secure proxy and middleware services             | 8081      |
 | **Database**                | PostgreSQL/Oracle/H2   | Data persistence and geospatial storage          | 5432/1521 |
 
 ## Technology Stack
 
-- Frontend: Angular 16, TypeScript, SITNA
+- Frontend: Angular 19, TypeScript, SITNA
 - Backend: Spring Boot 3, Java 17, Gradle
 - Database: PostgreSQL 17 (default), Oracle 23c, H2 (dev only), Liquibase
 - Infrastructure: Docker, Docker Compose, Git submodules, SonarCloud
@@ -207,6 +207,7 @@ The SITMUN Application Stack uses environment variables for configuration. Creat
 | `DATABASE_USERNAME`            | Database username                 | `sitmun3`                          |
 | `DATABASE_PASSWORD`            | Database password                 | `sitmun3`                          |
 | `FORCE_USE_OF_PROXY`           | Force proxy middleware            | `false`                            |
+| `MIDDLEWARE_SECRET`            | Backend-proxy authentication      | Development default (change!)      |
 
 ### Database Configuration
 
@@ -452,8 +453,8 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
 
 | Submodule                            | GitHub Repository                                                                | Docker Service | Technology Stack       |
 | ------------------------------------ | -------------------------------------------------------------------------------- | -------------- | ---------------------- |
-| `front/admin/sitmun-admin-app`       | [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app.git)               | `front`        | Angular 16, TypeScript |
-| `front/viewer/sitmun-viewer-app`     | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git)             | `front`        | Angular 16, TypeScript |
+| `front/admin/sitmun-admin-app`       | [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app.git)               | `front`        | Angular 19, TypeScript |
+| `front/viewer/sitmun-viewer-app`     | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git)             | `front`        | Angular 19, TypeScript |
 | `back/backend/sitmun-backend-core`   | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git)         | `backend`      | Spring Boot 3, Java 17 |
 | `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy`        | Spring Boot 3, Java 17 |
 
@@ -720,6 +721,21 @@ export class AuthInterceptor implements HttpInterceptor {
 
 ### Security Configuration
 
+#### Middleware Secret
+
+The backend and proxy services share a secret for secure authentication:
+
+```env
+# .env file
+MIDDLEWARE_SECRET=your-secure-secret-here
+```
+
+**IMPORTANT for production**:
+- Generate a secure random value: `openssl rand -hex 20`
+- Never commit secrets to version control
+- Both `SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET` (backend) and `SITMUN_BACKEND_CONFIG_SECRET` (proxy) use this value
+- Default development value should NOT be used in production
+
 #### JWT Configuration
 
 ```yaml
@@ -727,6 +743,8 @@ sitmun:
   user:
     secret: ${SITMUN_USER_SECRET:auto-generated}
     token-validity-in-milliseconds: 36000000
+  proxy-middleware:
+    secret: ${MIDDLEWARE_SECRET:default-dev-secret}
 ```
 
 #### CORS Configuration
@@ -1047,7 +1065,7 @@ SITMUN is an open-source platform for territorial information management, design
 
 **Technology Stack:**
 
-- Frontend: Angular 16, TypeScript, Angular Material, SITNA Library
+- Frontend: Angular 19, TypeScript, Angular Material, SITNA Library
 - Backend: Spring Boot 3, Java 17, PostgreSQL/Oracle/H2
 - Infrastructure: Docker, Docker Compose, Git Submodules
 - Quality: SonarCloud, GitHub Actions, Conventional Commits

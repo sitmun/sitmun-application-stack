@@ -6,12 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [1.2.0-rc.1] - 2026-01-21
+## [1.2.0] - 2026-01-27
 
 ### Added
 
 #### Backend Core
 
+- **Build System**: Parametrizable build output with support for JAR or WAR packaging via `-Ppackaging` property
+- **Deployment**: ServletInitializer for WAR deployment to external servlet containers (Tomcat, WildFly, WebSphere)
+- **Performance**: Entity graphs for cartography and task repositories
+- **Validation**: Tree type validation endpoint
+- **Mapping**: CRS support in service profile mapping
+- **DTOs**: Application name field in DTOs
 - **Language Controller**: New LanguageController to manage language-related endpoints
 - **MBTiles Service Configuration**: MBTiles service URL configuration support for enhanced mapping capabilities
 - **Tree Node View Mode**: New viewmode option for tree nodes in codelist configuration
@@ -38,17 +44,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **About Dialog**: New component for displaying application information and version details
 - **New Services**: catalog-switching, layer-info, map-interface, map-service-worker, raster-layer, sidebar-manager
 - **Standard Control Handlers**: feature-info-control and search-control handlers (replacing custom silme implementations)
+- **Testing**: Search control handler with comprehensive test coverage
+- **Assets**: Barcelona background image asset for application branding
+
+#### Proxy Middleware
+
+- **Build System**: Parametrizable build output with support for JAR or WAR packaging via `-Ppackaging` property
+- **Deployment**: ServletInitializer for WAR deployment to external servlet containers
+- **Error Handling**: RFC 9457 Problem Details for standardized HTTP error responses
+- **Error Types**: ProblemDetail and ProblemTypes classes for structured error handling
 
 ### Changed
 
 #### Backend Core
 
+- **Error Responses**: RFC 9457 problem details for error responses (standardized error format)
 - **Password Verification**: Improved password verification implementation with enhanced security measures
 - **Language Endpoints**: Restructured language endpoints and improved password verification system
 - **Spring Boot Tests**: Modernized Spring Boot test annotations and removed deprecated testing patterns
 - **Code Quality**: Applied comprehensive code formatting and cleanup across the codebase
 
+#### Admin Application
+
+- **Angular Framework**: Upgraded to Angular 19 with latest features and performance improvements
+- **Dependencies**: Updated Angular Material, TypeScript, and related dependencies to match Angular 19 requirements
+
 #### Viewer Application
+
+- **Angular Framework**: Upgraded to Angular 19 with latest features and performance improvements
+- **Dependencies**: Updated Angular Material, TypeScript, and related dependencies to match Angular 19 requirements
 
 - **SITNA API Upgrade**: SITNA API upgraded from version 4.1.0 to 4.8.0 (major version update with new features and improvements)
 - **Control Handler Refactoring**: Major architectural refactoring - migrated from custom "silme" control handlers to standard SITNA handlers for better maintainability
@@ -64,14 +88,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Dashboard Filtering**: Dashboard filtering changed to use appPrivate field instead of public field
 - **HTTP Methods**: User account and territory position update requests changed from PUT to POST method
 
+#### Proxy Middleware
+
+- **Error Responses**: Error responses now use RFC 9457 Problem Details format (`application/problem+json`)
+- **Error Handling**: Migrated from ErrorResponseDto to ProblemDetail across all error handlers
+- **Testing**: Updated test assertions to reflect external service changes
+
 #### Stack-Level
 
 - **Workshop Data**: Updated with data required for the workshop in Girona
+- **Docker Images**: Updated Node.js base image from 18 to 20 in frontend Dockerfile to match project requirements (.nvmrc and package.json engines)
+- **Docker Images**: Updated Amazon Corretto from 17.0.16 to 17.0.17 in all backend and proxy Dockerfiles for latest security patches
+- **Security Configuration**: Externalized middleware authentication secret to environment variable (MIDDLEWARE_SECRET) for production deployments
+- **Documentation**: Added MIDDLEWARE_SECRET to environment variables documentation and security configuration guide
 
 ### Fixed
 
 #### Backend Core
 
+- **Database Schema**: Oracle schema updates for STM_USER and STM_TOKEN_USER tables
+- **Exception Handling**: LazyInitializationException handling during constraint violations
+- **Database Constraints**: STM_TSK_UI.TUI_NAME column size increased to 50 characters
 - **Client Configuration i18n**: Prevented unnecessary internationalization updates on client configuration requests to improve performance
 - **Profile Security Updates**: Fixed profile update security issues with enhanced validation
 - **Password Reset Token Operations**: Fixed token password reset operation to ensure proper security handling
@@ -95,7 +132,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Global TC Object**: Global TC object accessibility in patch files
 - **Template Syntax**: Invalid template syntax by removing this and .content references
 
+#### Stack-Level
+
+- **Docker Configuration**: Fixed proxy service healthcheck endpoint to include correct port (8080) and path (/actuator/health)
+
 ### Removed
+
+#### Backend Core
+
+- **Tests**: Stale test removal for cleaner test suite
 
 #### Viewer Application
 
@@ -105,6 +150,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Legacy Utilities**: Removed sitna-helpers.ts utility file (functionality integrated into dedicated services)
 - **Legacy Controls**: Removed ExternalWMSSilme.js custom control (replaced with standard SITNA controls)
 - **Unused Assets**: Removed unused logo asset (bck_no_logo.jpg)
+
+### Notes
+
+#### Backend Core & Proxy Middleware
+
+- Docker builds only support JAR format (default)
+- WAR builds are intended for deployment to external application servers (Tomcat, WildFly, WebSphere, etc.)
+- Use `-Ppackaging=war` for building WAR packages locally
 
 ## [1.1.1] - 2025-08-28
 
@@ -418,8 +471,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0-rc.1...HEAD
-[1.2.0-rc.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0-rc.1
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/sitmun/sitmun-application-stack/releases/tag/v1.0.0
