@@ -6,6 +6,64 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-02-06
+
+### Added
+
+#### Backend Core
+
+- Multi-provider OIDC authentication support alongside existing database/LDAP authentication options
+- Multi-client frontend redirect URLs based on query parameter appended to OIDC auth requests
+- Integration tests for redirect service and complete OIDC authentication flow
+- Unit tests for OIDC authentication
+
+#### Admin Application
+
+- OIDC authentication support with dynamically configured providers
+- Callback component to handle backend redirection and JWT storage
+- Cookie-based JWT transport using ngx-cookie-service for future HttpOnly cookie support
+- OIDC provider buttons dynamically rendered below separator in login form
+- Translation strings for OIDC authentication flows
+- Callback component tests
+
+#### Viewer Application
+
+- OIDC authentication support with dynamically configured providers
+- Callback component to handle backend redirection and JWT storage
+- Cookie-based JWT transport using ngx-cookie-service for future HttpOnly cookie support
+- OIDC provider buttons dynamically rendered below login form
+- Translation strings for OIDC authentication flows
+- Callback component tests
+- Query parameter for proper backend to frontend redirection
+
+### Changed
+
+#### Backend Core
+
+- Centralized redirect logic and removed redundant attributes
+
+#### Admin Application
+
+- Refactored auth constants for better organization
+- Updated to Material spinner component
+- Enhanced authentication test coverage
+
+#### Viewer Application
+
+- Improved mobile view for authentication
+- Made SITNA paths relative by default
+- Enhanced existing authentication code with readonly/keydown attributes and extracted methods
+
+### Fixed
+
+#### Backend Core
+
+- Consistency mismatch between success and failure handlers
+
+#### Viewer Application
+
+- Cookie removal on logout
+
 ## [1.2.0] - 2026-01-27
 
 ### Added
@@ -471,7 +529,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.0.0...v1.1.0

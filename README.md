@@ -1,6 +1,6 @@
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)
 
 # SITMUN Application Stack
 
@@ -688,10 +688,12 @@ GET /api/proxy/{service-type}/{service-id}
 ### Authentication and Authorization
 
 - **JWT Tokens**: Secure token-based authentication with configurable expiration
+- **OIDC Authentication**: Multi-provider OpenID Connect support for enterprise single sign-on (new in 1.2.1)
+- **Database Authentication**: Traditional username/password authentication
+- **LDAP Integration**: Enterprise directory service authentication
 - **Role-Based Access Control**: Fine-grained permissions based on user roles and territories
 - **Application Privacy**: Applications can be marked as private to restrict public access
 - **Public User Support**: Anonymous access with appropriate restrictions
-- **LDAP Integration**: Enterprise authentication support
 
 ### Security Features
 
