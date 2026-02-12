@@ -71,12 +71,12 @@ function Update-FromRemote {
     }
 }
 
-# Copy .env.example to .env if .env does not exist
+# Copy default profile to .env if .env does not exist
 function Copy-EnvFileIfMissing {
     if (-Not (Test-Path ".env")) {
-        Write-Host "${Yellow}.env file is missing. Copying .env.example to .env...${Reset}"
-        Copy-Item -Path ".env.example" -Destination ".env"
-        Write-Host "${Green}.env file created from .env.example.${Reset}"
+        Write-Host "${Yellow}.env file is missing. Copying profiles/postgres.env to .env...${Reset}"
+        Copy-Item -Path "profiles/postgres.env" -Destination ".env"
+        Write-Host "${Green}.env file created from profiles/postgres.env.${Reset}"
     }
 }
 
