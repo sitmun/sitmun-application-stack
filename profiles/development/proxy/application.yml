@@ -1,0 +1,27 @@
+# Logging Configuration
+logging:
+  level:
+    ROOT: INFO
+    org.sitmun.proxy.middleware: INFO
+
+# Sitmun Proxy Configuration
+sitmun:
+  backend:
+    config:
+      url: http://some.url
+      secret: some-secret
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+  health:
+    defaults:
+      enabled: true

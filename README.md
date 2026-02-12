@@ -1,8 +1,7 @@
+# SITMUN Application Stack
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
 ![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)
-
-# SITMUN Application Stack
 
 The **SITMUN Application Stack** is a comprehensive multi-container geospatial platform that provides a complete solution for territorial information management, geographical services, and spatial applications. This stack integrates all SITMUN components into a unified, containerized environment designed for development, testing, and production deployment.
 
@@ -11,7 +10,6 @@ The **SITMUN Application Stack** is a comprehensive multi-container geospatial p
 - [About SITMUN](#about-sitmun)
 - [Architecture Overview](#architecture-overview)
 - [Technology Stack](#technology-stack)
-- [Key Features](#key-features)
 - [Quick Start](#quick-start)
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -32,7 +30,7 @@ SITMUN (Sistema de Información Territorial de la Mancomunidad de Municipios) is
 
 The stack has four main components:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    SITMUN Application Stack                 │
 ├─────────────────────────────────────────────────────────────┤
@@ -45,7 +43,7 @@ The stack has four main components:
 │  └── SITMUN Proxy Middleware (Spring Boot 3)                │
 ├─────────────────────────────────────────────────────────────┤
 │  Database Layer                                             │
-│  ├── PostgreSQL 17 / Oracle 23c / H2                        │
+│  ├── PostgreSQL 16 / Oracle 23c / H2                        │
 │  └── Liquibase Migration                                    │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -54,17 +52,17 @@ The stack has four main components:
 
 | Component                   | Technology             | Purpose                                          | Port      |
 | --------------------------- | ---------------------- | ------------------------------------------------ | --------- |
-| **SITMUN Viewer App**       | Angular 19, TypeScript | Interactive map visualization and user interface | 4200      |
-| **SITMUN Admin App**        | Angular 19, TypeScript | Administrative interface and configuration       | 4200      |
-| **SITMUN Backend Core**     | Spring Boot 3, Java 17 | Core REST API and business logic                 | 8080      |
-| **SITMUN Proxy Middleware** | Spring Boot 3, Java 17 | Secure proxy and middleware services             | 8081      |
-| **Database**                | PostgreSQL/Oracle/H2   | Data persistence and geospatial storage          | 5432/1521 |
+| **SITMUN Viewer App**       | Angular 19, TypeScript | Interactive map visualization and user interface | 9000      |
+| **SITMUN Admin App**        | Angular 19, TypeScript | Administrative interface and configuration       | 9000      |
+| **SITMUN Backend Core**     | Spring Boot 3, Java 17 | Core REST API and business logic                 | 9001      |
+| **SITMUN Proxy Middleware** | Spring Boot 3, Java 17 | Secure proxy and middleware services             | 9002      |
+| **Database**                | PostgreSQL/Oracle/H2   | Data persistence and geospatial storage          | 9003/9004 |
 
 ## Technology Stack
 
 - Frontend: Angular 19, TypeScript, SITNA
 - Backend: Spring Boot 3, Java 17, Gradle
-- Database: PostgreSQL 17 (default), Oracle 23c, H2 (dev only), Liquibase
+- Database: PostgreSQL 16 (default), Oracle 23c, H2 (dev only), Liquibase
 - Infrastructure: Docker, Docker Compose, Git submodules, SonarCloud
 
 ## Quick Start
@@ -116,7 +114,7 @@ The stack has four main components:
 
 ## Installation
 
-### Development
+### Development Installation
 
 1. **Clone the Repository**
 
@@ -158,9 +156,14 @@ The stack has four main components:
 
 1. **Environment Configuration**
 
+   Copy a profile to `.env` and edit for production (see [Database Configuration](#database-configuration) for all options):
+
    ```bash
-   # Copy and configure environment file
-   cp .env.example .env
+   # For PostgreSQL (default)
+   cp profiles/postgres.env .env
+
+   # For Oracle
+   cp profiles/oracle.env .env
 
    # Edit environment variables for production
    nano .env
@@ -168,96 +171,110 @@ The stack has four main components:
 
 2. **Database Setup**
 
-   Configure your database in the `.env` file (see [Database Configuration](#database-configuration) section for detailed instructions):
-
-   ```bash
-   # For PostgreSQL (default)
-   COMPOSE_PROFILES=postgres docker compose up -d
-
-   # For Oracle
-   COMPOSE_PROFILES=oracle docker compose up -d
-   ```
-
-   See the [Database Configuration](#database-configuration) section below for complete setup instructions, including environment variables and verification steps.
+   Database settings are already set by the profile you copied. To change database type later, copy a different profile to `.env` or edit `SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` in `.env`. See the [Database Configuration](#database-configuration) section for details and verification steps.
 
 3. **SSL Configuration**
+
    ```bash
-   # Configure SSL certificates
-   SITMUN_PUBLIC_PROTOCOL=https
-   SITMUN_PUBLIC_PORT=:443
+   # In .env, set for HTTPS (standard port 443)
+   PUBLIC_URL_SCHEME=https
+   # PUBLIC_PORT and PUBLIC_NON_STANDARD_PORT are not needed for standard port 443
    ```
 
 ## Configuration
 
 ### Environment Variables
 
-The SITMUN Application Stack uses environment variables for configuration. Create a `.env` file with the following variables:
+The SITMUN Application Stack uses environment variables for configuration. Copy a profile from `profiles/` to `.env` (see [Database Configuration](#database-configuration)); the following variables are used:
 
-| Variable                       | Description                       | Default Value                      |
-| ------------------------------ | --------------------------------- | ---------------------------------- |
-| `SITMUN_PUBLIC_PROTOCOL`       | Protocol (http/https)             | `http`                             |
-| `SITMUN_PUBLIC_HOST`           | Public hostname                   | `localhost`                        |
-| `SITMUN_PUBLIC_PORT`           | Public port with colon            | `:9000`                            |
-| `SITMUN_PUBLIC_FORWARDED_PORT` | Public port without colon         | `9000`                             |
-| `SITMUN_PUBLIC_CONTEXT_PATH`   | Application context path          | `/`                                |
-| `SITMUN_LOCAL_PORT`            | Local port                        | `9000`                             |
-| `COMPOSE_PROFILES`             | Active profiles (postgres/oracle) | `postgres`                         |
-| `DATABASE`                     | Database name                     | `sitmun3`                          |
-| `DATABASE_URL`                 | JDBC URL                          | `jdbc:postgresql://postgres:5432/` |
-| `DATABASE_USERNAME`            | Database username                 | `sitmun3`                          |
-| `DATABASE_PASSWORD`            | Database password                 | `sitmun3`                          |
-| `FORCE_USE_OF_PROXY`           | Force proxy middleware            | `false`                            |
-| `MIDDLEWARE_SECRET`            | Backend-proxy authentication      | Development default (change!)      |
+| Variable                   | Description                                           | Default Value                       |
+| -------------------------- | ----------------------------------------------------- | ----------------------------------- |
+| `PUBLIC_URL_SCHEME`        | Protocol (http/https)                                 | `http`                              |
+| `PUBLIC_HOSTNAME`          | Public hostname                                       | `localhost`                         |
+| `PUBLIC_PORT`              | Public port number (blank for standard port)          | `9000`                              |
+| `PUBLIC_NON_STANDARD_PORT` | Set to mark use of a non-standard port                | `1`                                 |
+| `PUBLIC_BASE_PATH`         | Application context path (must start and end with /)  | `/`                                 |
+| `LOCAL_PORT`               | Port the nginx container listens on                   | `9000`                              |
+| `LOCAL_BASE_PATH`          | Base path in the nginx container                      | `/`                                 |
+| `SITMUN_PROFILE`           | SITMUN scenario profile                               | `development`                       |
+| `SITMUN_DB_PROFILE`        | Spring Boot database profile (postgres/oracle)        | `postgres`                          |
+| `COMPOSE_PROFILES`         | Docker containers to start (postgres, oracle, dev)    | `postgres`                          |
+| `DATABASE`                 | Database name                                         | `sitmun3`                           |
+| `DATABASE_URL`             | JDBC URL                                              | `jdbc:postgresql://postgres:5432/`  |
+| `DATABASE_USERNAME`        | Database username                                     | `sitmun3`                           |
+| `DATABASE_PASSWORD`        | Database password                                     | `sitmun3`                           |
+| `FORCE_USE_OF_PROXY`       | Force proxy middleware                                | `false`                             |
+| `MIDDLEWARE_SECRET`        | Backend-proxy shared secret                           | Development default (change!)       |
 
 ### Database Configuration
 
-The SITMUN Application Stack supports multiple database backends: **PostgreSQL 17** (default), **Oracle 23c**, and **H2** (development only). The database is selected using Docker Compose profiles and configured via environment variables.
+The SITMUN Application Stack supports multiple database backends: **PostgreSQL 16** (default), **Oracle 23c**, and **H2** (development only). Three environment variables control setup:
 
-#### How Database Selection Works
+- **`SITMUN_PROFILE`** -- SITMUN scenario profile. Use `development` for local development scenarios.
+- **`SITMUN_DB_PROFILE`** -- Spring Boot database profile for the backend (`postgres` or `oracle`). Controls database dialect, Liquibase config, and which database service the backend depends on. Must always be set.
+- **`COMPOSE_PROFILES`** -- Built-in Docker Compose variable that selects which containers start. Set to `postgres` or `oracle` for a dockerized database. Add `,dev` to also start the example demo database. Omit entirely for external databases.
 
-1. **COMPOSE_PROFILES** environment variable determines which database container is started:
+`SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` must agree on the database type when using a dockerized database.
 
-   - `postgres` - Starts PostgreSQL container and configures backend for PostgreSQL
-   - `oracle` - Starts Oracle container and configures backend for Oracle
-   - Omitted - No database container (use external database)
+The backend automatically loads the appropriate configuration from:
 
-2. **SPRING_PROFILES_ACTIVE** is automatically set to match `COMPOSE_PROFILES`, which activates the corresponding Spring Boot profile (`postgres` or `oracle`)
+- `profiles/development/backend/application-postgres.yml` (for PostgreSQL)
+- `profiles/development/backend/application-oracle.yml` (for Oracle)
 
-3. The backend automatically loads the appropriate configuration from:
-   - `back/backend/config/application-postgres.yml` (for PostgreSQL)
-   - `back/backend/config/application-oracle.yml` (for Oracle)
+#### Using Profile .env Files (Recommended)
 
-#### PostgreSQL 17 (Default)
+Pre-configured profile `.env` files are provided in `profiles/`. Copy the desired profile to the project root as `.env`, edit as needed, then start the stack:
 
-**Step-by-step configuration:**
+```bash
+# Dockerized PostgreSQL
+cp profiles/postgres.env .env
+docker compose up -d
 
-1. Create or edit your `.env` file in the project root:
+# Dockerized Oracle
+cp profiles/oracle.env .env
+docker compose up -d
 
-   ```env
-   COMPOSE_PROFILES=postgres
-   DATABASE_URL=jdbc:postgresql://postgres:5432/
-   DATABASE=sitmun3
-   DATABASE_USERNAME=sitmun3
-   DATABASE_PASSWORD=sitmun3
-   ```
+# PostgreSQL + example demo database
+cp profiles/development-postgres.env .env
+docker compose up -d
 
-2. Start the stack with PostgreSQL:
+# Oracle + example demo database
+cp profiles/development-oracle.env .env
+docker compose up -d
 
-   ```bash
-   docker compose up -d
-   ```
+# External PostgreSQL (edit .env first)
+cp profiles/postgres-external.env .env
+# Edit .env with your connection details
+docker compose up -d front backend proxy
 
-   Or explicitly:
+# External Oracle (edit .env first)
+cp profiles/oracle-external.env .env
+# Edit .env with your connection details
+docker compose up -d front backend proxy
+```
 
-   ```bash
-   COMPOSE_PROFILES=postgres docker compose up -d
-   ```
+#### PostgreSQL 16 (Default)
 
-3. Verify PostgreSQL is running:
-   ```bash
-   docker compose ps postgres
-   curl http://localhost:9001/api/dashboard/health
-   ```
+Using a profile `.env` file:
+
+```bash
+cp profiles/postgres.env .env
+docker compose up -d
+```
+
+Or set variables directly in `.env`:
+
+```env
+SITMUN_PROFILE=development
+SITMUN_DB_PROFILE=postgres
+COMPOSE_PROFILES=postgres
+DATABASE_URL=jdbc:postgresql://postgres:5432/
+DATABASE=sitmun3
+DATABASE_USERNAME=sitmun3
+DATABASE_PASSWORD=sitmun3
+```
+
+Then: `docker compose up -d`
 
 **Configuration details:**
 
@@ -269,36 +286,33 @@ The SITMUN Application Stack supports multiple database backends: **PostgreSQL 1
 
 #### Oracle Database 23c
 
-**Step-by-step configuration:**
+Using a profile `.env` file:
 
-1. Create or edit your `.env` file in the project root:
+```bash
+cp profiles/oracle.env .env
+docker compose up -d
+```
 
-   ```env
-   COMPOSE_PROFILES=oracle
-   DATABASE_URL=jdbc:oracle:thin:@//oracle:1521/
-   DATABASE=sitmun3
-   DATABASE_USERNAME=sitmun3
-   DATABASE_PASSWORD=sitmun3
-   ```
+Or set variables directly in `.env`:
 
-2. Start the stack with Oracle:
+```env
+SITMUN_PROFILE=development
+SITMUN_DB_PROFILE=oracle
+COMPOSE_PROFILES=oracle
+DATABASE_URL=jdbc:oracle:thin:@//oracle:1521/
+DATABASE=sitmun3
+DATABASE_USERNAME=sitmun3
+DATABASE_PASSWORD=sitmun3
+```
 
-   ```bash
-   COMPOSE_PROFILES=oracle docker compose up -d
-   ```
+Then: `docker compose up -d`
 
-3. Wait for Oracle to initialize (may take 60+ seconds on first start):
+Oracle may take 60+ seconds on first start. Monitor with:
 
-   ```bash
-   docker compose logs -f oracle
-   # Wait for "DATABASE IS READY TO USE!" message
-   ```
-
-4. Verify Oracle is running:
-   ```bash
-   docker compose ps oracle
-   curl http://localhost:9001/api/dashboard/health
-   ```
+```bash
+docker compose logs -f oracle
+# Wait for "DATABASE IS READY TO USE!" message
+```
 
 **Configuration details:**
 
@@ -307,71 +321,76 @@ The SITMUN Application Stack supports multiple database backends: **PostgreSQL 1
 - **JDBC URL format**: `jdbc:oracle:thin:@//oracle:1521/`
 - **Spring profile**: `oracle`
 - **Hibernate dialect**: `org.hibernate.dialect.OracleDialect`
-- **Note**: Oracle container takes longer to start than PostgreSQL (60+ seconds)
 
 #### Switching Between Databases
 
-To switch from one database to another:
-
-1. **Stop all services:**
+1. Stop all services:
 
    ```bash
    docker compose down
    ```
 
-2. **Update `.env` file** with the new database configuration (see sections above)
-
-3. **Start with the new profile:**
+2. Copy a different profile to `.env` and start:
 
    ```bash
-   # For PostgreSQL
-   COMPOSE_PROFILES=postgres docker compose up -d
-
-   # For Oracle
-   COMPOSE_PROFILES=oracle docker compose up -d
+   cp profiles/oracle.env .env
+   docker compose up -d
    ```
 
-4. **Note**: Database migrations (Liquibase) will run automatically on backend startup
+   Or update `SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` in your `.env` file and run `docker compose up -d`.
+
+3. Database migrations (Liquibase) run automatically on backend startup.
 
 #### External Database
 
-To use an external database (not managed by Docker Compose):
+For an external database not managed by Docker Compose:
 
-1. **Comment out or remove COMPOSE_PROFILES** in your `.env` file:
+1. Copy the appropriate external profile to `.env` and edit with your connection details:
 
-   ```env
-   # COMPOSE_PROFILES=postgres
-   # COMPOSE_PROFILES=oracle
+   ```bash
+   cp profiles/postgres-external.env .env
+   # Or: cp profiles/oracle-external.env .env
+   # Edit .env with your connection details
    ```
 
-2. **Configure connection to external database:**
+2. Start services without a database container:
 
-   ```env
-   # For external PostgreSQL
-   DATABASE_URL=jdbc:postgresql://your-db-host:5432/
-   DATABASE=your_database
-   DATABASE_USERNAME=your_username
-   DATABASE_PASSWORD=your_password
-
-   # For external Oracle
-   DATABASE_URL=jdbc:oracle:thin:@//your-db-host:1521/
-   DATABASE=your_database
-   DATABASE_USERNAME=your_username
-   DATABASE_PASSWORD=your_password
-   ```
-
-3. **Set SPRING_PROFILES_ACTIVE** explicitly if needed:
-
-   ```env
-   SPRING_PROFILES_ACTIVE=postgres  # or 'oracle'
-   ```
-
-4. **Ensure network connectivity** from backend container to your database server
-
-5. **Start services** (database container will not start):
    ```bash
    docker compose up -d front backend proxy
    ```
+
+   The `front backend proxy` arguments are required because `depends_on` references the database service, which is not started. This selectively starts only the application services.
+
+Or set variables directly in `.env`:
+
+```env
+SITMUN_PROFILE=development
+SITMUN_DB_PROFILE=postgres       # or oracle
+# COMPOSE_PROFILES is omitted -- no database container starts
+DATABASE_URL=jdbc:postgresql://your-host:5432/
+DATABASE=your_database
+DATABASE_USERNAME=your_username
+DATABASE_PASSWORD=your_password
+```
+
+Then: `docker compose up -d front backend proxy`
+
+#### Example Demo Database (Optional)
+
+An optional demo database with geospatial datasets is available for testing. It runs on port `9005` and includes UNESCO heritage sites, web publications, and materials management data from `profiles/development/demo-data/`.
+
+To include it, use a development profile (which already sets `COMPOSE_PROFILES=postgres,dev` or `oracle,dev`):
+
+```bash
+# Using profile .env files
+cp profiles/development-postgres.env .env
+docker compose up -d
+# Or for Oracle: cp profiles/development-oracle.env .env
+
+# Or in .env: COMPOSE_PROFILES=postgres,dev
+```
+
+The example database is independent of the main SITMUN database and uses separate credentials (`example`/`example`).
 
 ### Application Configuration
 
@@ -438,7 +457,7 @@ When the `BASE_URL` is `http://localhost:9000/`, the following services are avai
 
 ### Service Dependencies
 
-```
+```text
 Viewer App ──┐
              ├── Backend Core ── Database
 Admin App ───┘
@@ -457,6 +476,43 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
 | `front/viewer/sitmun-viewer-app`     | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git)             | `front`        | Angular 19, TypeScript |
 | `back/backend/sitmun-backend-core`   | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git)         | `backend`      | Spring Boot 3, Java 17 |
 | `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy`        | Spring Boot 3, Java 17 |
+
+### Profile-Based Development Environments
+
+The stack includes minimum viable database profiles for rapid backend + database bootstrapping:
+
+```text
+profiles/
+  development/
+    backend/           # Backend Spring config (application.yml, Liquibase migrations)
+    proxy/             # Proxy Spring config
+  oracle/
+    docker-compose.yml # Backend + Oracle DB with schema + seed data
+  postgres/
+    docker-compose.yml # Backend + Postgres DB with schema + seed data
+```
+
+**Running a standalone profile:**
+
+```bash
+# Start Postgres profile (backend + database with dev seed data)
+cd profiles/postgres
+docker compose up -d --build
+
+# Verify backend health
+curl http://localhost:8080/api/dashboard/health
+
+# Start Oracle profile (mutually exclusive - use different terminal or stop postgres first)
+cd ../oracle
+docker compose up -d --build
+```
+
+**Important notes:**
+
+- Profiles use `SPRING_LIQUIBASE_CONTEXTS=dev` to bootstrap schema + development seed data via Liquibase on startup.
+- Backend listens on port `8080`, databases on standard ports (`5432` for Postgres, `1521` for Oracle).
+- Profiles share the same container names and ports - run only one profile at a time locally.
+- For production or custom contexts, override `SPRING_LIQUIBASE_CONTEXTS` in the compose environment section.
 
 ### Development Workflow
 
@@ -521,11 +577,11 @@ cd back/proxy/sitmun-proxy-middleware
 
 The frontend applications (Admin and Viewer) support three build configurations to cover different use cases:
 
-| Configuration | Use Case | API URL | Source Maps | Optimization |
-|---------------|----------|---------|-------------|--------------|
-| `development` | Local `ng serve` | `localhost:9000/backend` | Yes | No |
-| `docker-dev` | Docker debugging | Template-based | Yes | No |
-| `production` | Docker production | Template-based | No | Yes |
+| Configuration  | Use Case             | API URL                  | Source Maps | Optimization  |
+| -------------- | -------------------- | ------------------------ | ----------- | ------------- |
+| `development`  | Local `ng serve`     | `localhost:9000/backend` | Yes         | No            |
+| `docker-dev`   | Docker debugging     | Template-based           | Yes         | No            |
+| `production`   | Docker production    | Template-based           | No          | Yes           |
 
 #### Local Development
 
@@ -569,7 +625,7 @@ This creates unoptimized builds with source maps enabled, while still using the 
 
 #### Environment Files
 
-```
+```text
 front/
 ├── admin/
 │   ├── environment.prod.ts.template          # Docker builds (envsubst)
@@ -607,7 +663,7 @@ cd back/proxy/sitmun-proxy-middleware
 
 ## API Documentation
 
-### Backend Core API
+### Backend Core API Reference
 
 The SITMUN Backend Core provides comprehensive REST API functionality:
 
@@ -657,7 +713,7 @@ GET /api/dashboard/info
 GET /api/dashboard/metrics
 ```
 
-### Proxy Middleware API
+### Proxy Middleware API Reference
 
 The SITMUN Proxy Middleware provides secure proxy functionality:
 
@@ -733,6 +789,7 @@ MIDDLEWARE_SECRET=your-secure-secret-here
 ```
 
 **IMPORTANT for production**:
+
 - Generate a secure random value: `openssl rand -hex 20`
 - Never commit secrets to version control
 - Both `SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET` (backend) and `SITMUN_BACKEND_CONFIG_SECRET` (proxy) use this value
@@ -810,8 +867,8 @@ docker compose logs oracle
 
 ```bash
 # Test network connectivity
-docker exec sitmun-backend ping postgres  # For PostgreSQL
-docker exec sitmun-backend ping oracle    # For Oracle
+docker compose exec backend ping postgres  # For PostgreSQL
+docker compose exec backend ping oracle   # For Oracle
 
 # Check backend health (includes database connection check)
 curl http://localhost:9001/api/dashboard/health
@@ -821,13 +878,13 @@ curl http://localhost:9001/api/dashboard/health
 
 ```bash
 # Connect to PostgreSQL container
-docker exec -it sitmun-postgres psql -U sitmun3 -d sitmun3
+docker compose exec -it postgres psql -U sitmun3 -d sitmun3
 
 # Check PostgreSQL logs
 docker compose logs postgres | grep -i error
 
 # Verify PostgreSQL is accepting connections
-docker exec sitmun-postgres pg_isready -U sitmun3
+docker compose exec postgres pg_isready -U sitmun3
 ```
 
 **Oracle-specific troubleshooting:**
@@ -838,18 +895,18 @@ docker compose logs -f oracle
 # Wait for "DATABASE IS READY TO USE!" message
 
 # Connect to Oracle container
-docker exec -it sitmun-oracle sqlplus sitmun3/sitmun3@//localhost:1521/sitmun3
+docker compose exec -it oracle sqlplus sitmun3/sitmun3@//localhost:1521/sitmun3
 
 # Check Oracle logs
 docker compose logs oracle | grep -i error
 
 # Verify Oracle is ready (may take time)
-docker exec sitmun-oracle sqlplus -L sitmun3/sitmun3@//localhost:1521/sitmun3 -c "SELECT 1 FROM DUAL;"
+docker compose exec oracle sqlplus -L sitmun3/sitmun3@//localhost:1521/sitmun3 -c "SELECT 1 FROM DUAL;"
 ```
 
 **Common database configuration errors:**
 
-- **Wrong COMPOSE_PROFILES**: Ensure `.env` file has `COMPOSE_PROFILES=postgres` or `COMPOSE_PROFILES=oracle`
+- **Wrong profile configuration**: Ensure `SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` agree on the database type (both `postgres` or both `oracle`)
 - **Incorrect DATABASE_URL format**:
   - PostgreSQL: `jdbc:postgresql://postgres:5432/`
   - Oracle: `jdbc:oracle:thin:@//oracle:1521/`
@@ -936,7 +993,7 @@ export JAVA_OPTS="-Xmx4g -Xms2g"
 
 ```bash
 # Check database performance
-docker exec sitmun-postgres psql -U sitmun3 -d sitmun3 -c "SELECT * FROM pg_stat_activity;"
+docker compose exec postgres psql -U sitmun3 -d sitmun3 -c "SELECT * FROM pg_stat_activity;"
 
 # Optimize database queries
 # Check database indexes
@@ -1054,7 +1111,7 @@ The EUPL v1.2 is compatible with:
 
 ---
 
-## About SITMUN
+## Related Projects and Links
 
 SITMUN is an open-source platform for territorial information management, designed to help organizations manage geographical data, services, and applications effectively.
 

@@ -34,7 +34,7 @@ services:
       - "9001:8080"
     restart: always
     environment:
-      - SPRING_PROFILES_ACTIVE=${COMPOSE_PROFILES:-postgres}
+      - SPRING_PROFILES_ACTIVE=${SITMUN_DB_PROFILE:-postgres}
       - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
@@ -43,9 +43,9 @@ services:
       - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}backend
       - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
     volumes:
-      - ./back/backend/config:/usr/src/config
+      - ./profiles/development/backend:/usr/src/config
     depends_on:
-      - ${COMPOSE_PROFILES:-postgres}
+      - ${SITMUN_DB_PROFILE:-postgres}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
       interval: 30s
@@ -110,7 +110,9 @@ services:
         retries: 5
         start_period: 60s
 
-  example: 
+  example:
+    profiles:
+      - dev
     image: postgres:16-alpine
     restart: always
     environment:
@@ -121,7 +123,7 @@ services:
       - "9005:5432"
     volumes:
       - example_data:/var/lib/postgresql/data
-      - ./back/demo-data:/docker-entrypoint-initdb.d
+      - ./profiles/development/demo-data:/docker-entrypoint-initdb.d
 
 volumes:
   pgdata:

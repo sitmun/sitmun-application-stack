@@ -1,0 +1,33 @@
+# Development Profile Configuration
+spring:
+  # DevTools Configuration (only for development)
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 2s      # Faster polling for better responsiveness
+      quiet-period: 1s
+      exclude:
+        - "**/batch/**"      # Exclude batch jobs to prevent restarts during processing
+        - "**/tilesources/**" # Exclude tile source processing
+        - "**/io/**"         # Exclude MBTiles I/O operations
+        - "**/config/**"     # Exclude configuration classes
+        - "**/service/**"    # Exclude service layer
+        - "**/utils/**"      # Exclude utility classes
+        - "**/dto/**"        # Exclude DTOs
+        - "**/controllers/**" # Exclude controllers (optional)
+    livereload:
+      enabled: true
+      port: 35729
+
+  # H2 Console (only for development)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Development-specific logging
+logging:
+  level:
+    org.sitmun.proxy.middleware: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
