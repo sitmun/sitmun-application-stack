@@ -8,7 +8,68 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [1.2.2] - 2026-02-16
 
+### Added
+
+#### Stack-level
+
+- Profile-based configuration layout under `profiles/` (development/postgres/oracle) with ready-to-copy `.env` profiles:
+  - `profiles/development-postgres.env`, `profiles/development-oracle.env` (development + demo DB)
+  - `profiles/postgres.env`, `profiles/oracle.env` (dockerized DB, seed data)
+  - Profile compose files: `profiles/postgres/docker-compose.yml`, `profiles/oracle/docker-compose.yml`
+- Translation and Liquibase helper tooling under `tools/`:
+  - Translations: `tools/translations/*` (extract/generate/import/validate workflows)
+  - Liquibase: `tools/validate-liquibase-changelogs.sh`
+  - CSV helpers: `tools/sort_codelist*.py`, `tools/front-i18n/sort_and_complete_translations.py`
+
+#### Backend Core
+
+- Request-scoped translation cache and database-driven locale resolution for i18n lookups.
+- Health endpoint reports healthy only after startup completes.
+
+#### Admin Application
+
+- System configuration menu for admin users.
+- Tree type constraints enforcement for node type selection and validation.
+
+#### Viewer Application
+
+- Reload map and layer tree when language changes.
+
+### Changed
+
+#### Stack-level
+
+- Reorganized backend config and demo data paths to be driven by `SITMUN_CONFIG_DIR` and profile folders under `profiles/`.
+- Updated `docker-compose.yml` to support profile-based configuration mounting, improved database healthchecks, and optional dev/demo database profile.
+- Updated frontend Docker build to use `ENVIRONMENT` (development/production) and inject `APP_VERSION` into frontend environment templates.
+- Removed legacy `.env.example` in favor of profile `.env` files under `profiles/`.
+
+#### Backend Core
+
+- Refactored Liquibase configuration and removed legacy Heroku-related setup.
+- Lowered translation application logs from info to debug level to reduce noise in normal operation.
+- Updated README structure and formatting for consistency.
+
+#### Viewer Application
+
+- Added test coverage for language parameter behavior and improved related test quality.
+
+#### Proxy Middleware
+
+- Build configuration: override Axion SCM version with explicit `1.2.2` in `build.gradle`.
+- Documentation: update README version badge to `1.2.2`.
+
 ### Fixed
+
+#### Backend Core
+
+- Corrected tree node codelist naming (`code-list-name`) handling.
+- Stabilized test execution for parallel runs and database-specific scenarios (PostgreSQL/Oracle/WebMvcTest).
+
+#### Viewer Application
+
+- Fixed catalog switching state and button visibility after app switch or language change.
+- Increased contrast for loaded layers list text.
 
 #### Backend Core / Development data
 
