@@ -95,20 +95,36 @@ The stack has four main components:
    ./setup.ps1
    ```
 
-3. **Start the SITMUN Application Stack**
+3. **Select a profile (`.env`)**
+
+   The stack is configured via `.env`. Recommended profiles are under `profiles/`:
+
+   ```bash
+   # Development (PostgreSQL + demo DB)
+   cp profiles/development-postgres.env .env
+
+   # Development (Oracle + demo DB)
+   # cp profiles/development-oracle.env .env
+   ```
+
+   Notes:
+   - The setup scripts create `.env` from `profiles/postgres.env` **only if** `.env` is missing.
+   - You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
+
+4. **Start the SITMUN Application Stack**
 
    ```bash
    docker compose up -d
    ```
 
-4. **Access the applications**
+5. **Access the applications**
 
    - **Viewer Application**: [http://localhost:9000/viewer](http://localhost:9000/viewer) (public access)
    - **Admin Application**: [http://localhost:9000/admin](http://localhost:9000/admin) (requires authentication)
    - **Backend API**: [http://localhost:9000/backend](http://localhost:9000/backend)
    - **API Documentation**: [http://localhost:9001/swagger-ui/index.html](http://localhost:9001/swagger-ui/index.html)
 
-5. **Default credentials**
+6. **Default credentials**
    - Username: `admin`
    - Password: `admin`
 
@@ -133,13 +149,20 @@ The stack has four main components:
    ./setup.ps1
    ```
 
-3. **Start Services**
+3. **Select a development profile (`.env`)**
+
+   ```bash
+   cp profiles/development-postgres.env .env
+   # Or: cp profiles/development-oracle.env .env
+   ```
+
+4. **Start Services**
 
    ```bash
    docker compose up -d
    ```
 
-4. **Verify Installation**
+5. **Verify Installation**
 
    ```bash
    # Check service status
@@ -205,6 +228,8 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `DATABASE_PASSWORD`        | Database password                                     | `sitmun3`                           |
 | `FORCE_USE_OF_PROXY`       | Force proxy middleware                                | `false`                             |
 | `MIDDLEWARE_SECRET`        | Backend-proxy shared secret                           | Development default (change!)       |
+| `ENVIRONMENT`              | Frontend Docker build mode (development/production)   | `development`                       |
+| `APP_VERSION`              | Version injected into frontend builds                 | `0.0.0`                             |
 
 ### Database Configuration
 
