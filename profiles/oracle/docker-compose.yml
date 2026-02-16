@@ -11,22 +11,48 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
+      start_period: 120s
     networks:
       - sitmun-network-oracle
     restart: unless-stopped
     volumes:
       - ../development/backend:/app/config:ro
+      - ./liquibase:/app/config/liquibase:ro
     environment:
+      SPRING_PROFILES_ACTIVE: prod,oracle
       SPRING_DATASOURCE_URL: jdbc:oracle:thin:@//oracle:1521/sitmun3
       SPRING_DATASOURCE_USERNAME: sitmun3
       SPRING_DATASOURCE_PASSWORD: sitmun3
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.OracleDialect
-      SPRING_LIQUIBASE_CHANGE_LOG: file:/app/config/liquibase/master.xml
-      SPRING_LIQUIBASE_CONTEXTS: dev
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      # Dialect and boolean type mapping loaded from application-oracle.yml via 'oracle' profile
       SITMUN_BACKEND_URL: http://localhost:8080/
+      LOGGING_LEVEL_ROOT: WARN
+      LOGGING_LEVEL_ORG_SITMUN: INFO
+      # Database connection retry settings for slow Oracle startup
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 60000
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 10
+      SPRING_LIQUIBASE_CHANGE_LOG: file:/app/config/liquibase/master.xml
+      SPRING_LIQUIBASE_CONTEXTS: ""
     depends_on:
       oracle:
+        condition: service_healthy
+        required: true
+
+  sitmun-frontend:
+    build:
+      context: ../..
+      dockerfile: front/Dockerfile
+      args:
+        - BUILD_MODE=production
+        - PUBLIC_BASE_PATH=/
+    container_name: sitmun-frontend
+    ports:
+      - "80:80"
+    networks:
+      - sitmun-network-oracle
+    restart: unless-stopped
+    depends_on:
+      sitmun-backend:
         condition: service_healthy
         required: true
 
@@ -43,11 +69,16 @@ services:
       APP_USER_PASSWORD: sitmun3
       ORACLE_DATABASE: sitmun3
     healthcheck:
-      test: ["CMD", "sqlplus", "-L", "sitmun3/sitmun3@//localhost:1521/sitmun3", "-c", "SELECT 1 FROM DUAL;"]
-      interval: 30s
-      timeout: 30s
+      # Test that the service is registered with the listener AND database accepts connections
+      test: |
+        bash -c '
+        lsnrctl status | grep -q "Service \"sitmun3\"" &&
+        echo "SELECT 1 FROM DUAL;" | sqlplus -s sitmun3/sitmun3@//localhost:1521/sitmun3 | grep -q "1"
+        '
+      interval: 5s
+      timeout: 5s
       start_period: 60s
-      retries: 3
+      retries: 20
 
 networks:
   sitmun-network-oracle:

@@ -4,8 +4,8 @@ export const environment = {
   hideBackgroundImage: false,
   hideDNIEAccess: true,
   apiUrl: '${PUBLIC_BASE_PATH}backend',
-  version: '1.2.0',
-  environmentName: 'Production',
+  version: '${APP_VERSION}',
+  environmentName: '${FRONT_ENV}',
   sitnaVersion: '4.8.0',
   buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
   loginBackgroundImageUrl: '/assets/logos/barcelona_background.jpg'

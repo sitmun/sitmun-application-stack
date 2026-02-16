@@ -1,0 +1,1459 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-02-13",
+    "languages": [
+      "en",
+      "es",
+      "ca",
+      "oc-aranes",
+      "fr"
+    ],
+    "languageIds": {
+      "en": 1,
+      "es": 2,
+      "ca": 3,
+      "oc-aranes": 4,
+      "fr": 5
+    },
+    "defaultLanguage": "en"
+  },
+  "entities": {
+    "Language": {
+      "field": "name",
+      "column": "Language.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "English",
+          "es": "Inglés",
+          "ca": "Anglès",
+          "fr": "Anglais",
+          "oc-aranes": "Anglés"
+        },
+        {
+          "id": 2,
+          "en": "Spanish",
+          "es": "Español",
+          "ca": "Espanyol",
+          "fr": "Espagnol",
+          "oc-aranes": "Espanhòl"
+        },
+        {
+          "id": 3,
+          "en": "Catalan",
+          "es": "Catalán",
+          "ca": "Català",
+          "fr": "Catalan",
+          "oc-aranes": "Catalan"
+        },
+        {
+          "id": 4,
+          "en": "Aranese",
+          "es": "Aranés",
+          "ca": "Aranès",
+          "fr": "Aranais",
+          "oc-aranes": "Aranés"
+        },
+        {
+          "id": 5,
+          "en": "French",
+          "es": "Francés",
+          "ca": "Francès",
+          "fr": "Français",
+          "oc-aranes": "Francés"
+        }
+      ]
+    },
+    "CodeListValue": {
+      "field": "description",
+      "column": "CodeListValue.description",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Edition application",
+          "es": "Edition application",
+          "ca": "Edition application",
+          "fr": "Edition application",
+          "oc-aranes": "Edition application"
+        },
+        {
+          "id": 2,
+          "en": "External application",
+          "es": "Aplicación externa",
+          "ca": "Aplicació externa",
+          "fr": "Application externe",
+          "oc-aranes": "Aplicacion extèrna"
+        },
+        {
+          "id": 3,
+          "en": "Internal application",
+          "es": "Aplicación interna",
+          "ca": "Aplicació interna",
+          "fr": "Application interne",
+          "oc-aranes": "Aplicacion intèrna"
+        },
+        {
+          "id": 4,
+          "en": "Tourist application",
+          "es": "Aplicación turística",
+          "ca": "Aplicació turística",
+          "fr": "Application touristique",
+          "oc-aranes": "Aplicacion toristica"
+        },
+        {
+          "id": 5,
+          "en": "Mobile app parameter",
+          "es": "Parámetro de aplicación móvil",
+          "ca": "Paràmetre d'aplicació mòbil",
+          "fr": "Paramètre d'application mobile",
+          "oc-aranes": "Paramètres d'aplicacion mobil"
+        },
+        {
+          "id": 6,
+          "en": "Nomenclator parameter",
+          "es": "Parámetro de nomenclátor",
+          "ca": "Paràmetre de nomenclàtor",
+          "fr": "Paramètre de nomenclateur",
+          "oc-aranes": "Paramètres de nomenclator"
+        },
+        {
+          "id": 7,
+          "en": "Print template",
+          "es": "Plantilla de impresión",
+          "ca": "Plantilla d'impressió",
+          "fr": "Modèle d'impression",
+          "oc-aranes": "Modèl d'impression"
+        },
+        {
+          "id": 8,
+          "en": "Line",
+          "es": "Línea",
+          "ca": "Línia",
+          "fr": "Ligne",
+          "oc-aranes": "Linha"
+        },
+        {
+          "id": 9,
+          "en": "Point",
+          "es": "Punto",
+          "ca": "Punt",
+          "fr": "Point",
+          "oc-aranes": "Punt"
+        },
+        {
+          "id": 10,
+          "en": "Polygon",
+          "es": "Polígono",
+          "ca": "Polígon",
+          "fr": "Polygone",
+          "oc-aranes": "Poligòn"
+        },
+        {
+          "id": 11,
+          "en": "Get Legend Graphic",
+          "es": "Get Legend Graphic",
+          "ca": "Get Legend Graphic",
+          "fr": "Get Legend Graphic",
+          "oc-aranes": "Get Legend Graphic"
+        },
+        {
+          "id": 12,
+          "en": "GetCapabilities",
+          "es": "GetCapabilities",
+          "ca": "GetCapabilities",
+          "fr": "GetCapabilities",
+          "oc-aranes": "GetCapabilities"
+        },
+        {
+          "id": 13,
+          "en": "Static link",
+          "es": "Enlace estático",
+          "ca": "Enllaç estàtic",
+          "fr": "Lien statique",
+          "oc-aranes": "Ligam static"
+        },
+        {
+          "id": 14,
+          "en": "Custom",
+          "es": "Personalizado",
+          "ca": "Personalitzat",
+          "fr": "Personnalisé",
+          "oc-aranes": "Personalizat"
+        },
+        {
+          "id": 15,
+          "en": "Defined",
+          "es": "Definido",
+          "ca": "Definit",
+          "fr": "Défini",
+          "oc-aranes": "Definit"
+        },
+        {
+          "id": 16,
+          "en": "Alphanumeric",
+          "es": "Alfanumérico",
+          "ca": "Alfanumèric",
+          "fr": "Alphanumérique",
+          "oc-aranes": "Alfanumeric"
+        },
+        {
+          "id": 17,
+          "en": "Date",
+          "es": "Fecha",
+          "ca": "Data",
+          "fr": "Date",
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 18,
+          "en": "Number",
+          "es": "Número",
+          "ca": "Nombre",
+          "fr": "Nombre",
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 19,
+          "en": "Date",
+          "es": "Fecha",
+          "ca": "Data",
+          "fr": "Date",
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 20,
+          "en": "Image",
+          "es": "Imagen",
+          "ca": "Imatge",
+          "fr": "Image",
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 21,
+          "en": "Number",
+          "es": "Número",
+          "ca": "Nombre",
+          "fr": "Nombre",
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 22,
+          "en": "Percentage",
+          "es": "Porcentaje",
+          "ca": "Percentatge",
+          "fr": "Pourcentage",
+          "oc-aranes": "Percentatge"
+        },
+        {
+          "id": 23,
+          "en": "Text",
+          "es": "Texto",
+          "ca": "Text",
+          "fr": "Texte",
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 24,
+          "en": "URL",
+          "es": "URL",
+          "ca": "URL",
+          "fr": "URL",
+          "oc-aranes": "URL"
+        },
+        {
+          "id": 25,
+          "en": "INFO",
+          "es": "INFO",
+          "ca": "INFO",
+          "fr": "INFO",
+          "oc-aranes": "INFO"
+        },
+        {
+          "id": 26,
+          "en": "Background map",
+          "es": "Mapa de fondo",
+          "ca": "Mapa de fons",
+          "fr": "Carte de fond",
+          "oc-aranes": "Mapa de fons"
+        },
+        {
+          "id": 27,
+          "en": "Cartography group",
+          "es": "Grupo de cartografía",
+          "ca": "Grup de cartografia",
+          "fr": "Groupe de cartographie",
+          "oc-aranes": "Grop de cartografia"
+        },
+        {
+          "id": 28,
+          "en": "Location map",
+          "es": "Mapa de situación",
+          "ca": "Mapa de situació",
+          "fr": "Carte de situation",
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 29,
+          "en": "Report",
+          "es": "Informe",
+          "ca": "Informe",
+          "fr": "Rapport",
+          "oc-aranes": "Infòrme"
+        },
+        {
+          "id": 30,
+          "en": "Date",
+          "es": "Fecha",
+          "ca": "Data",
+          "fr": "Date",
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 31,
+          "en": "Image",
+          "es": "Imagen",
+          "ca": "Imatge",
+          "fr": "Image",
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 32,
+          "en": "Number",
+          "es": "Número",
+          "ca": "Nombre",
+          "fr": "Nombre",
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 33,
+          "en": "Percentage",
+          "es": "Porcentaje",
+          "ca": "Percentatge",
+          "fr": "Pourcentage",
+          "oc-aranes": "Percentatge"
+        },
+        {
+          "id": 34,
+          "en": "Text",
+          "es": "Texto",
+          "ca": "Text",
+          "fr": "Texte",
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 35,
+          "en": "URL",
+          "es": "URL",
+          "ca": "URL",
+          "fr": "URL",
+          "oc-aranes": "URL"
+        },
+        {
+          "id": 36,
+          "en": "EDIT",
+          "es": "EDITAR",
+          "ca": "EDITAR",
+          "fr": "ÉDITER",
+          "oc-aranes": "EDITAR"
+        },
+        {
+          "id": 37,
+          "en": "SELECT",
+          "es": "SELECCIONAR",
+          "ca": "SELECCIONAR",
+          "fr": "SÉLECTIONNER",
+          "oc-aranes": "SELECCIONAR"
+        },
+        {
+          "id": 38,
+          "en": "Application",
+          "es": "Aplicación",
+          "ca": "Aplicació",
+          "fr": "Application",
+          "oc-aranes": "Aplicacion"
+        },
+        {
+          "id": 39,
+          "en": "Isolated",
+          "es": "Isolated",
+          "ca": "Isolated",
+          "fr": "Isolated",
+          "oc-aranes": "Isolated"
+        },
+        {
+          "id": 40,
+          "en": "Layer",
+          "es": "Layer",
+          "ca": "Layer",
+          "fr": "Layer",
+          "oc-aranes": "Layer"
+        },
+        {
+          "id": 41,
+          "en": "Date",
+          "es": "Fecha",
+          "ca": "Data",
+          "fr": "Date",
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 42,
+          "en": "Image",
+          "es": "Imagen",
+          "ca": "Imatge",
+          "fr": "Image",
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 43,
+          "en": "ListBox",
+          "es": "ListBox",
+          "ca": "ListBox",
+          "fr": "ListBox",
+          "oc-aranes": "ListBox"
+        },
+        {
+          "id": 44,
+          "en": "Number",
+          "es": "Número",
+          "ca": "Nombre",
+          "fr": "Nombre",
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 45,
+          "en": "Text",
+          "es": "Texto",
+          "ca": "Text",
+          "fr": "Texte",
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 46,
+          "en": "Database edition",
+          "es": "Database edition",
+          "ca": "Database edition",
+          "fr": "Database edition",
+          "oc-aranes": "Database edition"
+        },
+        {
+          "id": 47,
+          "en": "Features service edition (WFS)",
+          "es": "Features service edition (WFS)",
+          "ca": "Features service edition (WFS)",
+          "fr": "Features service edition (WFS)",
+          "oc-aranes": "Features service edition (WFS)"
+        },
+        {
+          "id": 48,
+          "en": "Query parameter",
+          "es": "Query parameter",
+          "ca": "Query parameter",
+          "fr": "Query parameter",
+          "oc-aranes": "Query parameter"
+        },
+        {
+          "id": 49,
+          "en": "Template parameter",
+          "es": "Template parameter",
+          "ca": "Template parameter",
+          "fr": "Template parameter",
+          "oc-aranes": "Template parameter"
+        },
+        {
+          "id": 50,
+          "en": "Cartography Query",
+          "es": "Cartography Query",
+          "ca": "Cartography Query",
+          "fr": "Cartography Query",
+          "oc-aranes": "Cartography Query"
+        },
+        {
+          "id": 51,
+          "en": "SQL Query",
+          "es": "SQL Query",
+          "ca": "SQL Query",
+          "fr": "SQL Query",
+          "oc-aranes": "SQL Query"
+        },
+        {
+          "id": 52,
+          "en": "Web API Query",
+          "es": "Web API Query",
+          "ca": "Web API Query",
+          "fr": "Web API Query",
+          "oc-aranes": "Web API Query"
+        },
+        {
+          "id": 53,
+          "en": "HTTP Basic authentication",
+          "es": "Autenticación HTTP básica",
+          "ca": "Autenticació HTTP bàsica",
+          "fr": "Authentification HTTP de base",
+          "oc-aranes": "Autenticacion HTTP basica"
+        },
+        {
+          "id": 54,
+          "en": "None",
+          "es": "Ninguno",
+          "ca": "Cap",
+          "fr": "Aucun",
+          "oc-aranes": "Cap"
+        },
+        {
+          "id": 55,
+          "en": "WFS",
+          "es": "WFS",
+          "ca": "WFS",
+          "fr": "WFS",
+          "oc-aranes": "WFS"
+        },
+        {
+          "id": 56,
+          "en": "WMS",
+          "es": "WMS",
+          "ca": "WMS",
+          "fr": "WMS",
+          "oc-aranes": "WMS"
+        },
+        {
+          "id": 57,
+          "en": "WMTS",
+          "es": "WMTS",
+          "ca": "WMTS",
+          "fr": "WMTS",
+          "oc-aranes": "WMTS"
+        },
+        {
+          "id": 58,
+          "en": "GetFeatureInfo",
+          "es": "GetFeatureInfo",
+          "ca": "GetFeatureInfo",
+          "fr": "GetFeatureInfo",
+          "oc-aranes": "GetFeatureInfo"
+        },
+        {
+          "id": 59,
+          "en": "GetMap",
+          "es": "GetMap",
+          "ca": "GetMap",
+          "fr": "GetMap",
+          "oc-aranes": "GetMap"
+        },
+        {
+          "id": 60,
+          "en": "OpenLayers",
+          "es": "OpenLayers",
+          "ca": "OpenLayers",
+          "fr": "OpenLayers",
+          "oc-aranes": "OpenLayers"
+        },
+        {
+          "id": 61,
+          "en": "WMTS",
+          "es": "WMTS",
+          "ca": "WMTS",
+          "fr": "WMTS",
+          "oc-aranes": "WMTS"
+        },
+        {
+          "id": 62,
+          "en": "__NULL_VALUE__",
+          "es": "__NULL_VALUE__",
+          "ca": "__NULL_VALUE__",
+          "fr": "__NULL_VALUE__",
+          "oc-aranes": "__NULL_VALUE__"
+        },
+        {
+          "id": 63,
+          "en": "array",
+          "es": "array",
+          "ca": "array",
+          "fr": "array",
+          "oc-aranes": "array"
+        },
+        {
+          "id": 64,
+          "en": "boolean",
+          "es": "boolean",
+          "ca": "boolean",
+          "fr": "boolean",
+          "oc-aranes": "boolean"
+        },
+        {
+          "id": 65,
+          "en": "number",
+          "es": "number",
+          "ca": "number",
+          "fr": "number",
+          "oc-aranes": "number"
+        },
+        {
+          "id": 66,
+          "en": "object",
+          "es": "object",
+          "ca": "object",
+          "fr": "object",
+          "oc-aranes": "object"
+        },
+        {
+          "id": 67,
+          "en": "string",
+          "es": "string",
+          "ca": "string",
+          "fr": "string",
+          "oc-aranes": "string"
+        },
+        {
+          "id": 68,
+          "en": "Municipality",
+          "es": "Municipio",
+          "ca": "Municipi",
+          "fr": "Municipalité",
+          "oc-aranes": "Ajuntament"
+        },
+        {
+          "id": 69,
+          "en": "Regional",
+          "es": "Regional",
+          "ca": "Regional",
+          "fr": "Régional",
+          "oc-aranes": "Regionau"
+        },
+        {
+          "id": 70,
+          "en": "Total",
+          "es": "Total",
+          "ca": "Total",
+          "fr": "Total",
+          "oc-aranes": "Totau"
+        },
+        {
+          "id": 71,
+          "en": "Cartography",
+          "es": "Cartografía",
+          "ca": "Cartografia",
+          "fr": "Cartographie",
+          "oc-aranes": "Cartografia"
+        },
+        {
+          "id": 72,
+          "en": "Edition tree",
+          "es": "Árbol de edición",
+          "ca": "Arbre d'edició",
+          "fr": "Arbre d'édition",
+          "oc-aranes": "Arbre d'edicion"
+        },
+        {
+          "id": 73,
+          "en": "Tourist application",
+          "es": "Aplicación turística",
+          "ca": "Aplicació turística",
+          "fr": "Application touristique",
+          "oc-aranes": "Aplicacion toristica"
+        },
+        {
+          "id": 74,
+          "en": "Cartography",
+          "es": "Cartografía",
+          "ca": "Cartografia",
+          "fr": "Cartographie",
+          "oc-aranes": "Cartografia"
+        },
+        {
+          "id": 75,
+          "en": "List",
+          "es": "Lista",
+          "ca": "Llista",
+          "fr": "Liste",
+          "oc-aranes": "Lista"
+        },
+        {
+          "id": 76,
+          "en": "Cartography",
+          "es": "Cartografía",
+          "ca": "Cartografia",
+          "fr": "Cartographie",
+          "oc-aranes": "Cartografia"
+        },
+        {
+          "id": 77,
+          "en": "Favorites",
+          "es": "Favoritos",
+          "ca": "Favorits",
+          "fr": "Favoris",
+          "oc-aranes": "Favorits"
+        },
+        {
+          "id": 78,
+          "en": "Map",
+          "es": "Mapa",
+          "ca": "Mapa",
+          "fr": "Carte",
+          "oc-aranes": "Mapa"
+        },
+        {
+          "id": 79,
+          "en": "Menu",
+          "es": "Menú",
+          "ca": "Menú",
+          "fr": "Menu",
+          "oc-aranes": "Menú"
+        },
+        {
+          "id": 80,
+          "en": "Near me",
+          "es": "Cerca de mí",
+          "ca": "A prop meu",
+          "fr": "Près de moi",
+          "oc-aranes": "A prop mèu"
+        },
+        {
+          "id": 81,
+          "en": "Task",
+          "es": "Tarea",
+          "ca": "Tasca",
+          "fr": "Tâche",
+          "oc-aranes": "Tasca"
+        },
+        {
+          "id": 82,
+          "en": "Detailed list",
+          "es": "Lista detallada",
+          "ca": "Llista detallada",
+          "fr": "Liste détaillée",
+          "oc-aranes": "Lista detalhada"
+        },
+        {
+          "id": 83,
+          "en": "Events",
+          "es": "Eventos",
+          "ca": "Esdeveniments",
+          "fr": "Événements",
+          "oc-aranes": "Eveniments"
+        },
+        {
+          "id": 84,
+          "en": "Events categories",
+          "es": "Categorías de eventos",
+          "ca": "Categories d'esdeveniments",
+          "fr": "Catégories d'événements",
+          "oc-aranes": "Categories d'eveniments"
+        },
+        {
+          "id": 85,
+          "en": "Events locations",
+          "es": "Ubicaciones de eventos",
+          "ca": "Ubicacions d'esdeveniments",
+          "fr": "Emplacements d'événements",
+          "oc-aranes": "Ubicacions d'eveniments"
+        },
+        {
+          "id": 86,
+          "en": "Gallery",
+          "es": "Galería",
+          "ca": "Galeria",
+          "fr": "Galerie",
+          "oc-aranes": "Galeria"
+        },
+        {
+          "id": 87,
+          "en": "Map search",
+          "es": "Búsqueda en mapa",
+          "ca": "Cerca al mapa",
+          "fr": "Recherche sur carte",
+          "oc-aranes": "Cèrca ath mapa"
+        },
+        {
+          "id": 88,
+          "en": "Near elements",
+          "es": "Elementos cercanos",
+          "ca": "Elements propers",
+          "fr": "Éléments proches",
+          "oc-aranes": "Elements pròps"
+        },
+        {
+          "id": 89,
+          "en": "Routes list",
+          "es": "Lista de rutas",
+          "ca": "Llista de rutes",
+          "fr": "Liste des itinéraires",
+          "oc-aranes": "Lista de rotes"
+        },
+        {
+          "id": 90,
+          "en": "Schedule",
+          "es": "Horario",
+          "ca": "Horari",
+          "fr": "Horaire",
+          "oc-aranes": "Orari"
+        },
+        {
+          "id": 91,
+          "en": "DNI",
+          "es": "DNI",
+          "ca": "DNI",
+          "fr": "DNI",
+          "oc-aranes": "DNI"
+        },
+        {
+          "id": 92,
+          "en": "NIE",
+          "es": "NIE",
+          "ca": "NIE",
+          "fr": "NIE",
+          "oc-aranes": "NIE"
+        },
+        {
+          "id": 93,
+          "en": "Passport",
+          "es": "Passport",
+          "ca": "Passport",
+          "fr": "Passport",
+          "oc-aranes": "Passport"
+        },
+        {
+          "id": 94,
+          "en": "Point of contact",
+          "es": "Punto de contacto",
+          "ca": "Punt de contacte",
+          "fr": "Point de contact",
+          "oc-aranes": "Punt de contacte"
+        }
+      ]
+    },
+    "TerritoryType": {
+      "field": "name",
+      "column": "TerritoryType.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Country",
+          "es": "País",
+          "ca": "País",
+          "fr": "Pays",
+          "oc-aranes": "País"
+        },
+        {
+          "id": 2,
+          "en": "Autonomous Community",
+          "es": "Comunidad Autónoma",
+          "ca": "Comunitat Autònoma",
+          "fr": "Communauté autonome",
+          "oc-aranes": "Comunitat Autonòma"
+        },
+        {
+          "id": 3,
+          "en": "Autonomous City",
+          "es": "Ciudad Autónoma",
+          "ca": "Ciutat Autònoma",
+          "fr": "Ville autonome",
+          "oc-aranes": "Ciutat Autonòma"
+        },
+        {
+          "id": 4,
+          "en": "Provincial Council",
+          "es": "Diputación",
+          "ca": "Diputació",
+          "fr": "Conseil provincial",
+          "oc-aranes": "Deputacion"
+        },
+        {
+          "id": 5,
+          "en": "Island Council (Balearic)",
+          "es": "Consejo Insular (Baleares)",
+          "ca": "Consell Insular (Balears)",
+          "fr": "Conseil insulaire (Baléares)",
+          "oc-aranes": "Conselh Insulau (Balears)"
+        },
+        {
+          "id": 6,
+          "en": "Island Council (Canary)",
+          "es": "Cabildo Insular (Canarias)",
+          "ca": "Cabildo Insular (Canàries)",
+          "fr": "Conseil insulaire (Canaries)",
+          "oc-aranes": "Cabildo Insulau (Canàries)"
+        },
+        {
+          "id": 7,
+          "en": "Municipality",
+          "es": "Ayuntamiento",
+          "ca": "Ajuntament",
+          "fr": "Municipalité",
+          "oc-aranes": "Ajuntament"
+        },
+        {
+          "id": 8,
+          "en": "Comarca",
+          "es": "Comarca",
+          "ca": "Comarca",
+          "fr": "Comarca",
+          "oc-aranes": "Comarca"
+        },
+        {
+          "id": 9,
+          "en": "Metropolitan Area",
+          "es": "Área Metropolitana",
+          "ca": "Àrea Metropolitana",
+          "fr": "Zone métropolitaine",
+          "oc-aranes": "Aira Metropolitana"
+        },
+        {
+          "id": 10,
+          "en": "Commonwealth of Municipalities",
+          "es": "Mancomunidad",
+          "ca": "Mancomunitat",
+          "fr": "Communauté de communes",
+          "oc-aranes": "Mancomunitat"
+        },
+        {
+          "id": 11,
+          "en": "Municipal Grouping",
+          "es": "Agrupación de Municipios",
+          "ca": "Agrupació de Municipis",
+          "fr": "Groupement municipal",
+          "oc-aranes": "Agropament de Municipis"
+        },
+        {
+          "id": 12,
+          "en": "Sub-municipal Entity",
+          "es": "Entidad de Ámbito Inferior al Municipio",
+          "ca": "Entitat d'Àmbit Inferior al Municipi",
+          "fr": "Entité sous-municipale",
+          "oc-aranes": "Entitat d'Ambit Inferior ath Municipi"
+        }
+      ]
+    },
+    "User": {
+      "field": "firstName",
+      "column": "User.firstName",
+      "seedDataOnly": true,
+      "translations": [
+        {
+          "id": 1,
+          "en": "Administrator",
+          "es": "Administrador",
+          "ca": "Administrador",
+          "fr": "Administrateur",
+          "oc-aranes": "Administrator"
+        },
+        {
+          "id": 2,
+          "en": "",
+          "es": "",
+          "ca": "",
+          "fr": "",
+          "oc-aranes": ""
+        }
+      ]
+    },
+    "TaskGroup": {
+      "field": "name",
+      "column": "TaskGroup.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Basic",
+          "es": "Básico",
+          "ca": "Bàsic",
+          "fr": "Basique",
+          "oc-aranes": "Basic"
+        }
+      ]
+    },
+    "Task": {
+      "field": "name",
+      "column": "Task.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Attribution",
+          "es": "Atribución",
+          "ca": "Atribució",
+          "fr": "Attribution",
+          "oc-aranes": "Atribucion"
+        },
+        {
+          "id": 2,
+          "en": "Basemap Selector",
+          "es": "Selector de mapa base",
+          "ca": "Selector de mapa base",
+          "fr": "Sélecteur de fond de carte",
+          "oc-aranes": "Selector de mapa de basa"
+        },
+        {
+          "id": 3,
+          "en": "Click",
+          "es": "Clic",
+          "ca": "Clic",
+          "fr": "Clic",
+          "oc-aranes": "Clic"
+        },
+        {
+          "id": 4,
+          "en": "Coordinates",
+          "es": "Coordenadas",
+          "ca": "Coordenades",
+          "fr": "Coordonnées",
+          "oc-aranes": "Coordenades"
+        },
+        {
+          "id": 5,
+          "en": "Data Loader",
+          "es": "Cargador de datos",
+          "ca": "Carregador de dades",
+          "fr": "Chargeur de données",
+          "oc-aranes": "Cargador de dades"
+        },
+        {
+          "id": 6,
+          "en": "Download",
+          "es": "Descarga",
+          "ca": "Descàrrega",
+          "fr": "Télécharger",
+          "oc-aranes": "Descarga"
+        },
+        {
+          "id": 7,
+          "en": "Draw, Measure and Modify",
+          "es": "Dibujar, Medir y Modificar",
+          "ca": "Dibuixar, Mesurar i Modificar",
+          "fr": "Dessiner, Mesurer et Modifier",
+          "oc-aranes": "Dessenhar, Mesurar e Modificar"
+        },
+        {
+          "id": 8,
+          "en": "Feature Info",
+          "es": "Información de entidad",
+          "ca": "Informació d'entitat",
+          "fr": "Informations sur l'entité",
+          "oc-aranes": "Informacion d'entitat"
+        },
+        {
+          "id": 9,
+          "en": "Full Screen",
+          "es": "Pantalla completa",
+          "ca": "Pantalla completa",
+          "fr": "Plein écran",
+          "oc-aranes": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "en": "Geolocation",
+          "es": "Geolocalización",
+          "ca": "Geolocalització",
+          "fr": "Géolocalisation",
+          "oc-aranes": "Geolocalizacion"
+        },
+        {
+          "id": 11,
+          "en": "Layer Catalog",
+          "es": "Catálogo de capas",
+          "ca": "Catàleg de capes",
+          "fr": "Catalogue de couches",
+          "oc-aranes": "Catològ de capes"
+        },
+        {
+          "id": 12,
+          "en": "Legend",
+          "es": "Leyenda",
+          "ca": "Llegenda",
+          "fr": "Légende",
+          "oc-aranes": "Legenda"
+        },
+        {
+          "id": 13,
+          "en": "Loading Indicator",
+          "es": "Indicador de carga",
+          "ca": "Indicador de càrrega",
+          "fr": "Indicateur de chargement",
+          "oc-aranes": "Indicator de carga"
+        },
+        {
+          "id": 14,
+          "en": "Measure",
+          "es": "Medir",
+          "ca": "Mesurar",
+          "fr": "Mesurer",
+          "oc-aranes": "Mesurar"
+        },
+        {
+          "id": 15,
+          "en": "Multi Feature Info",
+          "es": "Información múltiple de entidades",
+          "ca": "Informació múltiple d'entitats",
+          "fr": "Informations multi-entités",
+          "oc-aranes": "Informacion multipla d'entitats"
+        },
+        {
+          "id": 16,
+          "en": "Navigation Bar",
+          "es": "Barra de navegación",
+          "ca": "Barra de navegació",
+          "fr": "Barre de navigation",
+          "oc-aranes": "Barra de navegacion"
+        },
+        {
+          "id": 17,
+          "en": "Offline Map Maker",
+          "es": "Creador de mapas sin conexión",
+          "ca": "Creador de mapes sense connexió",
+          "fr": "Créateur de cartes hors ligne",
+          "oc-aranes": "Creator de mapes sens connexion"
+        },
+        {
+          "id": 18,
+          "en": "Overview Map",
+          "es": "Mapa de situación",
+          "ca": "Mapa de situació",
+          "fr": "Carte de situation",
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 19,
+          "en": "Popup",
+          "es": "Ventana emergente",
+          "ca": "Finestra emergent",
+          "fr": "Fenêtre contextuelle",
+          "oc-aranes": "Finèstra emergenta"
+        },
+        {
+          "id": 20,
+          "en": "Print Map",
+          "es": "Imprimir mapa",
+          "ca": "Imprimir mapa",
+          "fr": "Imprimer la carte",
+          "oc-aranes": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "en": "Scale",
+          "es": "Escala",
+          "ca": "Escala",
+          "fr": "Échelle",
+          "oc-aranes": "Escala"
+        },
+        {
+          "id": 22,
+          "en": "Scale Bar",
+          "es": "Barra de escala",
+          "ca": "Barra d'escala",
+          "fr": "Barre d'échelle",
+          "oc-aranes": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "en": "Scale Selector",
+          "es": "Selector de escala",
+          "ca": "Selector d'escala",
+          "fr": "Sélecteur d'échelle",
+          "oc-aranes": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "en": "Search",
+          "es": "Buscar",
+          "ca": "Cercar",
+          "fr": "Rechercher",
+          "oc-aranes": "Cercar"
+        },
+        {
+          "id": 25,
+          "en": "Share",
+          "es": "Compartir",
+          "ca": "Compartir",
+          "fr": "Partager",
+          "oc-aranes": "Compartir"
+        },
+        {
+          "id": 26,
+          "en": "Street View",
+          "es": "Vista de calle",
+          "ca": "Vista de carrer",
+          "fr": "Vue de rue",
+          "oc-aranes": "Vista de carrèr"
+        },
+        {
+          "id": 27,
+          "en": "3D View",
+          "es": "Vista 3D",
+          "ca": "Vista 3D",
+          "fr": "Vue 3D",
+          "oc-aranes": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "en": "WFSEdit",
+          "es": "Edición WFS",
+          "ca": "Edició WFS",
+          "fr": "Édition WFS",
+          "oc-aranes": "Edicion WFS"
+        },
+        {
+          "id": 29,
+          "en": "WFS Query",
+          "es": "Consulta WFS",
+          "ca": "Consulta WFS",
+          "fr": "Requête WFS",
+          "oc-aranes": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "en": "Work Layer Manager",
+          "es": "Gestor de capas de trabajo",
+          "ca": "Gestor de capes de treball",
+          "fr": "Gestionnaire de couches de travail",
+          "oc-aranes": "Gestionari de capes de trabalh"
+        }
+      ]
+    },
+    "TaskUITooltip": {
+      "field": "tooltip",
+      "column": "TaskUITooltip.tooltip",
+      "seedDataOnly": true,
+      "translations": [
+        {
+          "id": 1,
+          "en": "Attribution",
+          "es": "Atribución",
+          "ca": "Atribució",
+          "fr": "Attribution",
+          "oc-aranes": "Atribucion"
+        },
+        {
+          "id": 2,
+          "en": "Basemap Selector",
+          "es": "Selector de mapa base",
+          "ca": "Selector de mapa base",
+          "fr": "Sélecteur de fond de carte",
+          "oc-aranes": "Selector de mapa de basa"
+        },
+        {
+          "id": 3,
+          "en": "Click",
+          "es": "Clic",
+          "ca": "Clic",
+          "fr": "Clic",
+          "oc-aranes": "Clic"
+        },
+        {
+          "id": 4,
+          "en": "Coordinates",
+          "es": "Coordenadas",
+          "ca": "Coordenades",
+          "fr": "Coordonnées",
+          "oc-aranes": "Coordenades"
+        },
+        {
+          "id": 5,
+          "en": "Data Loader",
+          "es": "Cargador de datos",
+          "ca": "Carregador de dades",
+          "fr": "Chargeur de données",
+          "oc-aranes": "Cargador de dades"
+        },
+        {
+          "id": 6,
+          "en": "Download",
+          "es": "Descarga",
+          "ca": "Descàrrega",
+          "fr": "Télécharger",
+          "oc-aranes": "Descarga"
+        },
+        {
+          "id": 7,
+          "en": "Draw, Measure and Modify",
+          "es": "Dibujar, Medir y Modificar",
+          "ca": "Dibuixar, Mesurar i Modificar",
+          "fr": "Dessiner, Mesurer et Modifier",
+          "oc-aranes": "Dessenhar, Mesurar e Modificar"
+        },
+        {
+          "id": 8,
+          "en": "Feature Info",
+          "es": "Información de entidad",
+          "ca": "Informació d'entitat",
+          "fr": "Informations sur l'entité",
+          "oc-aranes": "Informacion d'entitat"
+        },
+        {
+          "id": 9,
+          "en": "Full Screen",
+          "es": "Pantalla completa",
+          "ca": "Pantalla completa",
+          "fr": "Plein écran",
+          "oc-aranes": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "en": "Geolocation",
+          "es": "Geolocalización",
+          "ca": "Geolocalització",
+          "fr": "Géolocalisation",
+          "oc-aranes": "Geolocalizacion"
+        },
+        {
+          "id": 11,
+          "en": "Layer Catalog",
+          "es": "Catálogo de capas",
+          "ca": "Catàleg de capes",
+          "fr": "Catalogue de couches",
+          "oc-aranes": "Catològ de capes"
+        },
+        {
+          "id": 12,
+          "en": "Legend",
+          "es": "Leyenda",
+          "ca": "Llegenda",
+          "fr": "Légende",
+          "oc-aranes": "Legenda"
+        },
+        {
+          "id": 13,
+          "en": "Loading Indicator",
+          "es": "Indicador de carga",
+          "ca": "Indicador de càrrega",
+          "fr": "Indicateur de chargement",
+          "oc-aranes": "Indicator de carga"
+        },
+        {
+          "id": 14,
+          "en": "Measure",
+          "es": "Medir",
+          "ca": "Mesurar",
+          "fr": "Mesurer",
+          "oc-aranes": "Mesurar"
+        },
+        {
+          "id": 15,
+          "en": "Multi Feature Info",
+          "es": "Información múltiple de entidades",
+          "ca": "Informació múltiple d'entitats",
+          "fr": "Informations multi-entités",
+          "oc-aranes": "Informacion multipla d'entitats"
+        },
+        {
+          "id": 16,
+          "en": "Navigation Bar",
+          "es": "Barra de navegación",
+          "ca": "Barra de navegació",
+          "fr": "Barre de navigation",
+          "oc-aranes": "Barra de navegacion"
+        },
+        {
+          "id": 17,
+          "en": "Offline Map Maker",
+          "es": "Creador de mapas sin conexión",
+          "ca": "Creador de mapes sense connexió",
+          "fr": "Créateur de cartes hors ligne",
+          "oc-aranes": "Creator de mapes sens connexion"
+        },
+        {
+          "id": 18,
+          "en": "Overview Map",
+          "es": "Mapa de situación",
+          "ca": "Mapa de situació",
+          "fr": "Carte de situation",
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 19,
+          "en": "Popup",
+          "es": "Ventana emergente",
+          "ca": "Finestra emergent",
+          "fr": "Fenêtre contextuelle",
+          "oc-aranes": "Finèstra emergenta"
+        },
+        {
+          "id": 20,
+          "en": "Print Map",
+          "es": "Imprimir mapa",
+          "ca": "Imprimir mapa",
+          "fr": "Imprimer la carte",
+          "oc-aranes": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "en": "Scale",
+          "es": "Escala",
+          "ca": "Escala",
+          "fr": "Échelle",
+          "oc-aranes": "Escala"
+        },
+        {
+          "id": 22,
+          "en": "Scale Bar",
+          "es": "Barra de escala",
+          "ca": "Barra d'escala",
+          "fr": "Barre d'échelle",
+          "oc-aranes": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "en": "Scale Selector",
+          "es": "Selector de escala",
+          "ca": "Selector d'escala",
+          "fr": "Sélecteur d'échelle",
+          "oc-aranes": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "en": "Search",
+          "es": "Buscar",
+          "ca": "Cercar",
+          "fr": "Rechercher",
+          "oc-aranes": "Cercar"
+        },
+        {
+          "id": 25,
+          "en": "Share",
+          "es": "Compartir",
+          "ca": "Compartir",
+          "fr": "Partager",
+          "oc-aranes": "Compartir"
+        },
+        {
+          "id": 26,
+          "en": "Street View",
+          "es": "Vista de calle",
+          "ca": "Vista de carrer",
+          "fr": "Vue de rue",
+          "oc-aranes": "Vista de carrèr"
+        },
+        {
+          "id": 27,
+          "en": "3D View",
+          "es": "Vista 3D",
+          "ca": "Vista 3D",
+          "fr": "Vue 3D",
+          "oc-aranes": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "en": "WFSEdit",
+          "es": "Edición WFS",
+          "ca": "Edició WFS",
+          "fr": "Édition WFS",
+          "oc-aranes": "Edicion WFS"
+        },
+        {
+          "id": 29,
+          "en": "WFS Query",
+          "es": "Consulta WFS",
+          "ca": "Consulta WFS",
+          "fr": "Requête WFS",
+          "oc-aranes": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "en": "Work Layer Manager",
+          "es": "Gestor de capas de trabajo",
+          "ca": "Gestor de capes de treball",
+          "fr": "Gestionnaire de couches de travail",
+          "oc-aranes": "Gestionari de capes de trabalh"
+        }
+      ]
+    }
+  }
+}

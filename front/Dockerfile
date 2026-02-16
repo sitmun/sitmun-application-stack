@@ -1,9 +1,11 @@
 # Stage 0, "build-apps", based on Node.js, to build and compile both frontend apps sequentially
 FROM node:20 AS build-apps
 ARG PUBLIC_BASE_PATH=/
-ARG BUILD_MODE=production
+ARG ENVIRONMENT=development
+ARG APP_VERSION=0.0.0
 ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
-ENV BUILD_MODE=${BUILD_MODE}
+ENV ENVIRONMENT=${ENVIRONMENT}
+ENV APP_VERSION=${APP_VERSION}
 # Cache apt-get packages and install gettext
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -21,8 +23,14 @@ RUN --mount=type=cache,target=/root/.npm \
 COPY --chown=node:node front/admin/sitmun-admin-app/*.json front/admin/sitmun-admin-app/*.js ./
 COPY --chown=node:node front/admin/sitmun-admin-app/src/ ./src/
 COPY --chown=node:node front/admin/environment.prod.ts.template ./src/environments/environment.prod.ts.template
-RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
-RUN npm run build -- --configuration=${BUILD_MODE} --base-href=${PUBLIC_BASE_PATH}admin/
+RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
+    if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
+    envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
+RUN if [ "${ENVIRONMENT}" = "development" ]; then \
+      npm run build -- --configuration=docker-dev --base-href=${PUBLIC_BASE_PATH}admin/; \
+    else \
+      npm run build -- --configuration=production --base-href=${PUBLIC_BASE_PATH}admin/; \
+    fi
 
 # Clean up and prepare for viewer app build
 RUN rm -rf node_modules package*.json src
@@ -38,10 +46,16 @@ COPY --chown=node:node front/viewer/sitmun-viewer-app/src/ ./src/
 COPY --chown=node:node front/viewer/environment.prod.ts.template ./src/environments/environment.prod.ts.template
 COPY --chown=node:node front/viewer/index.html.template ./src/index.html.template
 COPY --chown=node:node front/viewer/webpack.config.js.template ./webpack.config.js.template
-RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
+RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
+    if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
+    envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
 RUN envsubst < ./src/index.html.template > ./src/index.html
 RUN envsubst < ./webpack.config.js.template > ./webpack.config.js
-RUN npm run build -- --configuration=${BUILD_MODE} --base-href=${PUBLIC_BASE_PATH}viewer/
+RUN if [ "${ENVIRONMENT}" = "development" ]; then \
+      npm run build -- --configuration=docker-dev --base-href=${PUBLIC_BASE_PATH}viewer/; \
+    else \
+      npm run build -- --configuration=production --base-href=${PUBLIC_BASE_PATH}viewer/; \
+    fi
 
 # Stage 1, based on Nginx, to have only the compiled apps, ready for production with Nginx
 FROM nginx:1.27-alpine

@@ -38,4 +38,6 @@
   <include file="changelog/30_align_task_ids_with_core.sql" relativeToChangelogFile="true"/>
   <include file="changelog/31_align_task_ui_with_core.sql" relativeToChangelogFile="true"/>
   <include file="changelog/32_remove_div_from_task_params.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/33_fix_node_type_codelists.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/34_update_printmap_logo.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

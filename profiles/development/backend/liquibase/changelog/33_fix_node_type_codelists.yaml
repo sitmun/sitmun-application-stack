@@ -1,0 +1,105 @@
+databaseChangeLog:
+  - changeSet:
+      id: 33
+      author: sitmun
+      context: dev,prod
+      comment: Fix treenode type classifications - menu should be folder type, fav/map/nm should be leaf types, set NULL node types, and fix tree type
+      changes:
+        # Fix tree type for tourism tree (tourist -> touristic)
+        - update:
+            tableName: STM_TREE
+            columns:
+              - column:
+                  name: TRE_TYPE
+                  value: touristic
+            where: TRE_ID = 41 AND TRE_TYPE = 'tourist'
+        # Fix code list classifications
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.folder.type
+            where: COD_LIST = 'treenode.leaf.type' AND COD_VALUE = 'menu'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.leaf.type
+            where: COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'fav'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.leaf.type
+            where: COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'map'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.leaf.type
+            where: COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'nm'
+        # Set node type for folder nodes (nodes without task and cartography)
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_TYPE
+                  value: cartography
+            where: TNO_TYPE IS NULL AND TNO_GIID IS NULL AND TNO_TASKID IS NULL
+        # Set node type for task leaf nodes
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_TYPE
+                  value: task
+            where: TNO_TYPE IS NULL AND TNO_TASKID IS NOT NULL
+        # Set node type for cartography leaf nodes
+        - update:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_TYPE
+                  value: cartography
+            where: TNO_TYPE IS NULL AND TNO_GIID IS NOT NULL
+        # Fix NULL tree types - set to cartography (default type)
+        - update:
+            tableName: STM_TREE
+            columns:
+              - column:
+                  name: TRE_TYPE
+                  value: cartography
+            where: TRE_TYPE IS NULL
+      rollback:
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.leaf.type
+            where: COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'menu'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.folder.type
+            where: COD_LIST = 'treenode.leaf.type' AND COD_VALUE = 'fav'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.folder.type
+            where: COD_LIST = 'treenode.leaf.type' AND COD_VALUE = 'map'
+        - update:
+            tableName: STM_CODELIST
+            columns:
+              - column:
+                  name: COD_LIST
+                  value: treenode.folder.type
+            where: COD_LIST = 'treenode.leaf.type' AND COD_VALUE = 'nm'
