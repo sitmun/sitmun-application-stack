@@ -1,0 +1,13 @@
+TET_ID,TET_NAME,TET_OFFICIAL,TET_TOP,TET_BOTTOM
+1,Country,true,true,false
+2,Autonomous Community,true,false,false
+3,Autonomous City,true,false,false
+4,Provincial Council,true,false,false
+5,Island Council (Balearic),true,false,false
+6,Island Council (Canary),true,false,false
+7,Municipality,true,false,true
+8,Comarca,false,false,false
+9,Metropolitan Area,false,false,false
+10,Commonwealth of Municipalities,false,false,false
+11,Municipal Grouping,false,false,false
+12,Sub-municipal Entity,false,false,false

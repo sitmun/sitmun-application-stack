@@ -1,0 +1,113 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: sitmun
+      changes:
+        - loadData:
+            encoding: UTF-8
+            file: 05_translations/STM_LANGUAGE.csv
+            relativeToChangelogFile: true
+            tableName: STM_LANGUAGE
+            columns:
+              - column:
+                  name: LAN_ID
+                  type: NUMERIC
+              - column:
+                  name: LAN_SHORTNAME
+                  type: STRING
+              - column:
+                  name: LAN_NAME
+                  type: STRING
+        - loadData:
+            encoding: UTF-8
+            file: 05_translations/STM_TRANSLATION_ES.csv
+            relativeToChangelogFile: true
+            tableName: STM_TRANSLATION
+            quotchar: "\"" 
+            columns:
+              - column:
+                  name: TRA_ID
+                  type: NUMERIC
+              - column:
+                  name: TRA_ELEID
+                  type: NUMERIC
+              - column:
+                  name: TRA_COLUMN
+                  type: STRING
+              - column:
+                  name: TRA_LANID
+                  type: NUMERIC
+              - column:
+                  name: TRA_NAME
+                  type: STRING
+        - loadData:
+            encoding: UTF-8
+            file: 05_translations/STM_TRANSLATION_CA.csv
+            relativeToChangelogFile: true
+            tableName: STM_TRANSLATION
+            quotchar: "\"" 
+            columns:
+              - column:
+                  name: TRA_ID
+                  type: NUMERIC
+              - column:
+                  name: TRA_ELEID
+                  type: NUMERIC
+              - column:
+                  name: TRA_COLUMN
+                  type: STRING
+              - column:
+                  name: TRA_LANID
+                  type: NUMERIC
+              - column:
+                  name: TRA_NAME
+                  type: STRING
+        - loadData:
+            encoding: UTF-8
+            file: 05_translations/STM_TRANSLATION_OC_ARANES.csv
+            relativeToChangelogFile: true
+            tableName: STM_TRANSLATION
+            quotchar: "\"" 
+            columns:
+              - column:
+                  name: TRA_ID
+                  type: NUMERIC
+              - column:
+                  name: TRA_ELEID
+                  type: NUMERIC
+              - column:
+                  name: TRA_COLUMN
+                  type: STRING
+              - column:
+                  name: TRA_LANID
+                  type: NUMERIC
+              - column:
+                  name: TRA_NAME
+                  type: STRING
+        - loadData:
+            encoding: UTF-8
+            file: 05_translations/STM_TRANSLATION_FR.csv
+            relativeToChangelogFile: true
+            tableName: STM_TRANSLATION
+            quotchar: "\"" 
+            columns:
+              - column:
+                  name: TRA_ID
+                  type: NUMERIC
+              - column:
+                  name: TRA_ELEID
+                  type: NUMERIC
+              - column:
+                  name: TRA_COLUMN
+                  type: STRING
+              - column:
+                  name: TRA_LANID
+                  type: NUMERIC
+              - column:
+                  name: TRA_NAME
+                  type: STRING
+        - sql:
+            comment: Normalize __NULL_VALUE__ placeholder to literal "null" in codelist and translations
+            sql: |
+              UPDATE STM_CODELIST SET COD_VALUE = 'null', COD_DESCRIPTION = 'null' WHERE COD_VALUE = '__NULL_VALUE__';
+              UPDATE STM_TRANSLATION SET TRA_NAME = 'null' WHERE TRA_NAME = '__NULL_VALUE__';

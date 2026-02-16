@@ -1,0 +1,8 @@
+# Oracle-specific configuration
+spring:
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.OracleDialect
+      # Oracle uses NUMBER(1,0) for booleans; INTEGER (code 4) binds as int 0/1
+      # NUMERIC (code 2) fails because BooleanJavaType cannot unwrap to BigDecimal
+      hibernate.type.preferred_boolean_jdbc_type: INTEGER

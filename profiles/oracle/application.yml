@@ -1,0 +1,84 @@
+# ===================================================================
+# SITMUN deployment overrides
+# Only properties that differ from the jar's internal defaults
+# or are not set via environment variables in docker-compose.yml
+# ===================================================================
+
+sitmun:
+  proxy:
+    config-response-validity-in-seconds: 3600
+  ui:
+    image:
+      sizes:
+        - type: menu
+          width: 50
+          height: 50
+        - type: list
+          width: 25
+          height: 25
+
+# ===================================================================
+# Spring Boot
+# ===================================================================
+
+spring:
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  jpa:
+    properties:
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.jdbc.time_zone: UTC
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.jdbc.batch_size: 25
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.jdbc.fetch_size: 150
+      hibernate.criteria.literal_handling_mode: BIND
+      hibernate.query.fail_on_pagination_over_collection_fetch: false
+      hibernate.query.in_clause_parameter_padding: true
+      javax.persistence.validation.mode: none
+  liquibase:
+    change-log: file:/usr/src/config/liquibase/master.xml
+  task:
+    execution:
+      thread-name-prefix: sample-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: sample-scheduling-
+      pool:
+        size: 2
+
+# ===================================================================
+# Security
+# ===================================================================
+
+security:
+  authentication:
+    jwt:
+      secret: 9ef80c644166846897f6a87d3cf6ab204d144229
+      token-validity-in-miliseconds: 36000000
+    ldap:
+      host: ldap://localhost:1389
+      base_dn: dc=example,dc=com
+      user_dn_pattern: uid={0}
+      user_ldap: cn=admin
+      password_ldap: admin
+
+# ===================================================================
+# Server
+# ===================================================================
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        http-only: true

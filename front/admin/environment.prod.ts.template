@@ -4,7 +4,7 @@ export const environment = {
   production: true,
   apiBaseURL: '${PUBLIC_BASE_PATH}backend',
   logLevel: LogLevel.Error,
-  version: '1.2.0',
+  version: '${APP_VERSION}',
   buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
-  environmentName: 'production'
+  environmentName: '${FRONT_ENV}'
 };

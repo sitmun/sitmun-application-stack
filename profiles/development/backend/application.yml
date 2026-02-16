@@ -88,11 +88,6 @@ spring:
     serialization:
       indent-output: true
       fail_on_empty_beans: false
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      poolName: Hikari
-      auto-commit: false
   h2:
     console:
       enabled: false
@@ -111,16 +106,12 @@ spring:
       hibernate.jdbc.batch_size: 25
       hibernate.order_inserts: true
       hibernate.order_updates: true
-      hibernate.jdbc.fetch_size: 150
       hibernate.criteria.literal_handling_mode: BIND
-      hibernate.query.fail_on_pagination_over_collection_fetch: true
       hibernate.query.in_clause_parameter_padding: true
       javax.persistence.validation.mode: none
   liquibase:
     change-log: file:/usr/src/config/liquibase/master.xml
     contexts: dev
-  main:
-    allow-bean-definition-overriding: true
   task:
     execution:
       thread-name-prefix: sample-task-

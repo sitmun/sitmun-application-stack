@@ -1,0 +1,95 @@
+COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
+1,application.type,ED,TRUE,FALSE,Edition application
+2,application.type,E,FALSE,FALSE,External application
+3,application.type,I,FALSE,FALSE,Internal application
+4,application.type,T,TRUE,FALSE,Tourist application
+5,applicationParameter.type,MOBILE,FALSE,FALSE,Mobile app parameter
+6,applicationParameter.type,Nomenclator,FALSE,FALSE,Nomenclator parameter
+7,applicationParameter.type,PRINT_TEMPLATE,FALSE,FALSE,Print template
+8,cartography.geometryType,LINE,FALSE,FALSE,Line
+9,cartography.geometryType,POINT,FALSE,FALSE,Point
+10,cartography.geometryType,POLYGON,FALSE,FALSE,Polygon
+11,cartography.legendType,LEGENDGRAPHIC,FALSE,FALSE,Get Legend Graphic
+12,cartography.legendType,CAPABILITIES,FALSE,FALSE,GetCapabilities
+13,cartography.legendType,LINK,FALSE,FALSE,Static link
+14,cartographyFilter.type,C,FALSE,FALSE,Custom
+15,cartographyFilter.type,D,FALSE,FALSE,Defined
+16,cartographyFilter.valueType,A,FALSE,FALSE,Alphanumeric
+17,cartographyFilter.valueType,D,FALSE,FALSE,Date
+18,cartographyFilter.valueType,N,FALSE,FALSE,Number
+19,cartographyParameter.format,F,FALSE,FALSE,Date
+20,cartographyParameter.format,I,FALSE,FALSE,Image
+21,cartographyParameter.format,N,FALSE,FALSE,Number
+22,cartographyParameter.format,P,FALSE,FALSE,Percentage
+23,cartographyParameter.format,T,FALSE,FALSE,Text
+24,cartographyParameter.format,U,FALSE,FALSE,URL
+25,cartographyParameter.type,INFO,FALSE,TRUE,INFO
+26,cartographyPermission.type,F,TRUE,FALSE,Background map
+27,cartographyPermission.type,C,TRUE,FALSE,Cartography group
+28,cartographyPermission.type,M,TRUE,FALSE,Location map
+29,cartographyPermission.type,I,TRUE,FALSE,Report
+30,cartographySpatialSelectionParameter.format,F,FALSE,FALSE,Date
+31,cartographySpatialSelectionParameter.format,I,FALSE,FALSE,Image
+32,cartographySpatialSelectionParameter.format,N,FALSE,FALSE,Number
+33,cartographySpatialSelectionParameter.format,P,FALSE,FALSE,Percentage
+34,cartographySpatialSelectionParameter.format,T,FALSE,FALSE,Text
+35,cartographySpatialSelectionParameter.format,U,FALSE,FALSE,URL
+36,cartographySpatialSelectionParameter.type,EDIT,FALSE,TRUE,EDIT
+37,cartographySpatialSelectionParameter.type,SELECT,FALSE,FALSE,SELECT
+38,downloadTask.scope,A,FALSE,FALSE,Application
+39,downloadTask.scope,U,FALSE,FALSE,Isolated
+40,downloadTask.scope,C,FALSE,FALSE,Layer
+41,editTask.fieldType,date,TRUE,FALSE,Date
+42,editTask.fieldType,image,TRUE,FALSE,Image
+43,editTask.fieldType,listbox,TRUE,FALSE,ListBox
+44,editTask.fieldType,number,TRUE,FALSE,Number
+45,editTask.fieldType,text,TRUE,FALSE,Text
+46,editTask.scope,db-edit,TRUE,FALSE,Database edition
+47,editTask.scope,feat-edit,TRUE,FALSE,Features service edition (WFS)
+48,queryTask.parameterType,query,TRUE,FALSE,Query parameter
+49,queryTask.parameterType,template,TRUE,FALSE,Template parameter
+50,queryTask.scope,cartography-query,TRUE,FALSE,Cartography Query
+51,queryTask.scope,sql-query,TRUE,FALSE,SQL Query
+52,queryTask.scope,web-api-query,TRUE,FALSE,Web API Query
+53,service.authenticationMode,HTTP Basic authentication,TRUE,FALSE,HTTP Basic authentication
+54,service.authenticationMode,None,TRUE,TRUE,None
+55,service.type,WFS,FALSE,FALSE,WFS
+56,service.type,WMS,FALSE,FALSE,WMS
+57,service.type,WMTS,FALSE,FALSE,WMTS
+58,serviceParameter.type,INFO,FALSE,FALSE,GetFeatureInfo
+59,serviceParameter.type,WMS,FALSE,FALSE,GetMap
+60,serviceParameter.type,OLPARAM,FALSE,FALSE,OpenLayers
+61,serviceParameter.type,WMTS,FALSE,FALSE,WMTS
+62,taskEntity.jsonParamType,__NULL_VALUE__,TRUE,FALSE,__NULL_VALUE__
+63,taskEntity.jsonParamType,array,TRUE,FALSE,array
+64,taskEntity.jsonParamType,boolean,TRUE,FALSE,boolean
+65,taskEntity.jsonParamType,number,TRUE,FALSE,number
+66,taskEntity.jsonParamType,object,TRUE,FALSE,object
+67,taskEntity.jsonParamType,string,TRUE,FALSE,string
+68,territory.scope,M,FALSE,FALSE,Municipality
+69,territory.scope,R,FALSE,FALSE,Regional
+70,territory.scope,T,FALSE,FALSE,Total
+71,tree.type,cartography,FALSE,TRUE,Cartography
+72,tree.type,edition,TRUE,FALSE,Edition tree
+73,tree.type,touristic,TRUE,FALSE,Tourist application
+74,treenode.folder.type,cartography,TRUE,FALSE,Cartography
+75,treenode.folder.type,list,TRUE,FALSE,List
+76,treenode.folder.type,menu,TRUE,FALSE,Menu
+77,treenode.leaf.type,cartography,TRUE,FALSE,Cartography
+78,treenode.leaf.type,fav,TRUE,FALSE,Favorites
+79,treenode.leaf.type,map,TRUE,FALSE,Map
+80,treenode.leaf.type,nm,TRUE,FALSE,Near me
+81,treenode.leaf.type,task,TRUE,FALSE,Task
+82,treenode.viewmode,dl,TRUE,FALSE,Detailed list
+83,treenode.viewmode,evt,TRUE,FALSE,Events
+84,treenode.viewmode,evtcat,TRUE,FALSE,Events categories
+85,treenode.viewmode,evtloc,TRUE,FALSE,Events locations
+86,treenode.viewmode,gallery,TRUE,FALSE,Gallery
+87,treenode.viewmode,ms,TRUE,FALSE,Map search
+88,treenode.viewmode,ne,TRUE,FALSE,Near elements
+89,treenode.viewmode,rt,TRUE,FALSE,Routes list
+90,treenode.viewmode,sch,TRUE,FALSE,Schedule
+91,user.identificationType,DNI,FALSE,FALSE,DNI
+92,user.identificationType,NIE,FALSE,FALSE,NIE
+93,user.identificationType,PAS,FALSE,FALSE,Passport
+94,userPosition.type,POC,FALSE,FALSE,Point of contact

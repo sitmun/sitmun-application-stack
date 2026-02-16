@@ -1,3 +1,60 @@
+# SITMUN Application Stack - Docker Compose Configuration
+#
+# ============================================================================
+# Environment Configuration (.env files)
+# ============================================================================
+#
+# This stack uses Docker Compose's environment file system:
+#
+# 1. .env (not committed) - Default development configuration
+#    - At least should include COMPOSE_PROFILES
+#    - Minimum content:
+#      COMPOSE_PROFILES=postgres,dev
+#
+# 2. Profile files (profiles/*.env) - Predefined configurations
+#    - development-postgres.env: Development with PostgreSQL + demo data
+#    - development-oracle.env: Development with Oracle + demo data
+#    - postgres.env: Production with PostgreSQL (minimal seed data)
+#    - oracle.env: Production with Oracle (minimal seed data)
+#
+# Docker Compose reads files in this order (last wins):
+#   .env → .env.local → Environment variables
+#
+# ============================================================================
+# Quick Start
+# ============================================================================
+#
+# Development (default):
+#   cp profiles/development-postgres.env .env
+#   docker compose up -d
+#
+# Production:
+#   cp profiles/postgres.env .env
+#   docker compose up -d
+#
+# Local customization:
+#   echo "PUBLIC_PORT=8080" >> .env.local
+#   docker compose up -d
+#
+# ============================================================================
+# Default Configuration (from committed .env)
+# ============================================================================
+#
+# Frontend:
+#   - ENVIRONMENT=development (shows "development", source maps enabled)
+#   - PUBLIC_PORT=9000 (http://localhost:9000)
+#
+# Backend:
+#   - DATABASE_TYPE=postgres
+#   - SITMUN_CONFIG_DIR=development/backend (42 changesets, extensive demo data)
+#   - COMPOSE_PROFILES=postgres,dev (PostgreSQL + example demo database)
+#
+# Databases:
+#   - PostgreSQL on port 9003 (docker host)
+#   - Example demo DB on port 9005 (docker host)
+#
+# ============================================================================
+
 services:
   front:
     build: 
@@ -5,14 +62,15 @@ services:
       dockerfile: front/Dockerfile
       args:
         - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
-        - BUILD_MODE=${BUILD_MODE:-production}
+        - ENVIRONMENT=${ENVIRONMENT:-development}
+        - APP_VERSION=${APP_VERSION:-0.0.0}
     restart: always
     ports:
       - "${LOCAL_PORT:-9000}:80"
     environment:
       - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME:-http}
       - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME:-localhost}
-      - PUBLIC_PORT=${PUBLIC_PORT:-}
+      - PUBLIC_PORT=${PUBLIC_PORT:-9000}
       - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
       - LOCAL_BASE_PATH=${LOCAL_BASE_PATH:-/}
     volumes:
@@ -34,24 +92,39 @@ services:
       - "9001:8080"
     restart: always
     environment:
-      - SPRING_PROFILES_ACTIVE=${SITMUN_DB_PROFILE:-postgres}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-${DATABASE_TYPE:-postgres}}
       - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
+      - SPRING_LIQUIBASE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
+      - SPRING_LIQUIBASE_USER=${DATABASE_USERNAME:-sitmun3}
+      - SPRING_LIQUIBASE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
+      - SPRING_LIQUIBASE_CHANGE_LOG=${SPRING_LIQUIBASE_CHANGE_LOG:-file:/usr/src/config/liquibase/master.xml}
+      - SPRING_LIQUIBASE_CONTEXTS=${SPRING_LIQUIBASE_CONTEXTS:-dev}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
-      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}middleware
-      - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:+:${PUBLIC_PORT}}${PUBLIC_BASE_PATH:-/}backend
+      - SITMUN_PROXY_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:-1:+:${PUBLIC_PORT:-9000}}${PUBLIC_BASE_PATH:-/}middleware
+      - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}${PUBLIC_NON_STANDARD_PORT:-1:+:${PUBLIC_PORT:-9000}}${PUBLIC_BASE_PATH:-/}backend
       - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+      - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
+      - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-DEBUG}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
+      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=${HIKARI_CONNECTION_TIMEOUT:-60000}
     volumes:
-      - ./profiles/development/backend:/usr/src/config
+      - ./profiles/${SITMUN_CONFIG_DIR:-development/backend}:/usr/src/config
     depends_on:
-      - ${SITMUN_DB_PROFILE:-postgres}
+      postgres:
+        condition: service_healthy
+        required: false
+      oracle:
+        condition: service_healthy
+        required: false
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
       interval: 30s
       timeout: 30s
-      start_period: 5s
-      retries: 3
+      start_period: 60s
+      retries: 5
 
   proxy:
     build: ./back/proxy
@@ -84,16 +157,18 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DATABASE_USERNAME:-sitmun3}"]
-      interval: 30s
-      timeout: 30s
+      # Test that PostgreSQL is accepting connections and can execute queries
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-sitmun3} -d ${DATABASE:-sitmun3} && psql -U ${DATABASE_USERNAME:-sitmun3} -d ${DATABASE:-sitmun3} -c 'SELECT 1' > /dev/null 2>&1"]
+      interval: 5s
+      timeout: 3s
       start_period: 5s
-      retries: 3
+      retries: 5
 
   oracle:
     profiles:
       - oracle
     image: gvenzl/oracle-free:23-slim
+    restart: always
     ports:
       - "9004:1521"
     environment:
@@ -104,11 +179,16 @@ services:
     volumes:
         - oradata:/opt/oracle/oradata
     healthcheck:
-        test: ["CMD", "sqlplus", "-L", "${DATABASE_USERNAME:-sitmun3}/${DATABASE_PASSWORD:-sitmun3}@//localhost:1521/${DATABASE:-sitmun3}", "-c", "SELECT 1 FROM DUAL;"]
-        interval: 30s
-        timeout: 10s
-        retries: 5
-        start_period: 60s
+      # Test that the service is registered with the listener AND database accepts connections
+      test: |
+        bash -c '
+        lsnrctl status | grep -q "Service \"${DATABASE:-sitmun3}\"" &&
+        echo "SELECT 1 FROM DUAL;" | sqlplus -s ${DATABASE_USERNAME:-sitmun3}/${DATABASE_PASSWORD:-sitmun3}@//localhost:1521/${DATABASE:-sitmun3} | grep -q "1"
+        '
+      interval: 5s
+      timeout: 5s
+      start_period: 60s
+      retries: 20
 
   example:
     profiles:
