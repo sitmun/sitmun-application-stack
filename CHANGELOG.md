@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-02-16
+
+### Fixed
+
+#### Backend Core / Development data
+
+- Print Map task (TAS_ID 20): logo parameter updated from `https://ide.cime.es/stm3/admin/assets/img/logos/logo_sitmun.svg` to `https://avatars.githubusercontent.com/u/24718368?s=200&v=4` to avoid CORS issues when embedding the image in the printed map.
+
 ## [1.2.1] - 2026-02-06
 
 ### Added
@@ -529,7 +537,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.1...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...HEAD
+[1.2.2]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.1...sitmun-application-stack/1.2.2
 [1.2.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.0...v1.1.1
