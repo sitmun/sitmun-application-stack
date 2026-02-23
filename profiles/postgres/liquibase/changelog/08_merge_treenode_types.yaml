@@ -1,0 +1,263 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: sitmun
+      context: dev,prod
+      comment: Add treenode.node.type codelist with all node types (additive; legacy lists unchanged)
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'cartography', TRUE, FALSE, 'Cartography'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'folder', TRUE, FALSE, 'Folder'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'list', TRUE, FALSE, 'List'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'menu', TRUE, FALSE, 'Menu'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'task', TRUE, FALSE, 'Task'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'fav', TRUE, FALSE, 'Favorites'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'map', TRUE, FALSE, 'Map'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map')
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'treenode.node.type', 'nm', TRUE, FALSE, 'Near me'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm')
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST) WHERE SEQ_NAME = 'COD_ID'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_TRANSLATION WHERE TRA_COLUMN = 'CodeListValue.description' AND TRA_ELEID IN (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type')
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type'
+
+  - changeSet:
+      id: 8-translations
+      author: sitmun
+      context: dev,prod
+      comment: Add CodeListValue.description translations for treenode.node.type (ES=2, CA=3, OC=4, FR=5)
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'), 'CodeListValue.description', 2, 'Cartografía'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'), 'CodeListValue.description', 3, 'Cartografia'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'), 'CodeListValue.description', 4, 'Cartografia'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'), 'CodeListValue.description', 5, 'Cartographie'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'cartography') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'), 'CodeListValue.description', 2, 'Carpeta'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'), 'CodeListValue.description', 3, 'Carpeta'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'), 'CodeListValue.description', 4, 'Carpeta'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'), 'CodeListValue.description', 5, 'Dossier'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'folder') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'), 'CodeListValue.description', 2, 'Lista'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'), 'CodeListValue.description', 3, 'Llista'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'), 'CodeListValue.description', 4, 'Lista'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'), 'CodeListValue.description', 5, 'Liste'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'list') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'), 'CodeListValue.description', 2, 'Menú'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'), 'CodeListValue.description', 3, 'Menú'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'), 'CodeListValue.description', 4, 'Menú'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'), 'CodeListValue.description', 5, 'Menu'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'menu') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'), 'CodeListValue.description', 2, 'Tarea'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'), 'CodeListValue.description', 3, 'Tasca'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'), 'CodeListValue.description', 4, 'Tasca'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'), 'CodeListValue.description', 5, 'Tâche'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'task') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'), 'CodeListValue.description', 2, 'Favoritos'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'), 'CodeListValue.description', 3, 'Favorits'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'), 'CodeListValue.description', 4, 'Favorits'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'), 'CodeListValue.description', 5, 'Favoris'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'fav') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'), 'CodeListValue.description', 2, 'Mapa'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'), 'CodeListValue.description', 3, 'Mapa'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'), 'CodeListValue.description', 4, 'Mapa'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'), 'CodeListValue.description', 5, 'Carte'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'map') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'), 'CodeListValue.description', 2, 'Cerca de mí'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'), 'CodeListValue.description', 3, 'A prop meu'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'), 'CodeListValue.description', 4, 'A prop mèu'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4)
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION), (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'), 'CodeListValue.description', 5, 'Près de moi'
+              FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm'
+              AND NOT EXISTS (SELECT 1 FROM STM_TRANSLATION t WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type' AND COD_VALUE = 'nm') AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5)
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION) WHERE SEQ_NAME = 'TRA_ID'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_TRANSLATION WHERE TRA_COLUMN = 'CodeListValue.description' AND TRA_ELEID IN (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.node.type')

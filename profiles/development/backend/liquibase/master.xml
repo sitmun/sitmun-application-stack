@@ -40,4 +40,7 @@
   <include file="changelog/32_remove_div_from_task_params.sql" relativeToChangelogFile="true"/>
   <include file="changelog/33_fix_node_type_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/34_update_printmap_logo.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/35_cartography_tree_folder_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/36_merge_treenode_types.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/37_remove_legacy_treenode_types.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

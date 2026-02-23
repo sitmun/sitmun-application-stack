@@ -10,4 +10,6 @@
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/08_merge_treenode_types.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/09_remove_legacy_treenode_types.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
