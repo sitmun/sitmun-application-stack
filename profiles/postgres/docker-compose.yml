@@ -1,79 +1,119 @@
-services:
-  sitmun-backend:
-    build:
-      context: ../../back/backend/sitmun-backend-core
-      dockerfile: docker/Dockerfile
-    container_name: sitmun-backend
-    ports:
-      - "8080:8080"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/dashboard/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    networks:
-      - sitmun-network-postgres
-    restart: unless-stopped
-    volumes:
-      - ../development/backend:/app/config:ro
-      - ./liquibase:/app/config/liquibase:ro
-    environment:
-      SPRING_PROFILES_ACTIVE: prod,postgres
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/sitmun3
-      SPRING_DATASOURCE_USERNAME: sitmun3
-      SPRING_DATASOURCE_PASSWORD: sitmun3
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      # Dialect loaded from application-postgres.yml via 'postgres' profile
-      SITMUN_BACKEND_URL: http://localhost:8080/
-      LOGGING_LEVEL_ROOT: WARN
-      LOGGING_LEVEL_ORG_SITMUN: INFO
-      # Database connection retry settings
-      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 30000
-      SPRING_LIQUIBASE_CHANGE_LOG: file:/app/config/liquibase/master.xml
-      SPRING_LIQUIBASE_CONTEXTS: ""
-    depends_on:
-      postgres:
-        condition: service_healthy
-        required: true
+# PostgreSQL profile - standalone deployment, run from this directory.
+#
+#   cd profiles/postgres
+#   docker compose up -d
+#
+# Paths are relative to profiles/postgres/ (../.. = repo root).
+# Create logs dir from repo root if needed: mkdir -p logs/front/nginx
 
-  sitmun-frontend:
+services:
+  front:
     build:
       context: ../..
       dockerfile: front/Dockerfile
       args:
-        - BUILD_MODE=production
-        - PUBLIC_BASE_PATH=/
-    container_name: sitmun-frontend
+        - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+        - ENVIRONMENT=${ENVIRONMENT:-production}
+        - APP_VERSION=${APP_VERSION:-0.0.0}
+    restart: always
     ports:
-      - "80:80"
-    networks:
-      - sitmun-network-postgres
-    restart: unless-stopped
+      - "${LOCAL_PORT:-80}:80"
+    environment:
+      - PUBLIC_URL_SCHEME=${PUBLIC_URL_SCHEME:-http}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME:-localhost}
+      - PUBLIC_PORT=${PUBLIC_PORT:-80}
+      - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
+      - LOCAL_BASE_PATH=${LOCAL_BASE_PATH:-/}
+    volumes:
+      - ../../front/config:/etc/nginx/conf.d
+      - ../../logs/front/nginx:/var/log/nginx
     depends_on:
-      sitmun-backend:
+      backend:
         condition: service_healthy
-        required: true
+    command: /bin/sh -c "envsubst '$${PUBLIC_URL_SCHEME},$${PUBLIC_HOSTNAME},$${PUBLIC_PORT},$${PUBLIC_BASE_PATH},$${LOCAL_BASE_PATH}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
+
+  backend:
+    build:
+      context: ../../back/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-postgres}
+      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME:-sitmun3}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
+      - SPRING_LIQUIBASE_URL=${DATABASE_URL:-jdbc:postgresql://postgres:5432/}${DATABASE:-sitmun3}
+      - SPRING_LIQUIBASE_USER=${DATABASE_USERNAME:-sitmun3}
+      - SPRING_LIQUIBASE_PASSWORD=${DATABASE_PASSWORD:-sitmun3}
+      - SPRING_LIQUIBASE_CHANGE_LOG=${SPRING_LIQUIBASE_CHANGE_LOG:-file:/usr/src/config/liquibase/master.xml}
+      - SPRING_LIQUIBASE_CONTEXTS=${SPRING_LIQUIBASE_CONTEXTS:-}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
+      - SITMUN_PROXY_FORCE=${FORCE_USE_OF_PROXY:-false}
+      - SITMUN_PROXY_MIDDLEWARE_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}:${PUBLIC_PORT:-80}${PUBLIC_BASE_PATH:-/}middleware
+      - SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS=${SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS:-true}
+      - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}:${PUBLIC_PORT:-80}${PUBLIC_BASE_PATH:-/}backend
+      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+      - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-WARN}
+      - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-INFO}
+      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=${HIKARI_CONNECTION_TIMEOUT:-30000}
+    volumes:
+      - .:/usr/src/config
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/dashboard/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 60s
+      retries: 5
+
+  proxy:
+    build:
+      context: ../../back/proxy
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
+      - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 3
 
   postgres:
     image: postgres:16-alpine
-    restart: unless-stopped
-    networks:
-      - sitmun-network-postgres
+    restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: sitmun3
-      POSTGRES_USER: sitmun3
-      POSTGRES_PASSWORD: sitmun3
+      POSTGRES_DB: ${DATABASE:-sitmun3}
+      POSTGRES_USER: ${DATABASE_USERNAME:-sitmun3}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-sitmun3}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      # Test that PostgreSQL is accepting connections and can execute queries
-      test: ["CMD-SHELL", "pg_isready -U sitmun3 -d sitmun3 && psql -U sitmun3 -d sitmun3 -c 'SELECT 1' > /dev/null 2>&1"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-sitmun3} -d ${DATABASE:-sitmun3} && psql -U ${DATABASE_USERNAME:-sitmun3} -d ${DATABASE:-sitmun3} -c 'SELECT 1' > /dev/null 2>&1"]
       interval: 5s
       timeout: 3s
       start_period: 5s
       retries: 5
 
-networks:
-  sitmun-network-postgres:
-    driver: bridge
+volumes:
+  pgdata:

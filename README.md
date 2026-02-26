@@ -1,7 +1,7 @@
 # SITMUN Application Stack
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.2-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.3-blue.svg)
 
 The **SITMUN Application Stack** is a comprehensive multi-container geospatial platform that provides a complete solution for territorial information management, geographical services, and spatial applications. This stack integrates all SITMUN components into a unified, containerized environment designed for development, testing, and production deployment.
 
@@ -227,6 +227,7 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `DATABASE_USERNAME`        | Database username                                     | `sitmun3`                           |
 | `DATABASE_PASSWORD`        | Database password                                     | `sitmun3`                           |
 | `FORCE_USE_OF_PROXY`       | Force proxy middleware                                | `false`                             |
+| `SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS` | Enable proxy access validation (blocks access to blocked services) | `true` |
 | `MIDDLEWARE_SECRET`        | Backend-proxy shared secret                           | Development default (change!)       |
 | `ENVIRONMENT`              | Frontend Docker build mode (development/production)   | `development`                       |
 | `APP_VERSION`              | Version injected into frontend builds                 | `0.0.0`                             |
