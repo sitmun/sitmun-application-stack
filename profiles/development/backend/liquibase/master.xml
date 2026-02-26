@@ -40,4 +40,5 @@
   <include file="changelog/32_remove_div_from_task_params.sql" relativeToChangelogFile="true"/>
   <include file="changelog/33_fix_node_type_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/34_update_printmap_logo.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/35_fix_missing_ui_controls.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

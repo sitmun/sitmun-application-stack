@@ -1,0 +1,30 @@
+# Cross-platform line endings (Windows + Linux)
+# https://git-scm.com/docs/gitattributes
+
+# Default: auto-detect text, normalize to LF in repo
+* text=auto
+
+# Shell scripts: always LF (required for Linux/WSL)
+*.sh text eol=lf
+
+# Windows scripts: CRLF on checkout
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries: no line-ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.jar binary
+*.war binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Gradle wrapper scripts (shell = LF, bat = CRLF)
+gradlew text eol=lf
+gradlew.bat text eol=crlf

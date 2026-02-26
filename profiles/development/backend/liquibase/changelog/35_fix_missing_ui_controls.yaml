@@ -1,0 +1,35 @@
+databaseChangeLog:
+  # Fix for databases created before the sitna.moreInfo UI control was added
+  # This changeset ensures the UI control exists for more info tasks to work properly
+  - changeSet:
+      id: 35
+      author: sitmun
+      changes:
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = SEQ_COUNT + 1 WHERE SEQ_NAME = 'TUI_ID';
+        - insert:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_ID
+                  valueComputed: COALESCE((SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME = 'TUI_ID'), 41)
+              - column:
+                  name: TUI_NAME
+                  value: "sitna.moreInfo"
+              - column:
+                  name: TUI_TOOLTIP
+                  value: "More Info"
+              - column:
+                  name: TUI_TYPE
+                  value: "moreInfo"
+              - column:
+                  name: TUI_ORDER
+                  valueComputed: COALESCE((SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME = 'TUI_ID'), 41)
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = SEQ_COUNT + 1 WHERE SEQ_NAME = 'TUI_ID';
+      # Only run this changeset if the UI control doesn't already exist
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM STM_TSK_UI WHERE TUI_NAME = 'sitna.moreInfo'

@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-02-26
+
+### Added
+
+#### Backend Core
+
+- More Information task type support with backend parameter and system-variable resolution.
+
+#### Proxy Middleware
+
+- PreparedStatement execution support for parameterized SQL requests.
+- API key and URI template support for API Padro integrations.
+
+#### Admin Application
+
+- More Information task configuration support for API/SQL/URL scopes.
+- New form guidance and i18n entries for More Information parameterization.
+
+#### Viewer Application
+
+- More Information task handling with URL scope and RFC 6570 templates.
+
+### Changed
+
+#### Backend Core
+
+- Consolidated legacy tree-node type codelists (`treenode.folder.type`, `treenode.leaf.type`) into `treenode.node.type` and updated translations.
+- Updated Liquibase scripts and backend services for More Information workflows.
+
+#### Viewer Application
+
+- Refactored More Information handling to centralize logic and reduce duplication.
+
+### Fixed
+
+#### Backend Core
+
+- Fixed sequence ordering and JSON/properties issues in More Information Liquibase changesets.
+
+#### Viewer Application
+
+- Fixed More Information feature-info behavior when highlighting table information.
+
+### Removed
+
+#### Admin Application
+
+- Removed redundant More Information parameter fields (`key`, `name`, `type`) from admin payloads.
+
 ## [1.2.2] - 2026-02-16
 
 ### Added
@@ -598,7 +647,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...HEAD
+[1.2.3]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...sitmun-application-stack/1.2.3
 [1.2.2]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.1...sitmun-application-stack/1.2.2
 [1.2.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/sitmun/sitmun-application-stack/compare/v1.1.1...v1.2.0
