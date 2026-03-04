@@ -7,6 +7,11 @@
 # Shell scripts: always LF (required for Linux/WSL)
 *.sh text eol=lf
 
+# Liquibase / seed data: LF so CRLF warnings go away
+profiles/**/liquibase/changelog/**/*.csv text eol=lf
+profiles/**/liquibase/changelog/**/*.yaml text eol=lf
+profiles/**/liquibase/changelog/**/*.yml text eol=lf
+
 # Windows scripts: CRLF on checkout
 *.bat text eol=crlf
 *.cmd text eol=crlf

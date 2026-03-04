@@ -2,12 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 5
       author: sitmun
+      runOnChange: true
       changes:
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 05_translations/STM_LANGUAGE.csv
             relativeToChangelogFile: true
             tableName: STM_LANGUAGE
+            primaryKey: LAN_ID
             columns:
               - column:
                   name: LAN_ID
@@ -18,12 +20,14 @@ databaseChangeLog:
               - column:
                   name: LAN_NAME
                   type: STRING
+        - sql:
+            sql: "CREATE TABLE TMP_TRA_UPLOAD (TRA_ID NUMBER, TRA_ELEID NUMBER, TRA_COLUMN VARCHAR2(4000), TRA_LANID NUMBER, TRA_NAME VARCHAR2(4000))"
         - loadData:
             encoding: UTF-8
             file: 05_translations/STM_TRANSLATION_ES.csv
             relativeToChangelogFile: true
-            tableName: STM_TRANSLATION
-            quotchar: "\"" 
+            tableName: TMP_TRA_UPLOAD
+            quotchar: "\""
             columns:
               - column:
                   name: TRA_ID
@@ -44,8 +48,8 @@ databaseChangeLog:
             encoding: UTF-8
             file: 05_translations/STM_TRANSLATION_CA.csv
             relativeToChangelogFile: true
-            tableName: STM_TRANSLATION
-            quotchar: "\"" 
+            tableName: TMP_TRA_UPLOAD
+            quotchar: "\""
             columns:
               - column:
                   name: TRA_ID
@@ -66,8 +70,8 @@ databaseChangeLog:
             encoding: UTF-8
             file: 05_translations/STM_TRANSLATION_OC_ARANES.csv
             relativeToChangelogFile: true
-            tableName: STM_TRANSLATION
-            quotchar: "\"" 
+            tableName: TMP_TRA_UPLOAD
+            quotchar: "\""
             columns:
               - column:
                   name: TRA_ID
@@ -88,8 +92,8 @@ databaseChangeLog:
             encoding: UTF-8
             file: 05_translations/STM_TRANSLATION_FR.csv
             relativeToChangelogFile: true
-            tableName: STM_TRANSLATION
-            quotchar: "\"" 
+            tableName: TMP_TRA_UPLOAD
+            quotchar: "\""
             columns:
               - column:
                   name: TRA_ID
@@ -106,3 +110,15 @@ databaseChangeLog:
               - column:
                   name: TRA_NAME
                   type: STRING
+        - sql:
+            splitStatements: false
+            sql: "MERGE INTO STM_TRANSLATION t USING TMP_TRA_UPLOAD s ON (t.TRA_ELEID=s.TRA_ELEID AND t.TRA_COLUMN=s.TRA_COLUMN AND t.TRA_LANID=s.TRA_LANID) WHEN MATCHED THEN UPDATE SET t.TRA_NAME = s.TRA_NAME WHEN NOT MATCHED THEN INSERT (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES (s.TRA_ID, s.TRA_ELEID, s.TRA_COLUMN, s.TRA_LANID, s.TRA_NAME)"
+        - sql:
+            splitStatements: false
+            sql: "BEGIN EXECUTE IMMEDIATE 'DROP TABLE TMP_TRA_UPLOAD'; EXCEPTION WHEN OTHERS THEN NULL; END;"
+        - sql:
+            sql: "DELETE FROM STM_LANGUAGE WHERE LAN_ID NOT IN (1, 2, 3, 4, 5)"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(LAN_ID), 0) + 1 FROM STM_LANGUAGE) WHERE SEQ_NAME = 'LAN_ID'"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION) WHERE SEQ_NAME = 'TRA_ID'"

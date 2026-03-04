@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 38
+      author: sitmun
+      context: dev,prod
+      comment: Remove legacy treenode.folder.type and treenode.leaf.type codelists (replaced by treenode.node.type)
+      changes:
+        - sql:
+            sql: |
+              DELETE FROM STM_TRANSLATION
+              WHERE TRA_COLUMN = 'CodeListValue.description'
+              AND TRA_ELEID IN (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST IN ('treenode.folder.type', 'treenode.leaf.type'))
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST WHERE COD_LIST IN ('treenode.folder.type', 'treenode.leaf.type')

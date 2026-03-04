@@ -2,12 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 4
       author: sitmun
+      runOnChange: true
       changes:
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 04_seed_data/STM_TER_TYP.csv
             relativeToChangelogFile: true
             tableName: STM_TER_TYP
+            primaryKey: TET_ID
             usePreparedStatements: true
             columns:
               - column:
@@ -25,11 +27,12 @@ databaseChangeLog:
               - column:
                   name: TET_BOTTOM
                   type: BOOLEAN
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 04_seed_data/STM_USER.csv
             relativeToChangelogFile: true
             tableName: STM_USER
+            primaryKey: USE_ID
             usePreparedStatements: true
             columns:
               - column:
@@ -56,11 +59,12 @@ databaseChangeLog:
               - column:
                   name: USE_CREATED
                   type: DATETIME
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 04_seed_data/STM_GRP_TSK.csv
             relativeToChangelogFile: true
             tableName: STM_GRP_TSK
+            primaryKey: GTS_ID
             usePreparedStatements: true
             columns:
               - column:
@@ -69,11 +73,12 @@ databaseChangeLog:
               - column:
                   name: GTS_NAME
                   type: STRING
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 04_seed_data/STM_TSK_UI.csv
             relativeToChangelogFile: true
             tableName: STM_TSK_UI
+            primaryKey: TUI_ID
             usePreparedStatements: true
             columns:
               - column:
@@ -91,11 +96,12 @@ databaseChangeLog:
               - column:
                   name: TUI_TYPE
                   type: STRING
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 04_seed_data/STM_TASK.csv
             relativeToChangelogFile: true
             tableName: STM_TASK
+            primaryKey: TAS_ID
             usePreparedStatements: true
             columns:
               - column:
@@ -131,3 +137,13 @@ databaseChangeLog:
               - column:
                   name: TAS_PARAMS
                   type: STRING
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TET_ID), 0) + 1 FROM STM_TER_TYP) WHERE SEQ_NAME = 'TET_ID'"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(USE_ID), 0) + 1 FROM STM_USER) WHERE SEQ_NAME = 'USE_ID'"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(GTS_ID), 0) + 1 FROM STM_GRP_TSK) WHERE SEQ_NAME = 'GTS_ID'"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TUI_ID), 0) + 1 FROM STM_TSK_UI) WHERE SEQ_NAME = 'TUI_ID'"
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TAS_ID), 0) + 1 FROM STM_TASK) WHERE SEQ_NAME = 'TAS_ID'"

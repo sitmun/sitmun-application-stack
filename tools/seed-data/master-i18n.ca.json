@@ -1,0 +1,749 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-03",
+    "language": "ca"
+  },
+  "entities": {
+    "Language": {
+      "field": "name",
+      "column": "Language.name",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Anglès"
+        },
+        {
+          "id": 2,
+          "ca": "Espanyol"
+        },
+        {
+          "id": 3,
+          "ca": "Català"
+        },
+        {
+          "id": 4,
+          "ca": "Aranès"
+        },
+        {
+          "id": 5,
+          "ca": "Francès"
+        }
+      ]
+    },
+    "CodeListValue": {
+      "field": "description",
+      "column": "CodeListValue.description",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Edition application"
+        },
+        {
+          "id": 2,
+          "ca": "Aplicació externa"
+        },
+        {
+          "id": 3,
+          "ca": "Aplicació interna"
+        },
+        {
+          "id": 4,
+          "ca": "Aplicació turística"
+        },
+        {
+          "id": 5,
+          "ca": "Paràmetre d'aplicació mòbil"
+        },
+        {
+          "id": 6,
+          "ca": "Paràmetre de nomenclàtor"
+        },
+        {
+          "id": 7,
+          "ca": "Plantilla d'impressió"
+        },
+        {
+          "id": 8,
+          "ca": "Línia"
+        },
+        {
+          "id": 9,
+          "ca": "Punt"
+        },
+        {
+          "id": 10,
+          "ca": "Polígon"
+        },
+        {
+          "id": 11,
+          "ca": "Get Legend Graphic"
+        },
+        {
+          "id": 12,
+          "ca": "GetCapabilities"
+        },
+        {
+          "id": 13,
+          "ca": "Enllaç estàtic"
+        },
+        {
+          "id": 14,
+          "ca": "Personalitzat"
+        },
+        {
+          "id": 15,
+          "ca": "Definit"
+        },
+        {
+          "id": 16,
+          "ca": "Alfanumèric"
+        },
+        {
+          "id": 17,
+          "ca": "Data"
+        },
+        {
+          "id": 18,
+          "ca": "Nombre"
+        },
+        {
+          "id": 19,
+          "ca": "Data"
+        },
+        {
+          "id": 20,
+          "ca": "Imatge"
+        },
+        {
+          "id": 21,
+          "ca": "Nombre"
+        },
+        {
+          "id": 22,
+          "ca": "Percentatge"
+        },
+        {
+          "id": 23,
+          "ca": "Text"
+        },
+        {
+          "id": 24,
+          "ca": "URL"
+        },
+        {
+          "id": 25,
+          "ca": "INFO"
+        },
+        {
+          "id": 26,
+          "ca": "Mapa de fons"
+        },
+        {
+          "id": 27,
+          "ca": "Grup de cartografia"
+        },
+        {
+          "id": 28,
+          "ca": "Mapa de situació"
+        },
+        {
+          "id": 29,
+          "ca": "Informe"
+        },
+        {
+          "id": 30,
+          "ca": "Data"
+        },
+        {
+          "id": 31,
+          "ca": "Imatge"
+        },
+        {
+          "id": 32,
+          "ca": "Nombre"
+        },
+        {
+          "id": 33,
+          "ca": "Percentatge"
+        },
+        {
+          "id": 34,
+          "ca": "Text"
+        },
+        {
+          "id": 35,
+          "ca": "URL"
+        },
+        {
+          "id": 36,
+          "ca": "EDITAR"
+        },
+        {
+          "id": 37,
+          "ca": "SELECCIONAR"
+        },
+        {
+          "id": 38,
+          "ca": "Aplicació"
+        },
+        {
+          "id": 39,
+          "ca": "Isolated"
+        },
+        {
+          "id": 40,
+          "ca": "Layer"
+        },
+        {
+          "id": 41,
+          "ca": "Data"
+        },
+        {
+          "id": 42,
+          "ca": "Imatge"
+        },
+        {
+          "id": 43,
+          "ca": "ListBox"
+        },
+        {
+          "id": 44,
+          "ca": "Nombre"
+        },
+        {
+          "id": 45,
+          "ca": "Text"
+        },
+        {
+          "id": 46,
+          "ca": "Database edition"
+        },
+        {
+          "id": 47,
+          "ca": "Features service edition (WFS)"
+        },
+        {
+          "id": 48,
+          "ca": "Query parameter"
+        },
+        {
+          "id": 49,
+          "ca": "Template parameter"
+        },
+        {
+          "id": 50,
+          "ca": "Cartography Query"
+        },
+        {
+          "id": 51,
+          "ca": "SQL Query"
+        },
+        {
+          "id": 52,
+          "ca": "Web API Query"
+        },
+        {
+          "id": 53,
+          "ca": "Autenticació HTTP bàsica"
+        },
+        {
+          "id": 54,
+          "ca": "Cap"
+        },
+        {
+          "id": 55,
+          "ca": "WFS"
+        },
+        {
+          "id": 56,
+          "ca": "WMS"
+        },
+        {
+          "id": 57,
+          "ca": "WMTS"
+        },
+        {
+          "id": 58,
+          "ca": "GetFeatureInfo"
+        },
+        {
+          "id": 59,
+          "ca": "GetMap"
+        },
+        {
+          "id": 60,
+          "ca": "OpenLayers"
+        },
+        {
+          "id": 61,
+          "ca": "WMTS"
+        },
+        {
+          "id": 62,
+          "ca": "__NULL_VALUE__"
+        },
+        {
+          "id": 63,
+          "ca": "array"
+        },
+        {
+          "id": 64,
+          "ca": "boolean"
+        },
+        {
+          "id": 65,
+          "ca": "number"
+        },
+        {
+          "id": 66,
+          "ca": "object"
+        },
+        {
+          "id": 67,
+          "ca": "string"
+        },
+        {
+          "id": 68,
+          "ca": "Municipi"
+        },
+        {
+          "id": 69,
+          "ca": "Regional"
+        },
+        {
+          "id": 70,
+          "ca": "Total"
+        },
+        {
+          "id": 71,
+          "ca": "Cartografia"
+        },
+        {
+          "id": 72,
+          "ca": "Arbre d'edició"
+        },
+        {
+          "id": 73,
+          "ca": "Aplicació turística"
+        },
+        {
+          "id": 82,
+          "ca": "Llista detallada"
+        },
+        {
+          "id": 83,
+          "ca": "Esdeveniments"
+        },
+        {
+          "id": 84,
+          "ca": "Categories d'esdeveniments"
+        },
+        {
+          "id": 85,
+          "ca": "Ubicacions d'esdeveniments"
+        },
+        {
+          "id": 86,
+          "ca": "Galeria"
+        },
+        {
+          "id": 87,
+          "ca": "Cerca al mapa"
+        },
+        {
+          "id": 88,
+          "ca": "Elements propers"
+        },
+        {
+          "id": 89,
+          "ca": "Llista de rutes"
+        },
+        {
+          "id": 90,
+          "ca": "Horari"
+        },
+        {
+          "id": 91,
+          "ca": "DNI"
+        },
+        {
+          "id": 92,
+          "ca": "NIE"
+        },
+        {
+          "id": 93,
+          "ca": "Passport"
+        },
+        {
+          "id": 94,
+          "ca": "Punt de contacte"
+        },
+        {
+          "id": 95,
+          "ca": "Cartografia"
+        },
+        {
+          "id": 96,
+          "ca": "Carpeta"
+        },
+        {
+          "id": 97,
+          "ca": "Llista"
+        },
+        {
+          "id": 98,
+          "ca": "Menú"
+        },
+        {
+          "id": 99,
+          "ca": "Tasca"
+        },
+        {
+          "id": 100,
+          "ca": "Favorits"
+        },
+        {
+          "id": 101,
+          "ca": "Mapa"
+        },
+        {
+          "id": 102,
+          "ca": "A prop meu"
+        }
+      ]
+    },
+    "TerritoryType": {
+      "field": "name",
+      "column": "TerritoryType.name",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "País"
+        },
+        {
+          "id": 2,
+          "ca": "Comunitat Autònoma"
+        },
+        {
+          "id": 3,
+          "ca": "Ciutat Autònoma"
+        },
+        {
+          "id": 4,
+          "ca": "Diputació"
+        },
+        {
+          "id": 5,
+          "ca": "Consell Insular (Balears)"
+        },
+        {
+          "id": 6,
+          "ca": "Cabildo Insular (Canàries)"
+        },
+        {
+          "id": 7,
+          "ca": "Ajuntament"
+        },
+        {
+          "id": 8,
+          "ca": "Comarca"
+        },
+        {
+          "id": 9,
+          "ca": "Àrea Metropolitana"
+        },
+        {
+          "id": 10,
+          "ca": "Mancomunitat"
+        },
+        {
+          "id": 11,
+          "ca": "Agrupació de Municipis"
+        },
+        {
+          "id": 12,
+          "ca": "Entitat d'Àmbit Inferior al Municipi"
+        }
+      ]
+    },
+    "User": {
+      "field": "firstName",
+      "column": "User.firstName",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Administrador"
+        },
+        {
+          "id": 2,
+          "ca": ""
+        }
+      ],
+      "seedDataOnly": true
+    },
+    "TaskGroup": {
+      "field": "name",
+      "column": "TaskGroup.name",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Bàsic"
+        }
+      ]
+    },
+    "Task": {
+      "field": "name",
+      "column": "Task.name",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Atribució"
+        },
+        {
+          "id": 2,
+          "ca": "Selector de mapa base"
+        },
+        {
+          "id": 3,
+          "ca": "Clic"
+        },
+        {
+          "id": 4,
+          "ca": "Coordenades"
+        },
+        {
+          "id": 5,
+          "ca": "Carregador de dades"
+        },
+        {
+          "id": 6,
+          "ca": "Descàrrega"
+        },
+        {
+          "id": 7,
+          "ca": "Dibuixar, Mesurar i Modificar"
+        },
+        {
+          "id": 8,
+          "ca": "Informació d'entitat"
+        },
+        {
+          "id": 9,
+          "ca": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "ca": "Geolocalització"
+        },
+        {
+          "id": 11,
+          "ca": "Catàleg de capes"
+        },
+        {
+          "id": 12,
+          "ca": "Llegenda"
+        },
+        {
+          "id": 13,
+          "ca": "Indicador de càrrega"
+        },
+        {
+          "id": 14,
+          "ca": "Mesurar"
+        },
+        {
+          "id": 15,
+          "ca": "Informació múltiple d'entitats"
+        },
+        {
+          "id": 16,
+          "ca": "Barra de navegació"
+        },
+        {
+          "id": 17,
+          "ca": "Creador de mapes sense connexió"
+        },
+        {
+          "id": 18,
+          "ca": "Mapa de situació"
+        },
+        {
+          "id": 19,
+          "ca": "Finestra emergent"
+        },
+        {
+          "id": 20,
+          "ca": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "ca": "Escala"
+        },
+        {
+          "id": 22,
+          "ca": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "ca": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "ca": "Cercar"
+        },
+        {
+          "id": 25,
+          "ca": "Compartir"
+        },
+        {
+          "id": 26,
+          "ca": "Vista de carrer"
+        },
+        {
+          "id": 27,
+          "ca": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "ca": "Edició WFS"
+        },
+        {
+          "id": 29,
+          "ca": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "ca": "Gestor de capes de treball"
+        }
+      ]
+    },
+    "TaskUITooltip": {
+      "field": "tooltip",
+      "column": "TaskUITooltip.tooltip",
+      "translations": [
+        {
+          "id": 1,
+          "ca": "Atribució"
+        },
+        {
+          "id": 2,
+          "ca": "Selector de mapa base"
+        },
+        {
+          "id": 3,
+          "ca": "Clic"
+        },
+        {
+          "id": 4,
+          "ca": "Coordenades"
+        },
+        {
+          "id": 5,
+          "ca": "Carregador de dades"
+        },
+        {
+          "id": 6,
+          "ca": "Descàrrega"
+        },
+        {
+          "id": 7,
+          "ca": "Dibuixar, Mesurar i Modificar"
+        },
+        {
+          "id": 8,
+          "ca": "Informació d'entitat"
+        },
+        {
+          "id": 9,
+          "ca": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "ca": "Geolocalització"
+        },
+        {
+          "id": 11,
+          "ca": "Catàleg de capes"
+        },
+        {
+          "id": 12,
+          "ca": "Llegenda"
+        },
+        {
+          "id": 13,
+          "ca": "Indicador de càrrega"
+        },
+        {
+          "id": 14,
+          "ca": "Mesurar"
+        },
+        {
+          "id": 15,
+          "ca": "Informació múltiple d'entitats"
+        },
+        {
+          "id": 16,
+          "ca": "Barra de navegació"
+        },
+        {
+          "id": 17,
+          "ca": "Creador de mapes sense connexió"
+        },
+        {
+          "id": 18,
+          "ca": "Mapa de situació"
+        },
+        {
+          "id": 19,
+          "ca": "Finestra emergent"
+        },
+        {
+          "id": 20,
+          "ca": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "ca": "Escala"
+        },
+        {
+          "id": 22,
+          "ca": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "ca": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "ca": "Cercar"
+        },
+        {
+          "id": 25,
+          "ca": "Compartir"
+        },
+        {
+          "id": 26,
+          "ca": "Vista de carrer"
+        },
+        {
+          "id": 27,
+          "ca": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "ca": "Edició WFS"
+        },
+        {
+          "id": 29,
+          "ca": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "ca": "Gestor de capes de treball"
+        }
+      ],
+      "seedDataOnly": true
+    }
+  }
+}

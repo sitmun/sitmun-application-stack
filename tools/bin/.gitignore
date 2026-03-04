@@ -1,0 +1,12 @@
+# Translation tool
+missing-translations.csv
+
+# Backups created by switch_default_language.py
+backups/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python

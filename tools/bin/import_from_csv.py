@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
-"""
-Import translations from existing CSV files into master-translations.json.
-One-time migration. Scenario via --scenario or SITMUN_PROFILE; default: postgres.
-"""
+"""Import translations from legacy Liquibase translation CSVs into a baseline."""
 
 import argparse
-import json
 import csv
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
-from _profile_paths import get_liquibase_root, get_scenario_from_env, SCENARIOS
+from _profile_paths import (
+    get_liquibase_root,
+    get_scenario_from_env,
+    discover_scenarios,
+    load_baseline,
+    save_baseline,
+)
 
-WORKSPACE_ROOT = Path(__file__).parent.parent.parent
-MASTER_FILE = Path(__file__).parent / "master-translations.json"
+WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
+SEED_DATA_DIR = Path(__file__).resolve().parent.parent / "seed-data"
+
+LANG_ID_TO_CODE = {1: "en", 2: "es", 3: "ca", 4: "oc-aranes", 5: "fr"}
 
 
-def get_translation_files(workspace_root: Path, scenario: str) -> Dict[str, Path]:
-    """Paths to legacy translation CSVs for the given scenario."""
+def get_translation_files(workspace_root: Path, scenario: str) -> dict[str, Path]:
     root = get_liquibase_root(workspace_root, scenario)
     trans = root / "changelog/05_translations"
     return {
@@ -25,116 +29,92 @@ def get_translation_files(workspace_root: Path, scenario: str) -> Dict[str, Path
         "CodeListValue": trans / "STM_CODELIST_TRANSLATION.csv",
     }
 
-# Language ID mapping
-LANG_ID_TO_CODE = {
-    1: "en",
-    2: "es",
-    3: "ca",
-    4: "oc-aranes",
-    5: "fr"
-}
 
-
-def load_master_translations() -> Dict[str, Any]:
-    """Load master translations file."""
-    with open(MASTER_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
-
-def read_csv_file(filepath: Path):
-    """Read CSV file and return list of dictionaries."""
+def read_csv_file(filepath: Path) -> list[dict[str, str]]:
     if not filepath.exists():
         print(f"Warning: File not found: {filepath}")
         return []
-    
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         return list(reader)
 
 
-def import_translations_from_csv(master: Dict[str, Any], entity_name: str, csv_path: Path):
-    """Import translations from a CSV file into the master data."""
+def import_translations_from_csv(
+    master: dict[str, Any], entity_name: str, csv_path: Path
+) -> int:
     if entity_name not in master["entities"]:
         print(f"Warning: Entity {entity_name} not found in master data")
         return 0
-    
+
     rows = read_csv_file(csv_path)
     if not rows:
         return 0
-    
+
     updated_count = 0
     entity_data = master["entities"][entity_name]
-    
+
     for row in rows:
         element_id = int(row["TRA_ELEID"])
         lang_id = int(row["TRA_LANID"])
         translation = row["TRA_NAME"]
-        
+
         lang_code = LANG_ID_TO_CODE.get(lang_id)
         if not lang_code:
             print(f"Warning: Unknown language ID {lang_id}")
             continue
-        
-        # Find the entry in master data
+
         entry = next((e for e in entity_data["translations"] if e["id"] == element_id), None)
-        
         if not entry:
             print(f"Warning: Entry ID {element_id} not found in {entity_name}")
             continue
-        
-        # Update translation
+
         if entry.get(lang_code) != translation:
             entry[lang_code] = translation
             updated_count += 1
-    
+
     return updated_count
 
 
-def save_master_translations(data: Dict[str, Any]):
-    """Save master translations to JSON file."""
-    from datetime import datetime
-    data["metadata"]["lastUpdated"] = datetime.now().strftime("%Y-%m-%d")
-    
-    with open(MASTER_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-
-def main():
-    """Main import process."""
-    parser = argparse.ArgumentParser(description="Import from legacy Liquibase translation CSVs")
+def main() -> None:
+    scenarios = discover_scenarios(WORKSPACE_ROOT)
+    parser = argparse.ArgumentParser(description="Import from legacy Liquibase translation CSVs.")
     parser.add_argument(
         "--scenario",
-        choices=SCENARIOS,
+        choices=scenarios,
         default=get_scenario_from_env(),
         help="Profile where CSVs live (default: SITMUN_PROFILE or postgres)",
     )
+    parser.add_argument("--baseline", metavar="LANG", help="Baseline to update (e.g. en, es). Required.")
     args = parser.parse_args()
+
+    if not args.baseline:
+        parser.error("--baseline is required (e.g. --baseline es)")
+
+    baseline_code = args.baseline.strip()
+    master = load_baseline(baseline_code, SEED_DATA_DIR)
     translation_files = get_translation_files(WORKSPACE_ROOT, args.scenario)
 
     print("=" * 60)
-    print("SITMUN CSV Translation Importer")
+    print(f"SITMUN CSV Translation Importer (baseline: {baseline_code})")
     print("=" * 60)
     print(f"Scenario: {args.scenario}")
     print()
-    
-    print("Loading master translations...")
-    master = load_master_translations()
-    
+
     total_updated = 0
     for entity_name, csv_path in translation_files.items():
         print(f"\nImporting {entity_name} from {csv_path.name}...")
         count = import_translations_from_csv(master, entity_name, csv_path)
         print(f"  Updated {count} translations")
         total_updated += count
-    
+
     if total_updated > 0:
+        master["metadata"]["lastUpdated"] = datetime.now().strftime("%Y-%m-%d")
+        save_baseline(baseline_code, master, SEED_DATA_DIR)
         print(f"\nTotal updated: {total_updated} translations")
-        save_master_translations(master)
-        print(f"Master translations saved to: {MASTER_FILE}")
+        print(f"Baseline saved: master-i18n.{baseline_code}.json")
         print("\nNext steps:")
-        print("1. Run check_translations.py to verify completeness")
-        print("2. Complete any missing translations")
-        print("3. Run generate_translation_files.py to regenerate CSVs")
+        print("1. Run check_translations.py --baseline <lang> to verify")
+        print("2. Run generate_translation_files.py --baseline <lang> to regenerate CSVs")
     else:
         print("\nNo translations were updated")
 
