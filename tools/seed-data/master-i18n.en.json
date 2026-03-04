@@ -1,0 +1,725 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-03",
+    "language": "en"
+  },
+  "entities": {
+    "Language": {
+      "field": "name",
+      "column": "Language.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "English"
+        },
+        {
+          "id": 2,
+          "en": "Spanish"
+        },
+        {
+          "id": 3,
+          "en": "Catalan"
+        },
+        {
+          "id": 4,
+          "en": "Aranese"
+        },
+        {
+          "id": 5,
+          "en": "French"
+        }
+      ]
+    },
+    "CodeListValue": {
+      "field": "description",
+      "column": "CodeListValue.description",
+      "translations": [
+        {
+          "id": 1,
+          "en": "External"
+        },
+        {
+          "id": 2,
+          "en": "Internal"
+        },
+        {
+          "id": 3,
+          "en": "Mobile app parameter"
+        },
+        {
+          "id": 4,
+          "en": "Nomenclator parameter"
+        },
+        {
+          "id": 5,
+          "en": "Print template"
+        },
+        {
+          "id": 6,
+          "en": "Line"
+        },
+        {
+          "id": 7,
+          "en": "Point"
+        },
+        {
+          "id": 8,
+          "en": "Polygon"
+        },
+        {
+          "id": 9,
+          "en": "GetCapabilities"
+        },
+        {
+          "id": 10,
+          "en": "Get Legend Graphic"
+        },
+        {
+          "id": 11,
+          "en": "Static link"
+        },
+        {
+          "id": 12,
+          "en": "Custom"
+        },
+        {
+          "id": 13,
+          "en": "Defined"
+        },
+        {
+          "id": 14,
+          "en": "Alphanumeric"
+        },
+        {
+          "id": 15,
+          "en": "Date"
+        },
+        {
+          "id": 16,
+          "en": "Number"
+        },
+        {
+          "id": 17,
+          "en": "Date"
+        },
+        {
+          "id": 18,
+          "en": "Image"
+        },
+        {
+          "id": 19,
+          "en": "Number"
+        },
+        {
+          "id": 20,
+          "en": "Percentage"
+        },
+        {
+          "id": 21,
+          "en": "Text"
+        },
+        {
+          "id": 22,
+          "en": "URL"
+        },
+        {
+          "id": 23,
+          "en": "EDIT"
+        },
+        {
+          "id": 27,
+          "en": "INFO"
+        },
+        {
+          "id": 29,
+          "en": "SELECT"
+        },
+        {
+          "id": 30,
+          "en": "Cartography group"
+        },
+        {
+          "id": 31,
+          "en": "Background map"
+        },
+        {
+          "id": 32,
+          "en": "Report"
+        },
+        {
+          "id": 33,
+          "en": "Location map"
+        },
+        {
+          "id": 34,
+          "en": "Application"
+        },
+        {
+          "id": 35,
+          "en": "Layer"
+        },
+        {
+          "id": 36,
+          "en": "Isolated"
+        },
+        {
+          "id": 38,
+          "en": "SQL Query"
+        },
+        {
+          "id": 40,
+          "en": "Web API Query"
+        },
+        {
+          "id": 41,
+          "en": "Cartography Query"
+        },
+        {
+          "id": 42,
+          "en": "AIMS"
+        },
+        {
+          "id": 43,
+          "en": "FME"
+        },
+        {
+          "id": 44,
+          "en": "TC"
+        },
+        {
+          "id": 45,
+          "en": "WFS"
+        },
+        {
+          "id": 46,
+          "en": "WMS"
+        },
+        {
+          "id": 47,
+          "en": "GetFeatureInfo"
+        },
+        {
+          "id": 48,
+          "en": "OpenLayers"
+        },
+        {
+          "id": 49,
+          "en": "GetMap"
+        },
+        {
+          "id": 50,
+          "en": "Database (trigger)"
+        },
+        {
+          "id": 51,
+          "en": "Email"
+        },
+        {
+          "id": 52,
+          "en": "Date"
+        },
+        {
+          "id": 53,
+          "en": "Image"
+        },
+        {
+          "id": 54,
+          "en": "List (from a query)"
+        },
+        {
+          "id": 55,
+          "en": "Number"
+        },
+        {
+          "id": 56,
+          "en": "Relation attribute between tables"
+        },
+        {
+          "id": 57,
+          "en": "Select for assigning a value"
+        },
+        {
+          "id": 58,
+          "en": "Text"
+        },
+        {
+          "id": 59,
+          "en": "URL"
+        },
+        {
+          "id": 60,
+          "en": "CAMPO"
+        },
+        {
+          "id": 61,
+          "en": "CAPA"
+        },
+        {
+          "id": 62,
+          "en": "DATAINPUT"
+        },
+        {
+          "id": 63,
+          "en": "EDIT"
+        },
+        {
+          "id": 64,
+          "en": "FILTRO"
+        },
+        {
+          "id": 65,
+          "en": "FME"
+        },
+        {
+          "id": 66,
+          "en": "GEOM"
+        },
+        {
+          "id": 67,
+          "en": "LABEL"
+        },
+        {
+          "id": 68,
+          "en": "RELM"
+        },
+        {
+          "id": 69,
+          "en": "RELS"
+        },
+        {
+          "id": 70,
+          "en": "SQL"
+        },
+        {
+          "id": 71,
+          "en": "TIPO"
+        },
+        {
+          "id": 72,
+          "en": "VALOR"
+        },
+        {
+          "id": 73,
+          "en": "VISTA"
+        },
+        {
+          "id": 82,
+          "en": "Unique values"
+        },
+        {
+          "id": 83,
+          "en": "Double"
+        },
+        {
+          "id": 84,
+          "en": "String"
+        },
+        {
+          "id": 85,
+          "en": "DNI"
+        },
+        {
+          "id": 86,
+          "en": "NIE"
+        },
+        {
+          "id": 87,
+          "en": "Passport"
+        },
+        {
+          "id": 88,
+          "en": "City Council"
+        },
+        {
+          "id": 89,
+          "en": "City Council SITMUN point of contact"
+        },
+        {
+          "id": 90,
+          "en": "Diputació de Barcelona"
+        },
+        {
+          "id": 91,
+          "en": "Demo"
+        },
+        {
+          "id": 92,
+          "en": "Company"
+        },
+        {
+          "id": 93,
+          "en": "Territorial Entity  (no City Council)"
+        },
+        {
+          "id": 94,
+          "en": "Territorial Entity  (no City Council) point of contact"
+        },
+        {
+          "id": 95,
+          "en": "Cartography"
+        },
+        {
+          "id": 96,
+          "en": "Folder"
+        },
+        {
+          "id": 97,
+          "en": "List"
+        },
+        {
+          "id": 98,
+          "en": "Menu"
+        },
+        {
+          "id": 99,
+          "en": "Task"
+        },
+        {
+          "id": 100,
+          "en": "Favorites"
+        },
+        {
+          "id": 101,
+          "en": "Map"
+        },
+        {
+          "id": 102,
+          "en": "Near me"
+        }
+      ]
+    },
+    "TerritoryType": {
+      "field": "name",
+      "column": "TerritoryType.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Àrea"
+        },
+        {
+          "id": 2,
+          "en": "Consell Comarcal"
+        },
+        {
+          "id": 3,
+          "en": "Consorci"
+        },
+        {
+          "id": 4,
+          "en": "Mancomunitat"
+        },
+        {
+          "id": 5,
+          "en": "Parc natural"
+        },
+        {
+          "id": 6,
+          "en": "Municipi"
+        },
+        {
+          "id": 7,
+          "en": "EMD"
+        },
+        {
+          "id": 8,
+          "en": "Província"
+        }
+      ]
+    },
+    "User": {
+      "field": "firstName",
+      "column": "User.firstName",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Administrator"
+        },
+        {
+          "id": 2,
+          "en": ""
+        },
+        {
+          "id": 4,
+          "en": "Ricard"
+        }
+      ],
+      "seedDataOnly": true
+    },
+    "TaskGroup": {
+      "field": "name",
+      "column": "TaskGroup.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Basic"
+        }
+      ]
+    },
+    "Task": {
+      "field": "name",
+      "column": "Task.name",
+      "translations": [
+        {
+          "id": 1,
+          "en": "attribution"
+        },
+        {
+          "id": 2,
+          "en": "basemapSelector"
+        },
+        {
+          "id": 3,
+          "en": "click"
+        },
+        {
+          "id": 4,
+          "en": "coordinates"
+        },
+        {
+          "id": 5,
+          "en": "dataLoader"
+        },
+        {
+          "id": 6,
+          "en": "download"
+        },
+        {
+          "id": 7,
+          "en": "drawMeasureModify"
+        },
+        {
+          "id": 8,
+          "en": "featureInfo"
+        },
+        {
+          "id": 9,
+          "en": "fullScreen"
+        },
+        {
+          "id": 10,
+          "en": "geolocation"
+        },
+        {
+          "id": 11,
+          "en": "layerCatalog"
+        },
+        {
+          "id": 12,
+          "en": "legend"
+        },
+        {
+          "id": 13,
+          "en": "loadingIndicator"
+        },
+        {
+          "id": 14,
+          "en": "measure"
+        },
+        {
+          "id": 15,
+          "en": "multiFeatureInfo"
+        },
+        {
+          "id": 16,
+          "en": "navBar"
+        },
+        {
+          "id": 17,
+          "en": "offlineMapMaker"
+        },
+        {
+          "id": 18,
+          "en": "overviewMap"
+        },
+        {
+          "id": 19,
+          "en": "popup"
+        },
+        {
+          "id": 20,
+          "en": "printMap.sitna"
+        },
+        {
+          "id": 21,
+          "en": "scale"
+        },
+        {
+          "id": 22,
+          "en": "scaleBar"
+        },
+        {
+          "id": 23,
+          "en": "scaleSelector"
+        },
+        {
+          "id": 24,
+          "en": "search.sitna"
+        },
+        {
+          "id": 25,
+          "en": "share"
+        },
+        {
+          "id": 26,
+          "en": "streetView"
+        },
+        {
+          "id": 27,
+          "en": "threed"
+        },
+        {
+          "id": 28,
+          "en": "TOC"
+        },
+        {
+          "id": 29,
+          "en": "WFSEdit"
+        },
+        {
+          "id": 30,
+          "en": "WFSQuery"
+        },
+        {
+          "id": 31,
+          "en": "workLayerManager"
+        },
+        {
+          "id": 32,
+          "en": "Welcome Panel"
+        },
+        {
+          "id": 33,
+          "en": "Help Panel"
+        }
+      ]
+    },
+    "TaskUITooltip": {
+      "field": "tooltip",
+      "column": "TaskUITooltip.tooltip",
+      "translations": [
+        {
+          "id": 1,
+          "en": "Attribution"
+        },
+        {
+          "id": 2,
+          "en": "Basemap Selector"
+        },
+        {
+          "id": 3,
+          "en": "Click"
+        },
+        {
+          "id": 4,
+          "en": "Coordinates"
+        },
+        {
+          "id": 5,
+          "en": "Data Loader"
+        },
+        {
+          "id": 6,
+          "en": "Download"
+        },
+        {
+          "id": 7,
+          "en": "Draw, Measure and Modify"
+        },
+        {
+          "id": 8,
+          "en": "Feature Info"
+        },
+        {
+          "id": 9,
+          "en": "Full Screen"
+        },
+        {
+          "id": 10,
+          "en": "Geolocation"
+        },
+        {
+          "id": 11,
+          "en": "Layer Catalog"
+        },
+        {
+          "id": 12,
+          "en": "Legend"
+        },
+        {
+          "id": 13,
+          "en": "Loading Indicator"
+        },
+        {
+          "id": 14,
+          "en": "Measure"
+        },
+        {
+          "id": 15,
+          "en": "Multi Feature Info"
+        },
+        {
+          "id": 16,
+          "en": "Navigation Bar"
+        },
+        {
+          "id": 17,
+          "en": "Offline Map Maker"
+        },
+        {
+          "id": 18,
+          "en": "Overview Map"
+        },
+        {
+          "id": 19,
+          "en": "Popup"
+        },
+        {
+          "id": 20,
+          "en": "Print Map"
+        },
+        {
+          "id": 21,
+          "en": "Scale"
+        },
+        {
+          "id": 22,
+          "en": "Scale Bar"
+        },
+        {
+          "id": 23,
+          "en": "Scale Selector"
+        },
+        {
+          "id": 24,
+          "en": "Search"
+        },
+        {
+          "id": 25,
+          "en": "Share"
+        },
+        {
+          "id": 26,
+          "en": "Street View"
+        },
+        {
+          "id": 27,
+          "en": "3D View"
+        },
+        {
+          "id": 28,
+          "en": "WFSEdit"
+        },
+        {
+          "id": 29,
+          "en": "WFS Query"
+        },
+        {
+          "id": 30,
+          "en": "Work Layer Manager"
+        }
+      ],
+      "seedDataOnly": true
+    }
+  }
+}

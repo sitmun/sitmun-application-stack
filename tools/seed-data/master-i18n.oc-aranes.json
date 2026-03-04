@@ -1,0 +1,749 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-03",
+    "language": "oc-aranes"
+  },
+  "entities": {
+    "Language": {
+      "field": "name",
+      "column": "Language.name",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Anglés"
+        },
+        {
+          "id": 2,
+          "oc-aranes": "Espanhòl"
+        },
+        {
+          "id": 3,
+          "oc-aranes": "Catalan"
+        },
+        {
+          "id": 4,
+          "oc-aranes": "Aranés"
+        },
+        {
+          "id": 5,
+          "oc-aranes": "Francés"
+        }
+      ]
+    },
+    "CodeListValue": {
+      "field": "description",
+      "column": "CodeListValue.description",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Edition application"
+        },
+        {
+          "id": 2,
+          "oc-aranes": "Aplicacion extèrna"
+        },
+        {
+          "id": 3,
+          "oc-aranes": "Aplicacion intèrna"
+        },
+        {
+          "id": 4,
+          "oc-aranes": "Aplicacion toristica"
+        },
+        {
+          "id": 5,
+          "oc-aranes": "Paramètres d'aplicacion mobil"
+        },
+        {
+          "id": 6,
+          "oc-aranes": "Paramètres de nomenclator"
+        },
+        {
+          "id": 7,
+          "oc-aranes": "Modèl d'impression"
+        },
+        {
+          "id": 8,
+          "oc-aranes": "Linha"
+        },
+        {
+          "id": 9,
+          "oc-aranes": "Punt"
+        },
+        {
+          "id": 10,
+          "oc-aranes": "Poligòn"
+        },
+        {
+          "id": 11,
+          "oc-aranes": "Get Legend Graphic"
+        },
+        {
+          "id": 12,
+          "oc-aranes": "GetCapabilities"
+        },
+        {
+          "id": 13,
+          "oc-aranes": "Ligam static"
+        },
+        {
+          "id": 14,
+          "oc-aranes": "Personalizat"
+        },
+        {
+          "id": 15,
+          "oc-aranes": "Definit"
+        },
+        {
+          "id": 16,
+          "oc-aranes": "Alfanumeric"
+        },
+        {
+          "id": 17,
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 18,
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 19,
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 20,
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 21,
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 22,
+          "oc-aranes": "Percentatge"
+        },
+        {
+          "id": 23,
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 24,
+          "oc-aranes": "URL"
+        },
+        {
+          "id": 25,
+          "oc-aranes": "INFO"
+        },
+        {
+          "id": 26,
+          "oc-aranes": "Mapa de fons"
+        },
+        {
+          "id": 27,
+          "oc-aranes": "Grop de cartografia"
+        },
+        {
+          "id": 28,
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 29,
+          "oc-aranes": "Infòrme"
+        },
+        {
+          "id": 30,
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 31,
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 32,
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 33,
+          "oc-aranes": "Percentatge"
+        },
+        {
+          "id": 34,
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 35,
+          "oc-aranes": "URL"
+        },
+        {
+          "id": 36,
+          "oc-aranes": "EDITAR"
+        },
+        {
+          "id": 37,
+          "oc-aranes": "SELECCIONAR"
+        },
+        {
+          "id": 38,
+          "oc-aranes": "Aplicacion"
+        },
+        {
+          "id": 39,
+          "oc-aranes": "Isolated"
+        },
+        {
+          "id": 40,
+          "oc-aranes": "Layer"
+        },
+        {
+          "id": 41,
+          "oc-aranes": "Data"
+        },
+        {
+          "id": 42,
+          "oc-aranes": "Imatge"
+        },
+        {
+          "id": 43,
+          "oc-aranes": "ListBox"
+        },
+        {
+          "id": 44,
+          "oc-aranes": "Numèro"
+        },
+        {
+          "id": 45,
+          "oc-aranes": "Tèxte"
+        },
+        {
+          "id": 46,
+          "oc-aranes": "Database edition"
+        },
+        {
+          "id": 47,
+          "oc-aranes": "Features service edition (WFS)"
+        },
+        {
+          "id": 48,
+          "oc-aranes": "Query parameter"
+        },
+        {
+          "id": 49,
+          "oc-aranes": "Template parameter"
+        },
+        {
+          "id": 50,
+          "oc-aranes": "Cartography Query"
+        },
+        {
+          "id": 51,
+          "oc-aranes": "SQL Query"
+        },
+        {
+          "id": 52,
+          "oc-aranes": "Web API Query"
+        },
+        {
+          "id": 53,
+          "oc-aranes": "Autenticacion HTTP basica"
+        },
+        {
+          "id": 54,
+          "oc-aranes": "Cap"
+        },
+        {
+          "id": 55,
+          "oc-aranes": "WFS"
+        },
+        {
+          "id": 56,
+          "oc-aranes": "WMS"
+        },
+        {
+          "id": 57,
+          "oc-aranes": "WMTS"
+        },
+        {
+          "id": 58,
+          "oc-aranes": "GetFeatureInfo"
+        },
+        {
+          "id": 59,
+          "oc-aranes": "GetMap"
+        },
+        {
+          "id": 60,
+          "oc-aranes": "OpenLayers"
+        },
+        {
+          "id": 61,
+          "oc-aranes": "WMTS"
+        },
+        {
+          "id": 62,
+          "oc-aranes": "__NULL_VALUE__"
+        },
+        {
+          "id": 63,
+          "oc-aranes": "array"
+        },
+        {
+          "id": 64,
+          "oc-aranes": "boolean"
+        },
+        {
+          "id": 65,
+          "oc-aranes": "number"
+        },
+        {
+          "id": 66,
+          "oc-aranes": "object"
+        },
+        {
+          "id": 67,
+          "oc-aranes": "string"
+        },
+        {
+          "id": 68,
+          "oc-aranes": "Ajuntament"
+        },
+        {
+          "id": 69,
+          "oc-aranes": "Regionau"
+        },
+        {
+          "id": 70,
+          "oc-aranes": "Totau"
+        },
+        {
+          "id": 71,
+          "oc-aranes": "Cartografia"
+        },
+        {
+          "id": 72,
+          "oc-aranes": "Arbre d'edicion"
+        },
+        {
+          "id": 73,
+          "oc-aranes": "Aplicacion toristica"
+        },
+        {
+          "id": 82,
+          "oc-aranes": "Lista detalhada"
+        },
+        {
+          "id": 83,
+          "oc-aranes": "Eveniments"
+        },
+        {
+          "id": 84,
+          "oc-aranes": "Categories d'eveniments"
+        },
+        {
+          "id": 85,
+          "oc-aranes": "Ubicacions d'eveniments"
+        },
+        {
+          "id": 86,
+          "oc-aranes": "Galeria"
+        },
+        {
+          "id": 87,
+          "oc-aranes": "Cèrca ath mapa"
+        },
+        {
+          "id": 88,
+          "oc-aranes": "Elements pròps"
+        },
+        {
+          "id": 89,
+          "oc-aranes": "Lista de rotes"
+        },
+        {
+          "id": 90,
+          "oc-aranes": "Orari"
+        },
+        {
+          "id": 91,
+          "oc-aranes": "DNI"
+        },
+        {
+          "id": 92,
+          "oc-aranes": "NIE"
+        },
+        {
+          "id": 93,
+          "oc-aranes": "Passport"
+        },
+        {
+          "id": 94,
+          "oc-aranes": "Punt de contacte"
+        },
+        {
+          "id": 95,
+          "oc-aranes": "Cartografia"
+        },
+        {
+          "id": 96,
+          "oc-aranes": "Carpeta"
+        },
+        {
+          "id": 97,
+          "oc-aranes": "Lista"
+        },
+        {
+          "id": 98,
+          "oc-aranes": "Menú"
+        },
+        {
+          "id": 99,
+          "oc-aranes": "Tasca"
+        },
+        {
+          "id": 100,
+          "oc-aranes": "Favorits"
+        },
+        {
+          "id": 101,
+          "oc-aranes": "Mapa"
+        },
+        {
+          "id": 102,
+          "oc-aranes": "A prop mèu"
+        }
+      ]
+    },
+    "TerritoryType": {
+      "field": "name",
+      "column": "TerritoryType.name",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "País"
+        },
+        {
+          "id": 2,
+          "oc-aranes": "Comunitat Autonòma"
+        },
+        {
+          "id": 3,
+          "oc-aranes": "Ciutat Autonòma"
+        },
+        {
+          "id": 4,
+          "oc-aranes": "Deputacion"
+        },
+        {
+          "id": 5,
+          "oc-aranes": "Conselh Insulau (Balears)"
+        },
+        {
+          "id": 6,
+          "oc-aranes": "Cabildo Insulau (Canàries)"
+        },
+        {
+          "id": 7,
+          "oc-aranes": "Ajuntament"
+        },
+        {
+          "id": 8,
+          "oc-aranes": "Comarca"
+        },
+        {
+          "id": 9,
+          "oc-aranes": "Aira Metropolitana"
+        },
+        {
+          "id": 10,
+          "oc-aranes": "Mancomunitat"
+        },
+        {
+          "id": 11,
+          "oc-aranes": "Agropament de Municipis"
+        },
+        {
+          "id": 12,
+          "oc-aranes": "Entitat d'Ambit Inferior ath Municipi"
+        }
+      ]
+    },
+    "User": {
+      "field": "firstName",
+      "column": "User.firstName",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Administrator"
+        },
+        {
+          "id": 2,
+          "oc-aranes": ""
+        }
+      ],
+      "seedDataOnly": true
+    },
+    "TaskGroup": {
+      "field": "name",
+      "column": "TaskGroup.name",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Basic"
+        }
+      ]
+    },
+    "Task": {
+      "field": "name",
+      "column": "Task.name",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Atribucion"
+        },
+        {
+          "id": 2,
+          "oc-aranes": "Selector de mapa de basa"
+        },
+        {
+          "id": 3,
+          "oc-aranes": "Clic"
+        },
+        {
+          "id": 4,
+          "oc-aranes": "Coordenades"
+        },
+        {
+          "id": 5,
+          "oc-aranes": "Cargador de dades"
+        },
+        {
+          "id": 6,
+          "oc-aranes": "Descarga"
+        },
+        {
+          "id": 7,
+          "oc-aranes": "Dessenhar, Mesurar e Modificar"
+        },
+        {
+          "id": 8,
+          "oc-aranes": "Informacion d'entitat"
+        },
+        {
+          "id": 9,
+          "oc-aranes": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "oc-aranes": "Geolocalizacion"
+        },
+        {
+          "id": 11,
+          "oc-aranes": "Catològ de capes"
+        },
+        {
+          "id": 12,
+          "oc-aranes": "Legenda"
+        },
+        {
+          "id": 13,
+          "oc-aranes": "Indicator de carga"
+        },
+        {
+          "id": 14,
+          "oc-aranes": "Mesurar"
+        },
+        {
+          "id": 15,
+          "oc-aranes": "Informacion multipla d'entitats"
+        },
+        {
+          "id": 16,
+          "oc-aranes": "Barra de navegacion"
+        },
+        {
+          "id": 17,
+          "oc-aranes": "Creator de mapes sens connexion"
+        },
+        {
+          "id": 18,
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 19,
+          "oc-aranes": "Finèstra emergenta"
+        },
+        {
+          "id": 20,
+          "oc-aranes": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "oc-aranes": "Escala"
+        },
+        {
+          "id": 22,
+          "oc-aranes": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "oc-aranes": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "oc-aranes": "Cercar"
+        },
+        {
+          "id": 25,
+          "oc-aranes": "Compartir"
+        },
+        {
+          "id": 26,
+          "oc-aranes": "Vista de carrèr"
+        },
+        {
+          "id": 27,
+          "oc-aranes": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "oc-aranes": "Edicion WFS"
+        },
+        {
+          "id": 29,
+          "oc-aranes": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "oc-aranes": "Gestionari de capes de trabalh"
+        }
+      ]
+    },
+    "TaskUITooltip": {
+      "field": "tooltip",
+      "column": "TaskUITooltip.tooltip",
+      "translations": [
+        {
+          "id": 1,
+          "oc-aranes": "Atribucion"
+        },
+        {
+          "id": 2,
+          "oc-aranes": "Selector de mapa de basa"
+        },
+        {
+          "id": 3,
+          "oc-aranes": "Clic"
+        },
+        {
+          "id": 4,
+          "oc-aranes": "Coordenades"
+        },
+        {
+          "id": 5,
+          "oc-aranes": "Cargador de dades"
+        },
+        {
+          "id": 6,
+          "oc-aranes": "Descarga"
+        },
+        {
+          "id": 7,
+          "oc-aranes": "Dessenhar, Mesurar e Modificar"
+        },
+        {
+          "id": 8,
+          "oc-aranes": "Informacion d'entitat"
+        },
+        {
+          "id": 9,
+          "oc-aranes": "Pantalla completa"
+        },
+        {
+          "id": 10,
+          "oc-aranes": "Geolocalizacion"
+        },
+        {
+          "id": 11,
+          "oc-aranes": "Catològ de capes"
+        },
+        {
+          "id": 12,
+          "oc-aranes": "Legenda"
+        },
+        {
+          "id": 13,
+          "oc-aranes": "Indicator de carga"
+        },
+        {
+          "id": 14,
+          "oc-aranes": "Mesurar"
+        },
+        {
+          "id": 15,
+          "oc-aranes": "Informacion multipla d'entitats"
+        },
+        {
+          "id": 16,
+          "oc-aranes": "Barra de navegacion"
+        },
+        {
+          "id": 17,
+          "oc-aranes": "Creator de mapes sens connexion"
+        },
+        {
+          "id": 18,
+          "oc-aranes": "Mapa de situacion"
+        },
+        {
+          "id": 19,
+          "oc-aranes": "Finèstra emergenta"
+        },
+        {
+          "id": 20,
+          "oc-aranes": "Imprimir mapa"
+        },
+        {
+          "id": 21,
+          "oc-aranes": "Escala"
+        },
+        {
+          "id": 22,
+          "oc-aranes": "Barra d'escala"
+        },
+        {
+          "id": 23,
+          "oc-aranes": "Selector d'escala"
+        },
+        {
+          "id": 24,
+          "oc-aranes": "Cercar"
+        },
+        {
+          "id": 25,
+          "oc-aranes": "Compartir"
+        },
+        {
+          "id": 26,
+          "oc-aranes": "Vista de carrèr"
+        },
+        {
+          "id": 27,
+          "oc-aranes": "Vista 3D"
+        },
+        {
+          "id": 28,
+          "oc-aranes": "Edicion WFS"
+        },
+        {
+          "id": 29,
+          "oc-aranes": "Consulta WFS"
+        },
+        {
+          "id": 30,
+          "oc-aranes": "Gestionari de capes de trabalh"
+        }
+      ],
+      "seedDataOnly": true
+    }
+  }
+}

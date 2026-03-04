@@ -2,12 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 2
       author: sitmun
+      runOnChange: true
       changes:
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 02_codelists/STM_CODELIST.csv
             relativeToChangelogFile: true
             tableName: STM_CODELIST
+            primaryKey: COD_ID
             columns:
               - column:
                   name: COD_ID
@@ -27,3 +29,5 @@ databaseChangeLog:
               - column:
                   name: COD_DESCRIPTION
                   type: STRING
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST) WHERE SEQ_NAME = 'COD_ID'"

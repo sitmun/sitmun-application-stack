@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Stack-level
+
+- Tools layout under `tools/`: `tools/bin/` (Python), `tools/scripts/`, `tools/tests/`, `tools/seed-data/` with scenario-based workflows.
+  - Python: generate_all_seed_outputs, generate_seed_files, generate_translation_files, extract_seed_data, extract_translatable, import_from_csv, import_from_generated_csvs, import_missing_translations, switch_default_language, sort_codelist.
+  - Scripts: `apply-seed-data.sh` (remote DB apply), Docker-based Liquibase tests for postgres and oracle.
+  - Seed-data baselines: master-seed-data.json, master-i18n.*.json, i18n-active-baseline.json.
+  - Documentation: tools/README.md, tools/seed-data/README.md.
+
+#### Profile-level
+
+- Liquibase changelogs 36 (cartography tree folder type), 37 (merge treenode.node.type), 38 (remove legacy treenode codelists).
+
+### Changed
+
+#### Stack-level
+
+- Liquibase: keep 35 (fix missing UI controls); add 36/37/38 (cartography folder type, merge treenode types, remove legacy codelists).
+- Tools: consolidated translations and seed workflows from tools/translations and tools/front-i18n into tools/bin, tools/seed-data, tools/scripts, tools/tests.
+- Regenerated production profile codelists, task types, seed data, translations, params, sequences (postgres and oracle).
+
+### Removed
+
+#### Stack-level
+
+- tools/translations/ (scripts and master-translations.json), tools/front-i18n/README.md, tools/sort_codelist.py (root).
+
 ## [1.2.3] - 2026-02-26
 
 ### Added
@@ -66,7 +94,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - `profiles/postgres.env`, `profiles/oracle.env` (dockerized DB, seed data)
   - Profile compose files: `profiles/postgres/docker-compose.yml`, `profiles/oracle/docker-compose.yml`
 - Translation and Liquibase helper tooling under `tools/`:
-  - Translations: `tools/translations/*` (extract/generate/import/validate workflows)
+  - Translations/seed data: `tools/seed-data/*` (extract/generate/import/validate workflows)
   - Liquibase: `tools/validate-liquibase-changelogs.sh`
   - CSV helpers: `tools/sort_codelist*.py`, `tools/front-i18n/sort_and_complete_translations.py`
 

@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: 36
+      author: sitmun
+      context: dev,prod
+      comment: Add codelist "folder" for treenode.folder.type and set cartography tree folder nodes to type folder
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'treenode.folder.type', 'folder', TRUE, FALSE, 'Folder'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+              )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID'
+        - sql:
+            sql: |
+              UPDATE STM_TREE_NOD
+              SET TNO_TYPE = 'folder'
+              WHERE TNO_GIID IS NULL
+                AND TNO_TASKID IS NULL
+                AND (TNO_TYPE IS NULL OR TNO_TYPE = 'cartography')
+                AND TNO_TREEID IN (
+                  SELECT TRE_ID FROM STM_TREE WHERE TRE_TYPE = 'cartography'
+                )
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'),
+                     'CodeListValue.description', 2, 'Carpeta'
+              FROM STM_CODELIST
+              WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (
+                SELECT 1 FROM STM_TRANSLATION t
+                WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder')
+                  AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 2
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'),
+                     'CodeListValue.description', 3, 'Carpeta'
+              FROM STM_CODELIST
+              WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (
+                SELECT 1 FROM STM_TRANSLATION t
+                WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder')
+                  AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 3
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'),
+                     'CodeListValue.description', 4, 'Carpeta'
+              FROM STM_CODELIST
+              WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (
+                SELECT 1 FROM STM_TRANSLATION t
+                WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder')
+                  AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 4
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'),
+                     'CodeListValue.description', 5, 'Dossier'
+              FROM STM_CODELIST
+              WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+              AND NOT EXISTS (
+                SELECT 1 FROM STM_TRANSLATION t
+                WHERE t.TRA_ELEID = (SELECT COD_ID FROM STM_CODELIST WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder')
+                  AND t.TRA_COLUMN = 'CodeListValue.description' AND t.TRA_LANID = 5
+              )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_TRANSLATION
+              WHERE TRA_COLUMN = 'CodeListValue.description'
+                AND TRA_ELEID IN (
+                  SELECT COD_ID FROM STM_CODELIST
+                  WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+                )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST
+              WHERE COD_LIST = 'treenode.folder.type' AND COD_VALUE = 'folder'
+        - sql:
+            sql: |
+              UPDATE STM_TREE_NOD
+              SET TNO_TYPE = 'cartography'
+              WHERE TNO_TYPE = 'folder'
+                AND TNO_GIID IS NULL
+                AND TNO_TASKID IS NULL
+                AND TNO_TREEID IN (
+                  SELECT TRE_ID FROM STM_TREE WHERE TRE_TYPE = 'cartography'
+                )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID'

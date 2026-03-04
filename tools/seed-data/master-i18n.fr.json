@@ -1,0 +1,749 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-03",
+    "language": "fr"
+  },
+  "entities": {
+    "Language": {
+      "field": "name",
+      "column": "Language.name",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Anglais"
+        },
+        {
+          "id": 2,
+          "fr": "Espagnol"
+        },
+        {
+          "id": 3,
+          "fr": "Catalan"
+        },
+        {
+          "id": 4,
+          "fr": "Aranais"
+        },
+        {
+          "id": 5,
+          "fr": "Français"
+        }
+      ]
+    },
+    "CodeListValue": {
+      "field": "description",
+      "column": "CodeListValue.description",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Edition application"
+        },
+        {
+          "id": 2,
+          "fr": "Application externe"
+        },
+        {
+          "id": 3,
+          "fr": "Application interne"
+        },
+        {
+          "id": 4,
+          "fr": "Application touristique"
+        },
+        {
+          "id": 5,
+          "fr": "Paramètre d'application mobile"
+        },
+        {
+          "id": 6,
+          "fr": "Paramètre de nomenclateur"
+        },
+        {
+          "id": 7,
+          "fr": "Modèle d'impression"
+        },
+        {
+          "id": 8,
+          "fr": "Ligne"
+        },
+        {
+          "id": 9,
+          "fr": "Point"
+        },
+        {
+          "id": 10,
+          "fr": "Polygone"
+        },
+        {
+          "id": 11,
+          "fr": "Get Legend Graphic"
+        },
+        {
+          "id": 12,
+          "fr": "GetCapabilities"
+        },
+        {
+          "id": 13,
+          "fr": "Lien statique"
+        },
+        {
+          "id": 14,
+          "fr": "Personnalisé"
+        },
+        {
+          "id": 15,
+          "fr": "Défini"
+        },
+        {
+          "id": 16,
+          "fr": "Alphanumérique"
+        },
+        {
+          "id": 17,
+          "fr": "Date"
+        },
+        {
+          "id": 18,
+          "fr": "Nombre"
+        },
+        {
+          "id": 19,
+          "fr": "Date"
+        },
+        {
+          "id": 20,
+          "fr": "Image"
+        },
+        {
+          "id": 21,
+          "fr": "Nombre"
+        },
+        {
+          "id": 22,
+          "fr": "Pourcentage"
+        },
+        {
+          "id": 23,
+          "fr": "Texte"
+        },
+        {
+          "id": 24,
+          "fr": "URL"
+        },
+        {
+          "id": 25,
+          "fr": "INFO"
+        },
+        {
+          "id": 26,
+          "fr": "Carte de fond"
+        },
+        {
+          "id": 27,
+          "fr": "Groupe de cartographie"
+        },
+        {
+          "id": 28,
+          "fr": "Carte de situation"
+        },
+        {
+          "id": 29,
+          "fr": "Rapport"
+        },
+        {
+          "id": 30,
+          "fr": "Date"
+        },
+        {
+          "id": 31,
+          "fr": "Image"
+        },
+        {
+          "id": 32,
+          "fr": "Nombre"
+        },
+        {
+          "id": 33,
+          "fr": "Pourcentage"
+        },
+        {
+          "id": 34,
+          "fr": "Texte"
+        },
+        {
+          "id": 35,
+          "fr": "URL"
+        },
+        {
+          "id": 36,
+          "fr": "ÉDITER"
+        },
+        {
+          "id": 37,
+          "fr": "SÉLECTIONNER"
+        },
+        {
+          "id": 38,
+          "fr": "Application"
+        },
+        {
+          "id": 39,
+          "fr": "Isolated"
+        },
+        {
+          "id": 40,
+          "fr": "Layer"
+        },
+        {
+          "id": 41,
+          "fr": "Date"
+        },
+        {
+          "id": 42,
+          "fr": "Image"
+        },
+        {
+          "id": 43,
+          "fr": "ListBox"
+        },
+        {
+          "id": 44,
+          "fr": "Nombre"
+        },
+        {
+          "id": 45,
+          "fr": "Texte"
+        },
+        {
+          "id": 46,
+          "fr": "Database edition"
+        },
+        {
+          "id": 47,
+          "fr": "Features service edition (WFS)"
+        },
+        {
+          "id": 48,
+          "fr": "Query parameter"
+        },
+        {
+          "id": 49,
+          "fr": "Template parameter"
+        },
+        {
+          "id": 50,
+          "fr": "Cartography Query"
+        },
+        {
+          "id": 51,
+          "fr": "SQL Query"
+        },
+        {
+          "id": 52,
+          "fr": "Web API Query"
+        },
+        {
+          "id": 53,
+          "fr": "Authentification HTTP de base"
+        },
+        {
+          "id": 54,
+          "fr": "Aucun"
+        },
+        {
+          "id": 55,
+          "fr": "WFS"
+        },
+        {
+          "id": 56,
+          "fr": "WMS"
+        },
+        {
+          "id": 57,
+          "fr": "WMTS"
+        },
+        {
+          "id": 58,
+          "fr": "GetFeatureInfo"
+        },
+        {
+          "id": 59,
+          "fr": "GetMap"
+        },
+        {
+          "id": 60,
+          "fr": "OpenLayers"
+        },
+        {
+          "id": 61,
+          "fr": "WMTS"
+        },
+        {
+          "id": 62,
+          "fr": "__NULL_VALUE__"
+        },
+        {
+          "id": 63,
+          "fr": "array"
+        },
+        {
+          "id": 64,
+          "fr": "boolean"
+        },
+        {
+          "id": 65,
+          "fr": "number"
+        },
+        {
+          "id": 66,
+          "fr": "object"
+        },
+        {
+          "id": 67,
+          "fr": "string"
+        },
+        {
+          "id": 68,
+          "fr": "Municipalité"
+        },
+        {
+          "id": 69,
+          "fr": "Régional"
+        },
+        {
+          "id": 70,
+          "fr": "Total"
+        },
+        {
+          "id": 71,
+          "fr": "Cartographie"
+        },
+        {
+          "id": 72,
+          "fr": "Arbre d'édition"
+        },
+        {
+          "id": 73,
+          "fr": "Application touristique"
+        },
+        {
+          "id": 82,
+          "fr": "Liste détaillée"
+        },
+        {
+          "id": 83,
+          "fr": "Événements"
+        },
+        {
+          "id": 84,
+          "fr": "Catégories d'événements"
+        },
+        {
+          "id": 85,
+          "fr": "Emplacements d'événements"
+        },
+        {
+          "id": 86,
+          "fr": "Galerie"
+        },
+        {
+          "id": 87,
+          "fr": "Recherche sur carte"
+        },
+        {
+          "id": 88,
+          "fr": "Éléments proches"
+        },
+        {
+          "id": 89,
+          "fr": "Liste des itinéraires"
+        },
+        {
+          "id": 90,
+          "fr": "Horaire"
+        },
+        {
+          "id": 91,
+          "fr": "DNI"
+        },
+        {
+          "id": 92,
+          "fr": "NIE"
+        },
+        {
+          "id": 93,
+          "fr": "Passport"
+        },
+        {
+          "id": 94,
+          "fr": "Point de contact"
+        },
+        {
+          "id": 95,
+          "fr": "Cartographie"
+        },
+        {
+          "id": 96,
+          "fr": "Dossier"
+        },
+        {
+          "id": 97,
+          "fr": "Liste"
+        },
+        {
+          "id": 98,
+          "fr": "Menu"
+        },
+        {
+          "id": 99,
+          "fr": "Tâche"
+        },
+        {
+          "id": 100,
+          "fr": "Favoris"
+        },
+        {
+          "id": 101,
+          "fr": "Carte"
+        },
+        {
+          "id": 102,
+          "fr": "Près de moi"
+        }
+      ]
+    },
+    "TerritoryType": {
+      "field": "name",
+      "column": "TerritoryType.name",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Pays"
+        },
+        {
+          "id": 2,
+          "fr": "Communauté autonome"
+        },
+        {
+          "id": 3,
+          "fr": "Ville autonome"
+        },
+        {
+          "id": 4,
+          "fr": "Conseil provincial"
+        },
+        {
+          "id": 5,
+          "fr": "Conseil insulaire (Baléares)"
+        },
+        {
+          "id": 6,
+          "fr": "Conseil insulaire (Canaries)"
+        },
+        {
+          "id": 7,
+          "fr": "Municipalité"
+        },
+        {
+          "id": 8,
+          "fr": "Comarca"
+        },
+        {
+          "id": 9,
+          "fr": "Zone métropolitaine"
+        },
+        {
+          "id": 10,
+          "fr": "Communauté de communes"
+        },
+        {
+          "id": 11,
+          "fr": "Groupement municipal"
+        },
+        {
+          "id": 12,
+          "fr": "Entité sous-municipale"
+        }
+      ]
+    },
+    "User": {
+      "field": "firstName",
+      "column": "User.firstName",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Administrateur"
+        },
+        {
+          "id": 2,
+          "fr": ""
+        }
+      ],
+      "seedDataOnly": true
+    },
+    "TaskGroup": {
+      "field": "name",
+      "column": "TaskGroup.name",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Basique"
+        }
+      ]
+    },
+    "Task": {
+      "field": "name",
+      "column": "Task.name",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Attribution"
+        },
+        {
+          "id": 2,
+          "fr": "Sélecteur de fond de carte"
+        },
+        {
+          "id": 3,
+          "fr": "Clic"
+        },
+        {
+          "id": 4,
+          "fr": "Coordonnées"
+        },
+        {
+          "id": 5,
+          "fr": "Chargeur de données"
+        },
+        {
+          "id": 6,
+          "fr": "Télécharger"
+        },
+        {
+          "id": 7,
+          "fr": "Dessiner, Mesurer et Modifier"
+        },
+        {
+          "id": 8,
+          "fr": "Informations sur l'entité"
+        },
+        {
+          "id": 9,
+          "fr": "Plein écran"
+        },
+        {
+          "id": 10,
+          "fr": "Géolocalisation"
+        },
+        {
+          "id": 11,
+          "fr": "Catalogue de couches"
+        },
+        {
+          "id": 12,
+          "fr": "Légende"
+        },
+        {
+          "id": 13,
+          "fr": "Indicateur de chargement"
+        },
+        {
+          "id": 14,
+          "fr": "Mesurer"
+        },
+        {
+          "id": 15,
+          "fr": "Informations multi-entités"
+        },
+        {
+          "id": 16,
+          "fr": "Barre de navigation"
+        },
+        {
+          "id": 17,
+          "fr": "Créateur de cartes hors ligne"
+        },
+        {
+          "id": 18,
+          "fr": "Carte de situation"
+        },
+        {
+          "id": 19,
+          "fr": "Fenêtre contextuelle"
+        },
+        {
+          "id": 20,
+          "fr": "Imprimer la carte"
+        },
+        {
+          "id": 21,
+          "fr": "Échelle"
+        },
+        {
+          "id": 22,
+          "fr": "Barre d'échelle"
+        },
+        {
+          "id": 23,
+          "fr": "Sélecteur d'échelle"
+        },
+        {
+          "id": 24,
+          "fr": "Rechercher"
+        },
+        {
+          "id": 25,
+          "fr": "Partager"
+        },
+        {
+          "id": 26,
+          "fr": "Vue de rue"
+        },
+        {
+          "id": 27,
+          "fr": "Vue 3D"
+        },
+        {
+          "id": 28,
+          "fr": "Édition WFS"
+        },
+        {
+          "id": 29,
+          "fr": "Requête WFS"
+        },
+        {
+          "id": 30,
+          "fr": "Gestionnaire de couches de travail"
+        }
+      ]
+    },
+    "TaskUITooltip": {
+      "field": "tooltip",
+      "column": "TaskUITooltip.tooltip",
+      "translations": [
+        {
+          "id": 1,
+          "fr": "Attribution"
+        },
+        {
+          "id": 2,
+          "fr": "Sélecteur de fond de carte"
+        },
+        {
+          "id": 3,
+          "fr": "Clic"
+        },
+        {
+          "id": 4,
+          "fr": "Coordonnées"
+        },
+        {
+          "id": 5,
+          "fr": "Chargeur de données"
+        },
+        {
+          "id": 6,
+          "fr": "Télécharger"
+        },
+        {
+          "id": 7,
+          "fr": "Dessiner, Mesurer et Modifier"
+        },
+        {
+          "id": 8,
+          "fr": "Informations sur l'entité"
+        },
+        {
+          "id": 9,
+          "fr": "Plein écran"
+        },
+        {
+          "id": 10,
+          "fr": "Géolocalisation"
+        },
+        {
+          "id": 11,
+          "fr": "Catalogue de couches"
+        },
+        {
+          "id": 12,
+          "fr": "Légende"
+        },
+        {
+          "id": 13,
+          "fr": "Indicateur de chargement"
+        },
+        {
+          "id": 14,
+          "fr": "Mesurer"
+        },
+        {
+          "id": 15,
+          "fr": "Informations multi-entités"
+        },
+        {
+          "id": 16,
+          "fr": "Barre de navigation"
+        },
+        {
+          "id": 17,
+          "fr": "Créateur de cartes hors ligne"
+        },
+        {
+          "id": 18,
+          "fr": "Carte de situation"
+        },
+        {
+          "id": 19,
+          "fr": "Fenêtre contextuelle"
+        },
+        {
+          "id": 20,
+          "fr": "Imprimer la carte"
+        },
+        {
+          "id": 21,
+          "fr": "Échelle"
+        },
+        {
+          "id": 22,
+          "fr": "Barre d'échelle"
+        },
+        {
+          "id": 23,
+          "fr": "Sélecteur d'échelle"
+        },
+        {
+          "id": 24,
+          "fr": "Rechercher"
+        },
+        {
+          "id": 25,
+          "fr": "Partager"
+        },
+        {
+          "id": 26,
+          "fr": "Vue de rue"
+        },
+        {
+          "id": 27,
+          "fr": "Vue 3D"
+        },
+        {
+          "id": 28,
+          "fr": "Édition WFS"
+        },
+        {
+          "id": 29,
+          "fr": "Requête WFS"
+        },
+        {
+          "id": 30,
+          "fr": "Gestionnaire de couches de travail"
+        }
+      ],
+      "seedDataOnly": true
+    }
+  }
+}

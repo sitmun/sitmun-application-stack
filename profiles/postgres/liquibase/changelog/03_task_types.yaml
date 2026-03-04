@@ -2,12 +2,14 @@ databaseChangeLog:
   - changeSet:
       id: 3
       author: sitmun
+      runOnChange: true
       changes:
-        - loadData:
+        - loadUpdateData:
             encoding: UTF-8
             file: 03_task_types/STM_TSK_TYP.csv
             relativeToChangelogFile: true
             tableName: STM_TSK_TYP
+            primaryKey: TTY_ID
             quotchar: "\""
             columns:
               - column:
@@ -28,3 +30,5 @@ databaseChangeLog:
               - column:
                   name: TTY_ORDER
                   type: NUMERIC
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = (SELECT COALESCE(MAX(TTY_ID), 0) + 1 FROM STM_TSK_TYP) WHERE SEQ_NAME = 'TTY_ID'"

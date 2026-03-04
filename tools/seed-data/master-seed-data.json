@@ -1,0 +1,1581 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-03",
+    "description": "Canonical non-translation seed data. English/default. STM_LANGUAGE and STM_TRANSLATION are owned by generate_translation_files.py."
+  },
+  "entities": {
+    "STM_CODELIST": {
+      "classification": "extensible",
+      "pk_column": "cod_id",
+      "rows": [
+        {
+          "cod_id": 1,
+          "cod_list": "application.type",
+          "cod_value": "ED",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Edition application"
+        },
+        {
+          "cod_id": 2,
+          "cod_list": "application.type",
+          "cod_value": "E",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "External application"
+        },
+        {
+          "cod_id": 3,
+          "cod_list": "application.type",
+          "cod_value": "I",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Internal application"
+        },
+        {
+          "cod_id": 4,
+          "cod_list": "application.type",
+          "cod_value": "T",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Tourist application"
+        },
+        {
+          "cod_id": 5,
+          "cod_list": "applicationParameter.type",
+          "cod_value": "MOBILE",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Mobile app parameter"
+        },
+        {
+          "cod_id": 6,
+          "cod_list": "applicationParameter.type",
+          "cod_value": "Nomenclator",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Nomenclator parameter"
+        },
+        {
+          "cod_id": 7,
+          "cod_list": "applicationParameter.type",
+          "cod_value": "PRINT_TEMPLATE",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Print template"
+        },
+        {
+          "cod_id": 8,
+          "cod_list": "cartography.geometryType",
+          "cod_value": "LINE",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Line"
+        },
+        {
+          "cod_id": 9,
+          "cod_list": "cartography.geometryType",
+          "cod_value": "POINT",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Point"
+        },
+        {
+          "cod_id": 10,
+          "cod_list": "cartography.geometryType",
+          "cod_value": "POLYGON",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Polygon"
+        },
+        {
+          "cod_id": 11,
+          "cod_list": "cartography.legendType",
+          "cod_value": "LEGENDGRAPHIC",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Get Legend Graphic"
+        },
+        {
+          "cod_id": 12,
+          "cod_list": "cartography.legendType",
+          "cod_value": "CAPABILITIES",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "GetCapabilities"
+        },
+        {
+          "cod_id": 13,
+          "cod_list": "cartography.legendType",
+          "cod_value": "LINK",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Static link"
+        },
+        {
+          "cod_id": 14,
+          "cod_list": "cartographyFilter.type",
+          "cod_value": "C",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Custom"
+        },
+        {
+          "cod_id": 15,
+          "cod_list": "cartographyFilter.type",
+          "cod_value": "D",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Defined"
+        },
+        {
+          "cod_id": 16,
+          "cod_list": "cartographyFilter.valueType",
+          "cod_value": "A",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Alphanumeric"
+        },
+        {
+          "cod_id": 17,
+          "cod_list": "cartographyFilter.valueType",
+          "cod_value": "D",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Date"
+        },
+        {
+          "cod_id": 18,
+          "cod_list": "cartographyFilter.valueType",
+          "cod_value": "N",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Number"
+        },
+        {
+          "cod_id": 19,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "F",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Date"
+        },
+        {
+          "cod_id": 20,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "I",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Image"
+        },
+        {
+          "cod_id": 21,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "N",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Number"
+        },
+        {
+          "cod_id": 22,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "P",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Percentage"
+        },
+        {
+          "cod_id": 23,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "T",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Text"
+        },
+        {
+          "cod_id": 24,
+          "cod_list": "cartographyParameter.format",
+          "cod_value": "U",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "URL"
+        },
+        {
+          "cod_id": 25,
+          "cod_list": "cartographyParameter.type",
+          "cod_value": "INFO",
+          "cod_system": false,
+          "cod_default": true,
+          "cod_description": "INFO"
+        },
+        {
+          "cod_id": 26,
+          "cod_list": "cartographyPermission.type",
+          "cod_value": "F",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Background map"
+        },
+        {
+          "cod_id": 27,
+          "cod_list": "cartographyPermission.type",
+          "cod_value": "C",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Cartography group"
+        },
+        {
+          "cod_id": 28,
+          "cod_list": "cartographyPermission.type",
+          "cod_value": "M",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Location map"
+        },
+        {
+          "cod_id": 29,
+          "cod_list": "cartographyPermission.type",
+          "cod_value": "I",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Report"
+        },
+        {
+          "cod_id": 30,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "F",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Date"
+        },
+        {
+          "cod_id": 31,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "I",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Image"
+        },
+        {
+          "cod_id": 32,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "N",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Number"
+        },
+        {
+          "cod_id": 33,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "P",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Percentage"
+        },
+        {
+          "cod_id": 34,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "T",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Text"
+        },
+        {
+          "cod_id": 35,
+          "cod_list": "cartographySpatialSelectionParameter.format",
+          "cod_value": "U",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "URL"
+        },
+        {
+          "cod_id": 36,
+          "cod_list": "cartographySpatialSelectionParameter.type",
+          "cod_value": "EDIT",
+          "cod_system": false,
+          "cod_default": true,
+          "cod_description": "EDIT"
+        },
+        {
+          "cod_id": 37,
+          "cod_list": "cartographySpatialSelectionParameter.type",
+          "cod_value": "SELECT",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "SELECT"
+        },
+        {
+          "cod_id": 38,
+          "cod_list": "downloadTask.scope",
+          "cod_value": "A",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Application"
+        },
+        {
+          "cod_id": 39,
+          "cod_list": "downloadTask.scope",
+          "cod_value": "U",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Isolated"
+        },
+        {
+          "cod_id": 40,
+          "cod_list": "downloadTask.scope",
+          "cod_value": "C",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Layer"
+        },
+        {
+          "cod_id": 41,
+          "cod_list": "editTask.fieldType",
+          "cod_value": "date",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Date"
+        },
+        {
+          "cod_id": 42,
+          "cod_list": "editTask.fieldType",
+          "cod_value": "image",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Image"
+        },
+        {
+          "cod_id": 43,
+          "cod_list": "editTask.fieldType",
+          "cod_value": "listbox",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "ListBox"
+        },
+        {
+          "cod_id": 44,
+          "cod_list": "editTask.fieldType",
+          "cod_value": "number",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Number"
+        },
+        {
+          "cod_id": 45,
+          "cod_list": "editTask.fieldType",
+          "cod_value": "text",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Text"
+        },
+        {
+          "cod_id": 46,
+          "cod_list": "editTask.scope",
+          "cod_value": "db-edit",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Database edition"
+        },
+        {
+          "cod_id": 47,
+          "cod_list": "editTask.scope",
+          "cod_value": "feat-edit",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Features service edition (WFS)"
+        },
+        {
+          "cod_id": 48,
+          "cod_list": "queryTask.parameterType",
+          "cod_value": "query",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Query parameter"
+        },
+        {
+          "cod_id": 49,
+          "cod_list": "queryTask.parameterType",
+          "cod_value": "template",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Template parameter"
+        },
+        {
+          "cod_id": 50,
+          "cod_list": "queryTask.scope",
+          "cod_value": "cartography-query",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Cartography Query"
+        },
+        {
+          "cod_id": 51,
+          "cod_list": "queryTask.scope",
+          "cod_value": "sql-query",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "SQL Query"
+        },
+        {
+          "cod_id": 52,
+          "cod_list": "queryTask.scope",
+          "cod_value": "web-api-query",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Web API Query"
+        },
+        {
+          "cod_id": 53,
+          "cod_list": "service.authenticationMode",
+          "cod_value": "HTTP Basic authentication",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "HTTP Basic authentication"
+        },
+        {
+          "cod_id": 54,
+          "cod_list": "service.authenticationMode",
+          "cod_value": "None",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "None"
+        },
+        {
+          "cod_id": 55,
+          "cod_list": "service.type",
+          "cod_value": "WFS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "WFS"
+        },
+        {
+          "cod_id": 56,
+          "cod_list": "service.type",
+          "cod_value": "WMS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "WMS"
+        },
+        {
+          "cod_id": 57,
+          "cod_list": "service.type",
+          "cod_value": "WMTS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "WMTS"
+        },
+        {
+          "cod_id": 58,
+          "cod_list": "serviceParameter.type",
+          "cod_value": "INFO",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "GetFeatureInfo"
+        },
+        {
+          "cod_id": 59,
+          "cod_list": "serviceParameter.type",
+          "cod_value": "WMS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "GetMap"
+        },
+        {
+          "cod_id": 60,
+          "cod_list": "serviceParameter.type",
+          "cod_value": "OLPARAM",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "OpenLayers"
+        },
+        {
+          "cod_id": 61,
+          "cod_list": "serviceParameter.type",
+          "cod_value": "WMTS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "WMTS"
+        },
+        {
+          "cod_id": 62,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "__NULL_VALUE__",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "__NULL_VALUE__"
+        },
+        {
+          "cod_id": 63,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "array",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "array"
+        },
+        {
+          "cod_id": 64,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "boolean",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "boolean"
+        },
+        {
+          "cod_id": 65,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "number",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "number"
+        },
+        {
+          "cod_id": 66,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "object",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "object"
+        },
+        {
+          "cod_id": 67,
+          "cod_list": "taskEntity.jsonParamType",
+          "cod_value": "string",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "string"
+        },
+        {
+          "cod_id": 68,
+          "cod_list": "territory.scope",
+          "cod_value": "M",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Municipality"
+        },
+        {
+          "cod_id": 69,
+          "cod_list": "territory.scope",
+          "cod_value": "R",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Regional"
+        },
+        {
+          "cod_id": 70,
+          "cod_list": "territory.scope",
+          "cod_value": "T",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Total"
+        },
+        {
+          "cod_id": 71,
+          "cod_list": "tree.type",
+          "cod_value": "cartography",
+          "cod_system": false,
+          "cod_default": true,
+          "cod_description": "Cartography"
+        },
+        {
+          "cod_id": 72,
+          "cod_list": "tree.type",
+          "cod_value": "edition",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Edition tree"
+        },
+        {
+          "cod_id": 73,
+          "cod_list": "tree.type",
+          "cod_value": "touristic",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Tourist application"
+        },
+        {
+          "cod_id": 82,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "dl",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Detailed list"
+        },
+        {
+          "cod_id": 83,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "evt",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Events"
+        },
+        {
+          "cod_id": 84,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "evtcat",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Events categories"
+        },
+        {
+          "cod_id": 85,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "evtloc",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Events locations"
+        },
+        {
+          "cod_id": 86,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "gallery",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Gallery"
+        },
+        {
+          "cod_id": 87,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "ms",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Map search"
+        },
+        {
+          "cod_id": 88,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "ne",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Near elements"
+        },
+        {
+          "cod_id": 89,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "rt",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Routes list"
+        },
+        {
+          "cod_id": 90,
+          "cod_list": "treenode.viewmode",
+          "cod_value": "sch",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Schedule"
+        },
+        {
+          "cod_id": 91,
+          "cod_list": "user.identificationType",
+          "cod_value": "DNI",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "DNI"
+        },
+        {
+          "cod_id": 92,
+          "cod_list": "user.identificationType",
+          "cod_value": "NIE",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "NIE"
+        },
+        {
+          "cod_id": 93,
+          "cod_list": "user.identificationType",
+          "cod_value": "PAS",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Passport"
+        },
+        {
+          "cod_id": 94,
+          "cod_list": "userPosition.type",
+          "cod_value": "POC",
+          "cod_system": false,
+          "cod_default": false,
+          "cod_description": "Point of contact"
+        },
+        {
+          "cod_id": 95,
+          "cod_list": "treenode.node.type",
+          "cod_value": "cartography",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Cartography"
+        },
+        {
+          "cod_id": 96,
+          "cod_list": "treenode.node.type",
+          "cod_value": "folder",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Folder"
+        },
+        {
+          "cod_id": 97,
+          "cod_list": "treenode.node.type",
+          "cod_value": "list",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "List"
+        },
+        {
+          "cod_id": 98,
+          "cod_list": "treenode.node.type",
+          "cod_value": "menu",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Menu"
+        },
+        {
+          "cod_id": 99,
+          "cod_list": "treenode.node.type",
+          "cod_value": "task",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Task"
+        },
+        {
+          "cod_id": 100,
+          "cod_list": "treenode.node.type",
+          "cod_value": "fav",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Favorites"
+        },
+        {
+          "cod_id": 101,
+          "cod_list": "treenode.node.type",
+          "cod_value": "map",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Map"
+        },
+        {
+          "cod_id": 102,
+          "cod_list": "treenode.node.type",
+          "cod_value": "nm",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Near me"
+        }
+      ]
+    },
+    "STM_TSK_TYP": {
+      "classification": "extensible",
+      "pk_column": "tty_id",
+      "rows": [
+        {
+          "tty_id": 0,
+          "tty_name": "edit",
+          "tty_title": "Edit",
+          "tty_enabled": 1,
+          "tty_parentid": null,
+          "tty_order": 3
+        },
+        {
+          "tty_id": 1,
+          "tty_name": "basic",
+          "tty_title": "Basic",
+          "tty_enabled": 1,
+          "tty_parentid": null,
+          "tty_order": 1
+        },
+        {
+          "tty_id": 5,
+          "tty_name": "query",
+          "tty_title": "Query",
+          "tty_enabled": 1,
+          "tty_parentid": null,
+          "tty_order": 2
+        },
+        {
+          "tty_id": 6,
+          "tty_name": "moreInfo",
+          "tty_title": "More Info",
+          "tty_enabled": 1,
+          "tty_parentid": null,
+          "tty_order": 4
+        }
+      ]
+    },
+    "STM_TER_TYP": {
+      "classification": "extensible",
+      "pk_column": "tet_id",
+      "rows": [
+        {
+          "tet_id": 1,
+          "tet_name": "Country",
+          "tet_official": true,
+          "tet_top": true,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 2,
+          "tet_name": "Autonomous Community",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 3,
+          "tet_name": "Autonomous City",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 4,
+          "tet_name": "Provincial Council",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 5,
+          "tet_name": "Island Council (Balearic)",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 6,
+          "tet_name": "Island Council (Canary)",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 7,
+          "tet_name": "Municipality",
+          "tet_official": true,
+          "tet_top": false,
+          "tet_bottom": true
+        },
+        {
+          "tet_id": 8,
+          "tet_name": "Comarca",
+          "tet_official": false,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 9,
+          "tet_name": "Metropolitan Area",
+          "tet_official": false,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 10,
+          "tet_name": "Commonwealth of Municipalities",
+          "tet_official": false,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 11,
+          "tet_name": "Municipal Grouping",
+          "tet_official": false,
+          "tet_top": false,
+          "tet_bottom": false
+        },
+        {
+          "tet_id": 12,
+          "tet_name": "Sub-municipal Entity",
+          "tet_official": false,
+          "tet_top": false,
+          "tet_bottom": false
+        }
+      ]
+    },
+    "STM_USER": {
+      "classification": "extensible",
+      "pk_column": "use_id",
+      "rows": [
+        {
+          "use_id": 1,
+          "use_user": "admin",
+          "use_pwd": "$2a$10$fxkKe8bLwlWNitI49I6DBeNtOhjTqkMw2KKWg8pPd8k2jOT5dYc/W",
+          "use_name": "Administrator",
+          "use_surname": null,
+          "use_adm": true,
+          "use_blocked": false,
+          "use_created": "2006-12-31 00:00:00"
+        },
+        {
+          "use_id": 2,
+          "use_user": "public",
+          "use_pwd": null,
+          "use_name": "",
+          "use_surname": null,
+          "use_adm": false,
+          "use_blocked": false,
+          "use_created": "2006-12-31 00:00:00"
+        }
+      ]
+    },
+    "STM_TASK": {
+      "classification": "extensible",
+      "pk_column": "tas_id",
+      "rows": [
+        {
+          "tas_id": 1,
+          "tas_name": "Attribution",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 1,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 2,
+          "tas_name": "Basemap Selector",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 2,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 3,
+          "tas_name": "Click",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 3,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 4,
+          "tas_name": "Coordinates",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 4,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 5,
+          "tas_name": "Data Loader",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 5,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 6,
+          "tas_name": "Download",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 6,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 7,
+          "tas_name": "Draw, Measure and Modify",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 7,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 8,
+          "tas_name": "Feature Info",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 8,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 9,
+          "tas_name": "Full Screen",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 9,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 10,
+          "tas_name": "Geolocation",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 10,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 11,
+          "tas_name": "Layer Catalog",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 11,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 12,
+          "tas_name": "Legend",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 12,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 13,
+          "tas_name": "Loading Indicator",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 13,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 14,
+          "tas_name": "Measure",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 14,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 15,
+          "tas_name": "Multi Feature Info",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 15,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 16,
+          "tas_name": "Navigation Bar",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 16,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 17,
+          "tas_name": "Offline Map Maker",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 17,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 18,
+          "tas_name": "Overview Map",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 18,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 19,
+          "tas_name": "Popup",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 19,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 20,
+          "tas_name": "Print Map",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 20,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 21,
+          "tas_name": "Scale",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 21,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 22,
+          "tas_name": "Scale Bar",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 22,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 23,
+          "tas_name": "Scale Selector",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 23,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 24,
+          "tas_name": "Search",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 24,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 25,
+          "tas_name": "Share",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 25,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 26,
+          "tas_name": "Street View",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 26,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 27,
+          "tas_name": "3D View",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 27,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 28,
+          "tas_name": "WFSEdit",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 28,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 29,
+          "tas_name": "WFS Query",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 29,
+          "tas_connid": null,
+          "tas_params": null
+        },
+        {
+          "tas_id": 30,
+          "tas_name": "Work Layer Manager",
+          "tas_created": null,
+          "tas_order": null,
+          "tas_giid": null,
+          "tas_serid": null,
+          "tas_gtaskid": 1,
+          "tas_ttaskid": 1,
+          "tas_tuiid": 30,
+          "tas_connid": null,
+          "tas_params": null
+        }
+      ]
+    },
+    "STM_TSK_UI": {
+      "classification": "extensible",
+      "pk_column": "tui_id",
+      "rows": [
+        {
+          "tui_id": 1,
+          "tui_name": "sitna.attribution",
+          "tui_tooltip": "Attribution",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 2,
+          "tui_name": "sitna.basemapSelector",
+          "tui_tooltip": "Basemap Selector",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 3,
+          "tui_name": "sitna.click",
+          "tui_tooltip": "Click",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 4,
+          "tui_name": "sitna.coordinates",
+          "tui_tooltip": "Coordinates",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 5,
+          "tui_name": "sitna.dataLoader",
+          "tui_tooltip": "Data Loader",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 6,
+          "tui_name": "sitna.download",
+          "tui_tooltip": "Download",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 7,
+          "tui_name": "sitna.drawMeasureModify",
+          "tui_tooltip": "Draw, Measure and Modify",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 8,
+          "tui_name": "sitna.featureInfo",
+          "tui_tooltip": "Feature Info",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 9,
+          "tui_name": "sitna.fullScreen",
+          "tui_tooltip": "Full Screen",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 10,
+          "tui_name": "sitna.geolocation",
+          "tui_tooltip": "Geolocation",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 11,
+          "tui_name": "sitna.layerCatalog",
+          "tui_tooltip": "Layer Catalog",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 12,
+          "tui_name": "sitna.legend",
+          "tui_tooltip": "Legend",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 13,
+          "tui_name": "sitna.loadingIndicator",
+          "tui_tooltip": "Loading Indicator",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 14,
+          "tui_name": "sitna.measure",
+          "tui_tooltip": "Measure",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 15,
+          "tui_name": "sitna.multiFeatureInfo",
+          "tui_tooltip": "Multi Feature Info",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 16,
+          "tui_name": "sitna.navBar",
+          "tui_tooltip": "Navigation Bar",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 17,
+          "tui_name": "sitna.offlineMapMaker",
+          "tui_tooltip": "Offline Map Maker",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 18,
+          "tui_name": "sitna.overviewMap",
+          "tui_tooltip": "Overview Map",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 19,
+          "tui_name": "sitna.popup",
+          "tui_tooltip": "Popup",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 20,
+          "tui_name": "sitna.printMap",
+          "tui_tooltip": "Print Map",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 21,
+          "tui_name": "sitna.scale",
+          "tui_tooltip": "Scale",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 22,
+          "tui_name": "sitna.scaleBar",
+          "tui_tooltip": "Scale Bar",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 23,
+          "tui_name": "sitna.scaleSelector",
+          "tui_tooltip": "Scale Selector",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 24,
+          "tui_name": "sitna.search",
+          "tui_tooltip": "Search",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 25,
+          "tui_name": "sitna.share",
+          "tui_tooltip": "Share",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 26,
+          "tui_name": "sitna.streetView",
+          "tui_tooltip": "Street View",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 27,
+          "tui_name": "sitna.threed",
+          "tui_tooltip": "3D View",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 28,
+          "tui_name": "sitna.WFSEdit",
+          "tui_tooltip": "WFSEdit",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 29,
+          "tui_name": "sitna.WFSQuery",
+          "tui_tooltip": "WFS Query",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 30,
+          "tui_name": "sitna.workLayerManager",
+          "tui_tooltip": "Work Layer Manager",
+          "tui_order": 0,
+          "tui_type": null
+        },
+        {
+          "tui_id": 31,
+          "tui_name": "sitna.moreInfo",
+          "tui_tooltip": "More Info",
+          "tui_order": 0,
+          "tui_type": "moreInfo"
+        }
+      ]
+    },
+    "STM_GRP_TSK": {
+      "classification": "extensible",
+      "pk_column": "gts_id",
+      "rows": [
+        {
+          "gts_id": 1,
+          "gts_name": "Basic"
+        }
+      ]
+    },
+    "STM_CONF": {
+      "classification": "extensible",
+      "pk_column": "cnf_id",
+      "rows": [
+        {
+          "cnf_id": 1,
+          "cnf_name": "language.default",
+          "cnf_value": "en"
+        },
+        {
+          "cnf_id": 2,
+          "cnf_name": "srs.default.identifier",
+          "cnf_value": "EPSG:25831"
+        },
+        {
+          "cnf_id": 3,
+          "cnf_name": "srs.default.x",
+          "cnf_value": "x"
+        },
+        {
+          "cnf_id": 4,
+          "cnf_name": "srs.default.y",
+          "cnf_value": "y"
+        },
+        {
+          "cnf_id": 5,
+          "cnf_name": "srs.default.proj4",
+          "cnf_value": "+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sort and renumber quoted CSV (development profile format) by cod_list and cod_description."""
+"""Sort and renumber STM_CODELIST.csv by COD_LIST and COD_DESCRIPTION."""
 
 import csv
 import sys
@@ -8,7 +8,7 @@ from pathlib import Path
 
 def sort_and_renumber_codelist(input_file: Path, output_file: Path = None) -> None:
     """
-    Sort quoted CSV by cod_list and cod_description, renumber cod_id from 1 without gaps.
+    Sort CSV by COD_LIST and COD_DESCRIPTION, renumber COD_ID from 1 without gaps.
     
     Args:
         input_file: Path to input CSV file
@@ -23,16 +23,16 @@ def sort_and_renumber_codelist(input_file: Path, output_file: Path = None) -> No
         header = reader.fieldnames
         rows = list(reader)
     
-    # Sort by cod_list, then cod_description
-    rows.sort(key=lambda r: (r['cod_list'], r['cod_description']))
+    # Sort by COD_LIST, then COD_DESCRIPTION
+    rows.sort(key=lambda r: (r['COD_LIST'], r['COD_DESCRIPTION']))
     
-    # Renumber cod_id starting from 1
+    # Renumber COD_ID starting from 1
     for idx, row in enumerate(rows, start=1):
-        row['cod_id'] = str(idx)
+        row['COD_ID'] = str(idx)
     
-    # Write sorted and renumbered data with quoting
+    # Write sorted and renumbered data
     with open(output_file, 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=header, quoting=csv.QUOTE_ALL)
+        writer = csv.DictWriter(f, fieldnames=header, lineterminator='\n')
         writer.writeheader()
         writer.writerows(rows)
     
@@ -43,10 +43,10 @@ def sort_and_renumber_codelist(input_file: Path, output_file: Path = None) -> No
 def main():
     """CLI entry point."""
     if len(sys.argv) < 2:
-        print("Usage: python sort_codelist_quoted.py <input_csv> [output_csv]")
+        print("Usage: python sort_codelist.py <input_csv> [output_csv]")
         print("\nExample:")
-        print("  python sort_codelist_quoted.py stm_codelist.csv")
-        print("  python sort_codelist_quoted.py input.csv output.csv")
+        print("  python sort_codelist.py STM_CODELIST.csv")
+        print("  python sort_codelist.py input.csv output.csv")
         sys.exit(1)
     
     input_file = Path(sys.argv[1])
