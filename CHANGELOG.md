@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-03-04
+
 ### Added
 
 #### Stack-level
@@ -20,6 +22,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Liquibase changelogs 36 (cartography tree folder type), 37 (merge treenode.node.type), 38 (remove legacy treenode codelists).
 
+#### Backend Core
+
+- English translation CSV support for postgres and oracle profiles.
+- `messageCode` on validation Problem Detail `FieldError` (set in exception handlers) for client-side i18n of validation messages.
+- `SitmunConstants`: application-wide keys for default language and proxy configuration.
+- Proxy setup: proxy middleware URL configured via `sitmun.proxy-middleware.url` and exposed to client in profile `global.proxy`.
+
+#### Admin Application
+
+- Detailed validation error messages in notifications: show field-level errors from RFC 9457 `errors` array, i18n for `messageCode` (e.g. `validation.NotBlank`, `validation.BoundingBox`), multi-line display in notification component.
+- Tree view mode handling with icons and labels for different view modes.
+- Task properties regression tests to prevent model drift.
+
+#### Viewer Application
+
+- ESLint flat config migration and updated dependencies.
+
 ### Changed
 
 #### Stack-level
@@ -28,11 +47,49 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Tools: consolidated translations and seed workflows from tools/translations and tools/front-i18n into tools/bin, tools/seed-data, tools/scripts, tools/tests.
 - Regenerated production profile codelists, task types, seed data, translations, params, sequences (postgres and oracle).
 
+#### Backend Core
+
+- Unified tree node type constants (`CodeListsConstants`) and application configuration for node type handling.
+- OIDC: added provider/client constants (`AuthProviderIds`, `OidcClientTypes`), improved tests and documentation.
+- Locale resolution: use `SitmunConstants.LANGUAGE_DEFAULT_CONF_KEY` for DB default language; `sitmun.language` default set to `en`.
+
+#### Admin Application
+
+- Node.js requirement updated to `>=20.19.0` (engines).
+- Angular framework upgraded to version 19 (^19.2.x) with latest features and performance improvements.
+- Tree node type unification: consolidated `treenode.folder.type` and `treenode.leaf.type` into unified `treenode.node.type`.
+- Task properties made opaque to improve encapsulation and type safety.
+
+#### Viewer Application
+
+- Node.js requirement updated to `>=20.19.0` (engines).
+- Angular framework upgraded to version 19 with latest features and performance improvements.
+- ESLint configuration migrated from legacy `.eslintrc.js` to flat config `eslint.config.js`.
+
+### Fixed
+
+#### Admin Application
+
+- Save failure: show a single error notification (interceptor only) and skip post-save logic; log error in component catch instead of calling ErrorHandlerService to avoid duplicate snackbar.
+- Development API URL set to `http://localhost:9000/backend` so `ng serve` uses the Nginx proxy path and CORS works correctly.
+- Tree duplication: await recursive node updates so child nodes complete before navigation; strip `_links` on duplicated nodes for clean create path (fixes #359).
+- Tree node type handling and mapping dialog state stabilization.
+- Aranés flag SVG metadata removed to fix language selector label display on login screen (fixes #360).
+
 ### Removed
 
 #### Stack-level
 
 - tools/translations/ (scripts and master-translations.json), tools/front-i18n/README.md, tools/sort_codelist.py (root).
+
+#### Backend Core
+
+- Proxy URL from seed config `STM_CONF` (proxy URL now from Spring property only).
+
+#### Viewer Application
+
+- Removed `.eslintignore` and `.eslintrc.js` legacy configuration files.
+- Removed deploy configuration from `angular.json`.
 
 ## [1.2.3] - 2026-02-26
 
@@ -675,7 +732,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...HEAD
+[1.2.4]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...sitmun-application-stack/1.2.4
 [1.2.3]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...sitmun-application-stack/1.2.3
 [1.2.2]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.1...sitmun-application-stack/1.2.2
 [1.2.1]: https://github.com/sitmun/sitmun-application-stack/compare/v1.2.0...v1.2.1
