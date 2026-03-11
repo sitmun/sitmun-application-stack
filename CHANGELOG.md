@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-03-11
+
+### Added
+
+#### Stack-level
+
+- Added `tools/scripts/bump-version.sh` to propagate stack version updates across submodules and profile/configuration consumers, including lockfile refresh for frontend applications.
+
 ### Changed
 
 #### Stack-level
@@ -739,7 +747,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...HEAD
+[1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5
 [1.2.4]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...sitmun-application-stack/1.2.4
 [1.2.3]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...sitmun-application-stack/1.2.3
 [1.2.2]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.1...sitmun-application-stack/1.2.2
