@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+#### Stack-level
+
+- Moved root helper scripts into `tools/`: `check_changelog_integrity.py` → `tools/bin/check_changelog_integrity.py`, `checkout-latest-tags.sh` → `tools/scripts/checkout-latest-tags.sh`.
+- Updated changelog integrity checker to resolve git repository root dynamically from `tools/bin` and use the current backend changelog path (`back/backend/sitmun-backend-core/config/db/changelog`).
+
 ## [1.2.4] - 2026-03-04
 
 ### Added

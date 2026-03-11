@@ -46,6 +46,7 @@ Paths by scenario:
 |--------|---------|
 | **apply-seed-data.sh** | Generate seed files then apply the Liquibase changelog to a remote database. `--db-type postgres\|oracle`; `--baseline` selects i18n language. |
 | **validate-liquibase-changelogs.sh** | List changelogs by last modification (newest first). Pass `[liquibase_dir]` as first argument (default: development). |
+| **checkout-latest-tags.sh** | Update all git submodules to their latest version tag. |
 
 ```bash
 # Apply seed data to a remote PostgreSQL database (English baseline)
@@ -78,6 +79,9 @@ bash tools/scripts/apply-seed-data.sh \
 bash tools/scripts/validate-liquibase-changelogs.sh
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/postgres/liquibase
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/oracle/liquibase
+
+# Move submodules to latest tags
+bash tools/scripts/checkout-latest-tags.sh
 ```
 
 ---
@@ -113,6 +117,7 @@ See [seed-data/README.md](seed-data/README.md) for the full workflow.
 | **import_from_csv.py** | One-time import from legacy Liquibase translation CSVs into a baseline. | `--scenario`; `--baseline` |
 | **import_from_generated_csvs.py** | Import from generated `STM_TRANSLATION_*.csv` into a baseline. | `--scenario`; `--baseline` |
 | **sort_codelist.py** | Sort and renumber `STM_CODELIST.csv`. | pass input file path |
+| **check_changelog_integrity.py** | Verify Liquibase changelog immutability by commit chronology checks. | — |
 
 ```bash
 # Generate translation + seed files for both production profiles (default baseline)
@@ -130,6 +135,9 @@ python3 tools/bin/switch_default_language.py es
 
 # Sort a codelist CSV
 python3 tools/bin/sort_codelist.py profiles/postgres/liquibase/changelog/02_codelists/STM_CODELIST.csv
+
+# Check changelog integrity against next-changelog commit boundaries
+python3 tools/bin/check_changelog_integrity.py
 ```
 
 ---
