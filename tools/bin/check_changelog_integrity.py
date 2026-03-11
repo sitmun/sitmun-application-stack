@@ -54,9 +54,24 @@ class Violation:
 class ChangelogChecker:
     """Checks Liquibase changelog integrity"""
     
-    def __init__(self, changelog_dir: str = "back/backend/config/liquibase/changelog"):
+    def __init__(self, changelog_dir: str = "back/backend/sitmun-backend-core/config/db/changelog"):
         self.changelog_dir = Path(changelog_dir)
-        self.repo_root = Path(__file__).parent
+        self.repo_root = self._resolve_repo_root()
+
+    def _resolve_repo_root(self) -> Path:
+        """Resolve git repository root so script works from tools/bin."""
+        try:
+            result = subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                cwd=Path(__file__).resolve().parent,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            return Path(result.stdout.strip())
+        except subprocess.CalledProcessError:
+            # Fallback for non-git invocations: assume tools/bin inside repo root.
+            return Path(__file__).resolve().parents[2]
         
     def run_git_command(self, cmd: List[str]) -> str:
         """Run a git command and return output"""
