@@ -94,6 +94,9 @@ services:
     environment:
       - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
       - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+      - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-WARN}
+      - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-INFO}
+      - LOGGING_LEVEL_ORG_SITMUN_PROXY_MIDDLEWARE=${LOGGING_LEVEL_ORG_SITMUN_PROXY_MIDDLEWARE:-${LOGGING_LEVEL_ORG_SITMUN:-INFO}}
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
       interval: 30s
