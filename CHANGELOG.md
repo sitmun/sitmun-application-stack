@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Stack-level
+
+- Middleware: `LOGGING_LEVEL_ROOT`, `LOGGING_LEVEL_ORG_SITMUN` in root `docker-compose.yml` (`INFO` / `DEBUG` defaults).
+
+#### Profile-level
+
+- Middleware: `LOGGING_LEVEL_*` in `profiles/postgres` and `profiles/oracle` compose (`WARN` / `INFO` defaults; optional `LOGGING_LEVEL_ORG_SITMUN_PROXY_MIDDLEWARE`).
+
+#### Backend Core
+
+- Parametrizable proxy: `RequestCoordinates`, HTTP/SQL user parametrization decorators, `JdbcSqlDialect`, `HttpPayloadDto`, extended `HttpSecurityDto`, `SensitiveDataMasking`, tests.
+
+#### Proxy Middleware
+
+- Multi API-key headers, `HttpSecurityConstants`, `HttpContextSecurity` alignment, masked debug logging, contract/regression tests.
+
+### Changed
+
+#### Profile-level
+
+- `profiles/development/proxy/application.yml`: drop fixed `org.sitmun.proxy.middleware` log level.
+
+#### Backend Core
+
+- `SystemVariableResolver` / WMS+HTTP proxy paths use `RequestCoordinates`; decorator pipeline and pagination behavior updated; `QueryVaryFiltersDecorator` → `SqlUserParametrizationDecorator`.
+
+#### Proxy Middleware
+
+- HTTP security decorators, executor logging, configuration/executor wiring and tests.
+
+### Removed
+
+#### Backend Core
+
+- `SqlTemplateExpander`, `QueryFixedFiltersDecorator` (superseded by new decorators).
+
 ## [1.2.5] - 2026-03-11
 
 ### Added
