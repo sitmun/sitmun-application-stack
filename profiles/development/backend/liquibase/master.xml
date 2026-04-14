@@ -44,4 +44,5 @@
   <include file="changelog/36_cartography_tree_folder_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/37_merge_treenode_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/38_remove_legacy_treenode_types.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/39_add_query_task_codelists.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -93,3 +93,19 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 100,treenode.node.type,fav,true,false,Favorites
 101,treenode.node.type,map,true,false,Map
 102,treenode.node.type,nm,true,false,Near me
+103,queryTask.scope,URL,true,false,URL
+104,queryTask.scope,resource,true,false,Resource
+105,queryTask.mimeType,image/png,true,false,PNG (.png)
+106,queryTask.mimeType,image/jpeg,true,false,JPEG (.jpg, .jpeg)
+107,queryTask.mimeType,image/gif,true,false,GIF (.gif)
+108,queryTask.mimeType,image/svg+xml,true,false,SVG (.svg)
+109,queryTask.mimeType,application/pdf,true,false,PDF (.pdf)
+110,queryTask.mimeType,application/json,true,false,JSON (.json)
+111,queryTask.mimeType,application/xml,true,false,XML (.xml)
+113,queryTask.mimeType,application/msword,true,false,Word (.doc)
+115,queryTask.mimeType,application/vnd.ms-excel,true,false,Excel (.xls)
+117,queryTask.mimeType,application/vnd.oasis.opendocument.text,true,false,ODT (.odt)
+118,queryTask.mimeType,application/vnd.oasis.opendocument.spreadsheet,true,false,ODS (.ods)
+119,queryTask.authenticationMode,None,true,true,None
+120,queryTask.authenticationMode,HTTP Basic authentication,true,false,HTTP Basic authentication
+121,queryTask.authenticationMode,X-API-Key,true,false,X-API-Key

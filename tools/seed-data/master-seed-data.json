@@ -760,6 +760,134 @@
           "cod_system": true,
           "cod_default": false,
           "cod_description": "Near me"
+        },
+        {
+          "cod_id": 103,
+          "cod_list": "queryTask.scope",
+          "cod_value": "URL",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "URL Query"
+        },
+        {
+          "cod_id": 104,
+          "cod_list": "queryTask.scope",
+          "cod_value": "resource",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Resource"
+        },
+        {
+          "cod_id": 105,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "image/png",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "PNG (.png)"
+        },
+        {
+          "cod_id": 106,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "image/jpeg",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "JPEG (.jpg, .jpeg)"
+        },
+        {
+          "cod_id": 107,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "image/gif",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "GIF (.gif)"
+        },
+        {
+          "cod_id": 108,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "image/svg+xml",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "SVG (.svg)"
+        },
+        {
+          "cod_id": 109,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/pdf",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "PDF (.pdf)"
+        },
+        {
+          "cod_id": 110,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/json",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "JSON (.json)"
+        },
+        {
+          "cod_id": 111,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/xml",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "XML (.xml)"
+        },
+        {
+          "cod_id": 113,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/msword",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Word (.doc)"
+        },
+        {
+          "cod_id": 115,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/vnd.ms-excel",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Excel (.xls)"
+        },
+        {
+          "cod_id": 117,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/vnd.oasis.opendocument.text",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "ODT (.odt)"
+        },
+        {
+          "cod_id": 118,
+          "cod_list": "queryTask.mimeType",
+          "cod_value": "application/vnd.oasis.opendocument.spreadsheet",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "ODS (.ods)"
+        },
+        {
+          "cod_id": 119,
+          "cod_list": "queryTask.authenticationMode",
+          "cod_value": "None",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "None"
+        },
+        {
+          "cod_id": 120,
+          "cod_list": "queryTask.authenticationMode",
+          "cod_value": "HTTP Basic authentication",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "HTTP Basic authentication"
+        },
+        {
+          "cod_id": 121,
+          "cod_list": "queryTask.authenticationMode",
+          "cod_value": "X-API-Key",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "X-API-Key"
         }
       ]
     },

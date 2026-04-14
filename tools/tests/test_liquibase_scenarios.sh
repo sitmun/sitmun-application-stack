@@ -122,7 +122,19 @@ generate en
 liquibase_update "en baseline, first apply"
 
 CODELIST_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST;")
-assert_ge "STM_CODELIST rows" 90 "$CODELIST_COUNT"
+assert_ge "STM_CODELIST rows" 118 "$CODELIST_COUNT"
+
+QUERY_SCOPE_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.scope';")
+assert_ge "queryTask.scope codelist entries" 5 "$QUERY_SCOPE_COUNT"
+
+QUERY_MIME_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.mimeType';")
+assert_ge "queryTask.mimeType codelist entries" 11 "$QUERY_MIME_COUNT"
+
+QUERY_AUTHMODE_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.authenticationMode';")
+assert_eq "queryTask.authenticationMode codelist entries" "3" "$QUERY_AUTHMODE_COUNT"
+
+RESOURCE_SCOPE=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.scope' AND COD_VALUE='resource';")
+assert_eq "queryTask.scope 'resource' entry exists" "1" "$RESOURCE_SCOPE"
 
 TSK_TYP_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP;")
 assert_ge "STM_TSK_TYP rows" 4 "$TSK_TYP_COUNT"
