@@ -1,0 +1,308 @@
+databaseChangeLog:
+  - changeSet:
+      id: 39
+      author: sitmun
+      context: dev,prod
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_ID = 154"
+      changes:
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 154 }
+              - column: { name: COD_LIST, value: "queryTask.scope" }
+              - column: { name: COD_VALUE, value: "URL" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "URL" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 155 }
+              - column: { name: COD_LIST, value: "queryTask.scope" }
+              - column: { name: COD_VALUE, value: "resource" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Resource" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 156 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/png" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "PNG (.png)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 157 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/jpeg" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "JPEG (.jpg, .jpeg)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 158 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/gif" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "GIF (.gif)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 159 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/svg+xml" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "SVG (.svg)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 160 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/pdf" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "PDF (.pdf)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 161 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/json" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "JSON (.json)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 162 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/xml" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "XML (.xml)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 163 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/msword" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Word (.doc)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 164 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.ms-excel" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Excel (.xls)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 165 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.text" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "ODT (.odt)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 166 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.spreadsheet" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "ODS (.ods)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 167 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "None" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: true }
+              - column: { name: COD_DESCRIPTION, value: "None" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 168 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "X-API-Key" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "X-API-Key" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 169 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "HTTP Basic authentication" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "HTTP Basic authentication" }
+      rollback:
+        - delete:
+            tableName: STM_CODELIST
+            where: COD_ID IN (154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169)
+
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 154 }
+              - column: { name: COD_LIST, value: "queryTask.scope" }
+              - column: { name: COD_VALUE, value: "URL" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "URL" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 155 }
+              - column: { name: COD_LIST, value: "queryTask.scope" }
+              - column: { name: COD_VALUE, value: "resource" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Resource" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 156 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/png" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "PNG (.png)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 157 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/jpeg" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "JPEG (.jpg, .jpeg)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 158 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/gif" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "GIF (.gif)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 159 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "image/svg+xml" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "SVG (.svg)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 160 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/pdf" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "PDF (.pdf)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 161 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/json" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "JSON (.json)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 162 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/xml" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "XML (.xml)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 164 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/msword" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Word (.doc)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 166 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.ms-excel" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "Excel (.xls)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 174 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.text" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "ODT (.odt)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 175 }
+              - column: { name: COD_LIST, value: "queryTask.mimeType" }
+              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.spreadsheet" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "ODS (.ods)" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 168 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "None" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: true }
+              - column: { name: COD_DESCRIPTION, value: "None" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 169 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "X-API-Key" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "X-API-Key" }
+        - insert:
+            tableName: STM_CODELIST
+            columns:
+              - column: { name: COD_ID, value: 170 }
+              - column: { name: COD_LIST, value: "queryTask.authenticationMode" }
+              - column: { name: COD_VALUE, value: "HTTP Basic authentication" }
+              - column: { name: COD_SYSTEM, valueBoolean: true }
+              - column: { name: COD_DEFAULT, valueBoolean: false }
+              - column: { name: COD_DESCRIPTION, value: "HTTP Basic authentication" }
+      rollback:
+        - delete:
+            tableName: STM_CODELIST
+            where: COD_ID IN (154,155,156,157,158,159,160,161,162,164,166,168,169,170,174,175)
