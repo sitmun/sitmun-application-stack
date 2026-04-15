@@ -157,6 +157,20 @@ databaseChangeLog:
         - delete:
             tableName: STM_CODELIST
             where: COD_ID IN (154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169)
+  - changeSet:
+      id: 39b
+      author: sitmun
+      context: dev,prod
+      runOnChange: true
+      changes:
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';
+      rollback:
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = 109 WHERE SEQ_NAME = 'COD_ID';"
 
         - insert:
             tableName: STM_CODELIST
