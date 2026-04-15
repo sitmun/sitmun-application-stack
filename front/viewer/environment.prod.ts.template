@@ -8,5 +8,6 @@ export const environment = {
   environmentName: '${FRONT_ENV}',
   sitnaVersion: '4.8.0',
   buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
-  loginBackgroundImageUrl: '/assets/logos/barcelona_background.jpg'
+  loginBackgroundImageUrl: 'assets/logos/barcelona_background.jpg',
+  proxyTokenRefreshIntervalMs: 2 * 60 * 1000
 };
