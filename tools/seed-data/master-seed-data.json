@@ -428,18 +428,26 @@
         {
           "cod_id": 53,
           "cod_list": "service.authenticationMode",
+          "cod_value": "None",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "None"
+        },
+        {
+          "cod_id": 54,
+          "cod_list": "service.authenticationMode",
           "cod_value": "HTTP Basic authentication",
           "cod_system": true,
           "cod_default": false,
           "cod_description": "HTTP Basic authentication"
         },
         {
-          "cod_id": 54,
+          "cod_id": 122,
           "cod_list": "service.authenticationMode",
-          "cod_value": "None",
+          "cod_value": "X-API-Key",
           "cod_system": true,
-          "cod_default": true,
-          "cod_description": "None"
+          "cod_default": false,
+          "cod_description": "X-API-Key"
         },
         {
           "cod_id": 55,
@@ -864,30 +872,6 @@
           "cod_system": true,
           "cod_default": false,
           "cod_description": "ODS (.ods)"
-        },
-        {
-          "cod_id": 119,
-          "cod_list": "queryTask.authenticationMode",
-          "cod_value": "None",
-          "cod_system": true,
-          "cod_default": true,
-          "cod_description": "None"
-        },
-        {
-          "cod_id": 120,
-          "cod_list": "queryTask.authenticationMode",
-          "cod_value": "HTTP Basic authentication",
-          "cod_system": true,
-          "cod_default": false,
-          "cod_description": "HTTP Basic authentication"
-        },
-        {
-          "cod_id": 121,
-          "cod_list": "queryTask.authenticationMode",
-          "cod_value": "X-API-Key",
-          "cod_system": true,
-          "cod_default": false,
-          "cod_description": "X-API-Key"
         }
       ]
     },
