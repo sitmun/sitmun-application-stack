@@ -134,7 +134,7 @@ databaseChangeLog:
               - column: { name: COD_VALUE, value: "X-API-Key" }
               - column: { name: COD_SYSTEM, valueBoolean: true }
               - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "X-API-Key" }
+              - column: { name: COD_DESCRIPTION, value: "API Key" }
       rollback:
         - delete:
             tableName: STM_CODELIST
