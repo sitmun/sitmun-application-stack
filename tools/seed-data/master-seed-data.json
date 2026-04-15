@@ -447,7 +447,7 @@
           "cod_value": "X-API-Key",
           "cod_system": true,
           "cod_default": false,
-          "cod_description": "X-API-Key"
+          "cod_description": "API Key"
         },
         {
           "cod_id": 55,
