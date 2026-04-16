@@ -17,23 +17,16 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-
-          navigator.serviceWorker.getRegistration().then(function(reg) {
-            if (reg && reg.active && !navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
-          });
-
-          navigator.serviceWorker.register('ServiceWorker.js', { scope: '${PUBLIC_BASE_PATH}viewer/'})
+          navigator.serviceWorker.register('ServiceWorker.js', { scope: '${PUBLIC_BASE_PATH}viewer/' })
             .then(() => {
-              console.log("SITMUN Service worker registered");
+              console.log('SITMUN Service worker registered');
             })
             .catch((error) => {
-              console.error("SITMUN Service worker registration failed:", error);
-            })
+              console.error('SITMUN Service worker registration failed:', error);
+            });
         });
       } else {
-        console.log("SITMUN Service worker not supported");
+        console.log('SITMUN Service worker not supported');
       }
     </script>
     <link rel="stylesheet" href="assets/js/toastr/toastr.min.css" />
