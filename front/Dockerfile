@@ -16,8 +16,9 @@ RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 
-# Build admin app first
+# Build admin app first (.npmrc enables legacy-peer-deps for npm ci with the current lockfile)
 COPY front/admin/sitmun-admin-app/package*.json ./
+COPY front/admin/sitmun-admin-app/.npmrc ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 COPY --chown=node:node front/admin/sitmun-admin-app/*.json front/admin/sitmun-admin-app/*.js ./
