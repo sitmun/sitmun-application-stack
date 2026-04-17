@@ -450,6 +450,30 @@
           "cod_description": "API Key"
         },
         {
+          "cod_id": 123,
+          "cod_list": "apiKey.header",
+          "cod_value": "X-API-Key",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "X-API-Key"
+        },
+        {
+          "cod_id": 124,
+          "cod_list": "apiKey.cookie",
+          "cod_value": "X-API-Key",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "X-API-Key"
+        },
+        {
+          "cod_id": 125,
+          "cod_list": "apiKey.queryParam",
+          "cod_value": "API-Key",
+          "cod_system": true,
+          "cod_default": true,
+          "cod_description": "API-Key"
+        },
+        {
           "cod_id": 55,
           "cod_list": "service.type",
           "cod_value": "WFS",

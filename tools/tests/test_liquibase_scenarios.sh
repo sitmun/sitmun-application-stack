@@ -122,7 +122,7 @@ generate en
 liquibase_update "en baseline, first apply"
 
 CODELIST_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST;")
-assert_ge "STM_CODELIST rows" 115 "$CODELIST_COUNT"
+assert_ge "STM_CODELIST rows" 118 "$CODELIST_COUNT"
 
 QUERY_SCOPE_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.scope';")
 assert_ge "queryTask.scope codelist entries" 5 "$QUERY_SCOPE_COUNT"
