@@ -3,153 +3,129 @@ databaseChangeLog:
       id: 39
       author: sitmun
       context: dev,prod
-      preConditions:
-        - onFail: MARK_RAN
-          sqlCheck:
-            expectedResult: 0
-            sql: "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_ID = 154"
-      changes:
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 154 }
-              - column: { name: COD_LIST, value: "queryTask.scope" }
-              - column: { name: COD_VALUE, value: "URL" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "URL" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 155 }
-              - column: { name: COD_LIST, value: "queryTask.scope" }
-              - column: { name: COD_VALUE, value: "resource" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "Resource" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 156 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "image/png" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "PNG (.png)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 157 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "image/jpeg" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "JPEG (.jpg, .jpeg)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 158 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "image/gif" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "GIF (.gif)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 159 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "image/svg+xml" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "SVG (.svg)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 160 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/pdf" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "PDF (.pdf)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 161 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/json" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "JSON (.json)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 162 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/xml" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "XML (.xml)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 163 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/msword" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "Word (.doc)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 164 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/vnd.ms-excel" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "Excel (.xls)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 165 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.text" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "ODT (.odt)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 166 }
-              - column: { name: COD_LIST, value: "queryTask.mimeType" }
-              - column: { name: COD_VALUE, value: "application/vnd.oasis.opendocument.spreadsheet" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "ODS (.ods)" }
-        - insert:
-            tableName: STM_CODELIST
-            columns:
-              - column: { name: COD_ID, value: 167 }
-              - column: { name: COD_LIST, value: "service.authenticationMode" }
-              - column: { name: COD_VALUE, value: "X-API-Key" }
-              - column: { name: COD_SYSTEM, valueBoolean: true }
-              - column: { name: COD_DEFAULT, valueBoolean: false }
-              - column: { name: COD_DESCRIPTION, value: "API Key" }
-      rollback:
-        - delete:
-            tableName: STM_CODELIST
-            where: COD_ID IN (154,155,156,157,158,159,160,161,162,163,164,165,166,167)
-  - changeSet:
-      id: 39b
-      author: sitmun
-      context: dev,prod
-      runOnChange: true
+      comment: Add codelists for queryTask.scope (URL, resource), queryTask.mimeType and service.authenticationMode (API key)
       changes:
         - sql:
-            sql: >
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.scope', 'URL', TRUE, FALSE, 'URL'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'URL'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.scope', 'resource', TRUE, FALSE, 'Resource'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'resource'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'image/png', TRUE, FALSE, 'PNG (.png)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'image/png'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'image/jpeg', TRUE, FALSE, 'JPEG (.jpg, .jpeg)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'image/jpeg'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'image/gif', TRUE, FALSE, 'GIF (.gif)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'image/gif'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'image/svg+xml', TRUE, FALSE, 'SVG (.svg)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'image/svg+xml'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/pdf', TRUE, FALSE, 'PDF (.pdf)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/pdf'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/json', TRUE, FALSE, 'JSON (.json)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/json'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/xml', TRUE, FALSE, 'XML (.xml)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/xml'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/msword', TRUE, FALSE, 'Word (.doc)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/msword'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/vnd.ms-excel', TRUE, FALSE, 'Excel (.xls)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/vnd.ms-excel'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/vnd.oasis.opendocument.text', TRUE, FALSE, 'ODT (.odt)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/vnd.oasis.opendocument.text'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.mimeType', 'application/vnd.oasis.opendocument.spreadsheet', TRUE, FALSE, 'ODS (.ods)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.mimeType' AND COD_VALUE = 'application/vnd.oasis.opendocument.spreadsheet'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'service.authenticationMode', 'API key', TRUE, FALSE, 'API key'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'service.authenticationMode' AND COD_VALUE = 'API key'
+              )
+        - sql:
+            sql: |
               UPDATE STM_SEQUENCE
               SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
-              WHERE SEQ_NAME = 'COD_ID';
+              WHERE SEQ_NAME = 'COD_ID'
       rollback:
         - sql:
-            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = 109 WHERE SEQ_NAME = 'COD_ID';"
+            sql: |
+              DELETE FROM STM_CODELIST
+              WHERE (COD_LIST = 'queryTask.scope' AND COD_VALUE IN ('URL', 'resource'))
+                 OR COD_LIST = 'queryTask.mimeType'
+                 OR (COD_LIST = 'service.authenticationMode' AND COD_VALUE = 'API key')

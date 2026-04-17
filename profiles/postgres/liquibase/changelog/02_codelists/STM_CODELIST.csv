@@ -53,7 +53,10 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 52,queryTask.scope,web-api-query,true,false,Web API Query
 53,service.authenticationMode,None,true,true,None
 54,service.authenticationMode,HTTP Basic authentication,true,false,HTTP Basic authentication
-122,service.authenticationMode,X-API-Key,true,false,API Key
+122,service.authenticationMode,API key,true,false,API key
+123,apiKey.header,X-API-Key,true,true,X-API-Key
+124,apiKey.cookie,X-API-Key,true,true,X-API-Key
+125,apiKey.queryParam,API-Key,true,true,API-Key
 55,service.type,WFS,false,false,WFS
 56,service.type,WMS,false,false,WMS
 57,service.type,WMTS,false,false,WMTS
