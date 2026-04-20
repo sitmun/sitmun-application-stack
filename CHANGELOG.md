@@ -26,17 +26,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+#### Stack-level
+
+- `front/Dockerfile`: copy `front/admin/sitmun-admin-app/.npmrc` before the admin `npm ci` step so image builds apply the same `legacy-peer-deps` lockfile semantics as local and CI workflows.
+- `front/viewer/index.html.template`: register `ServiceWorker.js` on window load without the previous `navigator.serviceWorker.getRegistration()` reload when a worker was active but not controlling (avoids fragile reload behavior; aligns with the viewer application’s service worker integration).
+
 #### Profile-level
 
 - `profiles/development/proxy/application.yml`: drop fixed `org.sitmun.proxy.middleware` log level.
 
 #### Backend Core
 
+- Submodule bump: cookie-backed session JWT (`access_token`), `POST /api/authenticate/proxy` proxy token, `POST /api/authenticate/logout` cookie clearing, and related filters/tests (see `sitmun-backend-core` `[Unreleased]`).
 - `SystemVariableResolver` / WMS+HTTP proxy paths use `RequestCoordinates`; decorator pipeline and pagination behavior updated; `QueryVaryFiltersDecorator` → `SqlUserParametrizationDecorator`.
 
 #### Proxy Middleware
 
 - HTTP security decorators, executor logging, configuration/executor wiring and tests.
+
+#### Admin Application
+
+- Submodule bump: HttpClient sessions with credentials, authenticated route guard, OIDC callback and login/logout alignment with the backend cookie model (see `sitmun-admin-app` `[Unreleased]`).
+
+#### Viewer Application
+
+- Submodule bump: route guards, credentials and authentication interceptors, IndexedDB and service worker wiring for proxy-backed map traffic (see `sitmun-viewer-app` `[Unreleased]`).
 
 ### Removed
 
