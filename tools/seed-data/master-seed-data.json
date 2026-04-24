@@ -426,6 +426,14 @@
           "cod_description": "Web API Query"
         },
         {
+          "cod_id": 126,
+          "cod_list": "queryTask.scope",
+          "cod_value": "web-api-query-no-proxy",
+          "cod_system": true,
+          "cod_default": false,
+          "cod_description": "Web API Query (No Proxy)"
+        },
+        {
           "cod_id": 53,
           "cod_list": "service.authenticationMode",
           "cod_value": "None",
@@ -799,15 +807,7 @@
           "cod_value": "URL",
           "cod_system": true,
           "cod_default": false,
-          "cod_description": "URL Query"
-        },
-        {
-          "cod_id": 104,
-          "cod_list": "queryTask.scope",
-          "cod_value": "resource",
-          "cod_system": true,
-          "cod_default": false,
-          "cod_description": "Resource"
+          "cod_description": "External link"
         },
         {
           "cod_id": 105,
