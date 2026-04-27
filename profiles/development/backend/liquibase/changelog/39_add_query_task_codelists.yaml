@@ -9,9 +9,9 @@ databaseChangeLog:
             sql: |
               INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
               SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
-                     'queryTask.scope', 'URL', TRUE, FALSE, 'URL'
+                     'queryTask.scope', 'external-link', TRUE, FALSE, 'External link'
               WHERE NOT EXISTS (
-                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'URL'
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'external-link'
               )
         - sql:
             sql: |
@@ -126,6 +126,6 @@ databaseChangeLog:
         - sql:
             sql: |
               DELETE FROM STM_CODELIST
-              WHERE (COD_LIST = 'queryTask.scope' AND COD_VALUE IN ('URL', 'resource'))
+              WHERE (COD_LIST = 'queryTask.scope' AND COD_VALUE IN ('external-link', 'resource'))
                  OR COD_LIST = 'queryTask.mimeType'
                  OR (COD_LIST = 'service.authenticationMode' AND COD_VALUE = 'API key')

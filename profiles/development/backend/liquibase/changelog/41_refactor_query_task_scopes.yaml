@@ -25,7 +25,7 @@ databaseChangeLog:
             sql: |
               UPDATE STM_CODELIST
               SET COD_DESCRIPTION = 'External link'
-              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'URL'
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'external-link'
         - sql:
             sql: |
               UPDATE STM_TASK
@@ -48,8 +48,8 @@ databaseChangeLog:
         - sql:
             sql: |
               UPDATE STM_CODELIST
-              SET COD_DESCRIPTION = 'URL'
-              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'URL'
+              SET COD_DESCRIPTION = 'External link'
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'external-link'
         - sql:
             sql: |
               INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
