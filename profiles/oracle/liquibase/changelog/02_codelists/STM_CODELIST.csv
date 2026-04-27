@@ -98,7 +98,7 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 100,treenode.node.type,fav,true,false,Favorites
 101,treenode.node.type,map,true,false,Map
 102,treenode.node.type,nm,true,false,Near me
-103,queryTask.scope,URL,true,false,External link
+103,queryTask.scope,external-link,true,false,External link
 105,queryTask.mimeType,image/png,true,false,PNG (.png)
 106,queryTask.mimeType,image/jpeg,true,false,JPEG (.jpg, .jpeg)
 107,queryTask.mimeType,image/gif,true,false,GIF (.gif)

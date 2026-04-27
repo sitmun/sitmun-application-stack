@@ -804,7 +804,7 @@
         {
           "cod_id": 103,
           "cod_list": "queryTask.scope",
-          "cod_value": "URL",
+          "cod_value": "external-link",
           "cod_system": true,
           "cod_default": false,
           "cod_description": "External link"
