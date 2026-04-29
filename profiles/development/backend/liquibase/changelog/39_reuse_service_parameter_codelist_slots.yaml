@@ -1,6 +1,7 @@
 # Reuses COD_ID 47, 48, 49, 108 for serviceParameter.type (legacy dev seed):
 # INFO / OLPARAM / WMS(GetMap) / duplicate WMTS -> WFS / WMS / WMTS / VARY.
 # 108 -> VARY first so (serviceParameter.type, WMTS) stays unique for COD_ID 49.
+# 49 -> WMTS before 48 -> WMS so (serviceParameter.type, WMS) is not duplicated vs COD_ID 49.
 #
 # Postgres-style ELEID 58–62 labels come from profiles/postgres 05_translations CSVs
 # (no duplicate SQL here). Skips when seed already matches (COD_ID 47 != INFO).
@@ -21,9 +22,9 @@ databaseChangeLog:
             stripComments: false
             sql: |
               UPDATE STM_CODELIST SET COD_VALUE = 'VARY', COD_DESCRIPTION = 'Non cacheable parameter', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 108 AND COD_LIST = 'serviceParameter.type';
-              UPDATE STM_CODELIST SET COD_VALUE = 'WFS', COD_DESCRIPTION = 'WFS', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 47 AND COD_LIST = 'serviceParameter.type';
-              UPDATE STM_CODELIST SET COD_VALUE = 'WMS', COD_DESCRIPTION = 'WMS', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 48 AND COD_LIST = 'serviceParameter.type';
               UPDATE STM_CODELIST SET COD_VALUE = 'WMTS', COD_DESCRIPTION = 'WMTS', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 49 AND COD_LIST = 'serviceParameter.type';
+              UPDATE STM_CODELIST SET COD_VALUE = 'WMS', COD_DESCRIPTION = 'WMS', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 48 AND COD_LIST = 'serviceParameter.type';
+              UPDATE STM_CODELIST SET COD_VALUE = 'WFS', COD_DESCRIPTION = 'WFS', COD_SYSTEM = FALSE, COD_DEFAULT = FALSE WHERE COD_ID = 47 AND COD_LIST = 'serviceParameter.type';
               UPDATE STM_PAR_SER SET PSE_TYPE = 'WFS' WHERE PSE_TYPE = 'INFO';
               UPDATE STM_PAR_SER SET PSE_TYPE = 'WMS' WHERE PSE_TYPE = 'OLPARAM';
               UPDATE STM_TRANSLATION SET TRA_NAME = 'WFS' WHERE TRA_ELEID = 47 AND TRA_COLUMN IN ('description', 'CodeListValue.description') AND TRA_LANID = 1;
