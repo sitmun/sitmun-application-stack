@@ -7,6 +7,14 @@
 sitmun:
   proxy:
     config-response-validity-in-seconds: 3600
+  ogc:
+    capabilities:
+      service-paths:
+        - wms
+        - wfs
+        - wcs
+        - ows
+      extra-sources: []
   ui:
     image:
       sizes:
