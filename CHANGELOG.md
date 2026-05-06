@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Profile-level
 
 - Middleware: `LOGGING_LEVEL_*` in `profiles/postgres` and `profiles/oracle` compose (`WARN` / `INFO` defaults; optional `LOGGING_LEVEL_ORG_SITMUN_PROXY_MIDDLEWARE`).
+- Database seeds: UI control `sitna.moreInfo` renamed to `sitmun.moreInfo` ([#31](https://github.com/sitmun/sitmun-application-stack/issues/31)). New installations use the updated name; existing databases are migrated via Liquibase changeset `40_rename_moreinfo_control.sql`.
 
 #### Backend Core
 
@@ -54,6 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Submodule bump: route guards, credentials and authentication interceptors, IndexedDB and service worker wiring for proxy-backed map traffic (see `sitmun-viewer-app` `[Unreleased]`).
 - Client profile layer **order** is applied as SITNA **zIndex** when adding from the layer catalog (see `sitmun-viewer-app` `[Unreleased]`).
+- `MoreInfoService`: updated task filter to recognize `sitmun.moreInfo` control (was `sitna.moreInfo`) per database seed rename ([#31](https://github.com/sitmun/sitmun-application-stack/issues/31)).
 
 ### Removed
 
