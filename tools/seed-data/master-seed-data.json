@@ -1529,7 +1529,7 @@
         },
         {
           "tui_id": 31,
-          "tui_name": "sitna.moreInfo",
+          "tui_name": "sitmun.moreInfo",
           "tui_tooltip": "More Info",
           "tui_order": 0,
           "tui_type": "moreInfo"
