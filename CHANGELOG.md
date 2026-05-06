@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - Submodule bump: cookie-backed session JWT (`access_token`), `POST /api/authenticate/proxy` proxy token, `POST /api/authenticate/logout` cookie clearing, and related filters/tests (see `sitmun-backend-core` `[Unreleased]`).
+- Client configuration profile: optional layer **`order`** in JSON (maps from cartography); integration tests and fixtures updated (see `sitmun-backend-core` `[Unreleased]`).
 - `SystemVariableResolver` / WMS+HTTP proxy paths use `RequestCoordinates`; decorator pipeline and pagination behavior updated; `QueryVaryFiltersDecorator` → `SqlUserParametrizationDecorator`.
 
 #### Proxy Middleware
@@ -47,10 +48,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Admin Application
 
 - Submodule bump: HttpClient sessions with credentials, authenticated route guard, OIDC callback and login/logout alignment with the backend cookie model (see `sitmun-admin-app` `[Unreleased]`).
+- Layer form: cartography **order** is always shown (removed `LAYERS_ORDER_FEATURE`); hints describe viewer **zIndex** / working-layer behavior; `cartography-scale-i18n` Jest spec asserts required layer-form and feature-flag i18n keys; `cartography-scale-i18n` uses `readFileSync` instead of `require()` for locale JSON (ESLint).
 
 #### Viewer Application
 
 - Submodule bump: route guards, credentials and authentication interceptors, IndexedDB and service worker wiring for proxy-backed map traffic (see `sitmun-viewer-app` `[Unreleased]`).
+- Client profile layer **order** is applied as SITNA **zIndex** when adding from the layer catalog (see `sitmun-viewer-app` `[Unreleased]`).
 
 ### Removed
 
