@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.6] - 2026-05-08
+
 ### Added
 
 #### Stack-level
@@ -20,10 +22,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - Parametrizable proxy: `RequestCoordinates`, HTTP/SQL user parametrization decorators, `JdbcSqlDialect`, `HttpPayloadDto`, extended `HttpSecurityDto`, `SensitiveDataMasking`, tests.
+- **Connections**: Microsoft SQL Server JDBC driver and codelist (`databaseConnection.driver`; `com.microsoft.sqlserver.jdbc.SQLServerDriver`).
+- **Client configuration profile** (`GET /api/config/client/profile/{appId}/{terrId}`): layers may include `metadataURL`, `datasetURL`, `description` (i18n-translated abstract from `Cartography.description`), `minScaleDenominator`/`maxScaleDenominator` from cartography scale configuration (previously listed: `order`, `transparency`).
+- **Task Query Services**: `TaskQueryUrlService` mapper for `external-link` scope query tasks; `TaskScopeNormalizer` utility for admin-to-viewer scope mapping; `ParameterValidator` helpers for detecting `#{...}` patterns and system variables.
+- **Parameter expansion**: `BasicParameterValueConverter` component for type-based conversion logic with `BasicParameterValueType` enum.
 
 #### Proxy Middleware
 
 - Multi API-key headers, `HttpSecurityConstants`, `HttpContextSecurity` alignment, masked debug logging, contract/regression tests.
+- Microsoft SQL Server JDBC driver (`mssql-jdbc`) alongside PostgreSQL and Oracle for JDBC proxy connections.
+- `HttpRequestDecoratorAddQueryParamSecurity` to append OpenAPI-style API key query parameters; `HttpSecurityDto#queryParams` and `HttpContextSecurity#getQueryParams()` for security query parameters.
+- `HttpRequestExecutor#addParameter` for merging individual query parameters.
+- `SensitiveDataMasking` for masked HTTP debug logging (e.g. OkHttp headers); `HttpSecurityConstants` for shared security literals.
 
 ### Changed
 
@@ -41,10 +51,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Submodule bump: cookie-backed session JWT (`access_token`), `POST /api/authenticate/proxy` proxy token, `POST /api/authenticate/logout` cookie clearing, and related filters/tests (see `sitmun-backend-core` `[Unreleased]`).
 - Client configuration profile: optional layer **`order`** in JSON (maps from cartography); integration tests and fixtures updated (see `sitmun-backend-core` `[Unreleased]`).
 - `SystemVariableResolver` / WMS+HTTP proxy paths use `RequestCoordinates`; decorator pipeline and pagination behavior updated; `QueryVaryFiltersDecorator` → `SqlUserParametrizationDecorator`.
+- **Task parameter pipeline**: centralized in `TaskParameterProcessor` service with unified parsing, classification, filtering, and effective-value computation; removes ~9 helper methods from `ProxyConfigurationService`.
+- **Task Query Web Service Proxying**: `TaskQueryWebService.map(...)` proxy decision now based solely on scope (`web-api-query` → always proxied; `web-api-query-no-proxy` → always direct).
+- **Client profile (`web-api-query`, proxied)**: configuration profile omits parameters with `type=template` for proxied tasks; URI path placeholders resolved server-side.
+- **Task Query Validator Enforcement**: `TaskQueryValidator.validate(...)` extended with strict `validateDirectExecutionScope(...)` for `web-api-query-no-proxy` and `external-link` tasks.
+- **Task Query Cartography Service**: `TaskQueryCartographyService.map(...)` now sets `TaskDto.cartographyId` to `String.valueOf(cartography.getId())` for viewer consumption.
 
 #### Proxy Middleware
 
 - HTTP security decorators, executor logging, configuration/executor wiring and tests.
+- `HttpSecurityDto` implements `HttpContextSecurity`; supports custom header and query-param maps for API keys alongside Basic auth.
+- `HttpRequestDecoratorAddHeaderSecurity` replaces `HttpRequestDecoratorAddApiKeyHeader` to forward the full security header map.
+- `HttpRequestExecutor` masks sensitive values in debug logs.
 
 #### Admin Application
 
@@ -56,12 +74,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Submodule bump: route guards, credentials and authentication interceptors, IndexedDB and service worker wiring for proxy-backed map traffic (see `sitmun-viewer-app` `[Unreleased]`).
 - Client profile layer **order** is applied as SITNA **zIndex** when adding from the layer catalog (see `sitmun-viewer-app` `[Unreleased]`).
 - `MoreInfoService`: updated task filter to recognize `sitmun.moreInfo` control (was `sitna.moreInfo`) per database seed rename ([#31](https://github.com/sitmun/sitmun-application-stack/issues/31)).
+- **Layer catalog info modal**: exposes `metadataURL`/`datasetURL` from client profile and OGC WMS `MetadataURL`/`DataURL` from upstream GetCapabilities.
+- **`SitnaCapabilitiesInterceptor`** (root-scoped): owns `meld.around` advice on `SITNA.layer.Layer.prototype.getCapabilitiesOnline`; shared by basemap-only and catalog-enabled apps for virtual/real GetCapabilities post-processing.
+- **`AppLayer.title`/`AppLayer.description`** (profile JSON keys) merged onto matched real WMS GetCapabilities layers as OGC `Title`/`Abstract` in `RasterLayerService.processWmtCapabilitiesResult`.
+- Profile `transparency` (0..100, 0 = opaque) mapped to SITNA opacity (`(100 - transparency) / 100`) on layer add in addition to `order`/`zIndex`.
 
 ### Removed
 
 #### Backend Core
 
 - `SqlTemplateExpander`, `QueryFixedFiltersDecorator` (superseded by new decorators).
+
+### Fixed
+
+#### Backend Core
+
+- **Basic parameter conversion**: `BasicParameterValueConverter.convert(...)` now treats a `null` raw value uniformly — `STRING` yields `""` and every other type yields `null`. Previously, `NUMBER`, `ARRAY`, and `OBJECT` raised unchecked `NullPointerException`.
+- **Security**: `JsonWebTokenFilter` continues the filter chain when the JWT username has no matching persisted user (previously returned without delegating).
+- Improved app configuration loading times by replacing `@EntityGraph` with `@BatchSize` to avoid Cartesian product when fetching members and roles in `CartographyPermission` ([#250](https://github.com/sitmun/sitmun-backend-core/pull/250)).
+
+#### Admin Application
+
+- Task forms: align parameter modals and fix duplicate columns in task-edit grid.
 
 ## [1.2.5] - 2026-03-11
 
@@ -804,7 +838,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...HEAD
+[1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
 [1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5
 [1.2.4]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...sitmun-application-stack/1.2.4
 [1.2.3]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.2...sitmun-application-stack/1.2.3
