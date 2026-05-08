@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 41
+      author: sitmun
+      context: dev,prod
+      comment: Add codelists for apiKey.header, apiKey.cookie and apiKey.queryParam
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'apiKey.header', 'X-API-Key', TRUE, TRUE, 'X-API-Key'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'apiKey.header' AND COD_VALUE = 'X-API-Key'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'apiKey.cookie', 'X-API-Key', TRUE, TRUE, 'X-API-Key'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'apiKey.cookie' AND COD_VALUE = 'X-API-Key'
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'apiKey.queryParam', 'API-Key', TRUE, TRUE, 'API-Key'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'apiKey.queryParam' AND COD_VALUE = 'API-Key'
+              )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST
+              WHERE COD_LIST IN ('apiKey.header', 'apiKey.cookie', 'apiKey.queryParam')

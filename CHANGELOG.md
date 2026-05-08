@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Profile-level
 
 - Middleware: `LOGGING_LEVEL_*` in `profiles/postgres` and `profiles/oracle` compose (`WARN` / `INFO` defaults; optional `LOGGING_LEVEL_ORG_SITMUN_PROXY_MIDDLEWARE`).
-- Database seeds: UI control `sitna.moreInfo` renamed to `sitmun.moreInfo` ([#31](https://github.com/sitmun/sitmun-application-stack/issues/31)). New installations use the updated name; existing databases are migrated via Liquibase changeset `40_rename_moreinfo_control.sql`.
+- Database seeds: UI control `sitna.moreInfo` renamed to `sitmun.moreInfo` ([#31](https://github.com/sitmun/sitmun-application-stack/issues/31)). New installations use the updated name; existing databases are migrated via Liquibase changeset `43_rename_moreinfo_control.sql`.
 
 #### Backend Core
 
