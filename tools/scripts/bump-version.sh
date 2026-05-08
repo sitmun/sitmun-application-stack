@@ -81,7 +81,7 @@ Usage:
 
   --status, -s    Report version in VERSION and each consumer file; flag mismatches. No writes.
   --dry-run, -n   Show changes that would be made; do not write files or run npm.
-  VERSION         Set VERSION file and propagate (e.g. 1.2.5). Creates VERSION if missing.
+  VERSION         Set VERSION file and propagate (e.g. 1.2.6). Creates VERSION if missing.
   (no args)       Propagate from current VERSION file to all consumers.
 
 Run from repo root. After updating files, runs npm install --package-lock-only in frontend apps.
@@ -235,7 +235,7 @@ normalize_ts_env_version_line() {
     BEGIN { done = 0 }
     {
       # Repair malformed variants like:
-      #   "  version: '\''1.2.5'\'',"
+      #   "  version: '\''1.2.6'\'',"
       # and enforce canonical TS object property form.
       if (done == 0 && $0 ~ /^[[:space:]]*"?[[:space:]]*version[[:space:]]*:[[:space:]]*["\047]?[0-9][0-9A-Za-z.-]*["\047]?,?[[:space:]]*"?[[:space:]]*$/) {
         print "  version: '\''" new_ver "'\'',"
@@ -429,7 +429,7 @@ if [[ -n "$VERSION_ARG" ]]; then
   fi
 else
   if [[ ! -f "$VERSION_FILE" ]]; then
-    echo "Error: VERSION file not found. Create it (e.g. echo 1.2.4 > VERSION) or run with an explicit version to create and sync: ./tools/scripts/bump-version.sh 1.2.5" >&2
+    echo "Error: VERSION file not found. Create it (e.g. echo 1.2.4 > VERSION) or run with an explicit version to create and sync: ./tools/scripts/bump-version.sh 1.2.6" >&2
     exit 1
   fi
   EFFECTIVE_VERSION="$(cat "$VERSION_FILE" | tr -d ' \r\n')"

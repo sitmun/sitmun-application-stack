@@ -11,8 +11,8 @@ It assumes:
 
 - `dev` is the integration branch.
 - `main` is the stable branch.
-- Tags use the repository prefix format (for example: `sitmun-admin-app/1.2.5`).
-- Release version follows Semantic Versioning (for example: `1.2.5`).
+- Tags use the repository prefix format (for example: `sitmun-admin-app/1.2.6`).
+- Release version follows Semantic Versioning (for example: `1.2.6`).
 
 ## 1) Preflight Checks
 
@@ -36,7 +36,7 @@ For each submodule (`admin`, `viewer`, `backend-core`, `proxy`):
 3. Run repository checks (build/tests/lint as applicable).
 4. Commit release changes on `dev`.
 5. Create and push tag on `dev` commit:
-   - Example: `sitmun-admin-app/1.2.5`.
+   - Example: `sitmun-admin-app/1.2.6`.
 
 ## 3) Merge Submodule `dev -> main` (Gate)
 

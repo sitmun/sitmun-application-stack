@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 42
+      author: sitmun
+      context: dev,prod
+      comment: >
+        Refactor queryTask.scope codelist: add web-api-query-no-proxy,
+        rename URL description to 'External link', and migrate resource
+        tasks to web-api-query-no-proxy (removing resource scope).
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.scope', 'web-api-query-no-proxy', TRUE, FALSE, 'Web API Query (No Proxy)'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'web-api-query-no-proxy'
+              )
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID'
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_DESCRIPTION = 'External link'
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'external-link'
+        - sql:
+            sql: |
+              UPDATE STM_TASK
+              SET TAS_PARAMS = REPLACE(TAS_PARAMS, '"scope":"resource"', '"scope":"web-api-query-no-proxy"')
+              WHERE TAS_PARAMS LIKE '%"scope":"resource"%'
+        - sql:
+            sql: |
+              UPDATE STM_TASK
+              SET TAS_PARAMS = REPLACE(TAS_PARAMS, '"scope": "resource"', '"scope":"web-api-query-no-proxy"')
+              WHERE TAS_PARAMS LIKE '%"scope": "resource"%'
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'resource'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_CODELIST
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'web-api-query-no-proxy'
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_DESCRIPTION = 'External link'
+              WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'external-link'
+        - sql:
+            sql: |
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'queryTask.scope', 'resource', TRUE, FALSE, 'Resource'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'queryTask.scope' AND COD_VALUE = 'resource'
+              )

@@ -2,7 +2,6 @@
 logging:
   level:
     ROOT: INFO
-    org.sitmun.proxy.middleware: INFO
 
 # Sitmun Proxy Configuration
 sitmun:
