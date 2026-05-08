@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset sitmun:40-1 context:dev,prod
+--changeset sitmun:43-1 context:dev,prod
 --
 -- Rename sitna.moreInfo to sitmun.moreInfo
 -- Addresses GitHub issue #31: https://github.com/sitmun/sitmun-application-stack/issues/31
