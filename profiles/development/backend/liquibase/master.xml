@@ -49,4 +49,6 @@
   <include file="changelog/41_add_api_key_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/42_refactor_query_task_scopes.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/43_rename_moreinfo_control.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/44_add_codelist_description_translations.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/45_fix_layer_catalog_task_display_names.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
