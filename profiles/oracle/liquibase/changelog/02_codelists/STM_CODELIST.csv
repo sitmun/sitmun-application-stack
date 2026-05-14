@@ -100,7 +100,7 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 102,treenode.node.type,nm,true,false,Near me
 103,queryTask.scope,external-link,true,false,External link
 105,queryTask.mimeType,image/png,true,false,PNG (.png)
-106,queryTask.mimeType,image/jpeg,true,false,JPEG (.jpg, .jpeg)
+106,queryTask.mimeType,image/jpeg,true,false,"JPEG (.jpg, .jpeg)"
 107,queryTask.mimeType,image/gif,true,false,GIF (.gif)
 108,queryTask.mimeType,image/svg+xml,true,false,SVG (.svg)
 109,queryTask.mimeType,application/pdf,true,false,PDF (.pdf)
