@@ -51,4 +51,5 @@
   <include file="changelog/43_rename_moreinfo_control.sql" relativeToChangelogFile="true"/>
   <include file="changelog/44_add_codelist_description_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/45_fix_layer_catalog_task_display_names.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/46_fix_driver_codelist_translations.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
