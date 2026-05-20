@@ -1669,6 +1669,13 @@
           "tui_tooltip": "More Info",
           "tui_order": 0,
           "tui_type": "moreInfo"
+        },
+        {
+          "tui_id": 32,
+          "tui_name": "sitmun.locator",
+          "tui_tooltip": "Locator",
+          "tui_order": 0,
+          "tui_type": "locator"
         }
       ]
     },

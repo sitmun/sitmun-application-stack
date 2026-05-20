@@ -49,4 +49,5 @@
   <include file="changelog/41_add_api_key_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/42_refactor_query_task_scopes.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/43_rename_moreinfo_control.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/44_add_locator_control.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
