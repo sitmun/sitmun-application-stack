@@ -1,0 +1,92 @@
+databaseChangeLog:
+  - changeSet:
+      id: 46
+      author: sitmun
+      context: dev,prod
+      comment: |
+        Fix incorrect translations for databaseConnection.driver code list entries.
+        IDs 137-140 were reassigned from application/tree types to JDBC drivers,
+        but the old translations remained. Additionally, IDs 141-144 had wrong
+        translations from a previous data migration. This changeset corrects both issues.
+      changes:
+        - sql:
+            comment: Delete obsolete translations for IDs 137-144
+            sql: |
+              DELETE FROM STM_TRANSLATION
+              WHERE TRA_ELEID IN (137, 138, 139, 140, 141, 142, 143, 144)
+              AND TRA_COLUMN = 'CodeListValue.description'
+              AND TRA_LANID IN (2, 3, 4, 5)
+        - sql:
+            comment: Insert correct translations for application.type (ID 141-142) and tree.type (ID 143-144)
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+              (3020561, 141, 'CodeListValue.description', 2, 'Aplicación turística'),
+              (3020562, 141, 'CodeListValue.description', 3, 'Aplicació turística'),
+              (3020563, 141, 'CodeListValue.description', 4, 'Aplicacion turistica'),
+              (3020564, 141, 'CodeListValue.description', 5, 'Application touristique'),
+              (3020565, 142, 'CodeListValue.description', 2, 'Aplicación de edición'),
+              (3020566, 142, 'CodeListValue.description', 3, 'Aplicació d''edició'),
+              (3020567, 142, 'CodeListValue.description', 4, 'Aplicacion d''edicion'),
+              (3020568, 142, 'CodeListValue.description', 5, 'Application d''édition'),
+              (3020569, 143, 'CodeListValue.description', 2, 'Aplicación turística'),
+              (3020570, 143, 'CodeListValue.description', 3, 'Aplicació turística'),
+              (3020571, 143, 'CodeListValue.description', 4, 'Aplicacion turistica'),
+              (3020572, 143, 'CodeListValue.description', 5, 'Application touristique'),
+              (3020573, 144, 'CodeListValue.description', 2, 'Árbol de edición'),
+              (3020574, 144, 'CodeListValue.description', 3, 'Arbre d''edició'),
+              (3020575, 144, 'CodeListValue.description', 4, 'Arbre d''edicion'),
+              (3020576, 144, 'CodeListValue.description', 5, 'Arbre d''édition')
+        - sql:
+            comment: Update the sequence to account for the new translation IDs
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'
+      rollback:
+        - sql:
+            comment: Restore the old incorrect state
+            sql: |
+              DELETE FROM STM_TRANSLATION
+              WHERE TRA_ID BETWEEN 3020561 AND 3020576;
+              
+              -- Restore old translations for 137-140
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+              (3020561, 137, 'CodeListValue.description', 2, 'Aplicación turística'),
+              (3020562, 137, 'CodeListValue.description', 3, 'Aplicació turística'),
+              (3020563, 137, 'CodeListValue.description', 4, 'Aplicacion turistica'),
+              (3020564, 137, 'CodeListValue.description', 5, 'Application touristique'),
+              (3020565, 138, 'CodeListValue.description', 2, 'Aplicación de edición'),
+              (3020566, 138, 'CodeListValue.description', 3, 'Aplicació d''edició'),
+              (3020567, 138, 'CodeListValue.description', 4, 'Aplicacion d''edicion'),
+              (3020568, 138, 'CodeListValue.description', 5, 'Application d''édition'),
+              (3020569, 139, 'CodeListValue.description', 2, 'Aplicación turística'),
+              (3020570, 139, 'CodeListValue.description', 3, 'Aplicació turística'),
+              (3020571, 139, 'CodeListValue.description', 4, 'Aplicacion turistica'),
+              (3020572, 139, 'CodeListValue.description', 5, 'Application touristique'),
+              (3020573, 140, 'CodeListValue.description', 2, 'Árbol de edición'),
+              (3020574, 140, 'CodeListValue.description', 3, 'Arbre d''edició'),
+              (3020575, 140, 'CodeListValue.description', 4, 'Arbre d''edicion'),
+              (3020576, 140, 'CodeListValue.description', 5, 'Arbre d''édition');
+              
+              -- Restore old translations for 141-144
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+              (3020577, 141, 'CodeListValue.description', 2, 'Lista detallada'),
+              (3020578, 141, 'CodeListValue.description', 3, 'Llista detallada'),
+              (3020579, 141, 'CodeListValue.description', 4, 'Lista detallada'),
+              (3020580, 141, 'CodeListValue.description', 5, 'Liste détaillée'),
+              (3020581, 142, 'CodeListValue.description', 2, 'Elementos cercanos'),
+              (3020582, 142, 'CodeListValue.description', 3, 'Elements propers'),
+              (3020583, 142, 'CodeListValue.description', 4, 'Elements pròches'),
+              (3020584, 142, 'CodeListValue.description', 5, 'Éléments à proximité'),
+              (3020585, 143, 'CodeListValue.description', 2, 'Programación'),
+              (3020586, 143, 'CodeListValue.description', 3, 'Programació'),
+              (3020587, 143, 'CodeListValue.description', 4, 'Programacion'),
+              (3020588, 143, 'CodeListValue.description', 5, 'Planning'),
+              (3020589, 144, 'CodeListValue.description', 2, 'Categorías de eventos'),
+              (3020590, 144, 'CodeListValue.description', 3, 'Categories d''esdeveniments'),
+              (3020591, 144, 'CodeListValue.description', 4, 'Categorias d''esdeveniments'),
+              (3020592, 144, 'CodeListValue.description', 5, 'Catégories d''événements');
+              
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'

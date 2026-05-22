@@ -1,0 +1,560 @@
+TRA_ID,TRA_ELEID,TRA_COLUMN,TRA_LANID,TRA_NAME
+3020142,1,CodeListValue.description,2,Externa
+3020143,1,CodeListValue.description,3,Externa
+3020144,1,CodeListValue.description,4,Externa
+3020145,1,CodeListValue.description,5,Externe
+3020146,2,CodeListValue.description,2,Interna
+3020147,2,CodeListValue.description,3,Interna
+3020148,2,CodeListValue.description,4,Interna
+3020149,2,CodeListValue.description,5,Interne
+3020150,3,CodeListValue.description,2,Parámetro de app móvil
+3020151,3,CodeListValue.description,3,Paràmetre d'app mòbil
+3020152,3,CodeListValue.description,4,Paràmetre d'app mobila
+3020153,3,CodeListValue.description,5,Paramètre d'application mobile
+3020154,4,CodeListValue.description,2,Parámetro de nomenclátor
+3020155,4,CodeListValue.description,3,Paràmetre de nomenclàtor
+3020156,4,CodeListValue.description,4,Paràmetre de nomenclador
+3020157,4,CodeListValue.description,5,Paramètre de nomenclateur
+3020158,5,CodeListValue.description,2,Plantilla de impresión
+3020159,5,CodeListValue.description,3,Plantilla d'impressió
+3020160,5,CodeListValue.description,4,Plantilla d'impression
+3020161,5,CodeListValue.description,5,Modèle d'impression
+3020162,6,CodeListValue.description,2,Línea
+3020163,6,CodeListValue.description,3,Línia
+3020164,6,CodeListValue.description,4,Linha
+3020165,6,CodeListValue.description,5,Ligne
+3020166,7,CodeListValue.description,2,Punto
+3020167,7,CodeListValue.description,3,Punt
+3020168,7,CodeListValue.description,4,Punt
+3020169,7,CodeListValue.description,5,Point
+3020170,8,CodeListValue.description,2,Polígono
+3020171,8,CodeListValue.description,3,Polígon
+3020172,8,CodeListValue.description,4,Poligon
+3020173,8,CodeListValue.description,5,Polygone
+3020174,9,CodeListValue.description,2,GetCapabilities
+3020175,9,CodeListValue.description,3,GetCapabilities
+3020176,9,CodeListValue.description,4,GetCapabilities
+3020177,9,CodeListValue.description,5,GetCapabilities
+3020178,10,CodeListValue.description,2,Get Legend Graphic
+3020179,10,CodeListValue.description,3,Get Legend Graphic
+3020180,10,CodeListValue.description,4,Get Legend Graphic
+3020181,10,CodeListValue.description,5,Get Legend Graphic
+3020182,11,CodeListValue.description,2,Enlace estático
+3020183,11,CodeListValue.description,3,Enllaç estàtic
+3020184,11,CodeListValue.description,4,Enllaç estatic
+3020185,11,CodeListValue.description,5,Lien statique
+3020186,12,CodeListValue.description,4,Personalizat
+3020187,12,CodeListValue.description,5,Personnalisé
+3020188,13,CodeListValue.description,4,Predefinit
+3020189,13,CodeListValue.description,5,Défini
+3020190,14,CodeListValue.description,4,Alfanumeric
+3020191,14,CodeListValue.description,5,Alphanumérique
+3020192,15,CodeListValue.description,4,Data
+3020193,15,CodeListValue.description,5,Date
+3020194,16,CodeListValue.description,4,Nombre
+3020195,16,CodeListValue.description,5,Nombre
+3020196,17,CodeListValue.description,4,Data
+3020197,17,CodeListValue.description,5,Date
+3020198,18,CodeListValue.description,4,Imatge
+3020199,18,CodeListValue.description,5,Image
+3020200,19,CodeListValue.description,4,Nombre
+3020201,19,CodeListValue.description,5,Nombre
+3020202,20,CodeListValue.description,4,Percentatge
+3020203,20,CodeListValue.description,5,Pourcentage
+3020204,21,CodeListValue.description,4,Text
+3020205,21,CodeListValue.description,5,Texte
+3020206,22,CodeListValue.description,4,URL
+3020207,22,CodeListValue.description,5,URL
+3020208,23,CodeListValue.description,2,EDIT
+3020209,23,CodeListValue.description,3,EDIT
+3020210,23,CodeListValue.description,4,EDIT
+3020211,23,CodeListValue.description,5,EDIT
+3020212,27,CodeListValue.description,2,INFO
+3020213,27,CodeListValue.description,3,INFO
+3020214,27,CodeListValue.description,4,INFO
+3020215,27,CodeListValue.description,5,INFO
+3020216,29,CodeListValue.description,2,SELECT
+3020217,29,CodeListValue.description,3,SELECT
+3020218,29,CodeListValue.description,4,SELECT
+3020219,29,CodeListValue.description,5,SELECT
+3020220,30,CodeListValue.description,3,Grup de cartografia
+3020221,30,CodeListValue.description,4,Grup de cartografia
+3020222,30,CodeListValue.description,5,Groupe de cartographie
+3020223,31,CodeListValue.description,3,Mapa de fons
+3020224,31,CodeListValue.description,4,Mapa de fons
+3020225,31,CodeListValue.description,5,Fond de carte
+3020226,32,CodeListValue.description,3,Informe
+3020227,32,CodeListValue.description,4,Informe
+3020228,32,CodeListValue.description,5,Rapport
+3020229,33,CodeListValue.description,3,Mapa de situació
+3020230,33,CodeListValue.description,4,Mapa de situacion
+3020231,33,CodeListValue.description,5,Carte de localisation
+3020232,34,CodeListValue.description,2,Aplicación
+3020233,34,CodeListValue.description,3,Aplicació
+3020234,34,CodeListValue.description,4,Aplicacion
+3020235,34,CodeListValue.description,5,Application
+3020236,35,CodeListValue.description,2,Capa
+3020237,35,CodeListValue.description,3,Capa
+3020238,35,CodeListValue.description,4,Capa
+3020239,35,CodeListValue.description,5,Couche
+3020240,36,CodeListValue.description,2,Aislado
+3020241,36,CodeListValue.description,3,Aïllat
+3020242,36,CodeListValue.description,4,Aïllat
+3020243,36,CodeListValue.description,5,Isolé
+3020244,38,CodeListValue.description,2,Consulta SQL
+3020245,38,CodeListValue.description,3,Consulta SQL
+3020246,38,CodeListValue.description,4,Consulta SQL
+3020247,38,CodeListValue.description,5,Requête SQL
+3020248,40,CodeListValue.description,2,Consulta API web
+3020249,40,CodeListValue.description,3,Consulta API web
+3020250,40,CodeListValue.description,4,Consulta API web
+3020251,40,CodeListValue.description,5,Requête API web
+3020252,41,CodeListValue.description,2,Consulta de cartografía
+3020253,41,CodeListValue.description,3,Consulta de cartografia
+3020254,41,CodeListValue.description,4,Consulta de cartografia
+3020255,41,CodeListValue.description,5,Requête cartographique
+3020256,45,CodeListValue.description,2,WFS
+3020257,45,CodeListValue.description,3,WFS
+3020258,45,CodeListValue.description,4,WFS
+3020259,45,CodeListValue.description,5,WFS
+3020260,46,CodeListValue.description,2,WMS
+3020261,46,CodeListValue.description,3,WMS
+3020262,46,CodeListValue.description,4,WMS
+3020263,46,CodeListValue.description,5,WMS
+3020264,47,CodeListValue.description,2,WFS
+3020265,47,CodeListValue.description,3,WFS
+3020266,47,CodeListValue.description,4,WFS
+3020267,47,CodeListValue.description,5,WFS
+3020268,48,CodeListValue.description,2,WMS
+3020269,48,CodeListValue.description,3,WMS
+3020270,48,CodeListValue.description,4,WMS
+3020271,48,CodeListValue.description,5,WMS
+3020272,49,CodeListValue.description,2,WMTS
+3020273,49,CodeListValue.description,3,WMTS
+3020274,49,CodeListValue.description,4,WMTS
+3020275,49,CodeListValue.description,5,WMTS
+3020276,50,CodeListValue.description,2,Base de datos (disparador)
+3020277,50,CodeListValue.description,3,Base de dades (disparador)
+3020278,50,CodeListValue.description,4,Base de dades (desencadenador)
+3020279,50,CodeListValue.description,5,Base de données (déclencheur)
+3020280,51,CodeListValue.description,2,Correo electrónico
+3020281,51,CodeListValue.description,3,Correu electrònic
+3020282,51,CodeListValue.description,4,Correu electronic
+3020283,51,CodeListValue.description,5,E-mail
+3020284,52,CodeListValue.description,2,Fecha
+3020285,52,CodeListValue.description,3,Data
+3020286,52,CodeListValue.description,4,Data
+3020287,52,CodeListValue.description,5,Date
+3020288,53,CodeListValue.description,2,Imagen
+3020289,53,CodeListValue.description,3,Imatge
+3020290,53,CodeListValue.description,4,Imatge
+3020291,53,CodeListValue.description,5,Image
+3020292,54,CodeListValue.description,2,Lista (desde una consulta)
+3020293,54,CodeListValue.description,3,Llista (des d'una consulta)
+3020294,54,CodeListValue.description,4,Lista (d'una consulta)
+3020295,54,CodeListValue.description,5,Liste (à partir d'une requête)
+3020296,55,CodeListValue.description,2,Número
+3020297,55,CodeListValue.description,3,Número
+3020298,55,CodeListValue.description,4,Nombre
+3020299,55,CodeListValue.description,5,Nombre
+3020300,56,CodeListValue.description,2,Atributo de relación entre tablas
+3020301,56,CodeListValue.description,3,Atribut de relació entre taules
+3020302,56,CodeListValue.description,4,Atribut de relacion entre taules
+3020303,56,CodeListValue.description,5,Attribut de relation entre tables
+3020304,57,CodeListValue.description,2,Selección para asignar un valor
+3020305,57,CodeListValue.description,3,Selecció per assignar un valor
+3020306,57,CodeListValue.description,4,Seleccion per assignar un valor
+3020307,57,CodeListValue.description,5,Sélection pour attribuer une valeur
+3020308,58,CodeListValue.description,2,Texto
+3020309,58,CodeListValue.description,3,Text
+3020310,58,CodeListValue.description,4,Text
+3020311,58,CodeListValue.description,5,Texte
+3020312,59,CodeListValue.description,2,URL
+3020313,59,CodeListValue.description,3,URL
+3020314,59,CodeListValue.description,4,URL
+3020315,59,CodeListValue.description,5,URL
+3020316,60,CodeListValue.description,2,CAMPO
+3020317,60,CodeListValue.description,3,CAMPO
+3020318,60,CodeListValue.description,4,CAMPO
+3020319,60,CodeListValue.description,5,CAMPO
+3020320,61,CodeListValue.description,2,CAPA
+3020321,61,CodeListValue.description,3,CAPA
+3020322,61,CodeListValue.description,4,CAPA
+3020323,61,CodeListValue.description,5,CAPA
+3020324,62,CodeListValue.description,2,DATAINPUT
+3020325,62,CodeListValue.description,3,DATAINPUT
+3020326,62,CodeListValue.description,4,DATAINPUT
+3020327,62,CodeListValue.description,5,DATAINPUT
+3020328,63,CodeListValue.description,2,EDIT
+3020329,63,CodeListValue.description,3,EDIT
+3020330,63,CodeListValue.description,4,EDIT
+3020331,63,CodeListValue.description,5,EDIT
+3020332,64,CodeListValue.description,2,FILTRO
+3020333,64,CodeListValue.description,3,FILTRO
+3020334,64,CodeListValue.description,4,FILTRO
+3020335,64,CodeListValue.description,5,FILTRO
+3020336,65,CodeListValue.description,2,FME
+3020337,65,CodeListValue.description,3,FME
+3020338,65,CodeListValue.description,4,FME
+3020339,65,CodeListValue.description,5,FME
+3020340,66,CodeListValue.description,2,GEOM
+3020341,66,CodeListValue.description,3,GEOM
+3020342,66,CodeListValue.description,4,GEOM
+3020343,66,CodeListValue.description,5,GEOM
+3020344,67,CodeListValue.description,2,LABEL
+3020345,67,CodeListValue.description,3,LABEL
+3020346,67,CodeListValue.description,4,LABEL
+3020347,67,CodeListValue.description,5,LABEL
+3020348,68,CodeListValue.description,2,RELM
+3020349,68,CodeListValue.description,3,RELM
+3020350,68,CodeListValue.description,4,RELM
+3020351,68,CodeListValue.description,5,RELM
+3020352,69,CodeListValue.description,2,RELS
+3020353,69,CodeListValue.description,3,RELS
+3020354,69,CodeListValue.description,4,RELS
+3020355,69,CodeListValue.description,5,RELS
+3020356,70,CodeListValue.description,2,SQL
+3020357,70,CodeListValue.description,3,SQL
+3020358,70,CodeListValue.description,4,SQL
+3020359,70,CodeListValue.description,5,SQL
+3020360,71,CodeListValue.description,2,TIPO
+3020361,71,CodeListValue.description,3,TIPO
+3020362,71,CodeListValue.description,4,TIPO
+3020363,71,CodeListValue.description,5,TIPO
+3020364,72,CodeListValue.description,2,VALOR
+3020365,72,CodeListValue.description,3,VALOR
+3020366,72,CodeListValue.description,4,VALOR
+3020367,72,CodeListValue.description,5,VALOR
+3020368,73,CodeListValue.description,2,VISTA
+3020369,73,CodeListValue.description,3,VISTA
+3020370,73,CodeListValue.description,4,VISTA
+3020371,73,CodeListValue.description,5,VISTA
+3020372,74,CodeListValue.description,2,Municipio
+3020373,74,CodeListValue.description,3,Municipi
+3020374,74,CodeListValue.description,4,Municipi
+3020375,74,CodeListValue.description,5,Municipalité
+3020376,75,CodeListValue.description,2,Regional
+3020377,75,CodeListValue.description,3,Regional
+3020378,75,CodeListValue.description,4,Regional
+3020379,75,CodeListValue.description,5,Régional
+3020380,76,CodeListValue.description,2,Total
+3020381,76,CodeListValue.description,3,Total
+3020382,76,CodeListValue.description,4,Total
+3020383,76,CodeListValue.description,5,Total
+3020384,77,CodeListValue.description,2,Archivo JSON cargado
+3020385,77,CodeListValue.description,3,Fitxer JSON pujat
+3020386,77,CodeListValue.description,4,Fichièr JSON pujat
+3020387,77,CodeListValue.description,5,Fichier JSON importé
+3020388,78,CodeListValue.description,2,Servicio web
+3020389,78,CodeListValue.description,3,Servei web
+3020390,78,CodeListValue.description,4,Servei web
+3020391,78,CodeListValue.description,5,Service web
+3020392,79,CodeListValue.description,2,Servicio web Hermes
+3020393,79,CodeListValue.description,3,Servei web Hermes
+3020394,79,CodeListValue.description,4,Servei web Hermes
+3020395,79,CodeListValue.description,5,Service web Hermès
+3020396,80,CodeListValue.description,2,Mismo número de registros
+3020397,80,CodeListValue.description,3,Mateix nombre de registres
+3020398,80,CodeListValue.description,4,Mateix nombre de registres
+3020399,80,CodeListValue.description,5,Effectifs égaux
+3020400,81,CodeListValue.description,2,Intervalo igual
+3020401,81,CodeListValue.description,3,Interval igual
+3020402,81,CodeListValue.description,4,Interval igual
+3020403,81,CodeListValue.description,5,Intervalle égal
+3020404,82,CodeListValue.description,2,Valores únicos
+3020405,82,CodeListValue.description,3,Valors únics
+3020406,82,CodeListValue.description,4,Valors unics
+3020407,82,CodeListValue.description,5,Valeurs uniques
+3020408,83,CodeListValue.description,2,Doble
+3020409,83,CodeListValue.description,3,Doble
+3020410,83,CodeListValue.description,4,Doble
+3020411,83,CodeListValue.description,5,Double
+3020412,84,CodeListValue.description,2,Cadena
+3020413,84,CodeListValue.description,3,Cadena
+3020414,84,CodeListValue.description,4,Cadena
+3020415,84,CodeListValue.description,5,Chaîne
+3020416,85,CodeListValue.description,2,DNI
+3020417,85,CodeListValue.description,3,DNI
+3020418,85,CodeListValue.description,4,DNI
+3020419,85,CodeListValue.description,5,DNI
+3020420,86,CodeListValue.description,2,NIE
+3020421,86,CodeListValue.description,3,NIE
+3020422,86,CodeListValue.description,4,NIE
+3020423,86,CodeListValue.description,5,NIE
+3020424,87,CodeListValue.description,2,Pasaporte
+3020425,87,CodeListValue.description,3,Passaport
+3020426,87,CodeListValue.description,4,Passaport
+3020427,87,CodeListValue.description,5,Passeport
+3020428,88,CodeListValue.description,2,Ayuntamiento
+3020429,88,CodeListValue.description,4,Ajuntament
+3020430,88,CodeListValue.description,5,Mairie
+3020431,89,CodeListValue.description,2,Ayuntamiento (contacto SITMUN)
+3020432,89,CodeListValue.description,4,Ajuntament (contacte SITMUN)
+3020433,89,CodeListValue.description,5,Mairie (contact SITMUN)
+3020434,90,CodeListValue.description,2,Diputación de Barcelona
+3020435,90,CodeListValue.description,4,Diputacion de Barcelona
+3020436,90,CodeListValue.description,5,Diputació de Barcelona
+3020437,91,CodeListValue.description,2,Demo
+3020438,91,CodeListValue.description,4,Demo
+3020439,91,CodeListValue.description,5,Démo
+3020440,92,CodeListValue.description,2,Empresa
+3020441,92,CodeListValue.description,4,Empresa
+3020442,92,CodeListValue.description,5,Entreprise
+3020443,93,CodeListValue.description,2,Entidad territorial (no ayuntamiento)
+3020444,93,CodeListValue.description,4,Entitat territorial (non ajuntament)
+3020445,93,CodeListValue.description,5,Entité territoriale (hors mairie)
+3020446,94,CodeListValue.description,2,Entidad territorial (no ayuntamiento) — contacto
+3020447,94,CodeListValue.description,4,Entitat territorial (non ajuntament) — contacte
+3020448,94,CodeListValue.description,5,Entité territoriale (hors mairie) — contact
+3020449,95,CodeListValue.description,2,Externos
+3020450,95,CodeListValue.description,4,Externs
+3020451,95,CodeListValue.description,5,Externes
+3020452,96,CodeListValue.description,2,Generalitat de Catalunya
+3020453,96,CodeListValue.description,4,Generalitat de Catalunya
+3020454,96,CodeListValue.description,5,Generalitat de Catalogne
+3020455,97,CodeListValue.description,2,Proyecto
+3020456,97,CodeListValue.description,4,Projècte
+3020457,97,CodeListValue.description,5,Projet
+3020458,98,CodeListValue.description,2,Prueba
+3020459,98,CodeListValue.description,4,Pròva
+3020460,98,CodeListValue.description,5,Test
+3020461,99,CodeListValue.description,4,Data
+3020462,99,CodeListValue.description,5,Date
+3020463,100,CodeListValue.description,4,Imatge
+3020464,100,CodeListValue.description,5,Image
+3020465,101,CodeListValue.description,4,Nombre
+3020466,101,CodeListValue.description,5,Nombre
+3020467,102,CodeListValue.description,4,Percentatge
+3020468,102,CodeListValue.description,5,Pourcentage
+3020469,103,CodeListValue.description,4,Text
+3020470,103,CodeListValue.description,5,Texte
+3020471,104,CodeListValue.description,4,URL
+3020472,104,CodeListValue.description,5,URL
+3020473,105,CodeListValue.description,2,Ninguno
+3020474,105,CodeListValue.description,3,Cap
+3020475,105,CodeListValue.description,4,Cap
+3020476,105,CodeListValue.description,5,Aucune
+3020477,106,CodeListValue.description,2,Autenticación HTTP básica
+3020478,106,CodeListValue.description,3,Autenticació HTTP bàsica
+3020479,106,CodeListValue.description,4,Autenticacion HTTP basica
+3020480,106,CodeListValue.description,5,Authentification HTTP basique
+3020481,107,CodeListValue.description,2,WMTS
+3020482,107,CodeListValue.description,3,WMTS
+3020483,107,CodeListValue.description,4,WMTS
+3020484,107,CodeListValue.description,5,WMTS
+3020485,108,CodeListValue.description,2,Parámetro no cacheable
+3020486,108,CodeListValue.description,3,Paràmetre no cachejable
+3020487,108,CodeListValue.description,4,Paràmetre non cachejable
+3020488,108,CodeListValue.description,5,Paramètre non cacheable
+3020489,109,CodeListValue.description,2,Cartografía
+3020490,109,CodeListValue.description,3,Cartografia
+3020491,109,CodeListValue.description,4,Cartografia
+3020492,109,CodeListValue.description,5,Cartographie
+3020493,118,CodeListValue.description,2,Enlace externo
+3020494,118,CodeListValue.description,3,Enllaç extern
+3020495,118,CodeListValue.description,4,Enlace extern
+3020496,118,CodeListValue.description,5,Lien externe
+3020497,120,CodeListValue.description,2,PNG (.png)
+3020498,120,CodeListValue.description,3,PNG (.png)
+3020499,120,CodeListValue.description,4,PNG (.png)
+3020500,120,CodeListValue.description,5,PNG (.png)
+3020501,121,CodeListValue.description,2,"JPEG (.jpg, .jpeg)"
+3020502,121,CodeListValue.description,3,"JPEG (.jpg, .jpeg)"
+3020503,121,CodeListValue.description,4,"JPEG (.jpg, .jpeg)"
+3020504,121,CodeListValue.description,5,"JPEG (.jpg, .jpeg)"
+3020505,122,CodeListValue.description,2,GIF (.gif)
+3020506,122,CodeListValue.description,3,GIF (.gif)
+3020507,122,CodeListValue.description,4,GIF (.gif)
+3020508,122,CodeListValue.description,5,GIF (.gif)
+3020509,123,CodeListValue.description,2,SVG (.svg)
+3020510,123,CodeListValue.description,3,SVG (.svg)
+3020511,123,CodeListValue.description,4,SVG (.svg)
+3020512,123,CodeListValue.description,5,SVG (.svg)
+3020513,124,CodeListValue.description,2,PDF (.pdf)
+3020514,124,CodeListValue.description,3,PDF (.pdf)
+3020515,124,CodeListValue.description,4,PDF (.pdf)
+3020516,124,CodeListValue.description,5,PDF (.pdf)
+3020517,125,CodeListValue.description,2,JSON (.json)
+3020518,125,CodeListValue.description,3,JSON (.json)
+3020519,125,CodeListValue.description,4,JSON (.json)
+3020520,125,CodeListValue.description,5,JSON (.json)
+3020521,126,CodeListValue.description,2,XML (.xml)
+3020522,126,CodeListValue.description,3,XML (.xml)
+3020523,126,CodeListValue.description,4,XML (.xml)
+3020524,126,CodeListValue.description,5,XML (.xml)
+3020525,127,CodeListValue.description,2,Word (.doc)
+3020526,127,CodeListValue.description,3,Word (.doc)
+3020527,127,CodeListValue.description,4,Word (.doc)
+3020528,127,CodeListValue.description,5,Word (.doc)
+3020529,128,CodeListValue.description,2,Excel (.xls)
+3020530,128,CodeListValue.description,3,Excel (.xls)
+3020531,128,CodeListValue.description,4,Excel (.xls)
+3020532,128,CodeListValue.description,5,Excel (.xls)
+3020533,129,CodeListValue.description,2,ODT (.odt)
+3020534,129,CodeListValue.description,3,ODT (.odt)
+3020535,129,CodeListValue.description,4,ODT (.odt)
+3020536,129,CodeListValue.description,5,ODT (.odt)
+3020537,130,CodeListValue.description,2,ODS (.ods)
+3020538,130,CodeListValue.description,3,ODS (.ods)
+3020539,130,CodeListValue.description,4,ODS (.ods)
+3020540,130,CodeListValue.description,5,ODS (.ods)
+3020541,131,CodeListValue.description,2,Clave API
+3020542,131,CodeListValue.description,3,Clau API
+3020543,131,CodeListValue.description,4,Clau API
+3020544,131,CodeListValue.description,5,Clé API
+3020545,132,CodeListValue.description,2,X-API-Key
+3020546,132,CodeListValue.description,3,X-API-Key
+3020547,132,CodeListValue.description,4,X-API-Key
+3020548,132,CodeListValue.description,5,X-API-Key
+3020549,133,CodeListValue.description,2,X-API-Key
+3020550,133,CodeListValue.description,3,X-API-Key
+3020551,133,CodeListValue.description,4,X-API-Key
+3020552,133,CodeListValue.description,5,X-API-Key
+3020553,134,CodeListValue.description,2,API-Key
+3020554,134,CodeListValue.description,3,API-Key
+3020555,134,CodeListValue.description,4,API-Key
+3020556,134,CodeListValue.description,5,API-Key
+3020557,135,CodeListValue.description,2,Consulta API web (sin proxy)
+3020558,135,CodeListValue.description,3,Consulta API web (sense proxy)
+3020559,135,CodeListValue.description,4,Consulta API web (sin proxy)
+3020560,135,CodeListValue.description,5,Requête API web (sans proxy)
+3020561,137,CodeListValue.description,2,Aplicación turística
+3020562,137,CodeListValue.description,3,Aplicació turística
+3020563,137,CodeListValue.description,4,Aplicacion turistica
+3020564,137,CodeListValue.description,5,Application touristique
+3020565,138,CodeListValue.description,2,Aplicación de edición
+3020566,138,CodeListValue.description,3,Aplicació d'edició
+3020567,138,CodeListValue.description,4,Aplicacion d'edicion
+3020568,138,CodeListValue.description,5,Application d'édition
+3020569,139,CodeListValue.description,2,Aplicación turística
+3020570,139,CodeListValue.description,3,Aplicació turística
+3020571,139,CodeListValue.description,4,Aplicacion turistica
+3020572,139,CodeListValue.description,5,Application touristique
+3020573,140,CodeListValue.description,2,Árbol de edición
+3020574,140,CodeListValue.description,3,Arbre d'edició
+3020575,140,CodeListValue.description,4,Arbre d'edicion
+3020576,140,CodeListValue.description,5,Arbre d'édition
+3020577,141,CodeListValue.description,2,Lista detallada
+3020578,141,CodeListValue.description,3,Llista detallada
+3020579,141,CodeListValue.description,4,Lista detallada
+3020580,141,CodeListValue.description,5,Liste détaillée
+3020581,142,CodeListValue.description,2,Elementos cercanos
+3020582,142,CodeListValue.description,3,Elements propers
+3020583,142,CodeListValue.description,4,Elements pròches
+3020584,142,CodeListValue.description,5,Éléments à proximité
+3020585,143,CodeListValue.description,2,Programación
+3020586,143,CodeListValue.description,3,Programació
+3020587,143,CodeListValue.description,4,Programacion
+3020588,143,CodeListValue.description,5,Planning
+3020589,144,CodeListValue.description,2,Categorías de eventos
+3020590,144,CodeListValue.description,3,Categories d'esdeveniments
+3020591,144,CodeListValue.description,4,Categorias d'esdeveniments
+3020592,144,CodeListValue.description,5,Catégories d'événements
+3020593,145,CodeListValue.description,2,Eventos
+3020594,145,CodeListValue.description,3,Esdeveniments
+3020595,145,CodeListValue.description,4,Esdeveniments
+3020596,145,CodeListValue.description,5,Événements
+3020597,146,CodeListValue.description,2,Ubicaciones de eventos
+3020598,146,CodeListValue.description,3,Ubicacions d'esdeveniments
+3020599,146,CodeListValue.description,4,Ubicacions d'esdeveniments
+3020600,146,CodeListValue.description,5,Lieux d'événements
+3020601,147,CodeListValue.description,2,Búsqueda en mapa
+3020602,147,CodeListValue.description,3,Cerca al mapa
+3020603,147,CodeListValue.description,4,Cerca en eth mapa
+3020604,147,CodeListValue.description,5,Recherche sur la carte
+3020605,148,CodeListValue.description,2,Lista de rutas
+3020606,148,CodeListValue.description,3,Llista de rutes
+3020607,148,CodeListValue.description,4,Lista de rotas
+3020608,148,CodeListValue.description,5,Liste d'itinéraires
+3020609,149,CodeListValue.description,2,Galería
+3020610,149,CodeListValue.description,3,Galeria
+3020611,149,CodeListValue.description,4,Galeria
+3020612,149,CodeListValue.description,5,Galerie
+3020613,150,CodeListValue.description,2,string
+3020614,150,CodeListValue.description,3,string
+3020615,150,CodeListValue.description,4,string
+3020616,150,CodeListValue.description,5,chaîne
+3020617,151,CodeListValue.description,2,number
+3020618,151,CodeListValue.description,3,number
+3020619,151,CodeListValue.description,4,number
+3020620,151,CodeListValue.description,5,nombre
+3020621,152,CodeListValue.description,2,boolean
+3020622,152,CodeListValue.description,3,boolean
+3020623,152,CodeListValue.description,4,boolean
+3020624,152,CodeListValue.description,5,booléen
+3020625,153,CodeListValue.description,2,object
+3020626,153,CodeListValue.description,3,object
+3020627,153,CodeListValue.description,4,object
+3020628,153,CodeListValue.description,5,objet
+3020629,154,CodeListValue.description,2,array
+3020630,154,CodeListValue.description,3,array
+3020631,154,CodeListValue.description,4,array
+3020632,154,CodeListValue.description,5,tableau
+3020633,155,CodeListValue.description,2,null
+3020634,155,CodeListValue.description,3,null
+3020635,155,CodeListValue.description,4,null
+3020636,155,CodeListValue.description,5,null
+3020637,156,CodeListValue.description,2,Parámetro de plantilla
+3020638,156,CodeListValue.description,3,Paràmetre de plantilla
+3020639,156,CodeListValue.description,4,Paràmetre de plantilla
+3020640,156,CodeListValue.description,5,Paramètre de modèle
+3020641,157,CodeListValue.description,2,Parámetro de consulta
+3020642,157,CodeListValue.description,3,Paràmetre de consulta
+3020643,157,CodeListValue.description,4,Paràmetre de consulta
+3020644,157,CodeListValue.description,5,Paramètre de requête
+3020645,158,CodeListValue.description,2,Edición del servicio de entidades (WFS)
+3020646,158,CodeListValue.description,3,Edició del servei d'entitats (WFS)
+3020647,158,CodeListValue.description,4,Edicion deth servei d'entitats (WFS)
+3020648,158,CodeListValue.description,5,Édition du service d'entités (WFS)
+3020649,159,CodeListValue.description,2,Edición de base de datos
+3020650,159,CodeListValue.description,3,Edició de base de dades
+3020651,159,CodeListValue.description,4,Edicion de baza de dades
+3020652,159,CodeListValue.description,5,Édition de base de données
+3020653,160,CodeListValue.description,2,Texto
+3020654,160,CodeListValue.description,3,Text
+3020655,160,CodeListValue.description,4,Text
+3020656,160,CodeListValue.description,5,Texte
+3020657,161,CodeListValue.description,2,Fecha
+3020658,161,CodeListValue.description,3,Data
+3020659,161,CodeListValue.description,4,Data
+3020660,161,CodeListValue.description,5,Date
+3020661,162,CodeListValue.description,2,Imagen
+3020662,162,CodeListValue.description,3,Imatge
+3020663,162,CodeListValue.description,4,Imatge
+3020664,162,CodeListValue.description,5,Image
+3020665,163,CodeListValue.description,2,Número
+3020666,163,CodeListValue.description,3,Número
+3020667,163,CodeListValue.description,4,Nombre
+3020668,163,CodeListValue.description,5,Nombre
+3020669,164,CodeListValue.description,2,ListBox
+3020670,164,CodeListValue.description,3,ListBox
+3020671,164,CodeListValue.description,4,ListBox
+3020672,164,CodeListValue.description,5,ListBox
+3020673,165,CodeListValue.description,2,SQL
+3020674,165,CodeListValue.description,3,SQL
+3020675,165,CodeListValue.description,4,SQL
+3020676,165,CodeListValue.description,5,SQL
+3020677,166,CodeListValue.description,2,API
+3020678,166,CodeListValue.description,3,API
+3020679,166,CodeListValue.description,4,API
+3020680,166,CodeListValue.description,5,API
+3020681,167,CodeListValue.description,2,URL
+3020682,167,CodeListValue.description,3,URL
+3020683,167,CodeListValue.description,4,URL
+3020684,167,CodeListValue.description,5,URL
+3020685,168,CodeListValue.description,2,Controlador JDBC H2
+3020686,168,CodeListValue.description,3,Controlador JDBC H2
+3020687,168,CodeListValue.description,4,Controlador JDBC H2
+3020688,168,CodeListValue.description,5,Pilote JDBC H2
+3020689,169,CodeListValue.description,2,Controlador JDBC PostgreSQL
+3020690,169,CodeListValue.description,3,Controlador JDBC PostgreSQL
+3020691,169,CodeListValue.description,4,Controlador JDBC PostgreSQL
+3020692,169,CodeListValue.description,5,Pilote JDBC PostgreSQL
+3020693,170,CodeListValue.description,2,Controlador JDBC Oracle
+3020694,170,CodeListValue.description,3,Controlador JDBC Oracle
+3020695,170,CodeListValue.description,4,Controlador JDBC Oracle
+3020696,170,CodeListValue.description,5,Pilote JDBC Oracle
+3020697,171,CodeListValue.description,2,Controlador JDBC Microsoft SQL Server
+3020698,171,CodeListValue.description,3,Controlador JDBC Microsoft SQL Server
+3020699,171,CodeListValue.description,4,Controlador JDBC Microsoft SQL Server
+3020700,171,CodeListValue.description,5,Pilote JDBC Microsoft SQL Server
