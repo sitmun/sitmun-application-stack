@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Admin Application
+
+- User form: hints (layer/service style), character counters (50-char limit), toggle-hints for administrator and blocked, card-lead context blocks on Roles and Positions tabs.
+- User form: flexible column widths (flex/minWidth/tooltipField) on Roles and Positions grids (clientSide only).
+- User form: territory picker on Positions tab for manual position add.
+- User form: read-only "Applications (point of contact)" tab for existing users.
+- User list: email, blocked, and administrator columns.
+- i18n: complete `entity.user.hint.*` set and `entity.user.warning.role-without-position` in all 5 locales.
+- i18n: Roles/Positions/applications-as-contact tab leads in all 5 locales.
+
+#### Backend Core
+
+- Account API: `GET /api/account/{id}` restricted to self or ROLE_ADMIN; `GET /api/account/all` restricted to ROLE_ADMIN.
+- Security: blocked-user JWT rejection in `JsonWebTokenFilter`.
+- `UserDTO` field sizes aligned to DB length (50) for firstName, lastName, email.
+- Startup invariant validator for built-in admin/public users.
+- `UserPositionEventHandler` dedup guard on direct REST create.
+- `ApplicationMapper` publishes creator email (not username) in client profile `ApplicationDto.creator`.
+
+#### Profile-level
+
+- Development profile: `47_fix_builtin_user_positions.sql` — reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the new startup invariant that built-in users must not hold `UserPosition` rows.
+
 ### Changed
 
 #### Admin Application
