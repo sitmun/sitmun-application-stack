@@ -52,4 +52,5 @@
   <include file="changelog/45_fix_layer_catalog_task_display_names.sql" relativeToChangelogFile="true"/>
   <include file="changelog/46_fix_driver_codelist_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/47_fix_builtin_user_positions.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/48_dev_external_applications.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
