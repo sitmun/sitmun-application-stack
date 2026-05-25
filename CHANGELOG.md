@@ -17,6 +17,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - User list: email, blocked, and administrator columns.
 - i18n: complete `entity.user.hint.*` set and `entity.user.warning.role-without-position` in all 5 locales.
 - i18n: Roles/Positions/applications-as-contact tab leads in all 5 locales.
+- Territory form: comprehensive Jest test coverage for validators and form behavior.
+- Territory form: backend-aligned validators (URL, SRS pattern, extent/center completeness, maxlength) with translated error messages in all 5 locales.
+- Territory form: feature flag configuration for defaultZoomLevel field (experimental).
 
 #### Backend Core
 
@@ -38,6 +41,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Admin Application
 
 - Submodule bump: Angular 19 deprecated API migration and toolchain alignment.
+- Territory form: reorganized layout with related fields grouped in rows (code/type, center X/Y, extent coordinates).
+- Territory form: refined hints for blocked, center, and extent fields to accurately reflect backend/viewer behavior.
+- Territory form: removed feature flag from center fields (fully implemented via Territory.getComputedView and ProfileMapper).
+- Territory form: custom coordinate group hints styling aligned with mat-hint appearance (12px, lighter color).
+- Login: simplified component lifecycle with proper subscription cleanup.
 
 #### Viewer Application
 
@@ -46,6 +54,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - Submodule bump: dashboard pagination API.
+
+### Fixed
+
+#### Admin Application
+
+- Territory form: duplicate relation loading for cartographies, tasks, and members now works correctly ([#383](https://github.com/sitmun/sitmun-admin-app/issues/383)).
+- Territory form: memberOf relation fetcher now correctly calls 'memberOf' instead of 'members'.
+- Login: password field now uses native type="password" masking instead of CSS hack.
+- Login: error handling now uses principal.authenticate(null) instead of logout() to avoid recursive issues.
 
 ## [1.2.6] - 2026-05-08
 
