@@ -26,10 +26,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Startup invariant validator for built-in admin/public users.
 - `UserPositionEventHandler` dedup guard on direct REST create.
 - `ApplicationMapper` publishes creator email (not username) in client profile `ApplicationDto.creator`.
+- Paginated dashboard applications API and search suggestions.
 
 #### Profile-level
 
 - Development profile: `47_fix_builtin_user_positions.sql` — reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the new startup invariant that built-in users must not hold `UserPosition` rows.
+- Development profile: `49_dev_dashboard_fixtures.sql` — dashboard pagination/tab test data.
 
 ### Changed
 
@@ -39,7 +41,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
-- Submodule bump: Angular 19 deprecated API migration.
+- Submodule bump: Angular 19 deprecated API migration; dashboard infinite scroll, unified list shell, public/private tabs ([#145](https://github.com/sitmun/sitmun-viewer-app/issues/145)).
+
+#### Backend Core
+
+- Submodule bump: dashboard pagination API.
 
 ## [1.2.6] - 2026-05-08
 
