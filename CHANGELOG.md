@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `UserPositionEventHandler` dedup guard on direct REST create.
 - `ApplicationMapper` publishes creator email (not username) in client profile `ApplicationDto.creator`.
 - Paginated dashboard applications API and search suggestions.
+- Territory computed view: `Territory.getComputedView()` combines extent and center point for optimal map initialization. ProfileMapper uses it to set `ApplicationDto.initialExtent` in client profile.
 
 #### Profile-level
 
@@ -53,7 +54,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
-- Submodule bump: dashboard pagination API.
+- Submodule bump: dashboard pagination API, Territory.getComputedView for centered map initialization.
 
 ### Fixed
 
