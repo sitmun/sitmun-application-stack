@@ -19,7 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - i18n: Roles/Positions/applications-as-contact tab leads in all 5 locales.
 - Territory form: comprehensive Jest test coverage for validators and form behavior.
 - Territory form: backend-aligned validators (URL, SRS pattern, extent/center completeness, maxlength) with translated error messages in all 5 locales.
-- Territory form: feature flag configuration for defaultZoomLevel field (experimental).
 
 #### Backend Core
 
@@ -45,12 +44,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Territory form: reorganized layout with related fields grouped in rows (code/type, center X/Y, extent coordinates).
 - Territory form: refined hints for blocked, center, and extent fields to accurately reflect backend/viewer behavior.
 - Territory form: removed feature flag from center fields (fully implemented via Territory.getComputedView and ProfileMapper).
+- Territory form: promote `defaultZoomLevel` to a standard field next to extent coordinates; remove `TERRITORY_FOCAL_POINT_FEATURE` experimental flag and obsolete i18n.
+- Territory form: extent hint documents zoom-level behavior; separate zoom field hint removed.
 - Territory form: custom coordinate group hints styling aligned with mat-hint appearance (12px, lighter color).
 - Login: simplified component lifecycle with proper subscription cleanup.
 
 #### Viewer Application
 
 - Submodule bump: Angular 19 deprecated API migration; dashboard infinite scroll, unified list shell, public/private tabs ([#145](https://github.com/sitmun/sitmun-viewer-app/issues/145)).
+- Map: apply territory `defaultZoomLevel` after initial extent fit from client profile.
 
 #### Backend Core
 
