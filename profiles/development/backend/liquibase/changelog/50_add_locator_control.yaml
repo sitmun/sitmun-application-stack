@@ -2,7 +2,7 @@ databaseChangeLog:
   # Add sitmun.locator UI control for Locator task type (type id 4)
   # Only runs if the UI control doesn't already exist (e.g. loaded via CSV on fresh DBs)
   - changeSet:
-      id: 47
+      id: 50
       author: sitmun
       context: dev,prod
       preConditions:

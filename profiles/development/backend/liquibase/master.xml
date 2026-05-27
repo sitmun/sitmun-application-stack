@@ -54,5 +54,5 @@
   <include file="changelog/47_fix_builtin_user_positions.sql" relativeToChangelogFile="true"/>
   <include file="changelog/48_dev_external_applications.sql" relativeToChangelogFile="true"/>
   <include file="changelog/49_dev_dashboard_fixtures.sql" relativeToChangelogFile="true"/>
-  <include file="changelog/47_add_locator_control.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/50_add_locator_control.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
