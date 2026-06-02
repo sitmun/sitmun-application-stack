@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
+- Client profile: locator tasks (type id 4) via `TaskLocatorService`; territory metadata on `application` in AppCfg (`sitmun-backend-core` `[Unreleased]`).
 - Account API: `GET /api/account/{id}` restricted to self or ROLE_ADMIN; `GET /api/account/all` restricted to ROLE_ADMIN.
 - Security: blocked-user JWT rejection in `JsonWebTokenFilter`.
 - `UserDTO` field sizes aligned to DB length (50) for firstName, lastName, email.
