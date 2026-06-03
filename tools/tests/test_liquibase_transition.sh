@@ -227,6 +227,15 @@ assert_ge "Phase2 STM_CODELIST rows (upsert safe)" 90 "$P2_CODELIST"
 P2_TSK_TYP=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP;")
 assert_ge "Phase2 STM_TSK_TYP rows (upsert safe)" 4 "$P2_TSK_TYP"
 
+P2_DOC_EXPORT_TASK=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17 AND TTY_NAME = 'documentExport';")
+assert_eq "Phase2 document export task type inserted" "1" "$P2_DOC_EXPORT_TASK"
+
+P2_DOC_EXPORT_ENGINE=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.engine' AND COD_VALUE='openhtmltopdf';")
+assert_eq "Phase2 documentExport.engine codelist inserted" "1" "$P2_DOC_EXPORT_ENGINE"
+
+P2_DOC_EXPORT_OUTPUT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.output' AND COD_VALUE='pdf';")
+assert_eq "Phase2 documentExport.output codelist inserted" "1" "$P2_DOC_EXPORT_OUTPUT"
+
 P2_LANG=$(psql_q "SELECT COUNT(*) FROM STM_LANGUAGE;")
 assert_eq "Phase2 STM_LANGUAGE count unchanged" "$P1_LANG" "$P2_LANG"
 
@@ -238,6 +247,9 @@ assert_ge "Phase2 STM_SEQUENCE[LAN_ID] recalculated" 5 "$P2_LAN_SEQ"
 
 P2_TRA_SEQ=$(psql_q "SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME='TRA_ID';")
 assert_ge "Phase2 STM_SEQUENCE[TRA_ID] recalculated" 400 "$P2_TRA_SEQ"
+
+P2_TTY_SEQ=$(psql_q "SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME='TTY_ID';")
+assert_ge "Phase2 STM_SEQUENCE[TTY_ID] recalculated" 18 "$P2_TTY_SEQ"
 
 # Language names should still be in English (baseline=en)
 EN_NAME=$(psql_q "SELECT LAN_NAME FROM STM_LANGUAGE WHERE LAN_SHORTNAME='en';")

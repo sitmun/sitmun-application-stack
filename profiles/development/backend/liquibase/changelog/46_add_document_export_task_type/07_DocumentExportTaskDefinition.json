@@ -1,0 +1,63 @@
+{
+  "form": {
+    "label": "tasksEntity.generalData",
+    "elements": {
+      "type": {
+        "hidden": true,
+        "value": 17,
+        "required": true
+      },
+      "name": {
+        "label": "tasksEntity.name",
+        "control": "input",
+        "required": true
+      },
+      "group": {
+        "label": "tasksEntity.group",
+        "control": "selector",
+        "selector": {
+          "data": "taskGroup",
+          "name": "name",
+          "value": "id"
+        },
+        "required": true
+      },
+      "exportEngine": {
+        "label": "tasksDocumentExportEntity.engine",
+        "control": "selector",
+        "selector": {
+          "data": "codelist-values",
+          "queryParams": {
+            "codeListName": "documentExport.engine",
+            "projection": "view"
+          },
+          "name": "description",
+          "value": "value"
+        },
+        "required": true,
+        "jsonParams": true
+      },
+      "downloadFormat": {
+        "label": "tasksDocumentExportEntity.output",
+        "control": "selector",
+        "selector": {
+          "data": "codelist-values",
+          "queryParams": {
+            "codeListName": "documentExport.output",
+            "projection": "view"
+          },
+          "name": "description",
+          "value": "value"
+        },
+        "required": true,
+        "jsonParams": true
+      },
+      "downloadSource": {
+        "label": "tasksDocumentExportEntity.sourcePath",
+        "control": "input",
+        "required": false,
+        "jsonParams": true
+      }
+    }
+  }
+}

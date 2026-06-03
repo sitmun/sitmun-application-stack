@@ -54,4 +54,5 @@
   <include file="changelog/43_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/44_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/45_add_more_info_advanced_basic_task.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/46_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

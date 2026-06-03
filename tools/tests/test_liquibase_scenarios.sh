@@ -139,6 +139,15 @@ assert_eq "queryTask.scope 'resource' removed by changeset 42" "0" "$RESOURCE_SC
 TSK_TYP_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP;")
 assert_ge "STM_TSK_TYP rows" 4 "$TSK_TYP_COUNT"
 
+DOC_EXPORT_TASK=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17 AND TTY_NAME = 'documentExport';")
+assert_eq "document export task type inserted" "1" "$DOC_EXPORT_TASK"
+
+DOC_EXPORT_ENGINE=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.engine' AND COD_VALUE='openhtmltopdf';")
+assert_eq "documentExport.engine codelist inserted" "1" "$DOC_EXPORT_ENGINE"
+
+DOC_EXPORT_OUTPUT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.output' AND COD_VALUE='pdf';")
+assert_eq "documentExport.output codelist inserted" "1" "$DOC_EXPORT_OUTPUT"
+
 LANG_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_LANGUAGE;")
 assert_eq "STM_LANGUAGE rows" 5 "$LANG_COUNT"
 
@@ -160,6 +169,12 @@ assert_ge "STM_SEQUENCE[LAN_ID]" 5 "$LAN_SEQ"
 TRA_SEQ=$(psql_q "SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME='TRA_ID';")
 assert_ge "STM_SEQUENCE[TRA_ID]" 400 "$TRA_SEQ"
 
+TTY_SEQ=$(psql_q "SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME='TTY_ID';")
+assert_ge "STM_SEQUENCE[TTY_ID]" 18 "$TTY_SEQ"
+
+COD_SEQ=$(psql_q "SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME='COD_ID';")
+assert_ge "STM_SEQUENCE[COD_ID]" 120 "$COD_SEQ"
+
 TREENODE_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='treenode.node.type';")
 assert_ge "treenode.node.type codelist entries" 5 "$TREENODE_COUNT"
 
@@ -172,6 +187,9 @@ liquibase_update "en baseline, second apply"
 
 LANG_COUNT2=$(psql_q "SELECT COUNT(*) FROM STM_LANGUAGE;")
 assert_eq "STM_LANGUAGE count unchanged" "$LANG_COUNT" "$LANG_COUNT2"
+
+DOC_EXPORT_TASK2=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17 AND TTY_NAME = 'documentExport';")
+assert_eq "document export task type unchanged after re-apply" "1" "$DOC_EXPORT_TASK2"
 
 TRA_COUNT2=$(psql_q "SELECT COUNT(*) FROM STM_TRANSLATION;")
 assert_eq "STM_TRANSLATION count unchanged" "$TRA_COUNT" "$TRA_COUNT2"
