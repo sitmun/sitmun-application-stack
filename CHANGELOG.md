@@ -65,6 +65,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - Auth endpoint authorization fixes restored viewer refresh/logout compatibility (`POST /api/authenticate/proxy` for `ROLE_USER`, `POST /api/authenticate/logout` as `permitAll`) ([#256](https://github.com/sitmun/sitmun-viewer-app/issues/256)).
+- **Database Schema**: Oracle `STM_TREE_NOD` bootstrap defaults now use numeric `DEFAULT 0` (instead of `DEFAULT FALSE`) for `TNO_LOAD_DATA` and `TNO_FILTERABLE`, fixing Oracle 24 setup failures ([#43](https://github.com/sitmun/sitmun-application-stack/issues/43)). Existing Oracle databases that already ran changeset `sitmun:1` may need Liquibase checksum reconciliation during upgrade.
 
 ## [1.2.6] - 2026-05-08
 
