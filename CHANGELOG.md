@@ -10,63 +10,61 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
-- User form: hints (layer/service style), character counters (50-char limit), toggle-hints for administrator and blocked, card-lead context blocks on Roles and Positions tabs.
-- User form: flexible column widths (flex/minWidth/tooltipField) on Roles and Positions grids (clientSide only).
-- User form: territory picker on Positions tab for manual position add.
-- User form: read-only "Applications (point of contact)" tab for existing users.
-- User list: email, blocked, and administrator columns.
-- i18n: complete `entity.user.hint.*` set and `entity.user.warning.role-without-position` in all 5 locales.
-- i18n: Roles/Positions/applications-as-contact tab leads in all 5 locales.
-- Territory form: comprehensive Jest test coverage for validators and form behavior.
-- Territory form: backend-aligned validators (URL, SRS pattern, extent/center completeness, maxlength) with translated error messages in all 5 locales.
+- **Trees**: improved authoring and validation flow (image constraints, duplicate-name checks, cartography/task linkage, hidden-in-viewer indicators, unsaved-change confirmation) with shared `TreeRulesService` rules.
+- **User management**: richer hints/counters/warnings, improved role/position guidance, new read-only applications-as-contact tab, and expanded list columns.
+- **Data grid**: dedicated clientSide/infinite column strategies, improved relation-grid sizing, and centered selection-checkbox rendering.
+- **i18n**: completed user/form warning and guidance keys across all five locales.
 
 #### Backend Core
 
-- Client profile: locator tasks (type id 4) via `TaskLocatorService`; territory metadata on `application` in AppCfg (`sitmun-backend-core` `[Unreleased]`).
-- Account API: `GET /api/account/{id}` restricted to self or ROLE_ADMIN; `GET /api/account/all` restricted to ROLE_ADMIN.
-- Security: blocked-user JWT rejection in `JsonWebTokenFilter`.
-- `UserDTO` field sizes aligned to DB length (50) for firstName, lastName, email.
-- Startup invariant validator for built-in admin/public users.
-- `UserPositionEventHandler` dedup guard on direct REST create.
-- `ApplicationMapper` publishes creator email (not username) in client profile `ApplicationDto.creator`.
-- Paginated dashboard applications API and search suggestions.
-- Territory computed view: `Territory.getComputedView()` combines extent and center point for optimal map initialization. ProfileMapper uses it to set `ApplicationDto.initialExtent` in client profile.
+- **Dashboard API**: added paginated application listing and suggestions for viewer dashboard consumption.
+- **Security**: account endpoints tightened, blocked-user JWT handling enforced, and proxy/client-config RBAC checks aligned for blocked/public principals.
+- **Profile payloads**: locator-task mapping, territory metadata fields, computed territory view usage, and institutional-email contact publication refined for profile and little DTO contracts.
+- **Validation**: user-field size alignment and built-in user integrity checks added (including aligned seed data).
+
+#### Viewer Application
+
+- **Auth**: stale authenticated sessions are cleared before `/public/**` activation via `publicAuthClearGuard` and `clearAuthentication()`.
+- **Dashboard**: server-side infinite scroll, public/private tabs, and shared list shell enabled across dashboard, territory, and application pages.
+- **Map**: profile `defaultZoomLevel` and initial-view behavior are applied consistently after extent fit.
 
 #### Profile-level
 
-- Development profile: `47_fix_builtin_user_positions.sql` — reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the new startup invariant that built-in users must not hold `UserPosition` rows.
-- Development profile: `49_dev_dashboard_fixtures.sql` — dashboard pagination/tab test data.
+- **Development profile**: `47_fix_builtin_user_positions.sql` reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the startup invariant that built-in users must not hold `UserPosition` rows.
+- **Development profile**: `49_dev_dashboard_fixtures.sql` adds dashboard pagination/tab test data.
 
 ### Changed
 
 #### Admin Application
 
-- Submodule bump: Angular 19 deprecated API migration and toolchain alignment.
-- Territory form: reorganized layout with related fields grouped in rows (code/type, center X/Y, extent coordinates).
-- Territory form: refined hints for blocked, center, and extent fields to accurately reflect backend/viewer behavior.
-- Territory form: removed feature flag from center fields (fully implemented via Territory.getComputedView and ProfileMapper).
-- Territory form: promote `defaultZoomLevel` to a standard field next to extent coordinates; remove `TERRITORY_FOCAL_POINT_FEATURE` experimental flag and obsolete i18n.
-- Territory form: extent hint documents zoom-level behavior; separate zoom field hint removed.
-- Territory form: custom coordinate group hints styling aligned with mat-hint appearance (12px, lighter color).
-- Login: simplified component lifecycle with proper subscription cleanup.
+- Territory and user forms were reorganized for clearer validation flow, stronger warning visibility, and cleaner tab-driven editing behavior.
+- Tooling and tests were modernized for Angular 19-era provider patterns and updated TypeScript/ESLint alignment.
 
 #### Viewer Application
 
-- Submodule bump: Angular 19 deprecated API migration; dashboard infinite scroll, unified list shell, public/private tabs ([#145](https://github.com/sitmun/sitmun-viewer-app/issues/145)).
-- Map: apply territory `defaultZoomLevel` after initial extent fit from client profile.
+- Auth/session lifecycle now routes through explicit cleanup (`clearAuthentication`) with redirect-suppression controls for failure paths.
+- Dashboard and map initialization behavior were aligned with profile-driven defaults and shared list shell architecture.
 
 #### Backend Core
 
-- Submodule bump: dashboard pagination API, Territory.getComputedView for centered map initialization.
+- Task/profile resolution for locator/query flows and territory-derived initial view computation were streamlined.
 
 ### Fixed
 
 #### Admin Application
 
-- Territory form: duplicate relation loading for cartographies, tasks, and members now works correctly ([#383](https://github.com/sitmun/sitmun-admin-app/issues/383)).
-- Territory form: memberOf relation fetcher now correctly calls 'memberOf' instead of 'members'.
-- Login: password field now uses native type="password" masking instead of CSS hack.
-- Login: error handling now uses principal.authenticate(null) instead of logout() to avoid recursive issues.
+- Territory relation loading and `memberOf` relation resolution issues were corrected ([#383](https://github.com/sitmun/sitmun-admin-app/issues/383)).
+- Login/password handling no longer relies on CSS masking and avoids recursive logout error paths.
+
+#### Viewer Application
+
+- Catalog, tooltip, i18n, and identify reliability fixes landed for map UI and layer operations ([#137](https://github.com/sitmun/sitmun-viewer-app/issues/137), [#139](https://github.com/sitmun/sitmun-viewer-app/issues/139), [#140](https://github.com/sitmun/sitmun-viewer-app/issues/140), [#155](https://github.com/sitmun/sitmun-viewer-app/issues/155), [#156](https://github.com/sitmun/sitmun-viewer-app/issues/156)).
+- Contact rendering now uses API-provided point-of-contact values directly ([#159](https://github.com/sitmun/sitmun-viewer-app/issues/159)).
+- Proxy/session reliability improved through explicit 401 refresh handling and service-worker/IndexedDB sequencing hardening ([#256](https://github.com/sitmun/sitmun-viewer-app/issues/256)).
+
+#### Backend Core
+
+- Auth endpoint authorization fixes restored viewer refresh/logout compatibility (`POST /api/authenticate/proxy` for `ROLE_USER`, `POST /api/authenticate/logout` as `permitAll`) ([#256](https://github.com/sitmun/sitmun-viewer-app/issues/256)).
 
 ## [1.2.6] - 2026-05-08
 
