@@ -6,6 +6,97 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.7] - 2026-06-05
+
+### Added
+
+#### Admin Application
+
+- **Trees**: improved authoring and validation flow (image constraints, duplicate-name checks, cartography/task linkage, hidden-in-viewer indicators, unsaved-change confirmation) with shared `TreeRulesService` rules.
+- **User management**: richer hints/counters/warnings, improved role/position guidance, new read-only applications-as-contact tab, and expanded list columns.
+- **Data grid**: dedicated clientSide/infinite column strategies, improved relation-grid sizing, and centered selection-checkbox rendering.
+- **i18n**: completed user/form warning and guidance keys across all five locales.
+
+#### Backend Core
+
+- **Dashboard API**: added paginated application listing and suggestions for viewer dashboard consumption.
+- **Security**: account endpoints tightened, blocked-user JWT handling enforced, and proxy/client-config RBAC checks aligned for blocked/public principals.
+- **Profile payloads**: locator-task mapping, territory metadata fields, computed territory view usage, and institutional-email contact publication refined for profile and little DTO contracts.
+- **Validation**: user-field size alignment and built-in user integrity checks added (including aligned seed data).
+
+#### Viewer Application
+
+- **Auth**: stale authenticated sessions are cleared before `/public/**` activation via `publicAuthClearGuard` and `clearAuthentication()`.
+- **Dashboard**: server-side infinite scroll, public/private tabs, and shared list shell enabled across dashboard, territory, and application pages.
+- **Map**: profile `defaultZoomLevel` and initial-view behavior are applied consistently after extent fit.
+
+#### Profile-level
+
+- **Development profile**: `47_fix_builtin_user_positions.sql` reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the startup invariant that built-in users must not hold `UserPosition` rows.
+- **Development profile**: `49_dev_dashboard_fixtures.sql` adds dashboard pagination/tab test data.
+- **Locator**: added locator task-type and `sitmun.locator` UI seed data for Oracle/PostgreSQL profiles, plus development Liquibase include `51_add_locator_control.yaml` to backfill existing databases.
+
+### Security
+
+#### Backend Core
+
+- **Account API**: `GET /api/account/{id}` is now self-or-admin only and `GET /api/account/all` is admin-only.
+- **JWT filter**: blocked accounts receive HTTP 401 with `access_token` cookie cleared.
+- **Auth endpoints**: `POST /api/authenticate/proxy` supports `ROLE_USER`; `POST /api/authenticate/logout` is `permitAll` for stale/anonymous cleanup.
+- **Proxy RBAC**: built-in `public` and blocked principals are denied on protected/private app contexts unless explicit bypass is enabled.
+- **Client config RBAC**: `/api/config/client/**` applies blocked/public access rules consistently (401 for anonymous public principal, 403 for authenticated blocked users).
+
+### Changed
+
+#### Admin Application
+
+- Territory and user forms were reorganized for clearer validation flow, stronger warning visibility, and cleaner tab-driven editing behavior.
+- Tooling and tests were modernized for Angular 19-era provider patterns and updated TypeScript/ESLint alignment.
+
+#### Viewer Application
+
+- Auth/session lifecycle now routes through explicit cleanup (`clearAuthentication`) with redirect-suppression controls for failure paths.
+- Dashboard and map initialization behavior were aligned with profile-driven defaults and shared list shell architecture.
+
+#### Backend Core
+
+- Task/profile resolution for locator/query flows and territory-derived initial view computation were streamlined.
+
+#### Proxy Middleware
+
+- Release alignment to `1.2.7` across build metadata and documentation badges.
+
+### Removed
+
+#### Admin Application
+
+- `FormValidationBannerComponent` and toolbar validation/custom-warning inputs removed from admin form toolbars.
+- Feature flag `TERRITORY_FOCAL_POINT_FEATURE` and related i18n keys.
+- Territory form: separate `defaultZoomLevel` field hint (covered by extent hint).
+
+#### Viewer Application
+
+- Legacy dashboard pagination/show-more components; unused `ApiModule` and `src/test.ts`.
+
+### Fixed
+
+#### Admin Application
+
+- Territory relation loading and `memberOf` relation resolution issues were corrected ([#383](https://github.com/sitmun/sitmun-admin-app/issues/383)).
+- Login/password handling no longer relies on CSS masking and avoids recursive logout error paths.
+- Data grid undo/redo handling fixed (counter timing, boolean handling, checkbox stack behavior).
+
+#### Viewer Application
+
+- Catalog, tooltip, i18n, and identify reliability fixes landed for map UI and layer operations ([#137](https://github.com/sitmun/sitmun-viewer-app/issues/137), [#139](https://github.com/sitmun/sitmun-viewer-app/issues/139), [#140](https://github.com/sitmun/sitmun-viewer-app/issues/140), [#155](https://github.com/sitmun/sitmun-viewer-app/issues/155), [#156](https://github.com/sitmun/sitmun-viewer-app/issues/156)).
+- Contact rendering now uses API-provided point-of-contact values directly ([#159](https://github.com/sitmun/sitmun-viewer-app/issues/159)).
+- Proxy/session reliability improved through explicit 401 refresh handling and service-worker/IndexedDB sequencing hardening ([#256](https://github.com/sitmun/sitmun-viewer-app/issues/256)).
+
+#### Backend Core
+
+- Auth endpoint authorization fixes restored viewer refresh/logout compatibility (`POST /api/authenticate/proxy` for `ROLE_USER`, `POST /api/authenticate/logout` as `permitAll`) ([#256](https://github.com/sitmun/sitmun-viewer-app/issues/256)).
+- **Database Schema**: Oracle `STM_TREE_NOD` bootstrap defaults now use numeric `DEFAULT 0` (instead of `DEFAULT FALSE`) for `TNO_LOAD_DATA` and `TNO_FILTERABLE`, fixing Oracle 24 setup failures ([#43](https://github.com/sitmun/sitmun-application-stack/issues/43)). Existing Oracle databases that already ran changeset `sitmun:1` may need Liquibase checksum reconciliation during upgrade.
+
 ## [1.2.6] - 2026-05-08
 
 ### Added
@@ -838,7 +929,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...HEAD
+[1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
 [1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5
 [1.2.4]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...sitmun-application-stack/1.2.4

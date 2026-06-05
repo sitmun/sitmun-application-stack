@@ -1,0 +1,35 @@
+databaseChangeLog:
+  # Add sitmun.locator UI control for Locator task type (type id 4)
+  # Only runs if the UI control doesn't already exist (e.g. loaded via CSV on fresh DBs)
+  - changeSet:
+      id: 51
+      author: sitmun
+      context: dev,prod
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM STM_TSK_UI WHERE TUI_NAME = 'sitmun.locator'
+      changes:
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = SEQ_COUNT + 1 WHERE SEQ_NAME = 'TUI_ID';
+        - insert:
+            tableName: STM_TSK_UI
+            columns:
+              - column:
+                  name: TUI_ID
+                  valueComputed: COALESCE((SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME = 'TUI_ID'), 100)
+              - column:
+                  name: TUI_NAME
+                  value: "sitmun.locator"
+              - column:
+                  name: TUI_TOOLTIP
+                  value: "Locator"
+              - column:
+                  name: TUI_ORDER
+                  valueComputed: COALESCE((SELECT SEQ_COUNT FROM STM_SEQUENCE WHERE SEQ_NAME = 'TUI_ID'), 100)
+              - column:
+                  name: TUI_TYPE
+                  value: "locator"
+        - sql:
+            sql: UPDATE STM_SEQUENCE SET SEQ_COUNT = SEQ_COUNT + 1 WHERE SEQ_NAME = 'TUI_ID';

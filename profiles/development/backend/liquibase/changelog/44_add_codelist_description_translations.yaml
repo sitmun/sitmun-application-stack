@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 44
+      author: sitmun
+      context: dev,prod
+      comment: Insert missing STM_TRANSLATION rows for CodeListValue.description (codelist UI labels)
+      changes:
+        - loadData:
+            tableName: STM_TRANSLATION
+            file: 44_stm_translation_codelist_gapfill.csv
+            relativeToChangelogFile: true
+            separator: ","
+            encoding: UTF-8
+            columns:
+              - column:
+                  name: TRA_ID
+                  type: NUMERIC
+              - column:
+                  name: TRA_ELEID
+                  type: NUMERIC
+              - column:
+                  name: TRA_COLUMN
+                  type: STRING
+              - column:
+                  name: TRA_LANID
+                  type: NUMERIC
+              - column:
+                  name: TRA_NAME
+                  type: STRING
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'
+      rollback:
+        - sql:
+            sql: |
+              DELETE FROM STM_TRANSLATION
+              WHERE TRA_ID BETWEEN 3020142 AND 3020700
+        - sql:
+            sql: |
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID'
