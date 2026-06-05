@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.7] - 2026-06-05
+
 ### Added
 
 #### Admin Application
@@ -34,6 +36,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Development profile**: `49_dev_dashboard_fixtures.sql` adds dashboard pagination/tab test data.
 - **Locator**: added locator task-type and `sitmun.locator` UI seed data for Oracle/PostgreSQL profiles, plus development Liquibase include `51_add_locator_control.yaml` to backfill existing databases.
 
+### Security
+
+#### Backend Core
+
+- **Account API**: `GET /api/account/{id}` is now self-or-admin only and `GET /api/account/all` is admin-only.
+- **JWT filter**: blocked accounts receive HTTP 401 with `access_token` cookie cleared.
+- **Auth endpoints**: `POST /api/authenticate/proxy` supports `ROLE_USER`; `POST /api/authenticate/logout` is `permitAll` for stale/anonymous cleanup.
+- **Proxy RBAC**: built-in `public` and blocked principals are denied on protected/private app contexts unless explicit bypass is enabled.
+- **Client config RBAC**: `/api/config/client/**` applies blocked/public access rules consistently (401 for anonymous public principal, 403 for authenticated blocked users).
+
 ### Changed
 
 #### Admin Application
@@ -50,12 +62,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Task/profile resolution for locator/query flows and territory-derived initial view computation were streamlined.
 
+#### Proxy Middleware
+
+- Release alignment to `1.2.7` across build metadata and documentation badges.
+
+### Removed
+
+#### Admin Application
+
+- `FormValidationBannerComponent` and toolbar validation/custom-warning inputs removed from admin form toolbars.
+- Feature flag `TERRITORY_FOCAL_POINT_FEATURE` and related i18n keys.
+- Territory form: separate `defaultZoomLevel` field hint (covered by extent hint).
+
+#### Viewer Application
+
+- Legacy dashboard pagination/show-more components; unused `ApiModule` and `src/test.ts`.
+
 ### Fixed
 
 #### Admin Application
 
 - Territory relation loading and `memberOf` relation resolution issues were corrected ([#383](https://github.com/sitmun/sitmun-admin-app/issues/383)).
 - Login/password handling no longer relies on CSS masking and avoids recursive logout error paths.
+- Data grid undo/redo handling fixed (counter timing, boolean handling, checkbox stack behavior).
 
 #### Viewer Application
 
@@ -900,7 +929,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...HEAD
+[1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
 [1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5
 [1.2.4]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.3...sitmun-application-stack/1.2.4
