@@ -30,3 +30,4 @@ TUI_ID,TUI_NAME,TUI_TOOLTIP,TUI_ORDER,TUI_TYPE
 29,sitna.WFSQuery,WFS Query,0,
 30,sitna.workLayerManager,Work Layer Manager,0,
 31,sitmun.moreInfo,More Info,0,moreInfo
+32,sitmun.locator,Locator,0,locator

@@ -51,8 +51,8 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 50,queryTask.scope,cartography-query,true,false,Cartography Query
 51,queryTask.scope,sql-query,true,false,SQL Query
 52,queryTask.scope,web-api-query,true,false,Web API Query
-53,service.authenticationMode,None,true,true,None
-54,service.authenticationMode,HTTP Basic authentication,true,false,HTTP Basic authentication
+53,service.authenticationMode,HTTP Basic authentication,true,false,HTTP Basic authentication
+54,service.authenticationMode,None,true,true,None
 122,service.authenticationMode,API key,true,false,API key
 123,apiKey.header,X-API-Key,true,true,X-API-Key
 124,apiKey.cookie,X-API-Key,true,true,X-API-Key
@@ -100,7 +100,7 @@ COD_ID,COD_LIST,COD_VALUE,COD_SYSTEM,COD_DEFAULT,COD_DESCRIPTION
 102,treenode.node.type,nm,true,false,Near me
 103,queryTask.scope,external-link,true,false,External link
 105,queryTask.mimeType,image/png,true,false,PNG (.png)
-106,queryTask.mimeType,image/jpeg,true,false,JPEG (.jpg, .jpeg)
+106,queryTask.mimeType,image/jpeg,true,false,"JPEG (.jpg, .jpeg)"
 107,queryTask.mimeType,image/gif,true,false,GIF (.gif)
 108,queryTask.mimeType,image/svg+xml,true,false,SVG (.svg)
 109,queryTask.mimeType,application/pdf,true,false,PDF (.pdf)
