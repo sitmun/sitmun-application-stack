@@ -1,5 +1,6 @@
 TTY_ID,TTY_NAME,TTY_TITLE,TTY_ENABLED,TTY_PARENTID,TTY_ORDER
 0,edit,Edit,true,,3
 1,basic,Basic,true,,1
+4,localizador,Locator,1,,6
 5,query,Query,true,,2
 6,moreInfo,More Info,true,,4

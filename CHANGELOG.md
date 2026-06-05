@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Development profile**: `47_fix_builtin_user_positions.sql` reassigns position 6963 from built-in `public` user (id=2) to normal dev user (id=4), satisfying the startup invariant that built-in users must not hold `UserPosition` rows.
 - **Development profile**: `49_dev_dashboard_fixtures.sql` adds dashboard pagination/tab test data.
+- **Locator**: added locator task-type and `sitmun.locator` UI seed data for Oracle/PostgreSQL profiles, plus development Liquibase include `51_add_locator_control.yaml` to backfill existing databases.
 
 ### Changed
 
