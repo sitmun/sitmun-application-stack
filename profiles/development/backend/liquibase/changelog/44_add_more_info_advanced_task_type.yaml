@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 44
+      id: 44_more_info_advanced_task_type
       author: sitmun
       context: dev,prod
       preConditions:
