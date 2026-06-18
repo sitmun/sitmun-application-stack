@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "title": "Document Export Task",
+  "properties": {
+    "name": {
+      "type": "string",
+      "x-i18n": "common.form.name"
+    },
+    "taskGroup": {
+      "type": "object",
+      "x-i18n": "entity.taskGroup.label",
+      "widget": {
+        "id": "select",
+        "data": "taskGroup",
+        "label": "name",
+        "value": "id"
+      }
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "exportEngine": {
+          "type": "string",
+          "x-i18n": "entity.task.documentExport.engine",
+          "widget": {
+            "id": "select",
+            "data": "codelist",
+            "codeListName": "documentExport.engine",
+            "label": "description",
+            "value": "value"
+          }
+        },
+        "downloadFormat": {
+          "type": "string",
+          "x-i18n": "entity.task.documentExport.output",
+          "widget": {
+            "id": "select",
+            "data": "codelist",
+            "codeListName": "documentExport.output",
+            "label": "description",
+            "value": "value"
+          }
+        },
+        "downloadSource": {
+          "type": "string",
+          "x-i18n": "entity.task.documentExport.sourcePath"
+        }
+      }
+    }
+  }
+}

@@ -10,6 +10,7 @@
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/08_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/08_add_template_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/09_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/11_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>

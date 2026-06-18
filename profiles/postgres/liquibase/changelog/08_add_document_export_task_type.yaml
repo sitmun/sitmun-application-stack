@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8_document_export_task_type
+      author: sitmun
+      context: dev,prod
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17"
+      changes:
+        - insert:
+            tableName: STM_TSK_TYP
+            columns:
+              - column: { name: TTY_ID, valueNumeric: 17 }
+              - column: { name: TTY_NAME, value: "documentExport" }
+              - column: { name: TTY_TITLE, value: "Document Export" }
+              - column: { name: TTY_ENABLED, valueBoolean: true }
+              - column: { name: TTY_ORDER, valueNumeric: 18 }
+        - update:
+            tableName: STM_TSK_TYP
+            columns:
+              - column:
+                  name: TTY_SPEC
+                  valueClobFile: 08_add_document_export_task_type/07_DocumentExportTaskDefinition.json
+            where: TTY_ID = 17
+      rollback:
+        - delete:
+            tableName: STM_TSK_TYP
+            where: TTY_ID = 17
+  - changeSet:
+      id: 8b_document_export_codelists
+      author: sitmun
+      context: dev,prod
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'documentExport.engine', 'openhtmltopdf', TRUE, TRUE, 'OpenHTMLToPDF'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'documentExport.engine' AND COD_VALUE = 'openhtmltopdf');
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'documentExport.output', 'pdf', TRUE, TRUE, 'PDF'
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'documentExport.output' AND COD_VALUE = 'pdf');
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';
+      rollback:
+        - sql:
+            sql: >
+              DELETE FROM STM_CODELIST
+              WHERE (COD_LIST = 'documentExport.engine' AND COD_VALUE = 'openhtmltopdf')
+                 OR (COD_LIST = 'documentExport.output' AND COD_VALUE = 'pdf');
+  - changeSet:
+      id: 8c_document_export_task_type_seq
+      author: sitmun
+      context: dev,prod
+      changes:
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TTY_ID), 0) + 1 FROM STM_TSK_TYP)
+              WHERE SEQ_NAME = 'TTY_ID';
+      rollback:
+        - sql:
+            sql: "UPDATE STM_SEQUENCE SET SEQ_COUNT = 17 WHERE SEQ_NAME = 'TTY_ID';"
