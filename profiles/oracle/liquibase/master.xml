@@ -15,4 +15,6 @@
   <include file="changelog/09_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/11_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/12_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/13_add_literal_translations.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/14_add_literal_translation_source_language.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
