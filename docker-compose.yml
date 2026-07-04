@@ -63,7 +63,6 @@ services:
       args:
         - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
         - ENVIRONMENT=${ENVIRONMENT:-development}
-        - APP_VERSION=${APP_VERSION:-0.0.0}
     restart: always
     ports:
       - "${LOCAL_PORT:-9000}:80"

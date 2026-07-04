@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+#### Stack-level
+
+- **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
+
 ## [1.2.7] - 2026-06-05
 
 ### Added

@@ -25,11 +25,6 @@ BUMP_ENTRIES=(
   "front/admin/sitmun-admin-app/src/environments/environment.prod.ts|  version: '{{VERSION}}',|  version: '{{NEW}}',"
   "front/viewer/sitmun-viewer-app/src/environments/environment.ts|  version: '{{VERSION}}',|  version: '{{NEW}}',"
   "front/viewer/sitmun-viewer-app/src/environments/environment.prod.ts|  version: '{{VERSION}}',|  version: '{{NEW}}',"
-  "profiles/postgres.env|APP_VERSION={{VERSION}}|APP_VERSION={{NEW}}"
-  "profiles/oracle.env|APP_VERSION={{VERSION}}|APP_VERSION={{NEW}}"
-  "profiles/development.env|APP_VERSION={{VERSION}}|APP_VERSION={{NEW}}"
-  "profiles/development-postgres.env|APP_VERSION={{VERSION}}|APP_VERSION={{NEW}}"
-  "profiles/development-oracle.env|APP_VERSION={{VERSION}}|APP_VERSION={{NEW}}"
   "README.md|version-{{VERSION}}-blue|version-{{NEW}}-blue"
   "front/admin/sitmun-admin-app/README.md|version-{{VERSION}}-blue|version-{{NEW}}-blue"
   "front/viewer/sitmun-viewer-app/README.md|version-{{VERSION}}-blue|version-{{NEW}}-blue"
@@ -40,13 +35,6 @@ NPM_DIRS=( "front/admin/sitmun-admin-app" "front/viewer/sitmun-viewer-app" )
 PACKAGE_JSON_FILES=(
   "front/admin/sitmun-admin-app/package.json"
   "front/viewer/sitmun-viewer-app/package.json"
-)
-APP_VERSION_ENV_FILES=(
-  "profiles/postgres.env"
-  "profiles/oracle.env"
-  "profiles/development.env"
-  "profiles/development-postgres.env"
-  "profiles/development-oracle.env"
 )
 README_BADGE_FILES=(
   "README.md"
@@ -156,27 +144,6 @@ normalize_package_json_version_line() {
       # Accept malformed quoted variants and force canonical JSON key/value form.
       if (done == 0 && $0 ~ /^[[:space:]]*"+[[:space:]]*version[[:space:]]*"+[[:space:]]*:/) {
         print "  \"version\": \"" new_ver "\","
-        done = 1
-        next
-      }
-      print $0
-    }
-  ' "$path" > "$temp"
-  mv "$temp" "$path"
-}
-
-# Normalize APP_VERSION env assignments to canonical unquoted form.
-normalize_env_app_version_line() {
-  local file="$1" new_ver="$2"
-  local path="$REPO_ROOT/$file"
-  [[ ! -f "$path" ]] && return 0
-  local temp
-  temp="$(mktemp)"
-  awk -v new_ver="$new_ver" '
-    BEGIN { done = 0 }
-    {
-      if (done == 0 && $0 ~ /^"?APP_VERSION=/) {
-        print "APP_VERSION=" new_ver
         done = 1
         next
       }
@@ -296,9 +263,6 @@ normalize_known_version_lines() {
   local rel
   for rel in "${PACKAGE_JSON_FILES[@]}"; do
     normalize_package_json_version_line "$rel" "$new_ver"
-  done
-  for rel in "${APP_VERSION_ENV_FILES[@]}"; do
-    normalize_env_app_version_line "$rel" "$new_ver"
   done
   for rel in "${README_BADGE_FILES[@]}"; do
     normalize_readme_badge_line "$rel" "$new_ver"

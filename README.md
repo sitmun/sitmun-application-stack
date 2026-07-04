@@ -230,7 +230,8 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS` | Enable proxy access validation (blocks access to blocked services) | `true` |
 | `MIDDLEWARE_SECRET`        | Backend-proxy shared secret                           | Development default (change!)       |
 | `ENVIRONMENT`              | Frontend Docker build mode (development/production)   | `development`                       |
-| `APP_VERSION`              | Version injected into frontend builds                 | `0.0.0`                             |
+
+Docker frontend builds read each app's version from its submodule `package.json` (admin and viewer independently). The About dialog shows that value at runtime.
 
 ### Database Configuration
 
