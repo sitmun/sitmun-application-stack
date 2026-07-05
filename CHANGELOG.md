@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate), a Tasks tab intro, and quick search on the Tasks relation grid, aligned with service/layer form patterns.
 - **Connections**: connection form test button under the JDBC URL uses the same raised primary pattern as the service form metadata action.
 - **Data grid**: relation-grid label columns (e.g. Name) auto-size to cell content once after load, capped so flex filler columns still expand.
+- **Layers**: relation tab grids (territories, permissions, trees, parameters, filters, styles) expose client-side quick search via `globalSearch`.
+- **Layers**: relation tab column widths tuned so URL/value-heavy columns expand and narrow fields stay compact.
+- **Dialogs**: template form modals use shared `formDialogs` width (640px); relation picker modals hide export and compute width from column `minWidth` (640px floor).
+- **Layers**: template-dialog grids (parameters, filters, styles) use `newButton` instead of `addButton`; style/filter add-dialog field order and URL input aligned with main form patterns.
 
 ### Fixed
 
@@ -25,9 +29,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Connections**: saved connections validate via `GET /connections/{id}/test` without re-entering the password; unsaved edits require a typed password before POST test ([sitmun-admin-app#424](https://github.com/sitmun/sitmun-admin-app/issues/424)).
 - **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
 - **Data grid**: relation-grid selection checkbox header/body alignment and flex column fill fixed (missing centered-header CSS; `autoSizeStrategy` now resolved after column prep).
+- **Data grid**: relation-grid status dots visible again (`.sitmun-status-dot` sizing); pending add/modify/delete hints show in the status column; unchanged rows leave the status cell empty.
 - **Navigation**: task query/edit connection links use `/connection/{id}/connectionForm`; connection and role task grids link via `/tasks/{id}/{typeId}`.
 - **Forms**: unsaved-changes confirmation on all admin entity form routes via `CanDeactivateGuard` on `BaseFormComponent` ([sitmun-admin-app#374](https://github.com/sitmun/sitmun-admin-app/issues/374)).
 - **Forms**: entity forms reload when route id changes; new connections no longer show a stale password placeholder.
+- **Layers**: save maps joined layer CSV fields to `layers`, `queryableLayers`, and `selectableLayers` (trimmed); preserves `spatialSelectionService` relation; load no longer clears selectable layers when queryable is disabled; queryable subset revalidates when the layer set changes; new style dialog maps flat legend fields to nested `legendURL`.
+- **Layers**: style add dialog title, form reset on reopen, filter field order, and `appUrlInput` on style URL; permissions relation updater uses saved entity proxy; removed dead `actionButton` bindings on layers form grids.
+- **Dialogs**: picker modals no longer show CSV export; form/picker modal sizing improved app-wide.
 - **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
 
 #### Backend Core
