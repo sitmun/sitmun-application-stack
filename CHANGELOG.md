@@ -14,6 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+#### Admin Application
+
+- **Connections**: saved connections validate via `GET /connections/{id}/test` without re-entering the password; unsaved edits require a typed password before POST test ([sitmun-admin-app#424](https://github.com/sitmun/sitmun-admin-app/issues/424)).
+- **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
+- **Navigation**: task query/edit connection links use `/connection/{id}/connectionForm`; connection and role task grids link via `/tasks/{id}/{typeId}`.
+- **Forms**: unsaved-changes confirmation on all admin entity form routes via `CanDeactivateGuard` on `BaseFormComponent` ([sitmun-admin-app#374](https://github.com/sitmun/sitmun-admin-app/issues/374)).
+- **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
+
 #### Backend Core
 
 - **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` search authorized apps and territories in the database instead of filtering only the first in-memory page.
