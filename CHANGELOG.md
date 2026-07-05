@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
 - **Navigation**: task query/edit connection links use `/connection/{id}/connectionForm`; connection and role task grids link via `/tasks/{id}/{typeId}`.
 - **Forms**: unsaved-changes confirmation on all admin entity form routes via `CanDeactivateGuard` on `BaseFormComponent` ([sitmun-admin-app#374](https://github.com/sitmun/sitmun-admin-app/issues/374)).
+- **Forms**: entity forms reload when route id changes; new connections no longer show a stale password placeholder.
 - **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
 
 #### Backend Core
