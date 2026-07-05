@@ -12,6 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
 
+### Fixed
+
+#### Backend Core
+
+- **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` search authorized apps and territories in the database instead of filtering only the first in-memory page.
+
+#### Viewer Application
+
+- **Dashboard**: pagination, server-side keyword search, autocomplete loading, searchbox/grid interaction, and dashboard-item resync fixes (see `sitmun-viewer-app` `[Unreleased]`).
+
 ## [1.2.7] - 2026-06-05
 
 ### Added
