@@ -17,10 +17,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate), a Tasks tab intro, and quick search on the Tasks relation grid, aligned with service/layer form patterns.
 - **Connections**: connection form test button under the JDBC URL uses the same raised primary pattern as the service form metadata action.
 - **Data grid**: relation-grid label columns (e.g. Name) auto-size to cell content once after load, capped so flex filler columns still expand.
-- **Layers**: relation tab grids (territories, permissions, trees, parameters, filters, styles) expose client-side quick search via `globalSearch`.
+- **Data grid**: introduced `app-relation-grid` wrapper with capability flags (`hasPickerAdd`, `hasRelationsUpdater`, `hasStatusColumn`, `hasTemplateDialogs`, `supportsDuplicate`); dirty tracking preserved via `BaseFormComponent` registration of nested `DataGridComponent` instances; wrapper defaults include quick search and normalized relation-grid toolbar.
+- **Data grid**: migrated all admin form relation grids to the wrapper — territory, layers (territories, permissions, trees, parameters, filters, styles), layers-permits, background-layers, role, task family (basic, more-info, query, edit, locator), user (roles, positions, applications-as-contact), application (roles, backgrounds, parameters, header params, trees), trees (roles, applications), connection (tasks), service (parameters, layers), task-edit (fields), and task groups; custom mappers and identity mappings preserved where picker-add or domain mapping required it.
+- **Data grid**: extended wrapper with template-dialog support (`templateDialogName`, capability-driven duplicate hiding), layer registration (`registerButton`, `newStatusRegister`), duplicate override (`duplicateButton`), and read-only `rowData` / `getAllCurrentData()` delegation for ViewChild validation.
+- **Data grid**: admin form relation-grid rollout complete — direct `app-data-grid` remains only in non-form templates: entity lists, picker dialogs, and the wrapper delegate.
+- **Task groups**: fixed tasks relation grid add/remove by wiring picker and group-assignment persistence.
 - **Layers**: relation tab column widths tuned so URL/value-heavy columns expand and narrow fields stay compact.
 - **Dialogs**: template form modals use shared `formDialogs` width (640px); relation picker modals hide export and compute width from column `minWidth` (640px floor).
-- **Layers**: template-dialog grids (parameters, filters, styles) use `newButton` instead of `addButton`; style/filter add-dialog field order and URL input aligned with main form patterns.
+- **Data grid**: relation/form grids auto-show discard, undo, and redo when they own pending changes (`statusColumn` or editable columns); `readOnly` and `changeTracking` inputs express view-only and parent-managed grids; redundant per-template toolbar `true` bindings removed.
+- **Data grid**: read-only grids now hide duplicate; display-only grids on connection, layers, and user forms no longer wire no-op relation save/add handlers or redundant toolbar hide/false flags.
 
 ### Fixed
 
