@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
 
+#### Admin Application
+
+- **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate) and a Tasks tab intro, aligned with service/layer form patterns.
+
 ### Fixed
 
 #### Admin Application
