@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Admin Application
+
+- **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.
+- **i18n**: task type admin strings across all five admin locales.
+
+#### Backend Core
+
+- **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
+- **i18n**: translation cache preload applies request locale via `LocaleContextHolder` so projection responses return localized type labels.
+
 ### Changed
 
 #### Stack-level
@@ -14,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Task types**: connection, role, and task-group relation grids show localized `typeTitle` instead of internal `typeName`; connection tasks relation requests include `lang` from the active UI language.
+- **Trees**: tree-node task picker and search use localized `typeTitle`.
 - **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate), a Tasks tab intro, and quick search on the Tasks relation grid, aligned with service/layer form patterns.
 - **Connections**: connection form test button under the JDBC URL uses the same raised primary pattern as the service form metadata action.
 - **Data grid**: relation-grid label columns (e.g. Name) auto-size to cell content once after load, capped so flex filler columns still expand.
@@ -42,6 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Layers**: style add dialog title, form reset on reopen, filter field order, and `appUrlInput` on style URL; permissions relation updater uses saved entity proxy; removed dead `actionButton` bindings on layers form grids.
 - **Dialogs**: picker modals no longer show CSV export; form/picker modal sizing improved app-wide.
 - **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
+- **Forms**: save toolbar stays disabled until entity data has loaded; translation edits and nested form changes trigger change detection so save/modified state stays accurate.
 
 #### Backend Core
 
