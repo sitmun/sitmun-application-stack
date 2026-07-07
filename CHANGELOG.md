@@ -12,11 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.
 - **i18n**: task type admin strings across all five admin locales.
+- **i18n**: language list and form show the database default language; guarded set-default workflow with preview dialog for missing translations; `language.default` protected in configuration parameter screens; admin UI locale unchanged when the database default changes.
 
 #### Backend Core
 
 - **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
 - **i18n**: translation cache preload applies request locale via `LocaleContextHolder` so projection responses return localized type labels.
+- **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
 
 ### Changed
 
