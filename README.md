@@ -192,11 +192,44 @@ The stack has four main components:
    nano .env
    ```
 
-2. **Database Setup**
+   The copied profile already sets the database, Spring, Liquibase, and frontend variables (all other compose variables have working defaults). The **only** variables you must add to boot are the two secrets — the compose profile marks them required (`:?`) and refuses to start without them:
+
+   ```env
+   # Secrets (mandatory, no default, min 32 chars each) -- see step 2
+   SITMUN_USER_SECRET=<32+ char random value>
+   MIDDLEWARE_SECRET=<32+ char random value>
+   ```
+
+   For a real production deployment you should also override the database credentials, which otherwise default to `sitmun3`/`sitmun3`:
+
+   ```env
+   DATABASE=<db name>
+   DATABASE_USERNAME=<db user>
+   DATABASE_PASSWORD=<db password>
+   ```
+
+2. **Secrets (mandatory)**
+
+   Production profiles (`profiles/postgres`, `profiles/oracle`) do **not** ship secret defaults. You must set both variables in `.env`, each at least 32 characters:
+
+   ```bash
+   # Backend JWT signing secret and backend-proxy shared secret
+   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+   ```
+
+   Enforcement is fail-fast, so misconfiguration is caught before the platform serves traffic:
+
+   - A missing variable makes Docker Compose refuse to start (`variable is required`).
+   - A blank or shorter-than-32-character value aborts backend/proxy startup via `SecuritySecretValidator` / `ProxySecretValidator` (`IllegalStateException`), so the container never becomes healthy.
+
+   `MIDDLEWARE_SECRET` is shared: it is injected into the backend as `SITMUN_PROXY_MIDDLEWARE_SECRET` and into the proxy as `SITMUN_BACKEND_CONFIG_SECRET`. Both sides must match. Never commit secrets, and never reuse the development defaults.
+
+3. **Database Setup**
 
    Database settings are already set by the profile you copied. To change database type later, copy a different profile to `.env` or edit `SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` in `.env`. See the [Database Configuration](#database-configuration) section for details and verification steps.
 
-3. **SSL Configuration**
+4. **SSL Configuration**
 
    ```bash
    # In .env, set for HTTPS (standard port 443)
@@ -228,7 +261,8 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `DATABASE_PASSWORD`        | Database password                                     | `sitmun3`                           |
 | `FORCE_USE_OF_PROXY`       | Force proxy middleware                                | `false`                             |
 | `SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS` | Enable proxy access validation (blocks access to blocked services) | `true` |
-| `MIDDLEWARE_SECRET`        | Backend-proxy shared secret                           | Development default (change!)       |
+| `SITMUN_USER_SECRET`       | Backend JWT signing secret (min 32 chars)             | Required in production profiles     |
+| `MIDDLEWARE_SECRET`        | Backend-proxy shared secret (min 32 chars)            | Required in production profiles     |
 | `ENVIRONMENT`              | Frontend Docker build mode (development/production)   | `development`                       |
 
 Docker frontend builds read each app's version from its submodule `package.json` (admin and viewer independently). The About dialog shows that value at runtime.
@@ -447,10 +481,10 @@ spring:
 
 sitmun:
   user:
-    secret: ${SITMUN_USER_SECRET:auto-generated}
+    secret: ${SITMUN_USER_SECRET}
     token-validity-in-milliseconds: 36000000
   proxy-middleware:
-    secret: ${SITMUN_PROXY_MIDDLEWARE_SECRET:auto-generated}
+    secret: ${SITMUN_PROXY_MIDDLEWARE_SECRET}
 ```
 
 ## Services
@@ -806,43 +840,42 @@ export class AuthInterceptor implements HttpInterceptor {
 
 ### Security Configuration
 
-#### Middleware Secret
+#### Secrets
 
-The backend and proxy services share a secret for secure authentication:
+Two secrets must be provided in production, each at least 32 characters:
 
 ```env
 # .env file
-MIDDLEWARE_SECRET=your-secure-secret-here
+SITMUN_USER_SECRET=<32+ char random value>   # backend JWT signing secret
+MIDDLEWARE_SECRET=<32+ char random value>     # shared backend <-> proxy secret
+```
+
+```bash
+# Generate secure random values
+openssl rand -hex 32
 ```
 
 **IMPORTANT for production**:
 
-- Generate a secure random value: `openssl rand -hex 20`
-- Never commit secrets to version control
-- Both `SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET` (backend) and `SITMUN_BACKEND_CONFIG_SECRET` (proxy) use this value
-- Default development value should NOT be used in production
+- `MIDDLEWARE_SECRET` is injected into the backend as `SITMUN_PROXY_MIDDLEWARE_SECRET` and into the proxy as `SITMUN_BACKEND_CONFIG_SECRET`; both sides must share the same value.
+- `SITMUN_USER_SECRET` signs user JWTs and is backend-only.
+- Startup is fail-fast: `SecuritySecretValidator` (backend) and `ProxySecretValidator` (proxy) reject blank or shorter-than-32-character secrets with an `IllegalStateException`, so the service never comes up misconfigured. Production compose profiles also mark the variables as required and refuse to start without them.
+- Never commit secrets to version control, and never reuse the development defaults.
 
 #### JWT Configuration
 
 ```yaml
 sitmun:
   user:
-    secret: ${SITMUN_USER_SECRET:auto-generated}
+    secret: ${SITMUN_USER_SECRET}
     token-validity-in-milliseconds: 36000000
   proxy-middleware:
-    secret: ${MIDDLEWARE_SECRET:default-dev-secret}
+    secret: ${SITMUN_PROXY_MIDDLEWARE_SECRET}
 ```
 
 #### CORS Configuration
 
-```yaml
-spring:
-  web:
-    cors:
-      allowed-origins: "*"
-      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
-      allowed-headers: "*"
-```
+Backend CORS is configured in `WebSecurityConfigurer.corsConfigurationSource()`. The current policy allows credentials, all headers, `OPTIONS`, `GET`, `POST`, `PUT`, and `DELETE`, and uses `allowedOriginPattern("*")`.
 
 #### Content Security Policy
 

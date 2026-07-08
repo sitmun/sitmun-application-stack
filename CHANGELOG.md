@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level
 
 - **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
+- **Security**: backend and proxy now use the same externally supplied middleware secret (`SITMUN_PROXY_MIDDLEWARE_SECRET` / `SITMUN_BACKEND_CONFIG_SECRET`) instead of relying on committed fallback values.
 
 #### Admin Application
 
