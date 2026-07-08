@@ -8,7 +8,7 @@ sitmun:
   backend:
     config:
       url: http://some.url
-      secret: some-secret
+      secret: dev-only-insecure-middleware-secret
 
 # Actuator Configuration
 management:
