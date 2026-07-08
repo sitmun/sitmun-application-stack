@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
-- **i18n**: translation cache preload applies request locale via `LocaleContextHolder` so projection responses return localized type labels.
+- **i18n**: request-scoped translation preload resolves `@I18n` fields for the request language.
 - **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
 
 ### Changed
@@ -63,7 +63,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
-- **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` search authorized apps and territories in the database instead of filtering only the first in-memory page.
+- **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` query the database instead of filtering only the first in-memory page.
+- **i18n**: translation cache filter resets servlet thread locale after each request so language does not leak between requests.
 
 #### Viewer Application
 
