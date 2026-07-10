@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
 - **Security**: backend and proxy now use the same externally supplied middleware secret (`SITMUN_PROXY_MIDDLEWARE_SECRET` / `SITMUN_BACKEND_CONFIG_SECRET`) instead of relying on committed fallback values.
+- **Authentication**: aligned backend, proxy, viewer, and admin `401`/`403` handling so passive resource failures preserve valid sessions, blocked or invalid credentials return generic RFC 9457 `401`, resource denial returns `403`, and upstream authorization failures become sanitized proxy `502` responses. JWT infrastructure failures now fail closed as generic `500`/`503` responses instead of continuing as public, and the viewer suppresses generic `401` modals while presenting translated `403` warnings.
 
 #### Admin Application
 

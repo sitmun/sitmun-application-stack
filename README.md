@@ -739,10 +739,10 @@ Content-Type: application/json
 }
 
 GET /api/account
-Authorization: Bearer <jwt-token>
+Cookie: access_token=<jwt-token>
 
-POST /api/logout
-Authorization: Bearer <jwt-token>
+POST /api/authenticate/logout
+Cookie: access_token=<jwt-token>
 ```
 
 #### User Management Endpoints
@@ -976,11 +976,12 @@ docker compose exec oracle sqlplus -L sitmun3/sitmun3@//localhost:1521/sitmun3 -
 #### Authentication Issues
 
 ```bash
-# Check JWT token format
-curl -H "Authorization: Bearer your-token" http://localhost:9001/api/account
+# Check the authenticated account using a saved login cookie
+curl -b cookies.txt http://localhost:9001/api/account
 
 # Verify user credentials
 curl -X POST http://localhost:9001/api/authenticate \
+  -c cookies.txt \
   -H "Content-Type: application/json" \
   -d '{"username":"NULL","password":"NULL"}'
 ```
