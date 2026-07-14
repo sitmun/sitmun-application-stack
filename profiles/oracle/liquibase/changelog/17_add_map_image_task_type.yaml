@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 15_map_image_task_type
+      id: 17_map_image_task_type
       author: sitmun
       context: dev,prod
       preConditions:
@@ -22,14 +22,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: TTY_SPEC
-                  valueClobFile: 15_add_map_image_task_type/18_MapImageTaskDefinition.json
+                  valueClobFile: 17_add_map_image_task_type/18_MapImageTaskDefinition.json
             where: TTY_ID = 18
       rollback:
         - delete:
             tableName: STM_TSK_TYP
             where: TTY_ID = 18
   - changeSet:
-      id: 15b_map_image_task_type_seq
+      id: 17b_map_image_task_type_seq
       author: sitmun
       context: dev,prod
       changes:

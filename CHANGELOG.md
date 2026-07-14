@@ -6,6 +6,71 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Admin Application
+
+- **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.
+- **i18n**: task type admin strings across all five admin locales.
+- **i18n**: language list and form show the database default language; guarded set-default workflow with preview dialog for missing translations; `language.default` protected in configuration parameter screens; admin UI locale unchanged when the database default changes.
+
+#### Backend Core
+
+- **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
+- **i18n**: request-scoped translation preload resolves `@I18n` fields for the request language.
+- **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
+
+### Changed
+
+#### Stack-level
+
+- **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
+- **Security**: backend and proxy now use the same externally supplied middleware secret (`SITMUN_PROXY_MIDDLEWARE_SECRET` / `SITMUN_BACKEND_CONFIG_SECRET`) instead of relying on committed fallback values.
+
+#### Admin Application
+
+- **Task types**: connection, role, and task-group relation grids show localized `typeTitle` instead of internal `typeName`; connection tasks relation requests include `lang` from the active UI language.
+- **Trees**: tree-node task picker and search use localized `typeTitle`.
+- **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate), a Tasks tab intro, and quick search on the Tasks relation grid, aligned with service/layer form patterns.
+- **Connections**: connection form test button under the JDBC URL uses the same raised primary pattern as the service form metadata action.
+- **Data grid**: relation-grid label columns (e.g. Name) auto-size to cell content once after load, capped so flex filler columns still expand.
+- **Data grid**: introduced `app-relation-grid` wrapper with capability flags (`hasPickerAdd`, `hasRelationsUpdater`, `hasStatusColumn`, `hasTemplateDialogs`, `supportsDuplicate`); dirty tracking preserved via `BaseFormComponent` registration of nested `DataGridComponent` instances; wrapper defaults include quick search and normalized relation-grid toolbar.
+- **Data grid**: migrated all admin form relation grids to the wrapper — territory, layers (territories, permissions, trees, parameters, filters, styles), layers-permits, background-layers, role, task family (basic, more-info, query, edit, locator), user (roles, positions, applications-as-contact), application (roles, backgrounds, parameters, header params, trees), trees (roles, applications), connection (tasks), service (parameters, layers), task-edit (fields), and task groups; custom mappers and identity mappings preserved where picker-add or domain mapping required it.
+- **Data grid**: extended wrapper with template-dialog support (`templateDialogName`, capability-driven duplicate hiding), layer registration (`registerButton`, `newStatusRegister`), duplicate override (`duplicateButton`), and read-only `rowData` / `getAllCurrentData()` delegation for ViewChild validation.
+- **Data grid**: admin form relation-grid rollout complete — direct `app-data-grid` remains only in non-form templates: entity lists, picker dialogs, and the wrapper delegate.
+- **Task groups**: fixed tasks relation grid add/remove by wiring picker and group-assignment persistence.
+- **Layers**: relation tab column widths tuned so URL/value-heavy columns expand and narrow fields stay compact.
+- **Dialogs**: template form modals use shared `formDialogs` width (640px); relation picker modals hide export and compute width from column `minWidth` (640px floor).
+- **Data grid**: relation/form grids auto-show discard, undo, and redo when they own pending changes (`statusColumn` or editable columns); `readOnly` and `changeTracking` inputs express view-only and parent-managed grids; redundant per-template toolbar `true` bindings removed.
+- **Data grid**: read-only grids now hide duplicate; display-only grids on connection, layers, and user forms no longer wire no-op relation save/add handlers or redundant toolbar hide/false flags.
+
+### Fixed
+
+#### Admin Application
+
+- **Services**: obtaining service details prefills `Service.name` and `Service.description` translation rows from alternate `xml:lang` entries; when the DB default language is absent from capabilities, the first entry still populates the main field and its language translation row (e.g. `ca` + `es` with default `en`) ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)).
+- **Connections**: saved connections validate via `GET /connections/{id}/test` without re-entering the password; unsaved edits require a typed password before POST test ([sitmun-admin-app#424](https://github.com/sitmun/sitmun-admin-app/issues/424)).
+- **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
+- **Data grid**: relation-grid selection checkbox header/body alignment and flex column fill fixed (missing centered-header CSS; `autoSizeStrategy` now resolved after column prep).
+- **Data grid**: relation-grid status dots visible again (`.sitmun-status-dot` sizing); pending add/modify/delete hints show in the status column; unchanged rows leave the status cell empty.
+- **Navigation**: task query/edit connection links use `/connection/{id}/connectionForm`; connection and role task grids link via `/tasks/{id}/{typeId}`.
+- **Forms**: unsaved-changes confirmation on all admin entity form routes via `CanDeactivateGuard` on `BaseFormComponent` ([sitmun-admin-app#374](https://github.com/sitmun/sitmun-admin-app/issues/374)).
+- **Forms**: entity forms reload when route id changes; new connections no longer show a stale password placeholder.
+- **Layers**: save maps joined layer CSV fields to `layers`, `queryableLayers`, and `selectableLayers` (trimmed); preserves `spatialSelectionService` relation; load no longer clears selectable layers when queryable is disabled; queryable subset revalidates when the layer set changes; new style dialog maps flat legend fields to nested `legendURL`.
+- **Layers**: style add dialog title, form reset on reopen, filter field order, and `appUrlInput` on style URL; permissions relation updater uses saved entity proxy; removed dead `actionButton` bindings on layers form grids.
+- **Dialogs**: picker modals no longer show CSV export; form/picker modal sizing improved app-wide.
+- **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
+- **Forms**: save toolbar stays disabled until entity data has loaded; translation edits and nested form changes trigger change detection so save/modified state stays accurate.
+
+#### Backend Core
+
+- **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` query the database instead of filtering only the first in-memory page.
+- **i18n**: translation cache filter resets servlet thread locale after each request so language does not leak between requests.
+
+#### Viewer Application
+
+- **Dashboard**: pagination, server-side keyword search, autocomplete loading, searchbox/grid interaction, and dashboard-item resync fixes (see `sitmun-viewer-app` `[Unreleased]`).
+
 ## [1.2.7] - 2026-06-05
 
 ### Added
