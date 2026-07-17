@@ -1,0 +1,15 @@
+{
+  "name": "sitmun-application-stack-e2e",
+  "private": true,
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install chromium",
+    "e2e:backend": "node scripts/e2e-backend.mjs",
+    "e2e:admin": "node scripts/e2e-admin.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1"
+  }
+}

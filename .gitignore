@@ -25,3 +25,9 @@ __pycache__/
 
 # Documentation site (separate repository)
 sitmun.github.io/
+
+# Root E2E (Playwright)
+node_modules/
+e2e/.auth/
+playwright-report/
+test-results/

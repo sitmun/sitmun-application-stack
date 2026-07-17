@@ -527,6 +527,19 @@ Admin App ───┘
 
 ## Development
 
+### End-to-end tests
+
+Root Playwright tests exercise the admin app against backend-core on in-memory H2 (no Docker Compose). Details: [e2e/README.md](e2e/README.md).
+
+```bash
+# prerequisites: Java 17, Node ≥ 20.19, submodules initialized, admin npm ci
+npm ci
+npm run e2e:install
+npm run e2e
+```
+
+Owned ports: admin `4300`, backend `18080`.
+
 ### Project Structure
 
 The SITMUN Application Stack uses Git submodules to include the source code of all SITMUN components:
