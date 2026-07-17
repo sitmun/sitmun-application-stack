@@ -6,24 +6,20 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const stackRoot = resolve(__dirname, '..');
-const backendRoot = join(stackRoot, 'back', 'backend', 'sitmun-backend-core');
-const changelog = join(backendRoot, 'config', 'db', 'changelog', 'db.changelog-master.yaml');
+const proxyRoot = join(stackRoot, 'back', 'proxy', 'sitmun-proxy-middleware');
 const isWindows = process.platform === 'win32';
-const gradlew = join(backendRoot, isWindows ? 'gradlew.bat' : 'gradlew');
+const gradlew = join(proxyRoot, isWindows ? 'gradlew.bat' : 'gradlew');
 
 function fail(message) {
-  console.error(`[e2e-backend] ${message}`);
+  console.error(`[e2e-proxy] ${message}`);
   process.exit(1);
 }
 
-if (!existsSync(backendRoot)) {
-  fail(`Backend submodule missing at ${backendRoot}. Run: git submodule update --init --recursive`);
+if (!existsSync(proxyRoot)) {
+  fail(`Proxy submodule missing at ${proxyRoot}. Run: git submodule update --init --recursive`);
 }
 if (!existsSync(gradlew)) {
   fail(`Gradle wrapper missing at ${gradlew}`);
-}
-if (!existsSync(changelog)) {
-  fail(`Liquibase changelog missing at ${changelog}`);
 }
 
 try {
@@ -32,28 +28,15 @@ try {
   fail('Java is not available on PATH. Install Java 17 (or a JDK that Gradle can use for the Java 17 toolchain).');
 }
 
-const springArgs = [
-  '--spring.profiles.active=dev',
-  '--server.port=18080',
-  '--spring.datasource.url=jdbc:h2:mem:sitmun-e2e;DB_CLOSE_DELAY=-1',
-  '--spring.datasource.driver-class-name=org.h2.Driver',
-  '--spring.datasource.username=sa',
-  '--spring.datasource.password=',
-  '--server.forward-headers-strategy=framework',
-  '--sitmun.proxy-middleware.url=http://localhost:4400/middleware',
-].join(' ');
+console.error('[e2e-proxy] Starting proxy middleware on port 18082...');
 
-const gradleArgs = ['bootRun', '--no-daemon', `--args=${springArgs}`];
-
-const env = {
-  ...process.env,
-  SITMUN_USER_SECRET: 'test-only-insecure-user-secret-32-bytes',
-  SITMUN_PROXY_MIDDLEWARE_SECRET: 'test-only-insecure-middleware-secret',
-};
-
-const child = spawn(gradlew, gradleArgs, {
-  cwd: backendRoot,
-  env,
+const child = spawn(gradlew, ['bootRun', '--no-daemon', '--args=--server.port=18082'], {
+  cwd: proxyRoot,
+  env: {
+    ...process.env,
+    SITMUN_BACKEND_CONFIG_URL: 'http://localhost:18080/api/config/proxy',
+    SITMUN_BACKEND_CONFIG_SECRET: 'test-only-insecure-middleware-secret',
+  },
   stdio: 'inherit',
   shell: isWindows,
   detached: !isWindows,
@@ -89,10 +72,10 @@ function shutdown(signal) {
     return;
   }
   shuttingDown = true;
-  console.error(`[e2e-backend] Shutting down (${signal})...`);
+  console.error(`[e2e-proxy] Shutting down (${signal})...`);
   killTree(false);
   const timer = setTimeout(() => {
-    console.error('[e2e-backend] Force-killing backend process tree...');
+    console.error('[e2e-proxy] Force-killing proxy process tree...');
     killTree(true);
   }, 10_000);
   child.once('exit', () => {
@@ -113,10 +96,10 @@ child.on('exit', (code, signal) => {
     process.exit(0);
   }
   if (signal) {
-    fail(`Backend process terminated by signal ${signal}`);
+    fail(`Proxy process terminated by signal ${signal}`);
   }
   if (code !== 0) {
-    fail(`Backend exited with code ${code}`);
+    fail(`Proxy exited with code ${code}`);
   }
   process.exit(0);
 });

@@ -6,7 +6,12 @@
     "e2e:ui": "playwright test --ui",
     "e2e:install": "playwright install chromium",
     "e2e:backend": "node scripts/e2e-backend.mjs",
-    "e2e:admin": "node scripts/e2e-admin.mjs"
+    "e2e:admin": "node scripts/e2e-admin.mjs",
+    "e2e:viewer": "playwright test --config=playwright.viewer.config.ts",
+    "e2e:viewer:ui": "playwright test --config=playwright.viewer.config.ts --ui",
+    "e2e:viewer:app": "node scripts/e2e-viewer.mjs",
+    "e2e:proxy": "node scripts/e2e-proxy.mjs",
+    "e2e:wms-stub": "node scripts/e2e-wms-stub.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

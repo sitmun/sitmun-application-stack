@@ -529,16 +529,19 @@ Admin App ───┘
 
 ### End-to-end tests
 
-Root Playwright tests exercise the admin app against backend-core on in-memory H2 (no Docker Compose). Details: [e2e/README.md](e2e/README.md).
+Root Playwright tests exercise the admin and viewer apps against backend-core on in-memory H2 (no Docker Compose). Viewer suite also starts proxy middleware and a local secured WMS stub. Details: [e2e/README.md](e2e/README.md).
 
 ```bash
-# prerequisites: Java 17, Node ≥ 20.19, submodules initialized, admin npm ci
+# prerequisites: Java 17, Node ≥ 20.19, submodules initialized
+# admin: cd front/admin/sitmun-admin-app && npm ci
+# viewer: cd front/viewer/sitmun-viewer-app && npm ci
 npm ci
 npm run e2e:install
 npm run e2e
+npm run e2e:viewer
 ```
 
-Owned ports: admin `4300`, backend `18080`.
+Owned ports: admin `4300`, viewer `4400`, backend `18080`, proxy `18082`, WMS stub `18093`.
 
 ### Project Structure
 
