@@ -57,4 +57,5 @@
   <include file="changelog/50_driver_translation_data.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/51_add_locator_control.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/52_add_tree_node_default.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/53_application_responsible_institution.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

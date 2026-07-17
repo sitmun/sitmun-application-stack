@@ -75,7 +75,7 @@ export async function saveAndCaptureId(
 
 export async function saveUpdate(
   page: Page,
-  collection: 'roles' | 'users' | 'territories',
+  collection: 'roles' | 'users' | 'territories' | 'applications',
   id: number,
 ): Promise<void> {
   const responsePromise = page.waitForResponse((response) => {

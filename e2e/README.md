@@ -14,8 +14,14 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 ### Viewer (`npm run e2e:viewer`)
 
 - Public access: dashboard configuration plus `403` for private profile `1/1` and its secured WMS
+- Public access: eligible vs blocked point-of-contact email on applications 2 and 3 (institution always shown when set)
 - Password access: dedicated regular user login, private profile, proxy token persistence, and secured WMS through proxy
 - Local Basic-auth upstream stub; production Liquibase is not modified
+
+### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
+
+- Shared one-backend suite: admin sets `responsibleInstitutionName` on application 2, reload persists, viewer public dashboard shows the value in application details
+- Starts admin (4300), viewer (4400), and a single backend (18080)
 
 ## Prerequisites
 
@@ -38,7 +44,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 | Secured WMS stub | 18093 |
 
 Do not reuse development servers. The suite fails if these ports are already occupied.
-Do not run admin and viewer suites in parallel on one host; both own backend port 18080.
+Do not run admin, viewer, and application-contact suites in parallel on one host; they share ports 18080, 4300, and/or 4400.
 
 ## Commands
 
@@ -57,6 +63,9 @@ npm run e2e:viewer
 npm run e2e:viewer:ui
 npm run e2e:viewer -- --project=viewer-public
 npm run e2e:viewer -- --project=viewer-password
+
+# admin → viewer responsible institution (shared backend)
+npx playwright test --config=playwright.application-contact.config.ts
 ```
 
 ## TDD workflow
@@ -78,7 +87,8 @@ harness or document the gap when the behavior is outside current coverage.
 - Fresh in-memory H2 database per suite run
 - Liquibase seeds `admin` / `admin`
 - Admin form tests create unique entities and delete them via authenticated API cleanup
-- Viewer setup provisions a dedicated regular user and rewrites seeded WMS service 3 to the local stub through the admin API; H2 is discarded when backend exits
+- Viewer setup provisions a dedicated regular user (password suite) plus disposable PoC users for applications 2/3; rewrites seeded WMS service 3 to the local stub through the admin API; H2 is discarded when backend exits
+- Application-contact suite uses one shared backend for admin write and viewer read of the same application row
 - Auth/fixture files live under `e2e/.auth/` (gitignored)
 
 ## Credential boundaries (viewer)
@@ -104,5 +114,5 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task relation grids
+- Admin suite does not cover Application / Layer / Task relation grids (except the dedicated application-contact cross-stack flow)
 - Viewer suite covers configuration + proxy GetCapabilities, not full SITNA tile painting

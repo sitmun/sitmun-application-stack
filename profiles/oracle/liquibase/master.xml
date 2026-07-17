@@ -10,4 +10,5 @@
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/08_application_responsible_institution.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

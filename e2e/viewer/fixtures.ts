@@ -7,6 +7,16 @@ export const TERRITORY_ID = 1;
 export const ROLE_ID = 1;
 export const SERVICE_ID = 3;
 
+/** Public applications used for responsible-institution / PoC email assertions. */
+export const CONTACT_APP_ID = 2;
+export const BLOCKED_CONTACT_APP_ID = 3;
+export const CONTACT_APP_TITLE = 'SITMUN - Municipal';
+export const BLOCKED_CONTACT_APP_TITLE = 'SITMUN - Supramunicipal';
+export const CONTACT_INSTITUTION = 'E2E Eligible Institution';
+export const BLOCKED_CONTACT_INSTITUTION = 'E2E Blocked Institution';
+export const CONTACT_EMAIL = 'e2e-eligible-poc@example.com';
+export const BLOCKED_CONTACT_EMAIL = 'e2e-blocked-poc@example.com';
+
 export const PROXY_PATH = `/middleware/proxy/${APP_ID}/${TERRITORY_ID}/WMS/${SERVICE_ID}`;
 export const CAPABILITIES_URL = `${PROXY_PATH}?SERVICE=WMS&REQUEST=GetCapabilities`;
 
@@ -23,6 +33,8 @@ export type ViewerFixture = {
   username: string;
   password: string;
   userId: number;
+  eligiblePocUserId: number;
+  blockedPocUserId: number;
 };
 
 export type CapabilitiesResult = {
@@ -191,7 +203,13 @@ export async function fetchCapabilities(page: Page): Promise<CapabilitiesResult>
 export async function readViewerCredentials(): Promise<ViewerFixture> {
   const raw = await readFile(VIEWER_FIXTURE_FILE, 'utf8');
   const fixture = JSON.parse(raw) as ViewerFixture;
-  if (!fixture.username || !fixture.password || !fixture.userId) {
+  if (
+    !fixture.username ||
+    !fixture.password ||
+    !fixture.userId ||
+    !fixture.eligiblePocUserId ||
+    !fixture.blockedPocUserId
+  ) {
     throw new Error('viewer fixture is incomplete');
   }
   return fixture;

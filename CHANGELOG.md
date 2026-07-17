@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
 - **i18n**: request-scoped translation preload resolves `@I18n` fields for the request language.
 - **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
+- **Startup**: soft built-in `admin`/`public` repair keeps the process alive and reports unrepaired admin bootstrap through `/api/dashboard/health`; optional `SITMUN_BOOTSTRAP_ADMIN_PASSWORD` creates/restores admin password only when explicitly injected.
+- **Startup**: public `/api/dashboard/startup` exposes only stable built-in-user state/reason; development property logging redacts secret-bearing keys.
+
+#### Profile-level
+
+- **Applications**: development, PostgreSQL, and Oracle Liquibase profiles add `APP_RESPONSIBLE_INSTITUTION`; development seeds a sample institution on application 12 ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)). Built-in position cleanup is owned by backend startup repair, not profile Liquibase.
+- **E2E**: cross-stack Playwright suite (`playwright.application-contact.config.ts`) covers admin → viewer responsible institution persistence on a shared H2 backend.
 
 ### Changed
 

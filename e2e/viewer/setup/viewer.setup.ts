@@ -1,8 +1,14 @@
-import { test as setup, expect } from '@playwright/test';
+import { test as setup, expect, type APIRequestContext } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   APP_ID,
+  BLOCKED_CONTACT_APP_ID,
+  BLOCKED_CONTACT_EMAIL,
+  BLOCKED_CONTACT_INSTITUTION,
+  CONTACT_APP_ID,
+  CONTACT_EMAIL,
+  CONTACT_INSTITUTION,
   generateViewerPassword,
   ROLE_ID,
   SERVICE_ID,
@@ -19,34 +25,20 @@ const adminHeaders = {
   'Content-Type': 'application/json',
 };
 
-setup('provision viewer user and secured WMS service', async ({ request }) => {
-  await mkdir(path.dirname(VIEWER_FIXTURE_FILE), { recursive: true });
-
-  const login = await request.post('/backend/api/authenticate/admin', {
-    data: {
-      username: 'admin',
-      password: 'admin',
-    },
-  });
-  expect(login.ok(), `admin login failed: ${login.status()}`).toBeTruthy();
-
-  const account = await request.get('/backend/api/account', {
-    headers: { 'X-SITMUN-Client': 'admin' },
-  });
-  expect(account.ok(), `admin account check failed: ${account.status()}`).toBeTruthy();
-
-  const username = uniqueViewerUsername();
-  const password = generateViewerPassword();
-
+async function createUser(
+  request: APIRequestContext,
+  options: { username: string; password: string; email: string; firstName: string },
+): Promise<{ userId: number; userSelf: string; apiOrigin: string }> {
   const createUser = await request.post('/backend/api/users', {
     headers: adminHeaders,
     data: {
-      username,
-      password,
+      username: options.username,
+      password: options.password,
       administrator: false,
       blocked: false,
-      firstName: 'E2E',
+      firstName: options.firstName,
       lastName: 'Viewer',
+      email: options.email,
     },
   });
   expect(createUser.status(), `create user failed: ${createUser.status()}`).toBe(201);
@@ -68,6 +60,37 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     createUser.headers()['location'] ??
     `http://localhost/api/users/${userId}`;
   const apiOrigin = new URL(userSelf).origin;
+
+  return { userId: userId as number, userSelf, apiOrigin };
+}
+
+setup('provision viewer user and secured WMS service', async ({ request }) => {
+  await mkdir(path.dirname(VIEWER_FIXTURE_FILE), { recursive: true });
+
+  const login = await request.post('/backend/api/authenticate/admin', {
+    data: {
+      username: 'admin',
+      password: 'admin',
+    },
+  });
+  expect(login.ok(), `admin login failed: ${login.status()}`).toBeTruthy();
+
+  const account = await request.get('/backend/api/account', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(account.ok(), `admin account check failed: ${account.status()}`).toBeTruthy();
+
+  const username = uniqueViewerUsername();
+  const password = generateViewerPassword();
+
+  const loginUser = await createUser(request, {
+    username,
+    password,
+    email: 'e2e-viewer-login@example.com',
+    firstName: 'E2E',
+  });
+  const userId = loginUser.userId;
+  const apiOrigin = loginUser.apiOrigin;
 
   const createConfig = await request.post('/backend/api/user-configurations', {
     headers: adminHeaders,
@@ -96,6 +119,66 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   expect(
     makeApplicationPrivate.ok(),
     `make application private failed: ${makeApplicationPrivate.status()}`,
+  ).toBeTruthy();
+
+  const eligiblePoc = await createUser(request, {
+    username: uniqueViewerUsername(),
+    password: generateViewerPassword(),
+    email: CONTACT_EMAIL,
+    firstName: 'EligiblePoc',
+  });
+  const blockedPoc = await createUser(request, {
+    username: uniqueViewerUsername(),
+    password: generateViewerPassword(),
+    email: BLOCKED_CONTACT_EMAIL,
+    firstName: 'BlockedPoc',
+  });
+
+  for (const [appId, institution, pocUserId] of [
+    [CONTACT_APP_ID, CONTACT_INSTITUTION, eligiblePoc.userId],
+    [BLOCKED_CONTACT_APP_ID, BLOCKED_CONTACT_INSTITUTION, blockedPoc.userId],
+  ] as const) {
+    const patchApp = await request.patch(`/backend/api/applications/${appId}`, {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      data: {
+        appPrivate: false,
+        responsibleInstitutionName: institution,
+      },
+    });
+    expect(
+      patchApp.ok(),
+      `patch application ${appId} failed: ${patchApp.status()} ${await patchApp.text()}`,
+    ).toBeTruthy();
+
+    const assignCreator = await request.put(
+      `/backend/api/applications/${appId}/creator`,
+      {
+        headers: {
+          'X-SITMUN-Client': 'admin',
+          'Content-Type': 'text/uri-list',
+        },
+        data: `${apiOrigin}/api/users/${pocUserId}`,
+      },
+    );
+    expect(
+      assignCreator.ok(),
+      `assign creator for application ${appId} failed: ${assignCreator.status()} ${await assignCreator.text()}`,
+    ).toBeTruthy();
+  }
+
+  const blockUser = await request.patch(`/backend/api/users/${blockedPoc.userId}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { blocked: true },
+  });
+  expect(
+    blockUser.ok(),
+    `block PoC user failed: ${blockUser.status()} ${await blockUser.text()}`,
   ).toBeTruthy();
 
   const serviceResponse = await request.get(`/backend/api/services/${SERVICE_ID}`, {
@@ -128,7 +211,17 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
 
   await writeFile(
     VIEWER_FIXTURE_FILE,
-    JSON.stringify({ username, password, userId }, null, 2),
+    JSON.stringify(
+      {
+        username,
+        password,
+        userId,
+        eligiblePocUserId: eligiblePoc.userId,
+        blockedPocUserId: blockedPoc.userId,
+      },
+      null,
+      2,
+    ),
     'utf8',
   );
 });
