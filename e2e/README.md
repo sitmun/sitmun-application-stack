@@ -23,6 +23,30 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Shared one-backend suite: admin sets `responsibleInstitutionName` on application 2, reload persists, viewer public dashboard shows the value in application details
 - Starts admin (4300), viewer (4400), and a single backend (18080)
 
+### Mobile web (`npm run e2e:mobile:web`)
+
+- Disposable setup patches application `1` to type `ED`, rewrites WMTS service `1` to the local stub, and creates a regular edition user
+- Edition: `POST /api/authenticate/mobile` returns JSON `access_token` (no cookie); viewer/admin cookie logins remain empty-body
+- Edition: Bearer `access_token` exchanges for distinct `proxy_token`; client apps list only `ED` and never includes `config.mbtilesUrl`
+- Edition: mobile token cannot call account/admin APIs
+- Touristic: anonymous client application list includes type `T`; private profile denied
+- Proxy/MBTiles: missing bearer and `access_token`-as-proxy denied; authorized `proxy_token` estimate/create through `/middleware/proxy/{app}/{ter}/mbtiles...`; opaque `jobHandle`; direct gateway `/mbtiles` is `404`
+- Starts backend (18080), proxy (18082), MBTiles (18084), WMTS stub (18094), and gateway (18081)
+- Ionic web shells on :4500/:4501 are not required; mobile web coverage is API-only through the gateway
+
+### Mobile Android (`npm run e2e:mobile:android`)
+
+- Builds debug APKs from temporary copies of pinned `apps/*` sources (does not commit Android projects); runs `cap add android` when the native project is absent
+- Requires `adb`, `ANDROID_HOME`/`ANDROID_SDK_ROOT`, Maestro CLI, and a connected API 34 emulator/device
+- Uses `adb reverse tcp:18081` and Maestro flows under `e2e/mobile/android/`
+- Records source SHA and APK SHA-256 under `test-results/mobile-android/`
+- Split coverage (Phase 8):
+  - **Maestro UI**: edition invalid login (`#login-error` via `androidWebViewHierarchy: devtools`), edition valid login/profile, touristic public profile (auto-enter after tree provisioning)
+  - **Gateway/API contracts** (before APK builds): missing bearer, wrong territory, `access_token` rejected as proxy, estimate/create/status/file with opaque `jobHandle`, direct `/mbtiles` is `404`
+- Orchestrator runs `adb shell am kill-all` before Maestro to avoid stale WebView DevTools sockets on Maestro 2.6.1
+- Separate `e2e-mobile-touristic.mjs` / `e2e-mobile-edition.mjs` shell scripts are not used; Ionic web shells are covered by API-only `e2e:mobile:web`
+- CI installs Maestro `2.6.1` with SHA-256 verification of `maestro.zip`
+
 ## Prerequisites
 
 - Java 17
@@ -40,11 +64,14 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 | Admin (`ng serve` E2E) | 4300 |
 | Viewer (`ng serve` E2E) | 4400 |
 | Backend (`bootRun` H2) | 18080 |
+| Mobile gateway (`/backend`, `/middleware`) | 18081 |
 | Proxy middleware | 18082 |
 | Secured WMS stub | 18093 |
+| WMTS stub (mobile) | 18094 |
+| MBTiles (internal; not on gateway) | 18084 |
 
 Do not reuse development servers. The suite fails if these ports are already occupied.
-Do not run admin, viewer, and application-contact suites in parallel on one host; they share ports 18080, 4300, and/or 4400.
+Do not run admin, viewer, application-contact, and mobile suites in parallel on one host; they share port 18080 and/or 18082.
 
 ## Commands
 
@@ -66,7 +93,23 @@ npm run e2e:viewer -- --project=viewer-password
 
 # admin → viewer responsible institution (shared backend)
 npx playwright test --config=playwright.application-contact.config.ts
+
+# mobile edition auth + MBTiles via middleware
+npm run e2e:mobile:web
+# optional: Android emulator + Maestro
+# npm run e2e:mobile:android
 ```
+
+## Credential boundaries (mobile edition)
+
+| Credential | Used for |
+| ---------- | -------- |
+| `access_token` (JSON Bearer) | Backend `/api/authenticate/mobile` session; ED client reads; `POST /api/authenticate/proxy` |
+| `proxy_token` (JSON Bearer) | Middleware `/middleware/**` only (map proxy + MBTiles) |
+| `X-SITMUN-Proxy-Key` | Proxy → backend `/api/config/proxy` and `/api/config/proxy/mbtiles` |
+| Opaque `jobHandle` | MBTiles status/file; bound to principal/app/territory |
+
+Browser `/api/authenticate` and `/api/authenticate/admin` remain cookie-only empty-body logins. Pre-change edition APKs that called `/api/authenticate` for JWT JSON are unsupported.
 
 ## TDD workflow
 
@@ -116,3 +159,6 @@ npx playwright show-report
 - No OIDC login
 - Admin suite does not cover Application / Layer / Task relation grids (except the dedicated application-contact cross-stack flow)
 - Viewer suite covers configuration + proxy GetCapabilities, not full SITNA tile painting
+- Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
+- Mobile Android suite does not harden release manifests (app Android source is unchanged)
+- MBTiles protected-source credentials, job-handle key rotation multi-key support, rate/size/time limits, and iOS are absent from this harness

@@ -6,12 +6,20 @@
     "e2e:ui": "playwright test --ui",
     "e2e:install": "playwright install chromium",
     "e2e:backend": "node scripts/e2e-backend.mjs",
+    "e2e:backend:mobile": "node scripts/e2e-backend-mobile.mjs",
     "e2e:admin": "node scripts/e2e-admin.mjs",
     "e2e:viewer": "playwright test --config=playwright.viewer.config.ts",
     "e2e:viewer:ui": "playwright test --config=playwright.viewer.config.ts --ui",
     "e2e:viewer:app": "node scripts/e2e-viewer.mjs",
     "e2e:proxy": "node scripts/e2e-proxy.mjs",
-    "e2e:wms-stub": "node scripts/e2e-wms-stub.mjs"
+    "e2e:proxy:mobile": "node scripts/e2e-proxy-mobile.mjs",
+    "e2e:wms-stub": "node scripts/e2e-wms-stub.mjs",
+    "e2e:wmts-stub": "node scripts/e2e-wmts-stub.mjs",
+    "e2e:mbtiles": "node scripts/e2e-mbtiles.mjs",
+    "e2e:mobile:gateway": "node scripts/e2e-mobile-gateway.mjs",
+    "e2e:mobile:web": "playwright test --config=playwright.mobile.config.ts",
+    "e2e:mobile:android": "node scripts/e2e-mobile-android.mjs",
+    "e2e:mobile": "npm run e2e:mobile:web"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

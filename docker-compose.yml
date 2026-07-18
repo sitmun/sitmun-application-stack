@@ -134,9 +134,12 @@ services:
       - "9002:8080"
     depends_on:
       - backend
+      - mbtiles
     environment:
       - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
       - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-dev-only-insecure-middleware-secret}
+      - SITMUN_MBTILES_URL=http://mbtiles:8080/mbtiles
+      - SITMUN_MBTILES_JOB_HANDLE_SECRET=${SITMUN_MBTILES_JOB_HANDLE_SECRET:-dev-only-insecure-mbtiles-job-handle-secret}
       - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
       - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-DEBUG}
     healthcheck:
@@ -145,6 +148,32 @@ services:
       timeout: 30s
       start_period: 5s
       retries: 3
+
+  # Internally unauthenticated. Reachable only on the Compose network via middleware.
+  # Do not publish a host port; nginx must not route /mbtiles/**.
+  mbtiles:
+    build: ./back/mbtiles
+    restart: always
+    expose:
+      - "8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${MBTILES_SPRING_PROFILES_ACTIVE:-prod}
+      - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
+      - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-INFO}
+    volumes:
+      - mbtiles_tmp:/tmp/mbtiles
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 40s
+      retries: 5
 
   postgres:
     profiles:
@@ -212,3 +241,4 @@ volumes:
   pgdata:
   oradata:
   example_data:
+  mbtiles_tmp:

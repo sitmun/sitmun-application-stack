@@ -529,7 +529,7 @@ Admin App ───┘
 
 ### End-to-end tests
 
-Root Playwright tests exercise the admin and viewer apps against backend-core on in-memory H2 (no Docker Compose). Viewer suite also starts proxy middleware and a local secured WMS stub. Details: [e2e/README.md](e2e/README.md).
+Root Playwright tests exercise the admin and viewer apps against backend-core on in-memory H2 (no Docker Compose). Viewer suite also starts proxy middleware and a local secured WMS stub. Mobile web suite covers edition Bearer login, proxy-token exchange, and authenticated MBTiles through middleware (no public `/mbtiles`). Details: [e2e/README.md](e2e/README.md).
 
 ```bash
 # prerequisites: Java 17, Node ≥ 20.19, submodules initialized
@@ -539,9 +539,12 @@ npm ci
 npm run e2e:install
 npm run e2e
 npm run e2e:viewer
+npm run e2e:mobile:web
+# optional Android emulator + Maestro (requires ANDROID_HOME, adb, Maestro)
+# npm run e2e:mobile:android
 ```
 
-Owned ports: admin `4300`, viewer `4400`, backend `18080`, proxy `18082`, WMS stub `18093`.
+Owned ports: admin `4300`, viewer `4400`, backend `18080`, proxy `18082`, WMS stub `18093`. Mobile adds gateway `18081`, MBTiles `18084`, WMTS stub `18094`.
 
 ### Project Structure
 
@@ -551,8 +554,11 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
 | ------------------------------------ | -------------------------------------------------------------------------------- | -------------- | ---------------------- |
 | `front/admin/sitmun-admin-app`       | [SITMUN Admin App](https://github.com/sitmun/sitmun-admin-app.git)               | `front`        | Angular 19, TypeScript |
 | `front/viewer/sitmun-viewer-app`     | [SITMUN Viewer App](https://github.com/sitmun/sitmun-viewer-app.git)             | `front`        | Angular 19, TypeScript |
+| `apps/touristic-mobile-app`         | [SITMUN Touristic Mobile App](https://github.com/sitmun/touristic-mobile-app.git) | —              | Ionic/Angular, Capacitor |
+| `apps/edition-mobile-app`            | [SITMUN Edition Mobile App](https://github.com/sitmun/edition-mobile-app.git)   | —              | Ionic/Angular, Capacitor |
 | `back/backend/sitmun-backend-core`   | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git)         | `backend`      | Spring Boot 3, Java 17 |
 | `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy`        | Spring Boot 3, Java 17 |
+| `back/mbtiles/sitmun-mbtiles`        | [SITMUN MBTiles](https://github.com/sitmun/sitmun-mbtiles.git)                   | `mbtiles` (internal) | Spring Boot 3, Java 17 |
 
 ### Profile-Based Development Environments
 

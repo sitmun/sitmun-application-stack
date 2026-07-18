@@ -8,6 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+#### Stack-level
+
+- **Mobile apps**: stack submodules for `apps/touristic-mobile-app`, `apps/edition-mobile-app`, and internal `back/mbtiles/sitmun-mbtiles`.
+- **E2E**: `npm run e2e:mobile:web` Playwright suite for edition mobile Bearer login, proxy-token exchange, touristic public config, and authenticated MBTiles through middleware (gateway blocks direct `/mbtiles`).
+- **E2E**: `npm run e2e:mobile:android` Maestro orchestrator (temporary APK builds; requires emulator + Maestro). Covers edition invalid/valid login, touristic public profile, and gateway proxy/MBTiles denial/success contracts before APK builds.
+- **Docker**: internal `mbtiles` Compose service (no host port); proxy uses `SITMUN_MBTILES_URL=http://mbtiles:8080/mbtiles`; nginx returns `404` for public `/mbtiles`.
+- **CI**: `e2e-mobile-web` and `e2e-mobile-android` jobs in `.github/workflows/e2e.yml` (Android job pins Maestro CLI `2.6.1` with SHA-256 verification).
+
+#### Backend Core
+
+- **Auth**: `POST /api/authenticate/mobile` returns JSON Bearer `access_token` for edition users with accessible `ED` applications (no cookies); restricted `ROLE_MOBILE_EDITION` client reads plus proxy-token exchange.
+- **Proxy**: mobile-derived `proxy_token` issuance via existing `POST /api/authenticate/proxy`; `POST /api/config/proxy/mbtiles` authorizes and canonicalizes tile requests from service/layer IDs.
+- **Client config**: application list responses no longer inject `config.mbtilesUrl`.
+
+#### Proxy Middleware
+
+- **MBTiles**: authenticated `/proxy/{appId}/{terId}/mbtiles...` routes with opaque owner-bound `jobHandle` and backend canonicalization; `SITMUN_MBTILES_URL` owned by middleware only.
+
+#### Edition Mobile App
+
+- **Auth**: login uses `/api/authenticate/mobile` (`access_token`) and exchanges for `proxy_token`; Bearer headers only; MBTiles estimate/create/status/file go through middleware with service/layer IDs.
+
 #### Admin Application
 
 - **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.

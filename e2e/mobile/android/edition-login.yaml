@@ -1,0 +1,38 @@
+appId: edition.mobile.app
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "instance-settings"
+    timeout: 30000
+- tapOn:
+    id: "instance-settings"
+- extendedWaitUntil:
+    visible:
+      id: "instance-url"
+    timeout: 10000
+- tapOn:
+    id: "instance-url"
+- eraseText
+- inputText: ${GATEWAY_BACKEND_URL}
+- tapOn:
+    id: "instance-register"
+- extendedWaitUntil:
+    visible:
+      id: "login-user"
+    timeout: 10000
+- tapOn:
+    id: "login-user"
+- inputText: ${EDITION_USERNAME}
+- tapOn:
+    id: "login-password"
+- inputText: ${EDITION_PASSWORD}
+- tapOn:
+    id: "login-access"
+- extendedWaitUntil:
+    visible:
+      id: "applist-title"
+    timeout: 60000
+- assertVisible:
+    id: "applist-title"

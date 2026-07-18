@@ -1,0 +1,43 @@
+appId: edition.mobile.app
+androidWebViewHierarchy: devtools
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "instance-settings"
+    timeout: 30000
+- tapOn:
+    id: "instance-settings"
+- extendedWaitUntil:
+    visible:
+      id: "instance-url"
+    timeout: 10000
+- tapOn:
+    id: "instance-url"
+- eraseText
+- inputText: ${GATEWAY_BACKEND_URL}
+- tapOn:
+    id: "instance-register"
+- extendedWaitUntil:
+    visible:
+      id: "login-user"
+    timeout: 10000
+- tapOn:
+    id: "login-user"
+- inputText: ${EDITION_USERNAME}
+- tapOn:
+    id: "login-password"
+- inputText: wrong-password
+- hideKeyboard
+- tapOn:
+    id: "login-access"
+- extendedWaitUntil:
+    visible:
+      id: "login-error"
+    timeout: 30000
+- assertVisible:
+    id: "login-error"
+- assertVisible: ".*incorrectes.*|.*incorrectos.*|.*Incorrect username.*|.*mot de passe incorrect.*"
+- assertNotVisible:
+    id: "applist-title"
