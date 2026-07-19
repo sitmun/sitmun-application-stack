@@ -48,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Applications**: development, PostgreSQL, and Oracle Liquibase profiles add `APP_RESPONSIBLE_INSTITUTION`; development seeds a sample institution on application 12 ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)). Built-in position cleanup is owned by backend startup repair, not profile Liquibase.
 - **E2E**: cross-stack Playwright suite (`playwright.application-contact.config.ts`) covers admin → viewer responsible institution persistence on a shared H2 backend.
+- **E2E**: `viewer-catalog` Playwright project asserts layer-catalog radio/`loadData` DOM behavior for seed tree folders ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45)).
 
 ### Changed
 

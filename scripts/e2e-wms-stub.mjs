@@ -28,6 +28,30 @@ const CAPABILITIES_XML = `<?xml version="1.0" encoding="UTF-8"?>
         <Name>DTE50_PROV</Name>
         <Title>Province</Title>
       </Layer>
+      <Layer queryable="1">
+        <Name>34_TOPO_TX</Name>
+        <Title>Toponymy</Title>
+      </Layer>
+      <Layer queryable="1">
+        <Name>03_ALTI_LN</Name>
+        <Title>Altimetry 03</Title>
+      </Layer>
+      <Layer queryable="1">
+        <Name>04_ALTI_LN</Name>
+        <Title>Altimetry 04</Title>
+      </Layer>
+      <Layer queryable="1">
+        <Name>29_ALTI_PNTX</Name>
+        <Title>Altimetry 29</Title>
+      </Layer>
+      <Layer queryable="1">
+        <Name>30_ALTI_TX</Name>
+        <Title>Altimetry 30</Title>
+      </Layer>
+      <Layer queryable="1">
+        <Name>02_ALTI_PA</Name>
+        <Title>Topo 1:25k sample</Title>
+      </Layer>
     </Layer>
   </Capability>
 </WMS_Capabilities>

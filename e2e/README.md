@@ -16,6 +16,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Public access: dashboard configuration plus `403` for private profile `1/1` and its secured WMS
 - Public access: eligible vs blocked point-of-contact email on applications 2 and 3 (institution always shown when set)
 - Password access: dedicated regular user login, private profile, proxy token persistence, and secured WMS through proxy
+- Layer catalog (`viewer-catalog`): radio folder children render native radios; `loadData` folders get a visible load control (checkbox, or radio when the folder is radio; title expand-only); non-radio cartography leaves get `sitmun-lcat-leaf-load` checkboxes (toggle work layer); child radios still work when `loadData` is off; queryable leaves show `.sitmun-lcat-gfi` after select when setup enables `queryableActive` + layer `queryableFeatureEnabled` (meta stamp asserted when SITNA renders info); row geometry asserts fixed 18px select/GFI controls when present (no empty spacers), level-stamped inset (`data-sitmun-lcat-level` 0/1/2…), nest step = type-icon width (16px, parent pad cancelled on nested `ul`), vertical centers, and meta ≥18×18 hit box; visible Capas disponibles rows stamp alternating `data-sitmun-lcat-zebra`; folder titles stay roman under `tc-checked`. Capas trash-then-clear after partial remove is asserted in viewer Jest (`layer-catalog-control.handler`), not yet in Playwright (WMS stub leaf-load gap).
 - Local Basic-auth upstream stub; production Liquibase is not modified
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
@@ -90,6 +91,7 @@ npm run e2e:viewer
 npm run e2e:viewer:ui
 npm run e2e:viewer -- --project=viewer-public
 npm run e2e:viewer -- --project=viewer-password
+npm run e2e:viewer -- --project=viewer-catalog
 
 # admin → viewer responsible institution (shared backend)
 npx playwright test --config=playwright.application-contact.config.ts
@@ -130,7 +132,7 @@ harness or document the gap when the behavior is outside current coverage.
 - Fresh in-memory H2 database per suite run
 - Liquibase seeds `admin` / `admin`
 - Admin form tests create unique entities and delete them via authenticated API cleanup
-- Viewer setup provisions a dedicated regular user (password suite) plus disposable PoC users for applications 2/3; rewrites seeded WMS service 3 to the local stub through the admin API; H2 is discarded when backend exits
+- Viewer setup provisions a dedicated regular user (password suite) plus disposable PoC users for applications 2/3; rewrites seeded WMS service 3 to the local stub through the admin API; adds task-availability for `sitna.layerCatalog` / `workLayerManager` and patches tree-node `loadData`/`active` fixtures for catalog E2E; H2 is discarded when backend exits
 - Application-contact suite uses one shared backend for admin write and viewer read of the same application row
 - Auth/fixture files live under `e2e/.auth/` (gitignored)
 
@@ -158,7 +160,7 @@ npx playwright show-report
 - H2 only (not Postgres/Oracle)
 - No OIDC login
 - Admin suite does not cover Application / Layer / Task relation grids (except the dedicated application-contact cross-stack flow)
-- Viewer suite covers configuration + proxy GetCapabilities, not full SITNA tile painting
+- Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)
 - MBTiles protected-source credentials, job-handle key rotation multi-key support, rate/size/time limits, and iOS are absent from this harness

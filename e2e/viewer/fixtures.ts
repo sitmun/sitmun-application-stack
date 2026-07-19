@@ -6,6 +6,35 @@ export const APP_ID = 1;
 export const TERRITORY_ID = 1;
 export const ROLE_ID = 1;
 export const SERVICE_ID = 3;
+/** WMS services backing Topográficos leaves used by catalog E2E. */
+export const CATALOG_LEAF_SERVICE_IDS = [4, 5] as const;
+
+/** Seed UI tasks required for Capas / layer catalog (missing from STM_AVAIL_TSK). */
+export const LAYER_CATALOG_TASK_ID = 11;
+export const WORK_LAYER_MANAGER_TASK_ID = 31;
+
+/**
+ * Catalog E2E uses the visible Topográficos branch (Ortofotos is filtered out of the
+ * seed catalog in H2). node/2 = radio+loadData; node/5 = checkbox loadData only.
+ */
+export const RADIO_FOLDER_NODE_ID = 'node/2';
+export const RADIO_FOLDER_TITLE = 'Topográfico 1:50.000';
+export const RADIO_FIRST_CHILD_NODE_ID = 'node/3';
+export const RADIO_SECOND_CHILD_NODE_ID = 'node/4';
+export const CHECKBOX_LOAD_FOLDER_NODE_ID = 'node/5';
+export const CHECKBOX_LOAD_FOLDER_TITLE = 'Topográfico 1:25.000';
+/** Non-radio cartography leaf under checkbox-load folder (seed GEO_ID 5). */
+export const NON_RADIO_LEAF_NODE_ID = 'node/6';
+export const NON_RADIO_LEAF_TITLE = '1:25.000 ICGC';
+export const NON_RADIO_ROOT_FOLDER_NODE_ID = 'node/1';
+export const NON_RADIO_ROOT_FOLDER_TITLE = 'Topográficos';
+export const RADIO_FOLDER_TREE_NODE_DB_ID = 2;
+export const CHECKBOX_LOAD_FOLDER_TREE_NODE_DB_ID = 5;
+/** Toponímia leaf under radio folder; seed cartography GEO_ID 6. */
+export const QUERYABLE_LEAF_NODE_ID = 'node/3';
+export const QUERYABLE_LEAF_TREE_NODE_DB_ID = 3;
+export const QUERYABLE_LEAF_CARTOGRAPHY_ID = 6;
+export const QUERYABLE_LEAF_TITLE = 'Toponímia';
 
 /** Public applications used for responsible-institution / PoC email assertions. */
 export const CONTACT_APP_ID = 2;

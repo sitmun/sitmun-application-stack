@@ -67,5 +67,11 @@ export default defineConfig({
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'viewer-catalog',
+      testMatch: /layer-catalog\.spec\.ts/,
+      dependencies: ['viewer-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });

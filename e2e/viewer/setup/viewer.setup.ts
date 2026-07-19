@@ -6,10 +6,14 @@ import {
   BLOCKED_CONTACT_APP_ID,
   BLOCKED_CONTACT_EMAIL,
   BLOCKED_CONTACT_INSTITUTION,
+  CATALOG_LEAF_SERVICE_IDS,
   CONTACT_APP_ID,
   CONTACT_EMAIL,
   CONTACT_INSTITUTION,
   generateViewerPassword,
+  LAYER_CATALOG_TASK_ID,
+  QUERYABLE_LEAF_CARTOGRAPHY_ID,
+  QUERYABLE_LEAF_TREE_NODE_DB_ID,
   ROLE_ID,
   SERVICE_ID,
   TERRITORY_ID,
@@ -18,6 +22,7 @@ import {
   UPSTREAM_URL,
   UPSTREAM_USER,
   VIEWER_FIXTURE_FILE,
+  WORK_LAYER_MANAGER_TASK_ID,
 } from '../fixtures';
 
 const adminHeaders = {
@@ -181,32 +186,95 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     `block PoC user failed: ${blockUser.status()} ${await blockUser.text()}`,
   ).toBeTruthy();
 
-  const serviceResponse = await request.get(`/backend/api/services/${SERVICE_ID}`, {
-    headers: { 'X-SITMUN-Client': 'admin' },
-  });
-  expect(serviceResponse.ok(), `get service failed: ${serviceResponse.status()}`).toBeTruthy();
-  const service = (await serviceResponse.json()) as {
-    name: string;
-    type: string;
-    blocked: boolean;
+  const rewriteServiceToStub = async (serviceId: number) => {
+    const serviceResponse = await request.get(`/backend/api/services/${serviceId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    expect(serviceResponse.ok(), `get service ${serviceId} failed: ${serviceResponse.status()}`).toBeTruthy();
+    const service = (await serviceResponse.json()) as {
+      name: string;
+      type: string;
+      blocked: boolean;
+    };
+
+    const updateService = await request.put(`/backend/api/services/${serviceId}`, {
+      headers: adminHeaders,
+      data: {
+        name: service.name,
+        type: service.type,
+        blocked: service.blocked,
+        serviceURL: UPSTREAM_URL,
+        isProxied: true,
+        authenticationMode: 'HTTP Basic authentication',
+        user: UPSTREAM_USER,
+        password: UPSTREAM_PASSWORD,
+      },
+    });
+    expect(
+      updateService.ok(),
+      `update service ${serviceId} failed: ${updateService.status()}`,
+    ).toBeTruthy();
   };
 
-  const updateService = await request.put(`/backend/api/services/${SERVICE_ID}`, {
-    headers: adminHeaders,
-    data: {
-      name: service.name,
-      type: service.type,
-      blocked: service.blocked,
-      serviceURL: UPSTREAM_URL,
-      isProxied: true,
-      authenticationMode: 'HTTP Basic authentication',
-      user: UPSTREAM_USER,
-      password: UPSTREAM_PASSWORD,
-    },
+  await rewriteServiceToStub(SERVICE_ID);
+  for (const serviceId of CATALOG_LEAF_SERVICE_IDS) {
+    await rewriteServiceToStub(serviceId);
+  }
+
+  // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
+  // sitna.layerCatalog / workLayerManager, so Capas stays empty without this.
+  for (const taskId of [LAYER_CATALOG_TASK_ID, WORK_LAYER_MANAGER_TASK_ID]) {
+    const createAvailability = await request.post('/backend/api/task-availabilities', {
+      headers: adminHeaders,
+      data: {
+        task: `${apiOrigin}/api/tasks/${taskId}`,
+        territory: `${apiOrigin}/api/territories/${TERRITORY_ID}`,
+      },
+    });
+    expect(
+      createAvailability.status(),
+      `create task-availability for task ${taskId} failed: ${createAvailability.status()} ${await createAvailability.text()}`,
+    ).toBe(201);
+  }
+
+  // Catalog matrix fixtures (#45): radio Ortofotos needs loadData for title activation;
+  // clear Infrarrojo load-by-default so title-click selection is observable; enable
+  // loadData on a non-radio folder for data-sitmun-load-folder decoration.
+  const patchTreeNode = async (id: number, data: Record<string, unknown>) => {
+    const response = await request.patch(`/backend/api/tree-nodes/${id}`, {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      data,
+    });
+    expect(
+      response.ok(),
+      `patch tree-node ${id} failed: ${response.status()} ${await response.text()}`,
+    ).toBeTruthy();
+  };
+  await patchTreeNode(2, { loadData: true, radio: true });
+  await patchTreeNode(5, { loadData: true });
+  await patchTreeNode(7, { loadData: true });
+  await patchTreeNode(9, { active: false });
+  // GFI catalog marker: node queryableActive + layer queryableFeatureEnabled.
+  await patchTreeNode(QUERYABLE_LEAF_TREE_NODE_DB_ID, {
+    queryableActive: true,
+    metadataURL: 'https://example.com/e2e-layer-meta',
   });
+  const patchCartography = await request.patch(
+    `/backend/api/cartographies/${QUERYABLE_LEAF_CARTOGRAPHY_ID}`,
+    {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      data: { queryableFeatureEnabled: true },
+    },
+  );
   expect(
-    updateService.ok(),
-    `update service failed: ${updateService.status()}`,
+    patchCartography.ok(),
+    `patch cartography ${QUERYABLE_LEAF_CARTOGRAPHY_ID} failed: ${patchCartography.status()} ${await patchCartography.text()}`,
   ).toBeTruthy();
 
   await writeFile(
