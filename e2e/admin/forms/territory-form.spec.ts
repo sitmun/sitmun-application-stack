@@ -61,4 +61,31 @@ test.describe('Territory form', () => {
     await waitForFormReady(page, 'name');
     await expect(control(page, 'description')).toHaveValue(description);
   });
+
+  test('enables save on duplicate with suggested copy name (#384)', async ({
+    page,
+    createdResources,
+  }) => {
+    const name = uniqueValue('e2e-territory-dup');
+    const code = uniqueValue('e2edup').replace(/-/g, '').slice(0, 50);
+
+    await gotoCreateForm(page, '/#/territory/-1/territoryForm', 'name');
+    await control(page, 'name').fill(name);
+    await control(page, 'code').fill(code);
+    await selectFirstTerritoryType(page);
+
+    const sourceId = await saveAndCaptureId(page, 'territories');
+    createdResources.push({ collection: 'territories', id: sourceId });
+
+    await page.goto(`/#/territory/-1/territoryForm/${sourceId}`);
+    await waitForFormReady(page, 'name');
+
+    await expect(control(page, 'name')).toHaveValue(`copy_${name}`);
+    await expect(control(page, 'code')).toHaveValue(code);
+    await expect(page.getByTestId('form-save')).toBeEnabled();
+
+    const duplicateId = await saveAndCaptureId(page, 'territories');
+    createdResources.push({ collection: 'territories', id: duplicateId });
+    expect(duplicateId).not.toBe(sourceId);
+  });
 });
