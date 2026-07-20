@@ -25,9 +25,9 @@ import {
  * Non-radio folders never get child radios. Radio folders get native
  * `input.sitmun-lcat-radio` on children. `loadData` folders get a visible
  * `input.sitmun-lcat-load` control (checkbox, or radio when the folder is
- * radio); title remains expand/collapse only. Queryable leaves show
- * `.sitmun-lcat-gfi` after the select control; SITNA info uses
- * `data-sitmun-lcat-meta`.
+ * radio); title remains expand/collapse only. Capas GFI lives in WorkLayerManager
+ * (Sitna `--icon-info` / “i”). Catalog meta uses `data-sitmun-lcat-meta` with
+ * Material Icons `article` trailed after the title.
  */
 async function loginAndOpenMap(page: Page): Promise<void> {
   const credentials = await readViewerCredentials();
@@ -227,7 +227,7 @@ test.describe('Viewer layer catalog loadData / radio', () => {
     await expect(secondRadio).toHaveAttribute('aria-checked', 'false');
   });
 
-  test('queryable leaf shows GFI i after select and meta when info is available', async ({
+  test('queryable leaf shows trailing meta article glyph after title', async ({
     page,
   }) => {
     await loginAndOpenMap(page);
@@ -238,9 +238,11 @@ test.describe('Viewer layer catalog loadData / radio', () => {
     await expect(leaf).toBeVisible({ timeout: 30_000 });
     await expect(leaf.getByText(QUERYABLE_LEAF_TITLE, { exact: true })).toBeVisible();
 
-    const gfi = leaf.locator(':scope > i.sitmun-lcat-gfi');
-    await expect(gfi).toBeVisible();
-    await expect(gfi).toHaveText('i');
+    await expect(leaf.locator(':scope > .sitmun-lcat-gfi, :scope > sitna-toggle.sitmun-lcat-gfi')).toHaveCount(0);
+
+    const meta = leaf.locator(':scope > [data-sitmun-lcat-meta]');
+    await expect(meta).toBeVisible();
+    await expect(meta).toHaveAttribute('checked-icon-text', 'article');
 
     const select = leaf.locator(
       `:scope > label.sitmun-lcat-radio-label input[data-layer-name="${QUERYABLE_LEAF_NODE_ID}"]`,
@@ -250,28 +252,22 @@ test.describe('Viewer layer catalog loadData / radio', () => {
       const children = [...li.children].filter((el) => el.tagName !== 'UL');
       return children.map((el) => {
         if (el.matches('label.sitmun-lcat-radio-label')) return 'select';
-        if (el.matches('i.sitmun-lcat-gfi')) return 'gfi';
         if (el.matches('[data-sitmun-lcat-meta]')) return 'meta';
         if (el.matches('.tc-ctl-lcat-node-title, span')) return 'title';
         return el.className || el.tagName;
       });
     });
     const selectIdx = order.indexOf('select');
-    const gfiIdx = order.indexOf('gfi');
     const titleIdx = order.indexOf('title');
+    const metaIdx = order.indexOf('meta');
     expect(selectIdx).toBeGreaterThanOrEqual(0);
-    expect(gfiIdx).toBeGreaterThan(selectIdx);
-    expect(titleIdx).toBeGreaterThan(gfiIdx);
+    expect(titleIdx).toBeGreaterThan(selectIdx);
+    expect(metaIdx).toBeGreaterThan(titleIdx);
 
     const sibling = page.locator(
       `#tc-slot-toc li[data-layer-name="${RADIO_SECOND_CHILD_NODE_ID}"]`,
     );
-    await expect(sibling.locator(':scope > i.sitmun-lcat-gfi')).toHaveCount(0);
-
-    const meta = leaf.locator('[data-sitmun-lcat-meta]');
-    if ((await meta.count()) > 0) {
-      await expect(meta.first()).toBeVisible();
-    }
+    await expect(sibling.locator(':scope > .sitmun-lcat-gfi')).toHaveCount(0);
   });
 
   test('catalog row geometry uses shared icon/control rhythm', async ({ page }) => {
@@ -300,7 +296,7 @@ test.describe('Viewer layer catalog loadData / radio', () => {
       const label = li.querySelector(
         ':scope > label.sitmun-lcat-radio-label, :scope > label.sitmun-lcat-load-label, :scope > label.sitmun-lcat-leaf-load-label',
       ) as HTMLElement | null;
-      const gfi = li.querySelector(':scope > i.sitmun-lcat-gfi') as HTMLElement | null;
+      const gfi = li.querySelector(':scope > .sitmun-lcat-gfi') as HTMLElement | null;
       const title = li.querySelector(
         ':scope > .tc-ctl-lcat-node-title, :scope > span',
       ) as HTMLElement | null;
@@ -325,29 +321,42 @@ test.describe('Viewer layer catalog loadData / radio', () => {
         minHeight,
         iconLeft,
         treeLeft: treeBox?.left ?? null,
+        liRight: liBox.right,
         selectLeft: labelBox?.left ?? null,
         selectWidth: labelBox?.width ?? null,
         gutterRight: liBox.left + paddingLeft,
         gfiLeft: gfiBox?.left ?? null,
         gfiWidth: gfiBox?.width ?? null,
         gfiRight: gfiBox?.right ?? null,
+        gfiTopGap: gfiBox ? gfiBox.top - liBox.top : null,
+        gfiBottomGap: gfiBox ? liBox.bottom - gfiBox.bottom : null,
+        gfiBorder: gfi ? getComputedStyle(gfi).borderTopWidth : null,
+        gfiBg: gfi ? getComputedStyle(gfi).backgroundColor : null,
         selectRight: labelBox?.right ?? null,
         titleLeft: titleBox?.left ?? null,
+        titleRight: titleBox?.right ?? null,
         metaLeft: metaBox?.left ?? null,
+        metaRight: metaBox?.right ?? null,
         metaWidth: metaBox?.width ?? null,
         metaHeight: metaBox?.height ?? null,
         labelHeight: labelBox?.height ?? null,
         selectTitleCenterDelta:
           labelBox && titleBox ? Math.abs(center(labelBox) - center(titleBox)) : null,
+        gfiTitleCenterDelta:
+          gfiBox && titleBox ? Math.abs(center(gfiBox) - center(titleBox)) : null,
+        selectGfiCenterDelta:
+          labelBox && gfiBox ? Math.abs(center(labelBox) - center(gfiBox)) : null,
+        metaTitleCenterDelta:
+          metaBox && titleBox ? Math.abs(center(metaBox) - center(titleBox)) : null,
       };
     });
 
-    // Nest step = type-icon width; select/GFI columns = slot (18); row ~20.
+    // Nest step = type-icon width; select column = slot (18); row ~20.
+    // Title flex-grows; Sitna-toggle GFI/meta hug the row’s right edge.
     expect(geometry.slot).toBe(18);
     expect(geometry.indent).toBe(geometry.icon);
     expect(geometry.paddingLeft).toBeCloseTo(geometry.expectedPadding, 0);
-    expect(geometry.minHeight).toBeGreaterThanOrEqual(19);
-    expect(geometry.minHeight).toBeLessThanOrEqual(22);
+    expect(geometry.minHeight).toBe(20);
     expect(geometry.selectLeft).not.toBeNull();
     expect(geometry.selectLeft!).toBeGreaterThanOrEqual(geometry.gutterRight - 1);
     expect(geometry.selectWidth!).toBeGreaterThanOrEqual(17);
@@ -357,18 +366,32 @@ test.describe('Viewer layer catalog loadData / radio', () => {
     expect(geometry.gfiWidth!).toBeLessThanOrEqual(19);
     expect(geometry.selectRight).not.toBeNull();
     expect(geometry.titleLeft).not.toBeNull();
-    expect(geometry.gfiLeft!).toBeGreaterThanOrEqual(geometry.selectRight! - 1);
-    expect(geometry.titleLeft!).toBeGreaterThanOrEqual(geometry.gfiRight! - 1);
-    expect(geometry.titleLeft!).toBeCloseTo(geometry.gutterRight + 2 * geometry.slot, 0);
+    expect(geometry.titleRight).not.toBeNull();
+    expect(geometry.titleLeft!).toBeGreaterThanOrEqual(geometry.selectRight! - 1);
+    expect(geometry.gfiLeft!).toBeGreaterThanOrEqual(geometry.titleRight! - 1);
     expect(geometry.selectTitleCenterDelta).not.toBeNull();
     expect(geometry.selectTitleCenterDelta!).toBeLessThanOrEqual(3);
+    expect(geometry.gfiTitleCenterDelta).not.toBeNull();
+    expect(geometry.gfiTitleCenterDelta!).toBeLessThanOrEqual(3);
+    expect(geometry.selectGfiCenterDelta).not.toBeNull();
+    expect(geometry.selectGfiCenterDelta!).toBeLessThanOrEqual(3);
     expect(geometry.labelHeight).not.toBeNull();
     expect(geometry.labelHeight!).toBeGreaterThanOrEqual(17);
+    expect(parseFloat(geometry.gfiBorder ?? '0')).toBeGreaterThanOrEqual(1);
+    expect(geometry.gfiBg).not.toMatch(/rgba?\(0,\s*0,\s*0,\s*0\)/);
+    expect(geometry.gfiTopGap).not.toBeNull();
+    expect(geometry.gfiBottomGap).not.toBeNull();
+    expect(Math.abs(geometry.gfiTopGap! - geometry.gfiBottomGap!)).toBeLessThanOrEqual(2);
 
     if (geometry.metaLeft != null) {
-      expect(geometry.metaLeft).toBeGreaterThanOrEqual(geometry.titleLeft! - 1);
+      expect(geometry.metaLeft).toBeGreaterThanOrEqual(geometry.gfiLeft! - 1);
       expect(geometry.metaWidth!).toBeGreaterThanOrEqual(18);
       expect(geometry.metaHeight!).toBeGreaterThanOrEqual(18);
+      expect(geometry.metaTitleCenterDelta).not.toBeNull();
+      expect(geometry.metaTitleCenterDelta!).toBeLessThanOrEqual(3);
+      expect(geometry.liRight - geometry.metaRight!).toBeLessThanOrEqual(6);
+    } else {
+      expect(geometry.liRight - geometry.gfiRight!).toBeLessThanOrEqual(6);
     }
 
     // Absent icons leave no empty slots (no select/GFI spacers on folders).
@@ -392,8 +415,8 @@ test.describe('Viewer layer catalog loadData / radio', () => {
         return {
           radioHasSpacer: hasSpacer(radio),
           checkboxHasSpacer: hasSpacer(checkbox),
-          radioHasGfi: Boolean(radio.querySelector(':scope > i.sitmun-lcat-gfi')),
-          checkboxHasGfi: Boolean(checkbox.querySelector(':scope > i.sitmun-lcat-gfi')),
+          radioHasGfi: Boolean(radio.querySelector(':scope > .sitmun-lcat-gfi')),
+          checkboxHasGfi: Boolean(checkbox.querySelector(':scope > .sitmun-lcat-gfi')),
         };
       },
       { radioId: RADIO_FOLDER_NODE_ID, checkboxId: CHECKBOX_LOAD_FOLDER_NODE_ID },
