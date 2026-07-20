@@ -4,6 +4,41 @@ databaseChangeLog:
       author: sitmun
       runOnChange: true
       changes:
+        # Issue #45: loadUpdateData keys by COD_ID; swapping values between IDs 53/54
+        # would violate STM_COD_UK unless rearranged via a temporary value first.
+        - sql:
+            comment: >
+              Guarded pre-swap for service.authenticationMode COD_ID 53/54 when still
+              on the pre-1.2.7 assignment (53=None, 54=HTTP Basic authentication).
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = '__sitmun_tmp_auth_mode__',
+                  COD_DESCRIPTION = '__sitmun_tmp_auth_mode__'
+              WHERE COD_ID = 53
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = 'None'
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = 'None',
+                  COD_DESCRIPTION = 'None'
+              WHERE COD_ID = 54
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = 'HTTP Basic authentication'
+                AND EXISTS (
+                  SELECT 1 FROM STM_CODELIST t
+                  WHERE t.COD_ID = 53
+                    AND t.COD_LIST = 'service.authenticationMode'
+                    AND t.COD_VALUE = '__sitmun_tmp_auth_mode__'
+                )
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = 'HTTP Basic authentication',
+                  COD_DESCRIPTION = 'HTTP Basic authentication'
+              WHERE COD_ID = 53
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = '__sitmun_tmp_auth_mode__'
         - loadUpdateData:
             encoding: UTF-8
             file: 02_codelists/STM_CODELIST.csv
