@@ -35,10 +35,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.
 - **i18n**: task type admin strings across all five admin locales.
 - **i18n**: language list and form show the database default language; guarded set-default workflow with preview dialog for missing translations; `language.default` protected in configuration parameter screens; admin UI locale unchanged when the database default changes.
+- **i18n**: language `enabled`/`order` admin UX; toolbar/login closed ISO + open endonyms; translation dialog Accept gated on real edits; chrome menus refresh via `languagesToUse$` after save.
+- **E2E**: `e2e/admin/language-chrome.spec.ts` (project `login`) covers login language chrome.
+
+#### Viewer Application
+
+- **i18n**: toolbar language chrome (closed ISO, open endonyms); omits `enabled: false`; refreshes via `languagesToUse$` when the language menu opens.
+- **E2E**: `e2e/viewer/language-chrome.spec.ts` (project `viewer-public`) covers login language chrome.
 
 #### Backend Core
 
 - **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
+- **i18n**: `Language` `enabled`/`order`, HAL `LanguageProjection` (`projection=view`), and Liquibase `11_language_order_enabled_and_labels` (development `56_…`, postgres/oracle `09_…`) for existing DBs.
 - **i18n**: request-scoped translation preload resolves `@I18n` fields for the request language.
 - **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
 - **Startup**: soft built-in `admin`/`public` repair keeps the process alive and reports unrepaired admin bootstrap through `/api/dashboard/health`; optional `SITMUN_BOOTSTRAP_ADMIN_PASSWORD` creates/restores admin password only when explicitly injected.
@@ -79,6 +87,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **i18n**: translation dialog Accept without edits no longer marks parent forms dirty; language chrome selectors update after enable/order save.
 - **Services**: obtaining service details prefills `Service.name` and `Service.description` translation rows from alternate `xml:lang` entries; when the DB default language is absent from capabilities, the first entry still populates the main field and its language translation row (e.g. `ca` + `es` with default `en`) ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)).
 - **Connections**: saved connections validate via `GET /connections/{id}/test` without re-entering the password; unsaved edits require a typed password before POST test ([sitmun-admin-app#424](https://github.com/sitmun/sitmun-admin-app/issues/424)).
 - **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
@@ -100,6 +109,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
+- **i18n**: language toolbar control matches hamburger ink; menu open re-fetches enabled languages for the switcher.
 - **Dashboard**: pagination, server-side keyword search, autocomplete loading, searchbox/grid interaction, and dashboard-item resync fixes (see `sitmun-viewer-app` `[Unreleased]`).
 
 ## [1.2.7] - 2026-06-05

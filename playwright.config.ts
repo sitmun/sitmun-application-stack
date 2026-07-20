@@ -45,7 +45,7 @@ export default defineConfig({
     },
     {
       name: 'login',
-      testMatch: /admin\/login\.spec\.ts/,
+      testMatch: /admin\/(login|language-chrome)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {

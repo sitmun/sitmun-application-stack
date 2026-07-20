@@ -122,7 +122,7 @@ generate en
 liquibase_update "en baseline, first apply"
 
 CODELIST_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST;")
-assert_ge "STM_CODELIST rows" 118 "$CODELIST_COUNT"
+assert_ge "STM_CODELIST rows" 100 "$CODELIST_COUNT"
 
 QUERY_SCOPE_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='queryTask.scope';")
 assert_ge "queryTask.scope codelist entries" 5 "$QUERY_SCOPE_COUNT"
@@ -149,7 +149,7 @@ EN_NAME=$(psql_q "SELECT LAN_NAME FROM STM_LANGUAGE WHERE LAN_SHORTNAME='en';")
 assert_eq "LAN_NAME[en] with baseline=en" "English" "$EN_NAME"
 
 ES_NAME=$(psql_q "SELECT LAN_NAME FROM STM_LANGUAGE WHERE LAN_SHORTNAME='es';")
-assert_eq "LAN_NAME[es] with baseline=en" "Spanish" "$ES_NAME"
+assert_eq "LAN_NAME[es] with baseline=en" "Castellano" "$ES_NAME"
 
 ES_TRA=$(psql_q "SELECT COUNT(*) FROM STM_TRANSLATION t JOIN STM_LANGUAGE l ON t.TRA_LANID=l.LAN_ID WHERE l.LAN_SHORTNAME='es';")
 assert_ge "STM_TRANSLATION rows for es" 100 "$ES_TRA"

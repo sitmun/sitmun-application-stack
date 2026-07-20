@@ -7,12 +7,14 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 ### Admin (`npm run e2e`)
 
 - Admin UI login (`/#/login` → `/#/dashboard`)
+- Language chrome on login: cleared `lang` → closed BCP-47 ISO from `language.default`; open menu shows API endonyms; no language field on the login form (`e2e/admin/language-chrome.spec.ts`, project `login`)
 - Role form: validation, create, edit, reload persistence
 - User form: validation, create, edit, reload persistence
 - Territory form: validation, create (with type), edit, reload persistence
 
 ### Viewer (`npm run e2e:viewer`)
 
+- Language chrome on `/auth/login`: cleared `language` → closed ISO left of hamburger; open endonyms; no language entries in the hamburger menu (`e2e/viewer/language-chrome.spec.ts`, project `viewer-public`)
 - Public access: dashboard configuration plus `403` for private profile `1/1` and its secured WMS
 - Public access: eligible vs blocked point-of-contact email on applications 2 and 3 (institution always shown when set)
 - Password access: dedicated regular user login, private profile, proxy token persistence, and secured WMS through proxy

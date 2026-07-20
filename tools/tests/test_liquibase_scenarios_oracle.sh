@@ -157,7 +157,7 @@ if [[ $LIQUIBASE_OK -eq 1 ]]; then
   assert_eq "LAN_NAME[en] with baseline=en" "English" "$EN_NAME"
 
   ES_NAME=$(sqlplus_q "SELECT LAN_NAME FROM STM_LANGUAGE WHERE LAN_SHORTNAME='es';")
-  assert_eq "LAN_NAME[es] with baseline=en" "Spanish" "$ES_NAME"
+  assert_eq "LAN_NAME[es] with baseline=en" "Castellano" "$ES_NAME"
 
   ES_TRA=$(sqlplus_q "SELECT COUNT(*) FROM STM_TRANSLATION t JOIN STM_LANGUAGE l ON t.TRA_LANID=l.LAN_ID WHERE l.LAN_SHORTNAME='es';")
   assert_ge "STM_TRANSLATION rows for es" 100 "$ES_TRA"

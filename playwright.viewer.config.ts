@@ -57,7 +57,7 @@ export default defineConfig({
     },
     {
       name: 'viewer-public',
-      testMatch: /public-access\.spec\.ts/,
+      testMatch: /(public-access|language-chrome)\.spec\.ts/,
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
