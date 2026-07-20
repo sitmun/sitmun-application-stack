@@ -35,6 +35,13 @@ export const QUERYABLE_LEAF_NODE_ID = 'node/3';
 export const QUERYABLE_LEAF_TREE_NODE_DB_ID = 3;
 export const QUERYABLE_LEAF_CARTOGRAPHY_ID = 6;
 export const QUERYABLE_LEAF_TITLE = 'Toponímia';
+/** Non-radio leaf under Topográfico 1:25.000 (seed GEO_ID 5). */
+export const NON_RADIO_LEAF_CARTOGRAPHY_ID = 5;
+/**
+ * Profile maxScaleDenominator for Capas #92 E2E (Toponímia).
+ * Zoomed-out OGC scales above this mark the Capas row notvisible.
+ */
+export const QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR = 100_000;
 
 /** Public applications used for responsible-institution / PoC email assertions. */
 export const CONTACT_APP_ID = 2;

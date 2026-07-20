@@ -8,6 +8,7 @@ import {
   NON_RADIO_LEAF_TITLE,
   NON_RADIO_ROOT_FOLDER_NODE_ID,
   NON_RADIO_ROOT_FOLDER_TITLE,
+  QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
   QUERYABLE_LEAF_NODE_ID,
   QUERYABLE_LEAF_TITLE,
   RADIO_FIRST_CHILD_NODE_ID,
@@ -140,6 +141,74 @@ async function patchTreeNodeLoadData(
     response.ok(),
     `patch tree-node ${nodeDbId} failed: ${response.status()} ${await response.text()}`,
   ).toBeTruthy();
+}
+
+async function expandWorkLayerManager(page: Page): Promise<void> {
+  // SITNA mounts WorkLayerManager on #tc-slot-wlm (the slot is .tc-ctl-wlm).
+  const wlm = page.locator('#tc-slot-wlm');
+  await wlm.waitFor({ state: 'attached', timeout: 30_000 });
+  await wlm.evaluate((el) => el.classList.remove('tc-collapsed'));
+}
+
+/** Load Toponímia (single WMS name) into Capas via radio. */
+async function loadQueryableLeafIntoCapas(page: Page): Promise<void> {
+  await expandWorkLayerManager(page);
+  await expandNodeByTitle(page, NON_RADIO_ROOT_FOLDER_TITLE);
+  await expandNodeByTitle(page, RADIO_FOLDER_TITLE);
+  const radio = page.locator(
+    `#tc-slot-toc input.sitmun-lcat-radio[data-layer-name="${QUERYABLE_LEAF_NODE_ID}"]`,
+  );
+  await expect(radio).toBeVisible({ timeout: 30_000 });
+  await radio.click();
+  await expect(page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id]')).toBeVisible({
+    timeout: 90_000,
+  });
+}
+
+/** Drive OpenLayers resolution so OGC scale ≈ target (SITNA getOgcScale). */
+async function setMapOgcScale(page: Page, targetScale: number): Promise<void> {
+  await page.evaluate((scale) => {
+    const TC = (window as unknown as { TC?: { Map?: { get: (el: Element) => any } } }).TC;
+    const mapEl = document.querySelector('.tc-map');
+    if (!TC?.Map?.get || !mapEl) {
+      throw new Error('TC.Map not available');
+    }
+    const map = TC.Map.get(mapEl);
+    const mpu =
+      typeof map.getMetersPerUnit === 'function' ? Number(map.getMetersPerUnit()) || 1 : 1;
+    const resolution = (scale * 0.00028) / mpu;
+    if (typeof map.setResolution === 'function') {
+      map.setResolution(resolution);
+    } else if (map.wrap?.map?.getView) {
+      map.wrap.map.getView().setResolution(resolution);
+    } else {
+      throw new Error('Cannot set map resolution');
+    }
+    for (const ctl of map.controls || []) {
+      if (typeof ctl.updateScale === 'function') {
+        ctl.updateScale();
+      }
+    }
+  }, targetScale);
+}
+
+function capasPathColor(page: Page, notVisible: boolean) {
+  const sel = notVisible
+    ? '#tc-slot-wlm li.tc-ctl-wlm-elm-notvisible .tc-ctl-wlm-path'
+    : '#tc-slot-wlm li.tc-ctl-wlm-elm:not(.tc-ctl-wlm-elm-notvisible) .tc-ctl-wlm-path';
+  return page.locator(sel).first().evaluate((el) => getComputedStyle(el).color);
+}
+
+function boxesOverlap(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number },
+): boolean {
+  return !(
+    a.x + a.width <= b.x ||
+    b.x + b.width <= a.x ||
+    a.y + a.height <= b.y ||
+    b.y + b.height <= a.y
+  );
 }
 
 test.describe('Viewer layer catalog loadData / radio', () => {
@@ -283,6 +352,12 @@ test.describe('Viewer layer catalog loadData / radio', () => {
     await expect(radioFolder).toHaveAttribute('data-sitmun-lcat-level', '1');
     await expect(leaf).toHaveAttribute('data-sitmun-lcat-level', '2');
 
+    // Catalog GFI moved to Capas (WLM); trailing control on the leaf is meta only.
+    await expect(leaf.locator(':scope > .sitmun-lcat-gfi, :scope > sitna-toggle.sitmun-lcat-gfi')).toHaveCount(
+      0,
+    );
+    await expect(leaf.locator(':scope > [data-sitmun-lcat-meta]')).toBeVisible();
+
     const geometry = await leaf.evaluate((li) => {
       const styles = getComputedStyle(li);
       const slot = parseFloat(styles.getPropertyValue('--sitmun-lcat-slot')) || 18;
@@ -296,15 +371,13 @@ test.describe('Viewer layer catalog loadData / radio', () => {
       const label = li.querySelector(
         ':scope > label.sitmun-lcat-radio-label, :scope > label.sitmun-lcat-load-label, :scope > label.sitmun-lcat-leaf-load-label',
       ) as HTMLElement | null;
-      const gfi = li.querySelector(':scope > .sitmun-lcat-gfi') as HTMLElement | null;
       const title = li.querySelector(
         ':scope > .tc-ctl-lcat-node-title, :scope > span',
       ) as HTMLElement | null;
-      const meta = li.querySelector('[data-sitmun-lcat-meta]') as HTMLElement | null;
+      const meta = li.querySelector(':scope > [data-sitmun-lcat-meta]') as HTMLElement | null;
       const tree = li.closest('.tc-ctl-lcat-tree') as HTMLElement | null;
       const liBox = li.getBoundingClientRect();
       const labelBox = label?.getBoundingClientRect();
-      const gfiBox = gfi?.getBoundingClientRect();
       const titleBox = title?.getBoundingClientRect();
       const metaBox = meta?.getBoundingClientRect();
       const treeBox = tree?.getBoundingClientRect();
@@ -325,13 +398,6 @@ test.describe('Viewer layer catalog loadData / radio', () => {
         selectLeft: labelBox?.left ?? null,
         selectWidth: labelBox?.width ?? null,
         gutterRight: liBox.left + paddingLeft,
-        gfiLeft: gfiBox?.left ?? null,
-        gfiWidth: gfiBox?.width ?? null,
-        gfiRight: gfiBox?.right ?? null,
-        gfiTopGap: gfiBox ? gfiBox.top - liBox.top : null,
-        gfiBottomGap: gfiBox ? liBox.bottom - gfiBox.bottom : null,
-        gfiBorder: gfi ? getComputedStyle(gfi).borderTopWidth : null,
-        gfiBg: gfi ? getComputedStyle(gfi).backgroundColor : null,
         selectRight: labelBox?.right ?? null,
         titleLeft: titleBox?.left ?? null,
         titleRight: titleBox?.right ?? null,
@@ -339,20 +405,22 @@ test.describe('Viewer layer catalog loadData / radio', () => {
         metaRight: metaBox?.right ?? null,
         metaWidth: metaBox?.width ?? null,
         metaHeight: metaBox?.height ?? null,
+        metaTopGap: metaBox ? metaBox.top - liBox.top : null,
+        metaBottomGap: metaBox ? liBox.bottom - metaBox.bottom : null,
+        metaBorder: meta ? getComputedStyle(meta).borderTopWidth : null,
+        metaBg: meta ? getComputedStyle(meta).backgroundColor : null,
         labelHeight: labelBox?.height ?? null,
         selectTitleCenterDelta:
           labelBox && titleBox ? Math.abs(center(labelBox) - center(titleBox)) : null,
-        gfiTitleCenterDelta:
-          gfiBox && titleBox ? Math.abs(center(gfiBox) - center(titleBox)) : null,
-        selectGfiCenterDelta:
-          labelBox && gfiBox ? Math.abs(center(labelBox) - center(gfiBox)) : null,
         metaTitleCenterDelta:
           metaBox && titleBox ? Math.abs(center(metaBox) - center(titleBox)) : null,
+        selectMetaCenterDelta:
+          labelBox && metaBox ? Math.abs(center(labelBox) - center(metaBox)) : null,
       };
     });
 
     // Nest step = type-icon width; select column = slot (18); row ~20.
-    // Title flex-grows; Sitna-toggle GFI/meta hug the row’s right edge.
+    // Title flex-grows; trailing meta hugs the row’s right edge (GFI is Capas-only).
     expect(geometry.slot).toBe(18);
     expect(geometry.indent).toBe(geometry.icon);
     expect(geometry.paddingLeft).toBeCloseTo(geometry.expectedPadding, 0);
@@ -361,38 +429,28 @@ test.describe('Viewer layer catalog loadData / radio', () => {
     expect(geometry.selectLeft!).toBeGreaterThanOrEqual(geometry.gutterRight - 1);
     expect(geometry.selectWidth!).toBeGreaterThanOrEqual(17);
     expect(geometry.selectWidth!).toBeLessThanOrEqual(19);
-    expect(geometry.gfiLeft).not.toBeNull();
-    expect(geometry.gfiWidth!).toBeGreaterThanOrEqual(17);
-    expect(geometry.gfiWidth!).toBeLessThanOrEqual(19);
     expect(geometry.selectRight).not.toBeNull();
     expect(geometry.titleLeft).not.toBeNull();
     expect(geometry.titleRight).not.toBeNull();
     expect(geometry.titleLeft!).toBeGreaterThanOrEqual(geometry.selectRight! - 1);
-    expect(geometry.gfiLeft!).toBeGreaterThanOrEqual(geometry.titleRight! - 1);
+    expect(geometry.metaLeft).not.toBeNull();
+    expect(geometry.metaLeft!).toBeGreaterThanOrEqual(geometry.titleRight! - 1);
+    expect(geometry.metaWidth!).toBeGreaterThanOrEqual(18);
+    expect(geometry.metaHeight!).toBeGreaterThanOrEqual(18);
     expect(geometry.selectTitleCenterDelta).not.toBeNull();
     expect(geometry.selectTitleCenterDelta!).toBeLessThanOrEqual(3);
-    expect(geometry.gfiTitleCenterDelta).not.toBeNull();
-    expect(geometry.gfiTitleCenterDelta!).toBeLessThanOrEqual(3);
-    expect(geometry.selectGfiCenterDelta).not.toBeNull();
-    expect(geometry.selectGfiCenterDelta!).toBeLessThanOrEqual(3);
+    expect(geometry.metaTitleCenterDelta).not.toBeNull();
+    expect(geometry.metaTitleCenterDelta!).toBeLessThanOrEqual(3);
+    expect(geometry.selectMetaCenterDelta).not.toBeNull();
+    expect(geometry.selectMetaCenterDelta!).toBeLessThanOrEqual(3);
     expect(geometry.labelHeight).not.toBeNull();
     expect(geometry.labelHeight!).toBeGreaterThanOrEqual(17);
-    expect(parseFloat(geometry.gfiBorder ?? '0')).toBeGreaterThanOrEqual(1);
-    expect(geometry.gfiBg).not.toMatch(/rgba?\(0,\s*0,\s*0,\s*0\)/);
-    expect(geometry.gfiTopGap).not.toBeNull();
-    expect(geometry.gfiBottomGap).not.toBeNull();
-    expect(Math.abs(geometry.gfiTopGap! - geometry.gfiBottomGap!)).toBeLessThanOrEqual(2);
-
-    if (geometry.metaLeft != null) {
-      expect(geometry.metaLeft).toBeGreaterThanOrEqual(geometry.gfiLeft! - 1);
-      expect(geometry.metaWidth!).toBeGreaterThanOrEqual(18);
-      expect(geometry.metaHeight!).toBeGreaterThanOrEqual(18);
-      expect(geometry.metaTitleCenterDelta).not.toBeNull();
-      expect(geometry.metaTitleCenterDelta!).toBeLessThanOrEqual(3);
-      expect(geometry.liRight - geometry.metaRight!).toBeLessThanOrEqual(6);
-    } else {
-      expect(geometry.liRight - geometry.gfiRight!).toBeLessThanOrEqual(6);
-    }
+    expect(parseFloat(geometry.metaBorder ?? '0')).toBeGreaterThanOrEqual(1);
+    expect(geometry.metaBg).not.toMatch(/rgba?\(0,\s*0,\s*0,\s*0\)/);
+    expect(geometry.metaTopGap).not.toBeNull();
+    expect(geometry.metaBottomGap).not.toBeNull();
+    expect(Math.abs(geometry.metaTopGap! - geometry.metaBottomGap!)).toBeLessThanOrEqual(2);
+    expect(geometry.liRight - geometry.metaRight!).toBeLessThanOrEqual(6);
 
     // Absent icons leave no empty slots (no select/GFI spacers on folders).
     const folderLayout = await page.evaluate(
@@ -627,4 +685,224 @@ test.describe('Viewer layer catalog loadData / radio', () => {
       await patchTreeNodeLoadData(request, RADIO_FOLDER_TREE_NODE_DB_ID, true);
     }
   });
+});
+
+test.describe('Capas WLM contrast and layout (#92 / #142)', () => {
+  test('Capas notvisible path uses #777777 (#92)', async ({ page }) => {
+    await loginAndOpenMap(page);
+    await loadQueryableLeafIntoCapas(page);
+
+    const capasLi = page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id]').first();
+    await expect(capasLi).toBeVisible();
+
+    // Visible (in scale): path stays maroon.
+    await setMapOgcScale(page, Math.floor(QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR / 2));
+    await expect
+      .poll(async () => capasLi.evaluate((li) => li.classList.contains('tc-ctl-wlm-elm-notvisible')), {
+        timeout: 15_000,
+      })
+      .toBe(false);
+    expect(await capasPathColor(page, false)).toBe('rgb(102, 0, 0)');
+
+    // Out of scale: SITNA toggles notvisible; path must be WCAG gray #777777.
+    await setMapOgcScale(page, QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR * 5);
+    await expect
+      .poll(async () => capasLi.evaluate((li) => li.classList.contains('tc-ctl-wlm-elm-notvisible')), {
+        timeout: 15_000,
+      })
+      .toBe(true);
+    expect(await capasPathColor(page, true)).toBe('rgb(119, 119, 119)');
+  });
+
+  test('Capas and Capas disponibles do not overlap (#142)', async ({ page }) => {
+    await loginAndOpenMap(page);
+    await expandNodeByTitle(page, NON_RADIO_ROOT_FOLDER_TITLE);
+    await expandNodeByTitle(page, RADIO_FOLDER_TITLE);
+    await expandNodeByTitle(page, CHECKBOX_LOAD_FOLDER_TITLE);
+    await loadQueryableLeafIntoCapas(page);
+
+    // Second Capas row via non-radio leaf-load (harness: stub GetMap + workLayerManager).
+    const leafLoad = page.locator(
+      `#tc-slot-toc input.sitmun-lcat-leaf-load[data-layer-name="${NON_RADIO_LEAF_NODE_ID}"]`,
+    );
+    if ((await leafLoad.count()) > 0) {
+      await leafLoad.click();
+      await expect
+        .poll(async () => page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm').count(), {
+          timeout: 60_000,
+        })
+        .toBeGreaterThanOrEqual(1);
+    }
+
+    await expandWorkLayerManager(page);
+    await page.locator('#tc-slot-toc').evaluate((el) => {
+      el.classList.remove('tc-collapsed');
+    });
+
+    const boxes = await page.evaluate(() => {
+      const wlm = document.querySelector('#tc-slot-wlm');
+      const lcat = document.querySelector('#tc-slot-toc');
+      if (!wlm || !lcat) {
+        return null;
+      }
+      const wlmBox = wlm.getBoundingClientRect();
+      const lcatBox = lcat.getBoundingClientRect();
+      const ul = wlm.querySelector('.tc-ctl-wlm-content ul') as HTMLElement | null;
+      return {
+        wlmBottom: wlmBox.bottom,
+        lcatTop: lcatBox.top,
+        overflowY: ul ? getComputedStyle(ul).overflowY : null,
+      };
+    });
+    expect(boxes).not.toBeNull();
+    expect(boxes!.wlmBottom).toBeLessThanOrEqual(boxes!.lcatTop + 1);
+    expect(['auto', 'scroll', 'overlay']).toContain(boxes!.overflowY);
+  });
+
+  test('tools-panel splitter resizes Capas without overlapping catalog', async ({ page }) => {
+    await loginAndOpenMap(page);
+    await loadQueryableLeafIntoCapas(page);
+    await expandWorkLayerManager(page);
+
+    // Capas expanded → usable splitter after WLM (hidden while Capas is collapsed).
+    const splitter = page.locator(
+      '#tc-slot-wlm + .sitmun-tools-panel-splitter, .sitmun-tools-panel-splitter[data-sitmun-split-above="tc-slot-wlm"]',
+    );
+    await expect(splitter).toBeVisible();
+
+    const before = await page.locator('#tc-slot-wlm').evaluate((el) => el.getBoundingClientRect().height);
+    const box = await splitter.boundingBox();
+    expect(box).not.toBeNull();
+
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2 + 80, { steps: 8 });
+    await page.mouse.up();
+
+    const after = await page.evaluate(() => {
+      const wlm = document.querySelector('#tc-slot-wlm') as HTMLElement | null;
+      const lcat = document.querySelector('#tc-slot-toc') as HTMLElement | null;
+      if (!wlm || !lcat) {
+        return null;
+      }
+      let storedWlm: number | null = null;
+      try {
+        const raw = window.localStorage.getItem('sitmun.toolsPanel.paneHeights');
+        storedWlm = raw ? (JSON.parse(raw) as Record<string, number>)['tc-slot-wlm'] ?? null : null;
+      } catch {
+        storedWlm = null;
+      }
+      return {
+        height: wlm.getBoundingClientRect().height,
+        resized: wlm.classList.contains('sitmun-pane-resized'),
+        wlmBottom: wlm.getBoundingClientRect().bottom,
+        lcatTop: lcat.getBoundingClientRect().top,
+        storedWlm,
+        splitterCount: document.querySelectorAll('.sitmun-tools-panel-splitter').length,
+      };
+    });
+    expect(after).not.toBeNull();
+    expect(after!.resized).toBe(true);
+    expect(after!.height).toBeGreaterThan(before + 40);
+    expect(after!.wlmBottom).toBeLessThanOrEqual(after!.lcatTop + 1);
+    expect(after!.storedWlm).toBeGreaterThan(before + 40);
+    expect(after!.splitterCount).toBeGreaterThanOrEqual(1);
+  });
+});
+
+test.describe('Map chrome responsive (#135)', () => {
+  const viewports = [
+    { width: 480, height: 360 },
+    { width: 768, height: 576 },
+    { width: 1024, height: 768 },
+  ] as const;
+
+  for (const viewport of viewports) {
+    test(`chrome does not overlap at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+      // Login at a desktop size so the login button stays in-viewport.
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await loginAndOpenMap(page);
+      await page.setViewportSize(viewport);
+      // Capas drawer collapsed for map-chrome layout (tab visible on the edge).
+      await page.locator('.tc-tools-panel').evaluate((panel) => {
+        panel.classList.add('tc-collapsed-right');
+      });
+
+      const layout = await page.evaluate(() => {
+        const pick = (sel: string) => {
+          const el = document.querySelector(sel) as HTMLElement | null;
+          if (!el) {
+            return null;
+          }
+          const style = getComputedStyle(el);
+          if (style.display === 'none' || style.visibility === 'hidden') {
+            return null;
+          }
+          const b = el.getBoundingClientRect();
+          if (b.width < 2 || b.height < 2) {
+            return null;
+          }
+          return { x: b.x, y: b.y, width: b.width, height: b.height, sel };
+        };
+        const candidates = [
+          pick('.tc-ctl-nav .tc-ctl-nav-btn-zoomin'),
+          pick('.tc-ctl-nav .tc-ctl-nav-btn-zoomout'),
+          pick('.tc-ctl-nav-home-btn'),
+          pick('.tc-tools-panel > h1'),
+          pick('.tc-ctl-sv'),
+          pick('.tc-ctl-3d'),
+        ].filter(Boolean) as Array<{
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+          sel: string;
+        }>;
+
+        const capasH1 = document.querySelector('.tc-tools-panel > h1') as HTMLElement | null;
+        let capasGlyphCount = 0;
+        if (capasH1) {
+          const bg = getComputedStyle(capasH1).backgroundImage;
+          if (bg && bg !== 'none') {
+            capasGlyphCount += 1;
+          }
+          const before = getComputedStyle(capasH1, '::before');
+          const after = getComputedStyle(capasH1, '::after');
+          if (before.content && before.content !== 'none' && before.content !== '""') {
+            capasGlyphCount += 1;
+          }
+          if (after.content && after.content !== 'none' && after.content !== '""') {
+            capasGlyphCount += 1;
+          }
+        }
+
+        const sv = document.querySelector('.tc-ctl-sv');
+        const threed = document.querySelector('.tc-ctl-3d');
+        return {
+          candidates,
+          capasGlyphCount,
+          svDisplay: sv ? getComputedStyle(sv).display : 'none',
+          threedDisplay: threed ? getComputedStyle(threed).display : 'none',
+        };
+      });
+
+      if (viewport.width <= 480) {
+        expect(layout.svDisplay).toBe('none');
+        expect(layout.threedDisplay).toBe('none');
+      }
+
+      expect(layout.capasGlyphCount).toBeLessThanOrEqual(1);
+
+      for (let i = 0; i < layout.candidates.length; i++) {
+        for (let j = i + 1; j < layout.candidates.length; j++) {
+          const a = layout.candidates[i]!;
+          const b = layout.candidates[j]!;
+          expect(
+            boxesOverlap(a, b),
+            `${a.sel} overlaps ${b.sel} at ${viewport.width}x${viewport.height}`,
+          ).toBe(false);
+        }
+      }
+    });
+  }
 });

@@ -13,6 +13,7 @@ import {
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
+  QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
   QUERYABLE_LEAF_TREE_NODE_DB_ID,
   ROLE_ID,
   SERVICE_ID,
@@ -269,7 +270,11 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         'X-SITMUN-Client': 'admin',
         'Content-Type': 'application/merge-patch+json',
       },
-      data: { queryableFeatureEnabled: true },
+      data: {
+        queryableFeatureEnabled: true,
+        // Capas #92: profile maxScaleDenominator → virtual WMS MaxScaleDenominator
+        maximumScale: QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
+      },
     },
   );
   expect(
