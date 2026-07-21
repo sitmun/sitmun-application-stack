@@ -9,8 +9,9 @@ export const SERVICE_ID = 3;
 /** WMS services backing Topográficos leaves used by catalog E2E. */
 export const CATALOG_LEAF_SERVICE_IDS = [4, 5] as const;
 
-/** Seed UI tasks required for Capas / layer catalog (missing from STM_AVAIL_TSK). */
+/** Seed UI tasks required for Capas / layer catalog / legend (missing from STM_AVAIL_TSK). */
 export const LAYER_CATALOG_TASK_ID = 11;
+export const LEGEND_TASK_ID = 12;
 export const WORK_LAYER_MANAGER_TASK_ID = 31;
 
 /**

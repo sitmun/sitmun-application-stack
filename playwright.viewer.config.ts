@@ -73,5 +73,11 @@ export default defineConfig({
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'viewer-legend',
+      testMatch: /legend\.spec\.ts/,
+      dependencies: ['viewer-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });

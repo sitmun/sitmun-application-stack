@@ -19,7 +19,8 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Public access: eligible vs blocked point-of-contact email on applications 2 and 3 (institution always shown when set)
 - Password access: dedicated regular user login, private profile, proxy token persistence, and secured WMS through proxy
 - Layer catalog (`viewer-catalog`): radio folder children render native radios; `loadData` folders get a visible load control (checkbox, or radio when the folder is radio; title expand-only); non-radio cartography leaves get `sitmun-lcat-leaf-load` checkboxes (toggle work layer); child radios still work when `loadData` is off; queryable leaves show `.sitmun-lcat-gfi` after select when setup enables `queryableActive` + layer `queryableFeatureEnabled` (meta stamp asserted when SITNA renders info); row geometry asserts fixed 18px select/GFI controls when present (no empty spacers), level-stamped inset (`data-sitmun-lcat-level` 0/1/2…), nest step = type-icon width (16px, parent pad cancelled on nested `ul`), vertical centers, and meta ≥18×18 hit box; visible Capas disponibles rows stamp alternating `data-sitmun-lcat-zebra`; folder titles stay roman under `tc-checked`. Capas trash-then-clear after partial remove is asserted in viewer Jest (`layer-catalog-control.handler`). Playwright covers Capas row after radio load, out-of-scale `#777777` path color (#92), WLM/LCAT non-overlap and runtime tools-panel splitters (#142), and map-chrome stacking at 480/768/1024 (#135); stub serves GetMap PNG and GetMap OnlineResource (rewritten by proxy) so Capas rows are not cleared by TILELOADERROR.
-- Local Basic-auth upstream stub; production Liquibase is not modified
+- Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
+- Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); production Liquibase is not modified
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
 
@@ -94,6 +95,7 @@ npm run e2e:viewer:ui
 npm run e2e:viewer -- --project=viewer-public
 npm run e2e:viewer -- --project=viewer-password
 npm run e2e:viewer -- --project=viewer-catalog
+npm run e2e:viewer -- --project=viewer-legend
 
 # admin → viewer responsible institution (shared backend)
 npx playwright test --config=playwright.application-contact.config.ts

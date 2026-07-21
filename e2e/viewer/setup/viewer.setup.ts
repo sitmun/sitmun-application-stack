@@ -12,6 +12,7 @@ import {
   CONTACT_INSTITUTION,
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
+  LEGEND_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
   QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
   QUERYABLE_LEAF_TREE_NODE_DB_ID,
@@ -223,8 +224,12 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   }
 
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
-  // sitna.layerCatalog / workLayerManager, so Capas stays empty without this.
-  for (const taskId of [LAYER_CATALOG_TASK_ID, WORK_LAYER_MANAGER_TASK_ID]) {
+  // sitna.layerCatalog / sitna.legend / workLayerManager.
+  for (const taskId of [
+    LAYER_CATALOG_TASK_ID,
+    LEGEND_TASK_ID,
+    WORK_LAYER_MANAGER_TASK_ID,
+  ]) {
     const createAvailability = await request.post('/backend/api/task-availabilities', {
       headers: adminHeaders,
       data: {

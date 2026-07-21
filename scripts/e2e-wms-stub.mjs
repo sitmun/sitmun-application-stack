@@ -1,4 +1,13 @@
 #!/usr/bin/env node
+/**
+ * Local secured WMS stub for root Playwright viewer E2E.
+ *
+ * DiBa/ArcGIS-style behavior for sitmun-viewer-app#164 (CAE1M / PCE5M oracle):
+ * - DescribeLayer → RequestNotAllowed
+ * - GetCapabilities Style/LegendURL → /legend (distinct from /wms MapServer path)
+ * - GetLegendGraphic on /wms fails (native SITNA getLegend path cannot paint)
+ * - GET /legend returns a stable PNG (>100 bytes) for Capas + LegendURL fallback
+ */
 import { createServer } from 'node:http';
 
 const HOST = '127.0.0.1';
@@ -10,6 +19,7 @@ const EXPECTED_AUTH = `Basic ${Buffer.from(`${USER}:${PASSWORD}`).toString('base
 // OnlineResource must be the stub base URL so proxy middleware can rewrite it to
 // the public proxy path (empty OnlineResource made OL GetMap hit the viewer origin).
 const STUB_WMS_URL = `http://${HOST}:${PORT}/wms`;
+const STUB_LEGEND_URL = `http://${HOST}:${PORT}/legend`;
 
 /** Seed WMS names used by catalog E2E leaves (GEO 4/5/6/7 + situation map). */
 const LAYER_NAMES = [
@@ -67,15 +77,35 @@ const LAYER_NAMES = [
   '48_ALTI_TX',
 ];
 
+/** 32×32 PNG (>100 bytes) so SITNA getLegend blob size gate accepts Capas/fallback imgs. */
+const LEGEND_PNG = Buffer.from(
+  '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',
+  'base64',
+);
+
+const GETMAP_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
 function layerXml(name) {
   // Capas #92 E2E: Toponímia out-of-scale when OGC scale > 100000 (zoom out).
   const scale =
     name === '34_TOPO_TX'
       ? '\n        <MaxScaleDenominator>100000</MaxScaleDenominator>'
       : '';
+  // #164: LegendURL on a distinct servlet-like path (not /wms GetLegendGraphic).
   return `      <Layer queryable="1">
         <Name>${name}</Name>
         <Title>${name}</Title>${scale}
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL width="8" height="8">
+            <Format>image/png</Format>
+            <OnlineResource xlink:type="simple" xlink:href="${STUB_LEGEND_URL}?layer=${encodeURIComponent(name)}"/>
+          </LegendURL>
+        </Style>
       </Layer>`;
 }
 
@@ -123,9 +153,23 @@ ${LAYER_NAMES.map(layerXml).join('\n')}
 </WMS_Capabilities>
 `;
 
+function serviceException(code, message, version = '1.3.0') {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<ServiceExceptionReport version="${version}">
+  <ServiceException code="${code}">
+${message}
+  </ServiceException>
+</ServiceExceptionReport>
+`;
+}
+
 function fail(message) {
   console.error(`[e2e-wms-stub] ${message}`);
   process.exit(1);
+}
+
+function requestNameOf(url) {
+  return (url.searchParams.get('REQUEST') || url.searchParams.get('request') || '').toLowerCase();
 }
 
 const server = createServer((req, res) => {
@@ -138,11 +182,24 @@ const server = createServer((req, res) => {
     return;
   }
 
+  // Capas / LegendURL fallback: no Basic auth (browser <img> cannot send it).
+  if (method === 'GET' && url.pathname === '/legend') {
+    console.error(`[e2e-wms-stub] GET /legend layer=${url.searchParams.get('layer') ?? ''}`);
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Access-Control-Allow-Origin': '*',
+      'X-E2E-Upstream': 'legend-url',
+    });
+    res.end(LEGEND_PNG);
+    return;
+  }
+
   if (method === 'GET' && url.pathname === '/wms') {
     const authorization = req.headers.authorization;
     const accepted = authorization === EXPECTED_AUTH;
+    const requestName = requestNameOf(url);
     console.error(
-      `[e2e-wms-stub] ${method} ${url.pathname} basicAuth=${accepted ? 'accepted' : 'rejected'}`,
+      `[e2e-wms-stub] ${method} ${url.pathname} request=${requestName || 'capabilities'} basicAuth=${accepted ? 'accepted' : 'rejected'}`,
     );
 
     if (!accepted) {
@@ -154,19 +211,48 @@ const server = createServer((req, res) => {
       return;
     }
 
-    const requestName = (url.searchParams.get('REQUEST') || url.searchParams.get('request') || '')
-      .toLowerCase();
+    if (requestName === 'describelayer') {
+      res.writeHead(200, {
+        'Content-Type': 'text/xml',
+        'X-E2E-Upstream': 'secured-wms',
+      });
+      res.end(serviceException('RequestNotAllowed', 'The request not allowed.', '1.1.1'));
+      return;
+    }
+
+    if (requestName === 'getlegendgraphic') {
+      const format = (
+        url.searchParams.get('FORMAT') ||
+        url.searchParams.get('format') ||
+        ''
+      ).toLowerCase();
+      // JSON probe: InvalidFormat XML → SITNA treats as PNG-capable (DiBa).
+      // PNG fetch: body must be <100 bytes so Raster.getLegend discards the blob
+      // and Capas-parity LegendURL fallback can run (#164).
+      if (format.includes('json')) {
+        res.writeHead(200, {
+          'Content-Type': 'text/xml',
+          'X-E2E-Upstream': 'secured-wms',
+        });
+        res.end(
+          serviceException('InvalidFormat', "Parameter 'format' contains unacceptable value."),
+        );
+      } else {
+        res.writeHead(200, {
+          'Content-Type': 'image/png',
+          'X-E2E-Upstream': 'secured-wms',
+        });
+        res.end(Buffer.alloc(50));
+      }
+      return;
+    }
+
     if (requestName === 'getmap') {
-      // 1x1 PNG so Capas rows are not cleared by TILELOADERROR after add.
-      const png = Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-        'base64',
-      );
       res.writeHead(200, {
         'Content-Type': 'image/png',
         'X-E2E-Upstream': 'secured-wms',
       });
-      res.end(png);
+      res.end(GETMAP_PNG);
       return;
     }
 
