@@ -747,11 +747,11 @@ test.describe('Capas WLM contrast and layout (#92 / #142)', () => {
       }
       const wlmBox = wlm.getBoundingClientRect();
       const lcatBox = lcat.getBoundingClientRect();
-      const ul = wlm.querySelector('.tc-ctl-wlm-content ul') as HTMLElement | null;
+      const content = wlm.querySelector('.tc-ctl-wlm-content') as HTMLElement | null;
       return {
         wlmBottom: wlmBox.bottom,
         lcatTop: lcatBox.top,
-        overflowY: ul ? getComputedStyle(ul).overflowY : null,
+        overflowY: content ? getComputedStyle(content).overflowY : null,
       };
     });
     expect(boxes).not.toBeNull();
