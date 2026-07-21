@@ -100,10 +100,10 @@ The stack has four main components:
    The stack is configured via `.env`. Recommended profiles are under `profiles/`:
 
    ```bash
-   # Development (PostgreSQL + demo DB)
+   # Development (PostgreSQL)
    cp profiles/development-postgres.env .env
 
-   # Development (Oracle + demo DB)
+   # Development (Oracle)
    # cp profiles/development-oracle.env .env
    ```
 
@@ -254,7 +254,7 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `LOCAL_BASE_PATH`          | Base path in the nginx container                      | `/`                                 |
 | `SITMUN_PROFILE`           | SITMUN scenario profile                               | `development`                       |
 | `SITMUN_DB_PROFILE`        | Spring Boot database profile (postgres/oracle)        | `postgres`                          |
-| `COMPOSE_PROFILES`         | Docker containers to start (postgres, oracle, dev)    | `postgres`                          |
+| `COMPOSE_PROFILES`         | Docker profiles: `postgres`, `oracle`, `demo` (example DB; `dev` alias), `mbtiles` | `postgres` |
 | `DATABASE`                 | Database name                                         | `sitmun3`                           |
 | `DATABASE_URL`             | JDBC URL                                              | `jdbc:postgresql://postgres:5432/`  |
 | `DATABASE_USERNAME`        | Database username                                     | `sitmun3`                           |
@@ -273,7 +273,7 @@ The SITMUN Application Stack supports multiple database backends: **PostgreSQL 1
 
 - **`SITMUN_PROFILE`** -- SITMUN scenario profile. Use `development` for local development scenarios.
 - **`SITMUN_DB_PROFILE`** -- Spring Boot database profile for the backend (`postgres` or `oracle`). Controls database dialect, Liquibase config, and which database service the backend depends on. Must always be set.
-- **`COMPOSE_PROFILES`** -- Built-in Docker Compose variable that selects which containers start. Set to `postgres` or `oracle` for a dockerized database. Add `,dev` to also start the example demo database. Omit entirely for external databases.
+- **`COMPOSE_PROFILES`** -- Built-in Docker Compose variable that selects which containers start. Set to `postgres` or `oracle` for a dockerized database. Add `,demo` for the example demo database (host port 9005; `,dev` remains a deprecated alias). Add `,mbtiles` for the MBTiles service used by edition-mobile tile export. Omit entirely for external databases.
 
 `SITMUN_DB_PROFILE` and `COMPOSE_PROFILES` must agree on the database type when using a dockerized database.
 
@@ -295,11 +295,11 @@ docker compose up -d
 cp profiles/oracle.env .env
 docker compose up -d
 
-# PostgreSQL + example demo database
+# Development PostgreSQL (main DB + Liquibase seed; no example DB / MBTiles)
 cp profiles/development-postgres.env .env
 docker compose up -d
 
-# Oracle + example demo database
+# Development Oracle (same idea)
 cp profiles/development-oracle.env .env
 docker compose up -d
 
@@ -440,18 +440,36 @@ Then: `docker compose up -d front backend proxy`
 
 An optional demo database with geospatial datasets is available for testing. It runs on port `9005` and includes UNESCO heritage sites, web publications, and materials management data from `profiles/development/demo-data/`.
 
-To include it, use a development profile (which already sets `COMPOSE_PROFILES=postgres,dev` or `oracle,dev`):
+Development profiles do **not** enable it by default. Opt in by adding the Compose profile `demo` (`,dev` is a deprecated alias that still works):
 
 ```bash
-# Using profile .env files
-cp profiles/development-postgres.env .env
-docker compose up -d
-# Or for Oracle: cp profiles/development-oracle.env .env
+# In .env (PostgreSQL)
+COMPOSE_PROFILES=postgres,demo
 
-# Or in .env: COMPOSE_PROFILES=postgres,dev
+# Or temporarily:
+COMPOSE_PROFILES=postgres,demo docker compose up -d
+
+# Oracle:
+# COMPOSE_PROFILES=oracle,demo
 ```
 
-The example database is independent of the main SITMUN database and uses separate credentials (`example`/`example`).
+Tourism/demo tasks that use JDBC `jdbc:postgresql://example/example` need this container. The main SITMUN database still starts without it. Credentials: `example`/`example` (read-only role `example_reader`/`example_reader`).
+
+#### MBTiles (Optional)
+
+The MBTiles service supports edition-mobile offline tile export through proxy middleware. It is internal to the Compose network (no host port); nginx returns `404` for public `/mbtiles`.
+
+Development profiles do **not** enable it by default. Opt in with `,mbtiles`:
+
+```bash
+# In .env
+COMPOSE_PROFILES=postgres,mbtiles
+
+# With example demo DB as well:
+# COMPOSE_PROFILES=postgres,demo,mbtiles
+```
+
+Admin, viewer, and normal WMS/WFS proxy flows work without it. Root Playwright mobile suites start MBTiles via `npm run e2e:mbtiles` (Gradle on port 18084), not this Compose service.
 
 ### Application Configuration
 
