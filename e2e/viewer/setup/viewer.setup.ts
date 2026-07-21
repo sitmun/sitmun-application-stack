@@ -10,6 +10,7 @@ import {
   CONTACT_APP_ID,
   CONTACT_EMAIL,
   CONTACT_INSTITUTION,
+  BASEMAP_SELECTOR_TASK_ID,
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
   LEGEND_TASK_ID,
@@ -224,11 +225,12 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   }
 
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
-  // sitna.layerCatalog / sitna.legend / workLayerManager.
+  // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector.
   for (const taskId of [
     LAYER_CATALOG_TASK_ID,
     LEGEND_TASK_ID,
     WORK_LAYER_MANAGER_TASK_ID,
+    BASEMAP_SELECTOR_TASK_ID,
   ]) {
     const createAvailability = await request.post('/backend/api/task-availabilities', {
       headers: adminHeaders,

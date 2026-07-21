@@ -13,6 +13,8 @@ export const CATALOG_LEAF_SERVICE_IDS = [4, 5] as const;
 export const LAYER_CATALOG_TASK_ID = 11;
 export const LEGEND_TASK_ID = 12;
 export const WORK_LAYER_MANAGER_TASK_ID = 31;
+/** Seed STM_TASK id for sitna.basemapSelector (STM_TSK_UI TUI_ID 2). */
+export const BASEMAP_SELECTOR_TASK_ID = 2;
 
 /**
  * Catalog E2E uses the visible Topográficos branch (Ortofotos is filtered out of the

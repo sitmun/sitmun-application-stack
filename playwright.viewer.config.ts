@@ -79,5 +79,11 @@ export default defineConfig({
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'viewer-basemap',
+      testMatch: /basemap-none\.spec\.ts/,
+      dependencies: ['viewer-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });
