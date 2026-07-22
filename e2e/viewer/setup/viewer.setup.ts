@@ -11,14 +11,20 @@ import {
   CONTACT_EMAIL,
   CONTACT_INSTITUTION,
   BASEMAP_SELECTOR_TASK_ID,
+  FULL_SCREEN_TASK_ID,
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
   LEGEND_TASK_ID,
+  NAV_BAR_TASK_ID,
+  OVERVIEW_MAP_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
+  SEARCH_TASK_ID,
   QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
   QUERYABLE_LEAF_TREE_NODE_DB_ID,
   ROLE_ID,
   SERVICE_ID,
+  STREET_VIEW_TASK_ID,
+  THREE_D_TASK_ID,
   TERRITORY_ID,
   uniqueViewerUsername,
   UPSTREAM_PASSWORD,
@@ -225,12 +231,19 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   }
 
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
-  // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector.
+  // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector
+  // and map-chrome nav/fullscreen/streetView/overview needed for #135 checks.
   for (const taskId of [
     LAYER_CATALOG_TASK_ID,
     LEGEND_TASK_ID,
     WORK_LAYER_MANAGER_TASK_ID,
     BASEMAP_SELECTOR_TASK_ID,
+    FULL_SCREEN_TASK_ID,
+    NAV_BAR_TASK_ID,
+    OVERVIEW_MAP_TASK_ID,
+    SEARCH_TASK_ID,
+    STREET_VIEW_TASK_ID,
+    THREE_D_TASK_ID,
   ]) {
     const createAvailability = await request.post('/backend/api/task-availabilities', {
       headers: adminHeaders,
