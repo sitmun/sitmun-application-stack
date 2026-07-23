@@ -9,10 +9,30 @@ const stackRoot = resolve(__dirname, '..');
 const proxyRoot = join(stackRoot, 'back', 'proxy', 'sitmun-proxy-middleware');
 const isWindows = process.platform === 'win32';
 const gradlew = join(proxyRoot, isWindows ? 'gradlew.bat' : 'gradlew');
+const BACKEND_HEALTH_URL = 'http://localhost:18080/api/dashboard/health';
+const BACKEND_WAIT_MS = 180_000;
 
 function fail(message) {
   console.error(`[e2e-proxy] ${message}`);
   process.exit(1);
+}
+
+async function waitForBackend(url, timeoutMs) {
+  const start = Date.now();
+  console.error(`[e2e-proxy] Waiting for backend at ${url}...`);
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        console.error('[e2e-proxy] Backend is ready');
+        return;
+      }
+    } catch {
+      // retry until timeout
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  fail(`Timed out waiting for backend at ${url} (${timeoutMs}ms)`);
 }
 
 if (!existsSync(proxyRoot)) {
@@ -27,6 +47,9 @@ try {
 } catch {
   fail('Java is not available on PATH. Install Java 17 (or a JDK that Gradle can use for the Java 17 toolchain).');
 }
+
+// Playwright starts webServers in parallel; proxy config fetch needs backend first.
+await waitForBackend(BACKEND_HEALTH_URL, BACKEND_WAIT_MS);
 
 console.error('[e2e-proxy] Starting proxy middleware on port 18082...');
 

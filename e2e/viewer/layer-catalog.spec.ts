@@ -1,4 +1,6 @@
-import { test, expect, type APIRequestContext, type Page } from '@playwright/test';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { test, expect, type APIRequestContext, type Page, type TestInfo } from '@playwright/test';
 import {
   APP_ID,
   CHECKBOX_LOAD_FOLDER_NODE_ID,
@@ -810,7 +812,639 @@ test.describe('Capas WLM contrast and layout (#92 / #142)', () => {
   });
 });
 
+type ChromeBox = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  sel: string;
+};
+
+type MapChromeLayout = {
+  candidates: ChromeBox[];
+  leftStack: ChromeBox[];
+  capasGlyphCount: number;
+  capasTransform: string;
+  capasPanel: ChromeBox | null;
+  capasTab: ChromeBox | null;
+  overviewTab: ChromeBox | null;
+  search: ChromeBox | null;
+  slider: ChromeBox | null;
+  mapBox: ChromeBox | null;
+  opacities: Record<string, number>;
+  wlmActionBoxes: ChromeBox[];
+  svDisplay: string;
+  threedDisplay: string;
+};
+
+const ISSUE135_SHOT_DIR = path.join('test-results', 'issue135');
+
+const LEFT_STACK_ORDER = [
+  '#tools-tab',
+  '#legend-tab',
+  '.tc-ctl-fscreen',
+  'button.tc-ctl-fscreen-btn',
+  '.tc-ctl-sv',
+  '.tc-ctl-nav-home-btn',
+  '.tc-ctl-nav .tc-ctl-nav-btn-zoomin',
+  '.tc-ctl-nav .tc-ctl-nav-btn-zoomout',
+  '.tc-ctl-3d',
+] as const;
+
+async function captureIssue135Shot(
+  page: Page,
+  testInfo: TestInfo,
+  name: string,
+  clip?: { x: number; y: number; width: number; height: number },
+): Promise<void> {
+  fs.mkdirSync(ISSUE135_SHOT_DIR, { recursive: true });
+  const filePath = path.join(ISSUE135_SHOT_DIR, name);
+  await page.screenshot({ path: filePath, fullPage: false, ...(clip ? { clip } : {}) });
+  await testInfo.attach(name, { path: filePath, contentType: 'image/png' });
+}
+
+async function readMapChromeLayout(page: Page): Promise<MapChromeLayout> {
+  return page.evaluate(() => {
+    const pick = (sel: string): ChromeBox | null => {
+      const el = document.querySelector(sel) as HTMLElement | null;
+      if (!el) {
+        return null;
+      }
+      const style = getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden') {
+        return null;
+      }
+      const b = el.getBoundingClientRect();
+      if (b.width < 2 || b.height < 2) {
+        return null;
+      }
+      return { x: b.x, y: b.y, width: b.width, height: b.height, sel };
+    };
+
+    const leftSelectors = [
+      '#tools-tab',
+      '#legend-tab',
+      '.tc-ctl-fscreen',
+      'button.tc-ctl-fscreen-btn',
+      '.tc-ctl-sv',
+      '.tc-ctl-nav-home-btn',
+      '.tc-ctl-nav .tc-ctl-nav-btn-zoomin',
+      '.tc-ctl-nav .tc-ctl-nav-btn-zoomout',
+      '.tc-ctl-3d',
+    ];
+    const leftStack = leftSelectors
+      .map((sel) => pick(sel))
+      .filter(Boolean) as ChromeBox[];
+
+    // Prefer host .tc-ctl-fscreen over nested button when both match.
+    const fscreenHost = leftStack.find((b) => b.sel === '.tc-ctl-fscreen');
+    const leftDeduped = fscreenHost
+      ? leftStack.filter((b) => b.sel !== 'button.tc-ctl-fscreen-btn')
+      : leftStack;
+
+    const capasH1 = pick('.tc-tools-panel > h1');
+    const overviewTab =
+      pick('#ovmap-tab') ?? pick('.tc-ovmap-panel > h1');
+    const search = pick('.tc-ctl-search-content');
+    const slider =
+      pick('.tc-ctl-nav-slider') ?? pick('.ol-zoomslider') ?? pick('.tc-ctl-nav-bar');
+    const candidates = [...leftDeduped, capasH1, overviewTab].filter(Boolean) as ChromeBox[];
+
+    const capasEl = document.querySelector('.tc-tools-panel > h1') as HTMLElement | null;
+    let capasGlyphCount = 0;
+    let capasTransform = 'none';
+    if (capasEl) {
+      capasTransform = getComputedStyle(capasEl).transform;
+      const bg = getComputedStyle(capasEl).backgroundImage;
+      if (bg && bg !== 'none') {
+        capasGlyphCount += 1;
+      }
+      const before = getComputedStyle(capasEl, '::before');
+      const after = getComputedStyle(capasEl, '::after');
+      if (before.content && before.content !== 'none' && before.content !== '""') {
+        capasGlyphCount += 1;
+      }
+      if (after.content && after.content !== 'none' && after.content !== '""') {
+        capasGlyphCount += 1;
+      }
+    }
+
+    const toolsPanel = document.querySelector('.tc-tools-panel') as HTMLElement | null;
+    let capasPanel: ChromeBox | null = null;
+    if (toolsPanel && !toolsPanel.classList.contains('tc-collapsed-right')) {
+      const content =
+        (toolsPanel.querySelector('.tc-panel-content') as HTMLElement | null) ?? toolsPanel;
+      const style = getComputedStyle(content);
+      if (style.display !== 'none' && style.visibility !== 'hidden') {
+        const b = content.getBoundingClientRect();
+        if (b.width >= 2 && b.height >= 2) {
+          capasPanel = {
+            x: b.x,
+            y: b.y,
+            width: b.width,
+            height: b.height,
+            sel: '.tc-tools-panel .tc-panel-content',
+          };
+        }
+      }
+    }
+
+    const opacityOf = (sel: string): number => {
+      const el = document.querySelector(sel) as HTMLElement | null;
+      if (!el) {
+        return 0;
+      }
+      return Number.parseFloat(getComputedStyle(el).opacity || '0');
+    };
+
+    const wlmActionBoxes = [
+      pick('#tc-slot-wlm .tc-ctl-wlm-btn-info'),
+      pick('#tc-slot-wlm .tc-ctl-wlm-btn-visibility'),
+      pick('#tc-slot-wlm .tc-ctl-wlm-btn-zoom'),
+      pick('#tc-slot-wlm .tc-ctl-wlm-btn-del'),
+      pick('#tc-slot-wlm input[type="range"]'),
+    ].filter(Boolean) as ChromeBox[];
+
+    const sv = document.querySelector('.tc-ctl-sv');
+    const threed = document.querySelector('.tc-ctl-3d');
+    const mapBox =
+      pick('.tc-map') ?? pick('#mapa') ?? pick('sitmun-map') ?? null;
+    return {
+      candidates,
+      leftStack: leftDeduped,
+      capasGlyphCount,
+      capasTransform,
+      capasPanel,
+      capasTab: capasH1,
+      overviewTab,
+      search,
+      slider,
+      mapBox,
+      opacities: {
+        '#tools-tab': opacityOf('#tools-tab'),
+        '#legend-tab': opacityOf('#legend-tab'),
+        '.tc-ctl-fscreen': opacityOf('.tc-ctl-fscreen'),
+        'button.tc-ctl-fscreen-btn': opacityOf('button.tc-ctl-fscreen-btn'),
+      },
+      wlmActionBoxes,
+      svDisplay: sv ? getComputedStyle(sv).display : 'none',
+      threedDisplay: threed ? getComputedStyle(threed).display : 'none',
+    };
+  });
+}
+
+function assertNoOverlap(
+  boxes: ChromeBox[],
+  viewportLabel: string,
+  label: string,
+): void {
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i]!;
+      const b = boxes[j]!;
+      expect(
+        boxesOverlap(a, b),
+        `${label}: ${a.sel} overlaps ${b.sel} at ${viewportLabel}`,
+      ).toBe(false);
+    }
+  }
+}
+
+function assertLeftStackOrder(
+  leftStack: ChromeBox[],
+  viewportLabel: string,
+  slider: ChromeBox | null = null,
+): void {
+  const orderIndex = (sel: string) => LEFT_STACK_ORDER.indexOf(sel as (typeof LEFT_STACK_ORDER)[number]);
+  const ordered = [...leftStack].sort((a, b) => orderIndex(a.sel) - orderIndex(b.sel));
+  for (let i = 0; i < ordered.length - 1; i++) {
+    const a = ordered[i]!;
+    const b = ordered[i + 1]!;
+    expect(
+      a.y < b.y,
+      `left stack order at ${viewportLabel}: ${a.sel} (y=${a.y}) should be above ${b.sel} (y=${b.y})`,
+    ).toBe(true);
+  }
+
+  const home = leftStack.find((b) => b.sel === '.tc-ctl-nav-home-btn');
+  const zoomIn = leftStack.find((b) => b.sel === '.tc-ctl-nav .tc-ctl-nav-btn-zoomin');
+  const zoomOut = leftStack.find((b) => b.sel === '.tc-ctl-nav .tc-ctl-nav-btn-zoomout');
+  const threed = leftStack.find((b) => b.sel === '.tc-ctl-3d');
+  if (home && zoomIn) {
+    expect(
+      boxesOverlap(home, zoomIn),
+      `BAD stack: home overlaps zoom+ at ${viewportLabel}`,
+    ).toBe(false);
+  }
+  const fscreen =
+    leftStack.find((b) => b.sel === '.tc-ctl-fscreen') ??
+    leftStack.find((b) => b.sel === 'button.tc-ctl-fscreen-btn');
+  const sv = leftStack.find((b) => b.sel === '.tc-ctl-sv');
+  if (fscreen && sv) {
+    expect(
+      boxesOverlap(fscreen, sv),
+      `BAD stack: fscreen overlaps Street View at ${viewportLabel}`,
+    ).toBe(false);
+  }
+  if (zoomIn && zoomOut && threed) {
+    expect(
+      zoomIn.y < zoomOut.y && zoomOut.y < threed.y,
+      `zoom order at ${viewportLabel}: + (${zoomIn.y}) < − (${zoomOut.y}) < 3D (${threed.y})`,
+    ).toBe(true);
+  }
+  if (slider && zoomIn && zoomOut) {
+    expect(
+      zoomIn.y < slider.y && slider.y < zoomOut.y,
+      `slider between +/− at ${viewportLabel}: + (${zoomIn.y}) < slider (${slider.y}) < − (${zoomOut.y})`,
+    ).toBe(true);
+  }
+}
+
+function assertSearchRightOfTools(
+  layout: MapChromeLayout,
+  viewportLabel: string,
+): void {
+  const tools = layout.leftStack.find((b) => b.sel === '#tools-tab');
+  expect(layout.search, `search must be visible at ${viewportLabel}`).toBeTruthy();
+  expect(tools, `tools tab must be visible at ${viewportLabel}`).toBeTruthy();
+  if (!layout.search || !tools) {
+    return;
+  }
+  expect(
+    layout.search.x + 0.5 >= tools.x + tools.width,
+    `search must sit right of tools at ${viewportLabel}: search.x=${layout.search.x} tools.right=${tools.x + tools.width}`,
+  ).toBe(true);
+  for (const tool of layout.leftStack) {
+    expect(
+      boxesOverlap(layout.search, tool),
+      `search overlaps ${tool.sel} at ${viewportLabel}`,
+    ).toBe(false);
+  }
+}
+
+function assertOpaqueLeftChrome(layout: MapChromeLayout, viewportLabel: string): void {
+  for (const sel of ['#tools-tab', '#legend-tab'] as const) {
+    expect(
+      layout.opacities[sel]! >= 0.99,
+      `${sel} opacity at ${viewportLabel}: ${layout.opacities[sel]}`,
+    ).toBe(true);
+  }
+  const fscreenOpacity = Math.max(
+    layout.opacities['.tc-ctl-fscreen'] ?? 0,
+    layout.opacities['button.tc-ctl-fscreen-btn'] ?? 0,
+  );
+  if (layout.leftStack.some((b) => b.sel.includes('fscreen'))) {
+    expect(
+      fscreenOpacity >= 0.99,
+      `fscreen opacity at ${viewportLabel}: ${fscreenOpacity}`,
+    ).toBe(true);
+  }
+}
+
+/** Overview hides only on very short heights; must stay visible at 768×576. */
+const OVERVIEW_MIN_VIEWPORT_HEIGHT = 401;
+
+function assertRightChrome(
+  layout: MapChromeLayout,
+  viewport: { width: number; height: number },
+  viewportLabel: string,
+): void {
+  expect(layout.capasTab, `Capas tab must be visible at ${viewportLabel}`).toBeTruthy();
+  const capas = layout.capasTab!;
+  const tools = layout.leftStack.find((b) => b.sel === '#tools-tab');
+  const mapRight = layout.mapBox
+    ? layout.mapBox.x + layout.mapBox.width
+    : viewport.width;
+  const mapBottom = layout.mapBox
+    ? layout.mapBox.y + layout.mapBox.height
+    : viewport.height;
+  const mapMidX = layout.mapBox
+    ? layout.mapBox.x + layout.mapBox.width / 2
+    : viewport.width / 2;
+  expect(
+    Math.abs(capas.width - 40) <= 4 && Math.abs(capas.height - 40) <= 4,
+    `Capas size at ${viewportLabel}: ${capas.width}x${capas.height} (want ~40x40)`,
+  ).toBe(true);
+  expect(
+    capas.x > mapMidX,
+    `Capas must be on the right at ${viewportLabel}: x=${capas.x}`,
+  ).toBe(true);
+  if (tools) {
+    expect(
+      Math.abs(capas.y - tools.y) <= 4,
+      `Capas must align with tools at ${viewportLabel}: capas.y=${capas.y} tools.y=${tools.y}`,
+    ).toBe(true);
+  }
+  const capasRightGap = mapRight - (capas.x + capas.width);
+  expect(
+    Math.abs(capasRightGap - 20) <= 8,
+    `Capas right inset at ${viewportLabel}: ${capasRightGap} (want ~20)`,
+  ).toBe(true);
+
+  if (viewport.height < OVERVIEW_MIN_VIEWPORT_HEIGHT) {
+    expect(
+      layout.overviewTab,
+      `overview must hide before clipping/Capas overlap at ${viewportLabel}`,
+    ).toBeNull();
+    return;
+  }
+
+  expect(layout.overviewTab, `overview tab must be visible at ${viewportLabel}`).toBeTruthy();
+  const overview = layout.overviewTab!;
+  expect(
+    Math.abs(overview.width - 40) <= 4 && Math.abs(overview.height - 40) <= 4,
+    `overview size at ${viewportLabel}: ${overview.width}x${overview.height} (want ~40x40; clipped/broken if smaller)`,
+  ).toBe(true);
+  // Fully inside the map — rejects the corner-clipped "broken" glyph.
+  expect(
+    overview.x >= (layout.mapBox?.x ?? 0) - 1 &&
+      overview.y >= (layout.mapBox?.y ?? 0) - 1 &&
+      overview.x + overview.width <= mapRight + 1 &&
+      overview.y + overview.height <= mapBottom + 1,
+    `overview must stay inside map at ${viewportLabel} (not clipped)`,
+  ).toBe(true);
+  const overviewRightGap = mapRight - (overview.x + overview.width);
+  const overviewBottomGap = mapBottom - (overview.y + overview.height);
+  expect(
+    Math.abs(overviewRightGap - 20) <= 8,
+    `overview right inset at ${viewportLabel}: ${overviewRightGap} (want ~20)`,
+  ).toBe(true);
+  expect(
+    Math.abs(overviewBottomGap - 80) <= 10,
+    `overview bottom inset at ${viewportLabel}: ${overviewBottomGap} (want ~80)`,
+  ).toBe(true);
+  expect(
+    boxesOverlap(capas, overview),
+    `Capas must not cover overview at ${viewportLabel}`,
+  ).toBe(false);
+}
+
+function leftChromeClip(
+  leftStack: ChromeBox[],
+): { x: number; y: number; width: number; height: number } | undefined {
+  if (leftStack.length === 0) {
+    return undefined;
+  }
+  const minX = Math.min(...leftStack.map((b) => b.x));
+  const minY = Math.min(...leftStack.map((b) => b.y));
+  const maxX = Math.max(...leftStack.map((b) => b.x + b.width));
+  const maxY = Math.max(...leftStack.map((b) => b.y + b.height));
+  const pad = 8;
+  return {
+    x: Math.max(0, minX - pad),
+    y: Math.max(0, minY - pad),
+    width: Math.max(2, maxX - minX + pad * 2),
+    height: Math.max(2, maxY - minY + pad * 2),
+  };
+}
+
+async function readTabChrome(page: Page, sel: '#tools-tab' | '#legend-tab') {
+  return page.locator(sel).evaluate((el) => {
+    const s = getComputedStyle(el);
+    const b = el.getBoundingClientRect();
+    return {
+      backgroundColor: s.backgroundColor,
+      backgroundImage: s.backgroundImage,
+      top: s.top,
+      y: b.y,
+      visible: s.display !== 'none' && s.visibility !== 'hidden' && b.width > 0,
+    };
+  });
+}
+
 test.describe('Map chrome responsive (#135)', () => {
+  test('capture status shots for GitHub progress update', async ({ page }, testInfo) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await loginAndOpenMap(page);
+
+    // Partner-reported viewport matrix from #135.
+    for (const viewport of [
+      { width: 480, height: 360 },
+      { width: 768, height: 576 },
+      { width: 1024, height: 768 },
+    ] as const) {
+      const tag = `${viewport.width}x${viewport.height}`;
+      await page.setViewportSize(viewport);
+
+      await page.evaluate(() => {
+        document.querySelector('.tc-tools-panel')?.classList.add('tc-collapsed-right');
+        document.querySelector('.tc-ovmap-panel')?.classList.add('tc-collapsed-right');
+        document.querySelector('.tc-left-panel')?.classList.add('tc-collapsed-left');
+      });
+      await page.waitForTimeout(350);
+      await captureIssue135Shot(page, testInfo, `status-${tag}-01-default-COLLAPSED.png`);
+
+      await page.locator('.tc-tools-panel > h1').click();
+      await page.waitForTimeout(350);
+      if (viewport.width === 480) {
+        const capas = await page.evaluate(() => {
+          const panel = document.querySelector('.tc-tools-panel') as HTMLElement;
+          const h1 = document.querySelector('.tc-tools-panel > h1') as HTMLElement;
+          const pb = panel.getBoundingClientRect();
+          const hb = h1.getBoundingClientRect();
+          const hs = getComputedStyle(h1);
+          return {
+            panelW: pb.width,
+            closeTop: hs.top,
+            closeX: hb.x,
+            panelX: pb.x,
+            gap: pb.x - (hb.x + hb.width),
+          };
+        });
+        expect(capas.panelW, 'Capas drawer ≤160px at 480').toBeLessThanOrEqual(161);
+        expect(capas.closeTop).toBe('56px');
+        expect(Math.abs(capas.gap - 20), `Capas close gap ${capas.gap}`).toBeLessThanOrEqual(2);
+      }
+      if (viewport.width === 480 || viewport.width === 768) {
+        const contentTop = await page.evaluate(() => {
+          const panel = document.querySelector('.tc-tools-panel') as HTMLElement;
+          const content = document.querySelector(
+            '.tc-tools-panel > .tc-panel-content',
+          ) as HTMLElement;
+          return {
+            panelY: panel.getBoundingClientRect().y,
+            contentY: content.getBoundingClientRect().y,
+            marginTop: getComputedStyle(content).marginTop,
+          };
+        });
+        expect(
+          contentTop.marginTop,
+          `Capas open must not reserve empty SITNA header slot at ${tag}`,
+        ).toBe('0px');
+        expect(
+          Math.abs(contentTop.contentY - contentTop.panelY) <= 1,
+          `Capas content must start at panel top (no seam gap) at ${tag}: contentY=${contentTop.contentY} panelY=${contentTop.panelY}`,
+        ).toBe(true);
+      }
+      await captureIssue135Shot(page, testInfo, `status-${tag}-02-capas-OPEN-close.png`);
+
+      await page.locator('.tc-tools-panel > h1').click();
+      await page.waitForTimeout(350);
+      // Overview may be CSS-hidden on very short heights; still attempt open shot.
+      const overviewTab = page.locator('.tc-ovmap-panel > h1');
+      if (await overviewTab.isVisible()) {
+        await overviewTab.click();
+        await page.waitForTimeout(400);
+        await captureIssue135Shot(page, testInfo, `status-${tag}-03-overview-OPEN-close.png`);
+        await overviewTab.click();
+        await page.waitForTimeout(350);
+      } else {
+        await captureIssue135Shot(page, testInfo, `status-${tag}-03-overview-HIDDEN.png`);
+      }
+
+      const toolsTab = page.locator('#tools-tab');
+      if (await toolsTab.isVisible()) {
+        await toolsTab.click();
+        await page.waitForTimeout(350);
+        if (viewport.width === 480) {
+          const left = await page.evaluate(() => {
+            const panel = document.querySelector('.tc-left-panel') as HTMLElement;
+            const tools = document.querySelector('#tools-tab') as HTMLElement;
+            const pb = panel.getBoundingClientRect();
+            const tb = tools.getBoundingClientRect();
+            const ts = getComputedStyle(tools);
+            return {
+              panelW: pb.width,
+              closeTop: ts.top,
+              closeRight: ts.right,
+              closeX: tb.x,
+              panelRight: pb.x + pb.width,
+              gap: tb.x - (pb.x + pb.width),
+              closeY: tb.y,
+              contentY: (
+                document.querySelector(
+                  '.tc-left-panel > .tc-panel-content',
+                ) as HTMLElement
+              ).getBoundingClientRect().y,
+            };
+          });
+          expect(left.panelW, 'left drawer ≤160px at 480').toBeLessThanOrEqual(161);
+          expect(left.closeTop, 'left close at drawer top').toBe('8px');
+          expect(left.closeRight).toBe('-60px');
+          expect(Math.abs(left.gap - 20), `left close gap ${left.gap}`).toBeLessThanOrEqual(2);
+          expect(
+            Math.abs(left.closeY - left.contentY - 8) <= 2,
+            `left close y=${left.closeY} vs content y=${left.contentY}`,
+          ).toBe(true);
+        }
+        await captureIssue135Shot(page, testInfo, `status-${tag}-04-left-tools-OPEN-close.png`);
+        await toolsTab.click();
+        await page.waitForTimeout(200);
+      }
+    }
+  });
+
+  test('left panel close control is red arrow at opener height for tools and legend', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await loginAndOpenMap(page);
+
+    const assertCloseAtOpenerHeight = async (
+      sel: '#tools-tab' | '#legend-tab',
+      expectedTopPx: number,
+    ) => {
+      const before = await readTabChrome(page, sel);
+      expect(before.visible, `${sel} opener must be visible`).toBe(true);
+
+      await page.locator(sel).click();
+      await expect(page.locator('.tc-left-panel')).not.toHaveClass(/tc-collapsed-left/);
+
+      await expect
+        .poll(async () => {
+          const chrome = await readTabChrome(page, sel);
+          return (
+            chrome.visible &&
+            /closeIcon/.test(chrome.backgroundImage) &&
+            /rgba?\(181,\s*24,\s*24/.test(chrome.backgroundColor)
+          );
+        }, { message: `${sel} close must become red closeIcon` })
+        .toBe(true);
+
+      const open = await readTabChrome(page, sel);
+      expect(
+        Math.abs(Number.parseFloat(open.top) - expectedTopPx) <= 1,
+        `${sel} close top ${open.top} must match opener ladder ${expectedTopPx}px`,
+      ).toBe(true);
+      expect(
+        Math.abs(open.y - before.y) <= 2,
+        `${sel} close y=${open.y} must match opener y=${before.y}`,
+      ).toBe(true);
+
+      await page.locator(sel).click();
+      await expect(page.locator('.tc-left-panel')).toHaveClass(/tc-collapsed-left/);
+    };
+
+    await assertCloseAtOpenerHeight('#tools-tab', 64);
+    await assertCloseAtOpenerHeight('#legend-tab', 108);
+  });
+
+  test('Capas and overview close stay at opener height', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await loginAndOpenMap(page);
+
+    const assertRightCloseAtOpenerHeight = async (
+      panelSel: '.tc-tools-panel' | '.tc-ovmap-panel',
+      tabSel: string,
+    ) => {
+      await page.evaluate((sel) => {
+        document.querySelector(sel)?.classList.add('tc-collapsed-right');
+      }, panelSel);
+
+      const before = await page.locator(tabSel).evaluate((el) => {
+        const b = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return { y: b.y, visible: b.width > 0 && s.visibility !== 'hidden' };
+      });
+      expect(before.visible, `${tabSel} opener must be visible`).toBe(true);
+
+      await page.locator(tabSel).click();
+      await expect(page.locator(panelSel)).not.toHaveClass(/tc-collapsed-right/);
+
+      const open = await page.locator(`${panelSel} > h1`).evaluate((el) => {
+        const b = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return {
+          y: b.y,
+          backgroundColor: s.backgroundColor,
+          backgroundImage: s.backgroundImage,
+        };
+      });
+      expect(
+        open.backgroundImage,
+        `${panelSel} close must use right-facing mapaCerrarReverse`,
+      ).toMatch(/mapaCerrarReverse/);
+      expect(
+        open.backgroundColor,
+        `${panelSel} close must be red (#b51818)`,
+      ).toMatch(/rgba?\(181,\s*24,\s*24/);
+      expect(
+        Math.abs(open.y - before.y) <= 3,
+        `${panelSel} close y=${open.y} must match opener y=${before.y}`,
+      ).toBe(true);
+
+      if (panelSel === '.tc-ovmap-panel') {
+        const contentShadow = await page
+          .locator(`${panelSel} > #tc-slot-ovmap`)
+          .evaluate((el) => getComputedStyle(el).boxShadow);
+        expect(
+          contentShadow,
+          'open overview must keep a Capas-like content edge',
+        ).toMatch(/rgba?\(0,\s*0,\s*0/);
+        expect(contentShadow, 'open overview edge must not be none').not.toBe('none');
+      }
+
+      await page.locator(`${panelSel} > h1`).click();
+      await expect(page.locator(panelSel)).toHaveClass(/tc-collapsed-right/);
+    };
+
+    await assertRightCloseAtOpenerHeight('.tc-tools-panel', '.tc-tools-panel > h1');
+    await assertRightCloseAtOpenerHeight(
+      '.tc-ovmap-panel',
+      '.tc-ovmap-panel > h1',
+    );
+  });
+
   const viewports = [
     { width: 480, height: 360 },
     { width: 768, height: 576 },
@@ -818,91 +1452,111 @@ test.describe('Map chrome responsive (#135)', () => {
   ] as const;
 
   for (const viewport of viewports) {
-    test(`chrome does not overlap at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    test(`chrome does not overlap at ${viewport.width}x${viewport.height}`, async ({
+      page,
+    }, testInfo) => {
+      const tag = `${viewport.width}x${viewport.height}`;
+
       // Login at a desktop size so the login button stays in-viewport.
       await page.setViewportSize({ width: 1280, height: 800 });
       await loginAndOpenMap(page);
       await page.setViewportSize(viewport);
-      // Capas drawer collapsed for map-chrome layout (tab visible on the edge).
-      await page.locator('.tc-tools-panel').evaluate((panel) => {
-        panel.classList.add('tc-collapsed-right');
-      });
 
-      const layout = await page.evaluate(() => {
-        const pick = (sel: string) => {
-          const el = document.querySelector(sel) as HTMLElement | null;
-          if (!el) {
-            return null;
-          }
-          const style = getComputedStyle(el);
-          if (style.display === 'none' || style.visibility === 'hidden') {
-            return null;
-          }
-          const b = el.getBoundingClientRect();
-          if (b.width < 2 || b.height < 2) {
-            return null;
-          }
-          return { x: b.x, y: b.y, width: b.width, height: b.height, sel };
-        };
-        const candidates = [
-          pick('.tc-ctl-nav .tc-ctl-nav-btn-zoomin'),
-          pick('.tc-ctl-nav .tc-ctl-nav-btn-zoomout'),
-          pick('.tc-ctl-nav-home-btn'),
-          pick('.tc-tools-panel > h1'),
-          pick('.tc-ctl-sv'),
-          pick('.tc-ctl-3d'),
-        ].filter(Boolean) as Array<{
-          x: number;
-          y: number;
-          width: number;
-          height: number;
-          sel: string;
-        }>;
+      const collapseRightChrome = async () => {
+        await page.evaluate(() => {
+          const tools = document.querySelector('.tc-tools-panel');
+          tools?.classList.add('tc-collapsed-right');
+          const ov = document.querySelector('.tc-ovmap-panel');
+          ov?.classList.add('tc-collapsed-right');
+          ov?.classList.remove('tc-disabled');
+        });
+      };
 
-        const capasH1 = document.querySelector('.tc-tools-panel > h1') as HTMLElement | null;
-        let capasGlyphCount = 0;
-        if (capasH1) {
-          const bg = getComputedStyle(capasH1).backgroundImage;
-          if (bg && bg !== 'none') {
-            capasGlyphCount += 1;
-          }
-          const before = getComputedStyle(capasH1, '::before');
-          const after = getComputedStyle(capasH1, '::after');
-          if (before.content && before.content !== 'none' && before.content !== '""') {
-            capasGlyphCount += 1;
-          }
-          if (after.content && after.content !== 'none' && after.content !== '""') {
-            capasGlyphCount += 1;
-          }
-        }
+      // Default chrome: Capas + overview panels collapsed; overview tab visible.
+      await collapseRightChrome();
+      await page.waitForTimeout(350);
+      await captureIssue135Shot(page, testInfo, `e2e-like-${tag}-capas-COLLAPSED.png`);
 
-        const sv = document.querySelector('.tc-ctl-sv');
-        const threed = document.querySelector('.tc-ctl-3d');
-        return {
-          candidates,
-          capasGlyphCount,
-          svDisplay: sv ? getComputedStyle(sv).display : 'none',
-          threedDisplay: threed ? getComputedStyle(threed).display : 'none',
-        };
-      });
-
+      const collapsedLayout = await readMapChromeLayout(page);
+      expect(
+        collapsedLayout.capasPanel,
+        `Capas panel must not be expanded at ${tag}`,
+      ).toBeNull();
+      await expect(
+        page.locator('.tc-ovmap-panel'),
+        `overview panel must stay collapsed at ${tag}`,
+      ).toHaveClass(/tc-collapsed-right/);
+      // Overview body rides off-screen with translateX(100%); tab stays visible.
+      await expect
+        .poll(async () => {
+          const box = await page.locator('#tc-slot-ovmap').boundingBox();
+          if (!box) {
+            return true;
+          }
+          return box.x >= viewport.width - 2;
+        }, `overview mini-map must stay off-screen when collapsed at ${tag}`)
+        .toBe(true);
+      expect(
+        collapsedLayout.leftStack.some((b) => b.sel === '#tools-tab'),
+        `tools tab must stay visible/upright at ${tag}`,
+      ).toBe(true);
+      expect(
+        await page.locator('#tools-tab').evaluate((el) => getComputedStyle(el).transform),
+        `tools tab must not mirror/rotate at ${tag}`,
+      ).toMatch(/none|matrix\(1,\s*0,\s*0,\s*1/);
       if (viewport.width <= 480) {
-        expect(layout.svDisplay).toBe('none');
-        expect(layout.threedDisplay).toBe('none');
+        expect(collapsedLayout.svDisplay).toBe('none');
+        expect(collapsedLayout.threedDisplay).toBe('none');
       }
+      expect(collapsedLayout.capasGlyphCount).toBeLessThanOrEqual(1);
+      assertNoOverlap(collapsedLayout.candidates, tag, 'Capas COLLAPSED chrome');
+      assertNoOverlap(collapsedLayout.leftStack, tag, 'Capas COLLAPSED left stack');
+      assertLeftStackOrder(collapsedLayout.leftStack, tag, collapsedLayout.slider);
+      assertSearchRightOfTools(collapsedLayout, tag);
+      assertOpaqueLeftChrome(collapsedLayout, tag);
+      assertRightChrome(collapsedLayout, viewport, tag);
 
-      expect(layout.capasGlyphCount).toBeLessThanOrEqual(1);
+      // Capas OPEN (partner-equivalent collision guards).
+      await page.locator('.tc-tools-panel').evaluate((panel) => {
+        panel.classList.remove('tc-collapsed-right');
+      });
+      await captureIssue135Shot(page, testInfo, `partner-like-${tag}-capas-OPEN.png`);
 
-      for (let i = 0; i < layout.candidates.length; i++) {
-        for (let j = i + 1; j < layout.candidates.length; j++) {
-          const a = layout.candidates[i]!;
-          const b = layout.candidates[j]!;
+      const openLayout = await readMapChromeLayout(page);
+      await captureIssue135Shot(
+        page,
+        testInfo,
+        `left-chrome-${tag}.png`,
+        leftChromeClip(openLayout.leftStack),
+      );
+
+      expect(
+        openLayout.leftStack.some((b) => b.sel === '.tc-ctl-nav-home-btn'),
+        `home control must be visible at ${tag} (enable sitna.navBar in setup)`,
+      ).toBe(true);
+      expect(
+        openLayout.leftStack.some((b) => b.sel === '.tc-ctl-nav .tc-ctl-nav-btn-zoomin'),
+        `zoom+ must be visible at ${tag}`,
+      ).toBe(true);
+
+      assertNoOverlap(openLayout.leftStack, tag, 'Capas OPEN left stack');
+      assertLeftStackOrder(openLayout.leftStack, tag, openLayout.slider);
+      assertSearchRightOfTools(openLayout, tag);
+      assertOpaqueLeftChrome(openLayout, tag);
+
+      if (openLayout.capasPanel) {
+        for (const tool of openLayout.leftStack) {
           expect(
-            boxesOverlap(a, b),
-            `${a.sel} overlaps ${b.sel} at ${viewport.width}x${viewport.height}`,
+            boxesOverlap(tool, openLayout.capasPanel),
+            `worst-case: ${tool.sel} overlaps Capas panel at ${tag}`,
           ).toBe(false);
         }
       }
+      if (openLayout.wlmActionBoxes.length >= 2) {
+        assertNoOverlap(openLayout.wlmActionBoxes, tag, 'Capas OPEN WLM actions');
+      }
+
+      await collapseRightChrome();
     });
   }
 });

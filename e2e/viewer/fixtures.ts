@@ -15,6 +15,24 @@ export const LEGEND_TASK_ID = 12;
 export const WORK_LAYER_MANAGER_TASK_ID = 31;
 /** Seed STM_TASK id for sitna.basemapSelector (STM_TSK_UI TUI_ID 2). */
 export const BASEMAP_SELECTOR_TASK_ID = 2;
+/**
+ * Map chrome tasks for #135 left-toolbar stack (missing from STM_AVAIL_TSK).
+ * Mirrors partner Menorca profile 12/4: navBar, fullScreen, streetView, threed.
+ */
+export const FULL_SCREEN_TASK_ID = 9;
+export const NAV_BAR_TASK_ID = 16;
+/** Bottom-right overview (folded map) tab for #135 right-chrome checks. */
+export const OVERVIEW_MAP_TASK_ID = 18;
+/** Search control — must stay clear of the left icon column (#135). */
+export const SEARCH_TASK_ID = 24;
+export const STREET_VIEW_TASK_ID = 26;
+export const THREE_D_TASK_ID = 27;
+/** Seed UI control sitna.moreInfoAdvanced (STM_TASK 41 / STM_TSK_UI 32). */
+export const MIA_CONTROL_TASK_ID = 41;
+/** Seed MIA parent on Toponímia cartography GEO_ID 6 (STM_TASK 42, typeId 16). */
+export const MIA_PARENT_TASK_ID = 42;
+/** Seed Feature Information control — needed for identify → MIA callback path. */
+export const FEATURE_INFO_TASK_ID = 8;
 
 /**
  * Catalog E2E uses the visible Topográficos branch (Ortofotos is filtered out of the

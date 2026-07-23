@@ -35,9 +35,10 @@ export default defineConfig({
       gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
     },
     {
+      // e2e-proxy waits for backend health before bootRun (parallel webServers).
       command: 'npm run e2e:proxy',
       url: 'http://localhost:18082/actuator/health',
-      timeout: 120_000,
+      timeout: 300_000,
       reuseExistingServer: false,
       gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
     },
@@ -82,6 +83,12 @@ export default defineConfig({
     {
       name: 'viewer-basemap',
       testMatch: /basemap-none\.spec\.ts/,
+      dependencies: ['viewer-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'viewer-mia',
+      testMatch: /mia-render\.spec\.ts/,
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
