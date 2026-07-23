@@ -12,6 +12,11 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - User form: validation, create, edit, reload persistence
 - Territory form: validation, create (with type), edit, reload persistence
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
+- Plantilla nested preview-only: create nested A→B, assert admin preview / execute-child panel contains B’s marker (`e2e/admin/forms/template-nested-preview.spec.ts`, project `admin-forms`)
+- More Info Advanced form: validation, create with cartography + included query child 38, layout update persistence; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
+- Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
+- Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
+- Literal grid CRUD (no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
 
 ### Viewer (`npm run e2e:viewer`)
 
@@ -22,8 +27,20 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Layer catalog (`viewer-catalog`): radio folder children render native radios; `loadData` folders get a visible load control (checkbox, or radio when the folder is radio; title expand-only); non-radio cartography leaves get `sitmun-lcat-leaf-load` checkboxes (toggle work layer); child radios still work when `loadData` is off; queryable leaves show `.sitmun-lcat-gfi` after select when setup enables `queryableActive` + layer `queryableFeatureEnabled` (meta stamp asserted when SITNA renders info); row geometry asserts fixed 18px select/GFI controls when present (no empty spacers), level-stamped inset (`data-sitmun-lcat-level` 0/1/2…), nest step = type-icon width (16px, parent pad cancelled on nested `ul`), vertical centers, and meta ≥18×18 hit box; visible Capas disponibles rows stamp alternating `data-sitmun-lcat-zebra`; folder titles stay roman under `tc-checked`. Capas trash-then-clear after partial remove is asserted in viewer Jest (`layer-catalog-control.handler`). Playwright covers Capas row after radio load, out-of-scale `#777777` path color (#92), WLM/LCAT non-overlap and runtime tools-panel splitters (#142), and map-chrome stacking at 480/768/1024 (#135); stub serves GetMap PNG and GetMap OnlineResource (rewritten by proxy) so Capas rows are not cleared by TILELOADERROR.
 - Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
 - No base map (`viewer-basemap`): basemap selector option `sitmun-no-base-map` clears raster basemap to a white viewport while a catalog leaf stays visible (#167); setup enables `sitna.basemapSelector` task-availability
-- More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia; FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); setup enables MIA + featureInfo task-availability
-- Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); production Liquibase is not modified
+- More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia (seed parent 42 includes query child 38); synthetic FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); also asserts live backend render, overlay error on 500, and close; setup enables MIA + featureInfo task-availability. Shared helpers live in `e2e/viewer/helpers/mia.ts`.
+- Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); GetFeatureInfo for layer `34_TOPO_TX` returns JSON FeatureCollection (XML fixture fallback). Production Liquibase is not modified.
+
+### MIA cross (`npm run e2e:mia-cross`)
+
+Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admin, viewer, application-contact, or mobile suites.
+
+- TipTap Plantilla HTML marker + CSV Catalan literal → simulated GFI → overlay (`e2e/mia-cross/mia-template-viewer.spec.ts`)
+- MIA parameter mapping feature attr → Plantilla `$param` in overlay (`e2e/mia-cross/mia-mapping.spec.ts`)
+- Nested Plantilla A→B composition in viewer overlay (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
+- Public-user MIA render on temporarily public app `1/1` (`e2e/mia-cross/mia-public-viewer.spec.ts`)
+- Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`); simulated GFI path remains for faster specs
+
+**Still out of Playwright:** TipTap full toolbar matrix, translation completion indicators, binary child handling, filtrable columns, Docker profile Liquibase salvage.
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
 
@@ -78,7 +95,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 | MBTiles (internal; not on gateway) | 18084 |
 
 Do not reuse development servers. The suite fails if these ports are already occupied.
-Do not run admin, viewer, application-contact, and mobile suites in parallel on one host; they share port 18080 and/or 18082.
+Do not run admin, viewer, `e2e:mia-cross`, application-contact, and mobile suites in parallel on one host; they share port 18080 and/or 18082.
 
 ## Commands
 
@@ -101,6 +118,10 @@ npm run e2e:viewer -- --project=viewer-catalog
 npm run e2e:viewer -- --project=viewer-legend
 npm run e2e:viewer -- --project=viewer-basemap
 npm run e2e:viewer -- --project=viewer-mia
+
+# MIA / Plantilla / literal cross-stack (admin + viewer + proxy + stub)
+npm run e2e:mia-cross
+npm run e2e:mia-cross:ui
 
 # admin → viewer responsible institution (shared backend)
 npx playwright test --config=playwright.application-contact.config.ts
@@ -168,7 +189,7 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task relation grids (except the dedicated application-contact cross-stack flow)
+- Admin suite does not cover Application / Layer / Task relation grids (except MIA form create/edit in `mia-form.spec.ts` and the dedicated application-contact cross-stack flow)
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)

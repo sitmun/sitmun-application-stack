@@ -10,6 +10,9 @@
     "e2e:admin": "node scripts/e2e-admin.mjs",
     "e2e:viewer": "playwright test --config=playwright.viewer.config.ts",
     "e2e:viewer:ui": "playwright test --config=playwright.viewer.config.ts --ui",
+    "e2e:mia-cross": "playwright test --config=playwright.mia-cross.config.ts",
+    "e2e:mia-cross:ui": "playwright test --config=playwright.mia-cross.config.ts --ui",
+
     "e2e:viewer:app": "node scripts/e2e-viewer.mjs",
     "e2e:proxy": "node scripts/e2e-proxy.mjs",
     "e2e:proxy:mobile": "node scripts/e2e-proxy-mobile.mjs",

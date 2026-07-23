@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+  <gml:featureMember>
+    <34_TOPO_TX fid="34_TOPO_TX.1">
+      <id>1</id>
+      <name>e2e-gfi-click</name>
+    </34_TOPO_TX>
+  </gml:featureMember>
+</wfs:FeatureCollection>

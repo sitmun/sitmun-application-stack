@@ -7,8 +7,55 @@
  * - GetCapabilities Style/LegendURL → /legend (distinct from /wms MapServer path)
  * - GetLegendGraphic on /wms fails (native SITNA getLegend path cannot paint)
  * - GET /legend returns a stable PNG (>100 bytes) for Capas + LegendURL fallback
+ * - GetFeatureInfo for 34_TOPO_TX → JSON FeatureCollection (or XML fixture)
  */
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const GFI_XML_PATH = join(__dirname, '../e2e/mia-cross/fixtures/gfi-34_TOPO_TX.xml');
+/** GML2 FeatureCollection — id prefix 34_TOPO_TX. maps to the queryable layer. */
+const GFI_GML = `<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <gml:featureMember>
+    <34_TOPO_TX fid="34_TOPO_TX.1">
+      <gml:name>e2e-gfi-click</gml:name>
+      <id>1</id>
+      <name>e2e-gfi-click</name>
+    </34_TOPO_TX>
+  </gml:featureMember>
+</wfs:FeatureCollection>
+`;
+
+let GFI_XML = GFI_GML;
+try {
+  GFI_XML = readFileSync(GFI_XML_PATH, 'utf8');
+} catch {
+  GFI_XML = GFI_GML;
+}
+
+// Coordinates in EPSG:25831 (viewer map CRS) so ol.format.GeoJSON readFeatures does not throw.
+const GFI_JSON = JSON.stringify({
+  type: 'FeatureCollection',
+  crs: { type: 'name', properties: { name: 'EPSG:25831' } },
+  features: [
+    {
+      type: 'Feature',
+      id: '34_TOPO_TX.1',
+      geometry: {
+        type: 'Point',
+        coordinates: [422500, 4608500],
+      },
+      properties: {
+        id: 1,
+        name: 'e2e-gfi-click',
+      },
+    },
+  ],
+});
+
 
 const HOST = '127.0.0.1';
 const PORT = 18093;
@@ -253,6 +300,52 @@ const server = createServer((req, res) => {
         'X-E2E-Upstream': 'secured-wms',
       });
       res.end(GETMAP_PNG);
+      return;
+    }
+
+    if (requestName === 'getfeatureinfo') {
+      const queryLayers = (
+        url.searchParams.get('QUERY_LAYERS') ||
+        url.searchParams.get('query_layers') ||
+        url.searchParams.get('LAYERS') ||
+        url.searchParams.get('layers') ||
+        ''
+      ).toLowerCase();
+      // SITNA requires Content-Type to equal INFO_FORMAT exactly or it treats the body as an error.
+      const infoFormat = (
+        url.searchParams.get('INFO_FORMAT') ||
+        url.searchParams.get('info_format') ||
+        'application/json'
+      ).trim();
+      const infoFormatLower = infoFormat.toLowerCase();
+      console.error(
+        `[e2e-wms-stub] GetFeatureInfo queryLayers=${queryLayers} infoFormat=${infoFormat}`,
+      );
+      if (!queryLayers.includes('34_topo_tx')) {
+        res.writeHead(200, {
+          'Content-Type': infoFormat || 'application/json',
+          'X-E2E-Upstream': 'secured-wms',
+        });
+        res.end(
+          infoFormatLower.includes('json')
+            ? JSON.stringify({ type: 'FeatureCollection', features: [] })
+            : GFI_XML.replace('e2e-gfi-click', 'empty'),
+        );
+        return;
+      }
+      if (infoFormatLower.includes('json')) {
+        res.writeHead(200, {
+          'Content-Type': infoFormat,
+          'X-E2E-Upstream': 'secured-wms-gfi',
+        });
+        res.end(GFI_JSON);
+        return;
+      }
+      res.writeHead(200, {
+        'Content-Type': infoFormat || 'application/vnd.ogc.gml',
+        'X-E2E-Upstream': 'secured-wms-gfi',
+      });
+      res.end(GFI_XML);
       return;
     }
 
