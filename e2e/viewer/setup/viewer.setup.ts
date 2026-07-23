@@ -11,10 +11,13 @@ import {
   CONTACT_EMAIL,
   CONTACT_INSTITUTION,
   BASEMAP_SELECTOR_TASK_ID,
+  FEATURE_INFO_TASK_ID,
   FULL_SCREEN_TASK_ID,
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
   LEGEND_TASK_ID,
+  MIA_CONTROL_TASK_ID,
+  MIA_PARENT_TASK_ID,
   NAV_BAR_TASK_ID,
   OVERVIEW_MAP_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
@@ -244,6 +247,9 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     SEARCH_TASK_ID,
     STREET_VIEW_TASK_ID,
     THREE_D_TASK_ID,
+    FEATURE_INFO_TASK_ID,
+    MIA_CONTROL_TASK_ID,
+    MIA_PARENT_TASK_ID,
   ]) {
     const createAvailability = await request.post('/backend/api/task-availabilities', {
       headers: adminHeaders,

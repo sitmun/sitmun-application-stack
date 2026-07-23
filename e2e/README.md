@@ -11,6 +11,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Role form: validation, create, edit, reload persistence
 - User form: validation, create, edit, reload persistence
 - Territory form: validation, create (with type), edit, reload persistence
+- Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
 
 ### Viewer (`npm run e2e:viewer`)
 
@@ -21,6 +22,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Layer catalog (`viewer-catalog`): radio folder children render native radios; `loadData` folders get a visible load control (checkbox, or radio when the folder is radio; title expand-only); non-radio cartography leaves get `sitmun-lcat-leaf-load` checkboxes (toggle work layer); child radios still work when `loadData` is off; queryable leaves show `.sitmun-lcat-gfi` after select when setup enables `queryableActive` + layer `queryableFeatureEnabled` (meta stamp asserted when SITNA renders info); row geometry asserts fixed 18px select/GFI controls when present (no empty spacers), level-stamped inset (`data-sitmun-lcat-level` 0/1/2…), nest step = type-icon width (16px, parent pad cancelled on nested `ul`), vertical centers, and meta ≥18×18 hit box; visible Capas disponibles rows stamp alternating `data-sitmun-lcat-zebra`; folder titles stay roman under `tc-checked`. Capas trash-then-clear after partial remove is asserted in viewer Jest (`layer-catalog-control.handler`). Playwright covers Capas row after radio load, out-of-scale `#777777` path color (#92), WLM/LCAT non-overlap and runtime tools-panel splitters (#142), and map-chrome stacking at 480/768/1024 (#135); stub serves GetMap PNG and GetMap OnlineResource (rewritten by proxy) so Capas rows are not cleared by TILELOADERROR.
 - Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
 - No base map (`viewer-basemap`): basemap selector option `sitmun-no-base-map` clears raster basemap to a white viewport while a catalog leaf stays visible (#167); setup enables `sitna.basemapSelector` task-availability
+- More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia; FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); setup enables MIA + featureInfo task-availability
 - Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); production Liquibase is not modified
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
@@ -97,6 +99,8 @@ npm run e2e:viewer -- --project=viewer-public
 npm run e2e:viewer -- --project=viewer-password
 npm run e2e:viewer -- --project=viewer-catalog
 npm run e2e:viewer -- --project=viewer-legend
+npm run e2e:viewer -- --project=viewer-basemap
+npm run e2e:viewer -- --project=viewer-mia
 
 # admin → viewer responsible institution (shared backend)
 npx playwright test --config=playwright.application-contact.config.ts

@@ -27,6 +27,12 @@ export const OVERVIEW_MAP_TASK_ID = 18;
 export const SEARCH_TASK_ID = 24;
 export const STREET_VIEW_TASK_ID = 26;
 export const THREE_D_TASK_ID = 27;
+/** Seed UI control sitna.moreInfoAdvanced (STM_TASK 41 / STM_TSK_UI 32). */
+export const MIA_CONTROL_TASK_ID = 41;
+/** Seed MIA parent on Toponímia cartography GEO_ID 6 (STM_TASK 42, typeId 16). */
+export const MIA_PARENT_TASK_ID = 42;
+/** Seed Feature Information control — needed for identify → MIA callback path. */
+export const FEATURE_INFO_TASK_ID = 8;
 
 /**
  * Catalog E2E uses the visible Topográficos branch (Ortofotos is filtered out of the
