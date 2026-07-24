@@ -10,6 +10,11 @@ import {
   uniqueValue,
   waitForFormReady,
 } from '../helpers/form';
+import {
+  addMiaParameter,
+  createMiaWithChild,
+  openMia,
+} from '../helpers/mia-form';
 
 const MIA_CREATE_PATH = '/#/tasksMoreInfoAdvanced/-1/16';
 const SEEDED_QUERY_CHILD_ID = 38;
@@ -83,6 +88,46 @@ test.describe('MIA form', () => {
     await expect(page.locator('.included-task-id')).toContainText(
       `ID: ${SEEDED_QUERY_CHILD_ID}`,
     );
+  });
+
+  test('opens seeded MIA via deep tasks/:id/16 route', async ({ page }) => {
+    await page.goto(`/#/tasks/${SEEDED_MIA_PARENT_ID}/16`);
+    await waitForFormReady(page, 'name');
+    await expect(control(page, 'name')).toBeVisible();
+  });
+
+  test('exposes cartography open-in-new and Parameters relation-grid add+reload', async ({
+    page,
+    createdResources,
+  }) => {
+    test.setTimeout(90_000);
+    const { id } = await createMiaWithChild(page, {
+      childSearch: CHILD_TASK_SEARCH,
+      childOption: CHILD_TASK_OPTION,
+      childId: SEEDED_QUERY_CHILD_ID,
+    });
+    createdResources.push({ collection: 'tasks', id });
+
+    await openMia(page, id);
+
+    const cartographyOpen = page.locator('a.related-entity-open-link[href*="/layers/"]');
+    await expect(cartographyOpen).toBeVisible();
+    await expect(cartographyOpen).toHaveAttribute('target', '_blank');
+    await expect(cartographyOpen).toHaveAttribute('href', /layers\/\d+\/layersForm/);
+
+    const paramLabel = uniqueValue('e2e-mia-param');
+    const paramValue = uniqueValue('feature');
+    await addMiaParameter(page, { label: paramLabel, value: paramValue });
+
+    await page.reload();
+    await waitForFormReady(page, 'name');
+    await page.getByRole('tab', { name: /Parameters|Paràmetres|Parámetros|Paramètres/i }).click();
+    const parametersGrid = page.locator('app-relation-grid');
+    await expect(parametersGrid).toBeVisible();
+    await expect(parametersGrid.locator('app-data-grid')).toBeVisible();
+    await expect(parametersGrid).toContainText(paramLabel, {
+      timeout: 15_000,
+    });
   });
 
   test('ADMIN more-info-advanced render returns seeded parent', async ({ request }) => {

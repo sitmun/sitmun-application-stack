@@ -8,15 +8,15 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 
 - Admin UI login (`/#/login` → `/#/dashboard`)
 - Language chrome on login: cleared `lang` → closed BCP-47 ISO from `language.default`; open menu shows API endonyms; no language field on the login form (`e2e/admin/language-chrome.spec.ts`, project `login`)
-- Role form: validation, create, edit, reload persistence
-- User form: validation, create, edit, reload persistence
-- Territory form: validation, create (with type), edit, reload persistence
+- Role form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
+- User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
+- Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
 - Plantilla nested preview-only: create nested A→B, assert admin preview / execute-child panel contains B’s marker (`e2e/admin/forms/template-nested-preview.spec.ts`, project `admin-forms`)
-- More Info Advanced form: validation, create with cartography + included query child 38, layout update persistence; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
+- More Info Advanced **Details**: validation, create with cartography + included query child 38, layout update persistence; cartography open-in-new; deep route `/#/tasks/42/16`; Parameters `app-relation-grid` add + reload persist; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
-- Literal grid CRUD (no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
+- Literal translations grid CRUD (not `app-relation-grid`; no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
 
 ### Viewer (`npm run e2e:viewer`)
 
@@ -189,7 +189,7 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task relation grids (except MIA form create/edit in `mia-form.spec.ts` and the dedicated application-contact cross-stack flow)
+- Admin suite does not cover Application / Layer / Task `app-relation-grid` CRUD except MIA Parameters add+reload in `mia-form.spec.ts`. Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation grids
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)

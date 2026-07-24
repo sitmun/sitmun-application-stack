@@ -62,9 +62,11 @@ export async function addMiaParameter(
   options: { label: string; value: string },
 ): Promise<void> {
   await page.getByRole('tab', { name: /Parameters|Paràmetres|Parámetros|Paramètres/i }).click();
+  await expect(page.locator('app-relation-grid')).toBeVisible({ timeout: 15_000 });
   await page
-    .locator('app-data-grid')
-    .getByRole('button', { name: /^(New|Nou|Nuevo|Nouveau)$/i })
+    .locator('app-relation-grid button')
+    .filter({ has: page.locator('mat-icon', { hasText: 'add_circle_outline' }) })
+    .first()
     .click();
   const dialog = page.locator('mat-dialog-container').last();
   await expect(dialog).toBeVisible({ timeout: 15_000 });
@@ -75,7 +77,26 @@ export async function addMiaParameter(
     .filter({ has: page.locator('mat-icon', { hasText: 'add_circle_outline' }) })
     .click();
   await expect(dialog).toBeHidden({ timeout: 15_000 });
-  await page.getByRole('tab', { name: /Details|Detalls|Detalles|Détails/i }).click();
+  await expect(page.locator('app-relation-grid')).toContainText(options.label, {
+    timeout: 15_000,
+  });
+
+  const putPromise = page.waitForResponse((response) => {
+    try {
+      const pathname = new URL(response.url()).pathname;
+      return (
+        response.request().method() === 'PUT' &&
+        /\/backend\/api\/tasks\/\d+$/.test(pathname)
+      );
+    } catch {
+      return false;
+    }
+  });
+  await expect(page.getByTestId('form-save')).toBeEnabled({ timeout: 15_000 });
+  await page.getByTestId('form-save').click();
+  const put = await putPromise;
+  expect(put.ok(), `PUT task after parameter add failed: ${put.status()}`).toBeTruthy();
+  await expect(page.getByTestId('form-save')).toBeDisabled({ timeout: 15_000 });
 }
 
 /** Ensure Plantilla exposes a child param label for MIA mapping UI. */
