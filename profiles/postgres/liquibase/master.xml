@@ -12,4 +12,11 @@
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/08_application_responsible_institution.sql" relativeToChangelogFile="true"/>
   <include file="changelog/09_language_order_enabled_and_labels.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/10_add_template_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/11_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/12_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/13_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/14_add_literal_translations.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/15_add_literal_translation_source_language.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/16_add_translation_sequences.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

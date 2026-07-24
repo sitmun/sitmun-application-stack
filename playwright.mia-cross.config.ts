@@ -1,19 +1,26 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'node:path';
 
+const adminAuthFile = path.join(process.cwd(), 'e2e/.auth/admin.json');
+
+/**
+ * Cross-stack MIA / Plantilla suite: shared H2, admin, viewer, proxy, WMS stub.
+ * Do not run concurrently with admin, viewer, application-contact, or mobile suites.
+ */
 export default defineConfig({
-  testDir: './e2e/viewer',
+  testDir: './e2e',
   fullyParallel: false,
   workers: 1,
   retries: process.env.CI ? 1 : 0,
-  timeout: 120_000,
+  timeout: 180_000,
   expect: {
-    timeout: 15_000,
+    timeout: 20_000,
   },
   reporter: process.env.CI
     ? [['line'], ['html', { open: 'never' }]]
     : [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://localhost:4400',
+    baseURL: 'http://localhost:4300',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -35,10 +42,16 @@ export default defineConfig({
       gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
     },
     {
-      // e2e-proxy waits for backend health before bootRun (parallel webServers).
       command: 'npm run e2e:proxy',
       url: 'http://localhost:18082/actuator/health',
       timeout: 300_000,
+      reuseExistingServer: !process.env.CI,
+      gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
+    },
+    {
+      command: 'npm run e2e:admin',
+      url: 'http://localhost:4300',
+      timeout: 120_000,
       reuseExistingServer: !process.env.CI,
       gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
     },
@@ -52,45 +65,23 @@ export default defineConfig({
   ],
   projects: [
     {
+      name: 'setup',
+      testMatch: /admin\/auth\.setup\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'viewer-setup',
-      testMatch: /setup\/.*\.setup\.ts/,
+      testMatch: /viewer\/setup\/.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'viewer-public',
-      testMatch: /(public-access|language-chrome)\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'viewer-password',
-      testMatch: /password-access\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'viewer-catalog',
-      testMatch: /layer-catalog\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'viewer-legend',
-      testMatch: /legend\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'viewer-basemap',
-      testMatch: /basemap-none\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'viewer-mia',
-      testMatch: /mia-render\.spec\.ts/,
-      dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
+      name: 'mia-cross',
+      testMatch: /mia-cross\/.*\.spec\.ts/,
+      dependencies: ['setup', 'viewer-setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: adminAuthFile,
+      },
     },
   ],
 });

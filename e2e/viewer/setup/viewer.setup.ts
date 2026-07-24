@@ -258,10 +258,12 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         territory: `${apiOrigin}/api/territories/${TERRITORY_ID}`,
       },
     });
+    const status = createAvailability.status();
+    // MIA control/parent may already be seeded in STM_AVAIL_TSK (unique ter+task).
     expect(
-      createAvailability.status(),
-      `create task-availability for task ${taskId} failed: ${createAvailability.status()} ${await createAvailability.text()}`,
-    ).toBe(201);
+      [201, 409].includes(status),
+      `create task-availability for task ${taskId} failed: ${status} ${await createAvailability.text()}`,
+    ).toBeTruthy();
   }
 
   // Catalog matrix fixtures (#45): radio Ortofotos needs loadData for title activation;

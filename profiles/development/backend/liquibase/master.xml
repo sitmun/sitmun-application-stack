@@ -61,4 +61,11 @@
   <include file="changelog/54_application_tree_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/55_fix_proxy_conf_url.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/56_language_order_enabled_and_labels.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/57_add_template_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/58_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/59_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/60_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/61_add_literal_translations.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/62_add_literal_translation_source_language.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/63_add_translation_sequences.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

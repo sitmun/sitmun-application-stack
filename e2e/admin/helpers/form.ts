@@ -39,7 +39,7 @@ export async function touchAndClear(page: Page, fieldName: string): Promise<void
 
 export async function saveAndCaptureId(
   page: Page,
-  collection: 'roles' | 'users' | 'territories',
+  collection: 'roles' | 'users' | 'territories' | 'tasks',
 ): Promise<number> {
   const responsePromise = page.waitForResponse((response) => {
     try {
@@ -75,7 +75,7 @@ export async function saveAndCaptureId(
 
 export async function saveUpdate(
   page: Page,
-  collection: 'roles' | 'users' | 'territories' | 'applications',
+  collection: 'roles' | 'users' | 'territories' | 'applications' | 'tasks' | 'languages',
   id: number,
 ): Promise<void> {
   const responsePromise = page.waitForResponse((response) => {
@@ -121,4 +121,30 @@ export async function selectFirstTerritoryType(page: Page): Promise<void> {
   await firstOption.click();
   // mat-select stores value on the control; the trigger should show non-empty text.
   await expect(control(page, 'typeId').locator('.mat-mdc-select-value-text')).not.toBeEmpty();
+}
+
+export async function selectFirstMatOption(
+  page: Page,
+  formControlName: string,
+): Promise<void> {
+  await control(page, formControlName).click();
+  const firstOption = page.locator('mat-option:not([aria-disabled="true"])').first();
+  await firstOption.waitFor({ state: 'visible', timeout: 15_000 });
+  await firstOption.click();
+  await expect(
+    control(page, formControlName).locator('.mat-mdc-select-value-text'),
+  ).not.toBeEmpty();
+}
+
+export async function selectAutocompleteOption(
+  page: Page,
+  input: Locator,
+  searchText: string,
+  optionText: string | RegExp,
+): Promise<void> {
+  await input.click();
+  await input.fill(searchText);
+  const option = page.locator('mat-option').filter({ hasText: optionText }).first();
+  await option.waitFor({ state: 'visible', timeout: 15_000 });
+  await option.click();
 }
