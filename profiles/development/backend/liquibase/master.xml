@@ -68,4 +68,6 @@
   <include file="changelog/61_add_literal_translations.sql" relativeToChangelogFile="true"/>
   <include file="changelog/62_add_literal_translation_source_language.sql" relativeToChangelogFile="true"/>
   <include file="changelog/63_add_translation_sequences.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/64_literal_translations_varchar.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/65_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
