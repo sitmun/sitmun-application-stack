@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import {
   APP_ID,
   isBackendRequest,
+  MIA_PARENT_TASK_ID,
   NON_RADIO_ROOT_FOLDER_TITLE,
   QUERYABLE_LEAF_NODE_ID,
   RADIO_FOLDER_TITLE,
@@ -102,12 +103,17 @@ export async function loadQueryableLeafIntoCapas(page: Page): Promise<void> {
   });
 }
 
-/** Simulated GetFeatureInfo — injects FeatureInfo.responseCallback (not a real WMS GFI). */
-export async function simulateGetFeatureInfo(
-  page: Page,
-  attrs: Record<string, unknown> = { id: 1, name: 'e2e-mia' },
-): Promise<void> {
-  await page.evaluate((featureAttrs) => {
+export type MiaGfiFeatureAttrs = Record<string, unknown>;
+
+export type MiaGfiSimulateLayer = {
+  name: string;
+  features: MiaGfiFeatureAttrs[];
+};
+
+function getFeatureInfoControl(page: Page): Promise<{
+  ok: true;
+} | { ok: false; error: string }> {
+  return page.evaluate(() => {
     const w = window as unknown as {
       TC?: {
         Map?: {
@@ -117,6 +123,61 @@ export async function simulateGetFeatureInfo(
         };
         control?: { FeatureInfo?: new () => unknown };
       };
+    };
+    const mapEl = document.querySelector('.tc-map');
+    if (!w.TC?.Map?.get || !mapEl) {
+      return { ok: false as const, error: 'TC.Map not available' };
+    }
+    const map = w.TC.Map.get(mapEl);
+    const FeatureInfo = w.TC.control?.FeatureInfo;
+    const fi = (map.controls || []).find(
+      (ctl) => FeatureInfo && ctl instanceof (FeatureInfo as unknown as Function),
+    );
+    if (!fi?.responseCallback) {
+      return {
+        ok: false as const,
+        error: 'FeatureInfo control with responseCallback not found',
+      };
+    }
+    return { ok: true as const };
+  });
+}
+
+/** Simulated GetFeatureInfo — injects FeatureInfo.responseCallback (not a real WMS GFI). */
+export async function simulateGetFeatureInfo(
+  page: Page,
+  attrs: MiaGfiFeatureAttrs = { id: 1, name: 'e2e-mia' },
+): Promise<void> {
+  await simulateGetFeatureInfoLayers(page, [
+    { name: '34_TOPO_TX', features: [attrs] },
+  ]);
+}
+
+/**
+ * Simulated multi-layer / multi-feature GetFeatureInfo via responseCallback.
+ * Feature objects are kept on window.__sitmunE2eMiaFeatures for selection helpers.
+ */
+export async function simulateGetFeatureInfoLayers(
+  page: Page,
+  layers: MiaGfiSimulateLayer[],
+): Promise<void> {
+  const ready = await getFeatureInfoControl(page);
+  if (!ready.ok) {
+    throw new Error(ready.error);
+  }
+
+  await page.evaluate((layerDefs) => {
+    const w = window as unknown as {
+      TC?: {
+        Map?: {
+          get: (el: Element) => {
+            controls?: Array<{ responseCallback?: (o: unknown) => void }>;
+          };
+        };
+        control?: { FeatureInfo?: new () => unknown };
+      };
+      __sitmunE2eMiaFeatures?: unknown[];
+      __sitmunE2eMiaFeatureInfo?: { responseCallback?: (o: unknown) => void };
     };
     const mapEl = document.querySelector('.tc-map');
     if (!w.TC?.Map?.get || !mapEl) {
@@ -130,23 +191,71 @@ export async function simulateGetFeatureInfo(
     if (!fi?.responseCallback) {
       throw new Error('FeatureInfo control with responseCallback not found');
     }
-    fi.responseCallback({
-      services: [
-        {
-          layers: [
-            {
-              name: '34_TOPO_TX',
-              features: [
-                {
-                  getData: () => featureAttrs,
-                },
-              ],
-            },
-          ],
-        },
-      ],
+
+    const allFeatures: Array<{ getData: () => Record<string, unknown> }> = [];
+    const services = [
+      {
+        layers: layerDefs.map((layer) => {
+          const features = layer.features.map((attrs) => {
+            const feature = { getData: () => attrs };
+            allFeatures.push(feature);
+            return feature;
+          });
+          return { name: layer.name, features };
+        }),
+      },
+    ];
+    w.__sitmunE2eMiaFeatures = allFeatures;
+    w.__sitmunE2eMiaFeatureInfo = fi;
+    fi.responseCallback({ services });
+  }, layers);
+}
+
+/**
+ * Fire SITNA popup.tc as if FeatureInfo selected another GFI feature (by index
+ * into window.__sitmunE2eMiaFeatures from the last simulateGetFeatureInfoLayers).
+ */
+export async function selectMiaGfiFeature(
+  page: Page,
+  featureIndex: number,
+): Promise<void> {
+  await page.evaluate((index) => {
+    const w = window as unknown as {
+      TC?: {
+        Map?: {
+          get: (el: Element) => {
+            trigger?: (name: string, data: unknown) => void;
+            controls?: unknown[];
+          };
+        };
+        control?: { FeatureInfo?: new () => unknown };
+      };
+      __sitmunE2eMiaFeatures?: unknown[];
+      __sitmunE2eMiaFeatureInfo?: unknown;
+    };
+    const features = w.__sitmunE2eMiaFeatures;
+    const fi = w.__sitmunE2eMiaFeatureInfo;
+    if (!features?.[index]) {
+      throw new Error(`E2E MIA feature index ${index} missing`);
+    }
+    if (!fi) {
+      throw new Error('E2E FeatureInfo control missing');
+    }
+    const mapEl = document.querySelector('.tc-map');
+    if (!w.TC?.Map?.get || !mapEl) {
+      throw new Error('TC.Map not available');
+    }
+    const map = w.TC.Map.get(mapEl);
+    if (typeof map.trigger !== 'function') {
+      throw new Error('map.trigger not available');
+    }
+    map.trigger('popup.tc', {
+      control: {
+        caller: fi,
+        currentFeature: features[index],
+      },
     });
-  }, attrs);
+  }, featureIndex);
 }
 
 export async function openPublicDashboard(page: Page): Promise<void> {
@@ -173,4 +282,47 @@ export async function enableCapasGfi(page: Page): Promise<void> {
   if (!checked) {
     await gfi.click();
   }
+}
+
+export type MiaRenderDeferred = {
+  resolve: (body: unknown) => void;
+};
+
+/**
+ * Hold each /more-info-advanced/render POST until the test resolves its deferred.
+ * Gate on `deferreds.length` (event-driven) — do not sleep around the 350ms open delay.
+ */
+export async function installMiaRenderDeferredRoute(
+  page: Page,
+): Promise<MiaRenderDeferred[]> {
+  const deferreds: MiaRenderDeferred[] = [];
+  await page.route(
+    '**/api/tasks/template/more-info-advanced/render**',
+    async (route) => {
+      const body = await new Promise<unknown>((resolve) => {
+        deferreds.push({ resolve });
+      });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(body),
+      });
+    },
+  );
+  return deferreds;
+}
+
+export function miaRenderTasksBody(
+  marker: string,
+  taskId: number = MIA_PARENT_TASK_ID,
+): unknown {
+  return {
+    tasks: [
+      {
+        taskId,
+        title: 'E2E MIA',
+        html: `<p data-e2e-mia-marker="${marker}">${marker}</p>`,
+      },
+    ],
+  };
 }
