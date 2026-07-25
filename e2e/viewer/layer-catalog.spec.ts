@@ -1212,6 +1212,31 @@ async function readTabChrome(page: Page, sel: '#tools-tab' | '#legend-tab') {
   });
 }
 
+/** Wait until a panel's layout box is stable across two animation frames (replaces fixed sleeps). */
+async function waitLayoutStable(page: Page, selector: string): Promise<void> {
+  await expect
+    .poll(
+      async () => {
+        const sample = () =>
+          page.locator(selector).evaluate((el) => {
+            const b = el.getBoundingClientRect();
+            const s = getComputedStyle(el);
+            return `${b.x}|${b.y}|${b.width}|${b.height}|${s.transform}|${s.top}`;
+          });
+        const first = await sample();
+        await page.evaluate(
+          () =>
+            new Promise<void>((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+            }),
+        );
+        return (await sample()) === first;
+      },
+      { timeout: 5_000, message: `layout not stable for ${selector}` },
+    )
+    .toBe(true);
+}
+
 test.describe('Map chrome responsive (#135)', () => {
   test('capture status shots for GitHub progress update', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -1231,11 +1256,13 @@ test.describe('Map chrome responsive (#135)', () => {
         document.querySelector('.tc-ovmap-panel')?.classList.add('tc-collapsed-right');
         document.querySelector('.tc-left-panel')?.classList.add('tc-collapsed-left');
       });
-      await page.waitForTimeout(350);
+      await expect(page.locator('.tc-tools-panel')).toHaveClass(/tc-collapsed-right/);
+      await waitLayoutStable(page, '.tc-tools-panel');
       await captureIssue135Shot(page, testInfo, `status-${tag}-01-default-COLLAPSED.png`);
 
       await page.locator('.tc-tools-panel > h1').click();
-      await page.waitForTimeout(350);
+      await expect(page.locator('.tc-tools-panel')).not.toHaveClass(/tc-collapsed-right/);
+      await waitLayoutStable(page, '.tc-tools-panel');
       if (viewport.width === 480) {
         const capas = await page.evaluate(() => {
           const panel = document.querySelector('.tc-tools-panel') as HTMLElement;
@@ -1279,15 +1306,18 @@ test.describe('Map chrome responsive (#135)', () => {
       await captureIssue135Shot(page, testInfo, `status-${tag}-02-capas-OPEN-close.png`);
 
       await page.locator('.tc-tools-panel > h1').click();
-      await page.waitForTimeout(350);
+      await expect(page.locator('.tc-tools-panel')).toHaveClass(/tc-collapsed-right/);
+      await waitLayoutStable(page, '.tc-tools-panel');
       // Overview may be CSS-hidden on very short heights; still attempt open shot.
       const overviewTab = page.locator('.tc-ovmap-panel > h1');
       if (await overviewTab.isVisible()) {
         await overviewTab.click();
-        await page.waitForTimeout(400);
+        await expect(page.locator('.tc-ovmap-panel')).not.toHaveClass(/tc-collapsed-right/);
+        await waitLayoutStable(page, '.tc-ovmap-panel');
         await captureIssue135Shot(page, testInfo, `status-${tag}-03-overview-OPEN-close.png`);
         await overviewTab.click();
-        await page.waitForTimeout(350);
+        await expect(page.locator('.tc-ovmap-panel')).toHaveClass(/tc-collapsed-right/);
+        await waitLayoutStable(page, '.tc-ovmap-panel');
       } else {
         await captureIssue135Shot(page, testInfo, `status-${tag}-03-overview-HIDDEN.png`);
       }
@@ -1295,7 +1325,8 @@ test.describe('Map chrome responsive (#135)', () => {
       const toolsTab = page.locator('#tools-tab');
       if (await toolsTab.isVisible()) {
         await toolsTab.click();
-        await page.waitForTimeout(350);
+        await expect(page.locator('.tc-left-panel')).not.toHaveClass(/tc-collapsed-left/);
+        await waitLayoutStable(page, '.tc-left-panel');
         if (viewport.width === 480) {
           const left = await page.evaluate(() => {
             const panel = document.querySelector('.tc-left-panel') as HTMLElement;
@@ -1329,7 +1360,8 @@ test.describe('Map chrome responsive (#135)', () => {
         }
         await captureIssue135Shot(page, testInfo, `status-${tag}-04-left-tools-OPEN-close.png`);
         await toolsTab.click();
-        await page.waitForTimeout(200);
+        await expect(page.locator('.tc-left-panel')).toHaveClass(/tc-collapsed-left/);
+        await waitLayoutStable(page, '.tc-left-panel');
       }
     }
   });
@@ -1474,7 +1506,8 @@ test.describe('Map chrome responsive (#135)', () => {
 
       // Default chrome: Capas + overview panels collapsed; overview tab visible.
       await collapseRightChrome();
-      await page.waitForTimeout(350);
+      await expect(page.locator('.tc-tools-panel')).toHaveClass(/tc-collapsed-right/);
+      await waitLayoutStable(page, '.tc-tools-panel');
       await captureIssue135Shot(page, testInfo, `e2e-like-${tag}-capas-COLLAPSED.png`);
 
       const collapsedLayout = await readMapChromeLayout(page);
