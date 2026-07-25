@@ -36,7 +36,8 @@ export async function createPlantilla(
   const name = options.name ?? uniqueValue('e2e-plantilla');
   // Hash-route reuse can keep the prior Plantilla form; bounce via list first.
   await page.goto('/#/tasksTemplate');
-  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/#\/tasksTemplate(?:\/|$|\?)/);
+  await expect(page.locator('app-tasks-template').first()).toBeVisible({ timeout: 15_000 });
   await gotoCreateForm(page, PLANTILLA_CREATE_PATH, 'name');
   await expect(page).toHaveURL(/taskTemplate\/-1\/15/);
   await expect(control(page, 'name')).toHaveValue('');

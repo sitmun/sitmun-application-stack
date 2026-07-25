@@ -11,10 +11,20 @@ import {
   waitForFormReady,
 } from '../helpers/form';
 import {
+  addChildMapping,
   addMiaParameter,
+  addMiaParameterRow,
+  changeChildMappingMiaParam,
   createMiaWithChild,
+  expectChildTaskMapping,
+  getMiaTaskProperties,
+  gotoMiaDetailsTab,
   openMia,
+  putMiaTaskProperties,
+  saveMiaParameters,
+  saveMiaUpdate,
 } from '../helpers/mia-form';
+import { createPlantilla } from '../helpers/template';
 
 const MIA_CREATE_PATH = '/#/tasksMoreInfoAdvanced/-1/16';
 const SEEDED_QUERY_CHILD_ID = 38;
@@ -23,6 +33,7 @@ const CARTOGRAPHY_SEARCH = 'Toponimia';
 const CARTOGRAPHY_OPTION = /Toponimia 1:25\.000/;
 const CHILD_TASK_SEARCH = 'Web API direct';
 const CHILD_TASK_OPTION = /Web API direct \(template param\)/;
+const CHILD_PARAM_LABEL = 'codigo';
 
 test.describe('MIA form', () => {
   test('disables save when name is cleared', async ({ page }) => {
@@ -154,5 +165,158 @@ test.describe('MIA form', () => {
     };
     expect(json.tasks?.length).toBeGreaterThan(0);
     expect(json.tasks?.some((task) => task.taskId === SEEDED_MIA_PARENT_ID)).toBeTruthy();
+  });
+
+  test('persists child parameter mapping through reload', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
+    test.setTimeout(120_000);
+    const { id } = await createMiaWithChild(page, {
+      childSearch: CHILD_TASK_SEARCH,
+      childOption: CHILD_TASK_OPTION,
+      childId: SEEDED_QUERY_CHILD_ID,
+    });
+    createdResources.push({ collection: 'tasks', id });
+
+    await openMia(page, id);
+    const paramLabel = uniqueValue('e2e-map-param');
+    const paramValue = uniqueValue('feature');
+    await addMiaParameter(page, { label: paramLabel, value: paramValue });
+    await addChildMapping(page, {
+      miaParamLabel: paramLabel,
+      childParamLabel: CHILD_PARAM_LABEL,
+    });
+    await saveMiaUpdate(page, id);
+
+    await expectChildTaskMapping(request, id, SEEDED_QUERY_CHILD_ID, {
+      [CHILD_PARAM_LABEL]: paramValue,
+    });
+
+    await openMia(page, id);
+    await gotoMiaDetailsTab(page);
+    const row = page.locator('.mapping-row').first();
+    await expect(row.locator('mat-select').nth(0)).toContainText(paramLabel);
+    await expect(row.locator('mat-select').nth(1)).toContainText(CHILD_PARAM_LABEL);
+  });
+
+  test('keeps edited mapping after a subsequent Parameters save', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
+    test.setTimeout(150_000);
+    const { id } = await createMiaWithChild(page, {
+      childSearch: CHILD_TASK_SEARCH,
+      childOption: CHILD_TASK_OPTION,
+      childId: SEEDED_QUERY_CHILD_ID,
+    });
+    createdResources.push({ collection: 'tasks', id });
+
+    await openMia(page, id);
+    const firstLabel = uniqueValue('e2e-map-a');
+    const firstValue = uniqueValue('feature-a');
+    const secondLabel = uniqueValue('e2e-map-b');
+    const secondValue = uniqueValue('feature-b');
+    // Add both params in one Parameters save so Details dropdowns see both.
+    await addMiaParameterRow(page, { label: firstLabel, value: firstValue });
+    await addMiaParameterRow(page, { label: secondLabel, value: secondValue });
+    await saveMiaParameters(page, {
+      taskId: id,
+      request,
+      expectedLabels: [firstLabel, secondLabel],
+    });
+    await addChildMapping(page, {
+      miaParamLabel: firstLabel,
+      childParamLabel: CHILD_PARAM_LABEL,
+    });
+    await saveMiaUpdate(page, id);
+
+    await changeChildMappingMiaParam(page, { miaParamLabel: secondLabel });
+    // Parameters save must keep the unsaved mapping edit (Maps ahead of properties).
+    await addMiaParameter(page, {
+      label: uniqueValue('e2e-map-c'),
+      value: uniqueValue('feature-c'),
+      taskId: id,
+      request,
+    });
+
+    await expectChildTaskMapping(request, id, SEEDED_QUERY_CHILD_ID, {
+      [CHILD_PARAM_LABEL]: secondValue,
+    });
+  });
+
+  test('drops orphan childTaskParameters keys on save', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
+    test.setTimeout(120_000);
+    const { id } = await createMiaWithChild(page, {
+      childSearch: CHILD_TASK_SEARCH,
+      childOption: CHILD_TASK_OPTION,
+      childId: SEEDED_QUERY_CHILD_ID,
+    });
+    createdResources.push({ collection: 'tasks', id });
+
+    await openMia(page, id);
+    const paramLabel = uniqueValue('e2e-orphan-param');
+    const paramValue = uniqueValue('feature');
+    await addMiaParameter(page, { label: paramLabel, value: paramValue });
+    await addChildMapping(page, {
+      miaParamLabel: paramLabel,
+      childParamLabel: CHILD_PARAM_LABEL,
+    });
+    await saveMiaUpdate(page, id);
+
+    await putMiaTaskProperties(request, id, {
+      childTaskParameters: {
+        [String(SEEDED_QUERY_CHILD_ID)]: { [CHILD_PARAM_LABEL]: paramValue },
+        '99999': { fake: paramValue },
+      },
+    });
+
+    await openMia(page, id);
+    await control(page, 'parentLayout').click();
+    await page.getByRole('option', { name: /^(Scroll|Desplaçament|Défilement)$/i }).click();
+    await saveMiaUpdate(page, id);
+
+    const properties = await getMiaTaskProperties(request, id);
+    const childTaskParameters = properties.childTaskParameters as
+      | Record<string, Record<string, string>>
+      | undefined;
+    expect(childTaskParameters?.[String(SEEDED_QUERY_CHILD_ID)]).toEqual({
+      [CHILD_PARAM_LABEL]: paramValue,
+    });
+    expect(childTaskParameters?.['99999']).toBeUndefined();
+  });
+
+  test('disables Add mapping when included child has no parameters', async ({
+    page,
+    createdResources,
+  }) => {
+    test.setTimeout(150_000);
+    const plantilla = await createPlantilla(page, {
+      html: '<p>e2e empty-params plantilla</p>',
+    });
+    createdResources.push({ collection: 'tasks', id: plantilla.id });
+
+    const { id } = await createMiaWithChild(page, {
+      childSearch: plantilla.name,
+      childOption: new RegExp(
+        `${plantilla.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(ID: ${plantilla.id}\\)`,
+      ),
+      childId: plantilla.id,
+    });
+    createdResources.push({ collection: 'tasks', id });
+
+    await openMia(page, id);
+    await addMiaParameter(page, {
+      label: uniqueValue('e2e-empty-child'),
+      value: uniqueValue('feature'),
+    });
+    await gotoMiaDetailsTab(page);
+    await expect(page.locator('.mapping-actions-row button').first()).toBeDisabled();
   });
 });

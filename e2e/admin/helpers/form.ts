@@ -103,13 +103,21 @@ export async function saveUpdate(
   await dismissBlockingOverlays(page);
 }
 
-async function dismissBlockingOverlays(page: Page): Promise<void> {
+export async function dismissBlockingOverlays(page: Page): Promise<void> {
   const backdrop = page.locator('.cdk-overlay-backdrop');
   if (await backdrop.count()) {
     await page.keyboard.press('Escape').catch(() => {});
     await backdrop
       .first()
       .waitFor({ state: 'hidden', timeout: 5_000 })
+      .catch(() => {});
+  }
+  const notification = page.locator('.notification-content');
+  if (await notification.count()) {
+    await page.keyboard.press('Escape').catch(() => {});
+    await notification
+      .first()
+      .waitFor({ state: 'hidden', timeout: 10_000 })
       .catch(() => {});
   }
 }

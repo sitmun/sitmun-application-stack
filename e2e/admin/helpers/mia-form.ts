@@ -1,6 +1,7 @@
-import { expect, type APIRequestContext, type Page } from '@playwright/test';
+import { expect, type APIRequestContext, type Locator, type Page } from '@playwright/test';
 import {
   control,
+  dismissBlockingOverlays,
   gotoCreateForm,
   saveAndCaptureId,
   saveUpdate,
@@ -54,10 +55,17 @@ export async function createMiaWithChild(
 
 export async function openMia(page: Page, id: number): Promise<void> {
   await page.goto(`/#/tasksMoreInfoAdvanced/${id}/16`);
-  await waitForFormReady(page, 'name');
+  await page.getByTestId('form-save').waitFor({ state: 'visible', timeout: 15_000 });
+  await page
+    .getByText('Loading...', { exact: false })
+    .waitFor({ state: 'hidden', timeout: 30_000 })
+    .catch(() => {});
+  // mat-tab can leave the name control in a hidden panel after reload; select Details first.
+  await gotoMiaDetailsTab(page);
+  await expect(control(page, 'name')).toBeVisible({ timeout: 15_000 });
 }
 
-export async function addMiaParameter(
+export async function addMiaParameterRow(
   page: Page,
   options: { label: string; value: string },
 ): Promise<void> {
@@ -80,7 +88,12 @@ export async function addMiaParameter(
   await expect(page.locator('app-relation-grid')).toContainText(options.label, {
     timeout: 15_000,
   });
+}
 
+export async function saveMiaParameters(
+  page: Page,
+  options?: { taskId?: number; request?: APIRequestContext; expectedLabels?: string[] },
+): Promise<void> {
   const putPromise = page.waitForResponse((response) => {
     try {
       const pathname = new URL(response.url()).pathname;
@@ -91,12 +104,41 @@ export async function addMiaParameter(
     } catch {
       return false;
     }
-  });
+  }, { timeout: 30_000 });
   await expect(page.getByTestId('form-save')).toBeEnabled({ timeout: 15_000 });
   await page.getByTestId('form-save').click();
   const put = await putPromise;
-  expect(put.ok(), `PUT task after parameter add failed: ${put.status()}`).toBeTruthy();
-  await expect(page.getByTestId('form-save')).toBeDisabled({ timeout: 15_000 });
+  expect(put.ok(), `PUT task after parameter save failed: ${put.status()}`).toBeTruthy();
+  await expect(page.getByTestId('form-save')).toBeDisabled({ timeout: 30_000 });
+
+  if (options?.request && options.taskId != null && options.expectedLabels?.length) {
+    await expect
+      .poll(async () => {
+        const properties = await getMiaTaskProperties(options.request!, options.taskId!);
+        const parameters = properties.parameters as Array<{ label?: string }> | undefined;
+        return options.expectedLabels!.every((label) =>
+          parameters?.some((p) => p.label === label),
+        );
+      }, { timeout: 15_000 })
+      .toBeTruthy();
+  }
+}
+
+export async function addMiaParameter(
+  page: Page,
+  options: {
+    label: string;
+    value: string;
+    taskId?: number;
+    request?: APIRequestContext;
+  },
+): Promise<void> {
+  await addMiaParameterRow(page, options);
+  await saveMiaParameters(page, {
+    taskId: options.taskId,
+    request: options.request,
+    expectedLabels: options.request && options.taskId != null ? [options.label] : undefined,
+  });
 }
 
 /** Ensure Plantilla exposes a child param label for MIA mapping UI. */
@@ -137,18 +179,108 @@ export async function putPlantillaParameter(
   expect(put.ok(), `put plantilla params: ${put.status()} ${await put.text()}`).toBeTruthy();
 }
 
+export async function gotoMiaDetailsTab(page: Page): Promise<void> {
+  // common.form.details → "General information" / "Informació general" / …
+  await page
+    .getByRole('tab', {
+      name: /General information|Informació general|Información general|Informations générales|Informacions generalas/i,
+    })
+    .click();
+  await expect(page.locator('.included-tasks-title')).toBeVisible({
+    timeout: 15_000,
+  });
+}
+
+async function selectMappingOption(
+  page: Page,
+  select: Locator,
+  optionName: string,
+): Promise<void> {
+  await dismissBlockingOverlays(page);
+  await select.scrollIntoViewIfNeeded();
+  await select.click({ force: true });
+  const option = page.getByRole('option', { name: optionName, exact: true });
+  await expect(option).toBeVisible({ timeout: 15_000 });
+  await option.click();
+}
+
 export async function addChildMapping(
   page: Page,
   options: { miaParamLabel: string; childParamLabel: string },
 ): Promise<void> {
+  await gotoMiaDetailsTab(page);
+  await dismissBlockingOverlays(page);
   const addRow = page.locator('.mapping-actions-row button').first();
   await expect(addRow).toBeEnabled({ timeout: 15_000 });
   await addRow.click();
   const row = page.locator('.mapping-row').last();
-  await row.locator('mat-select').nth(0).click();
-  await page.getByRole('option', { name: options.miaParamLabel, exact: true }).click();
-  await row.locator('mat-select').nth(1).click();
-  await page.getByRole('option', { name: options.childParamLabel, exact: true }).click();
+  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
+  await selectMappingOption(page, row.locator('mat-select').nth(1), options.childParamLabel);
+}
+
+export async function changeChildMappingMiaParam(
+  page: Page,
+  options: { miaParamLabel: string; rowIndex?: number },
+): Promise<void> {
+  await gotoMiaDetailsTab(page);
+  await dismissBlockingOverlays(page);
+  const row = page.locator('.mapping-row').nth(options.rowIndex ?? 0);
+  await expect(row).toBeVisible({ timeout: 15_000 });
+  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
+}
+
+export async function getMiaTaskProperties(
+  request: APIRequestContext,
+  taskId: number,
+): Promise<Record<string, unknown>> {
+  const get = await request.get(`/backend/api/tasks/${taskId}`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(get.ok(), await get.text()).toBeTruthy();
+  const task = (await get.json()) as { properties?: Record<string, unknown> };
+  return task.properties ?? {};
+}
+
+export async function expectChildTaskMapping(
+  request: APIRequestContext,
+  taskId: number,
+  childTaskId: number,
+  expectedMap: Record<string, string>,
+): Promise<void> {
+  const properties = await getMiaTaskProperties(request, taskId);
+  const childTaskParameters = properties.childTaskParameters as
+    | Record<string, Record<string, string>>
+    | undefined;
+  expect(childTaskParameters?.[String(childTaskId)]).toEqual(expectedMap);
+}
+
+export async function putMiaTaskProperties(
+  request: APIRequestContext,
+  taskId: number,
+  propertiesPatch: Record<string, unknown>,
+): Promise<void> {
+  const get = await request.get(`/backend/api/tasks/${taskId}`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(get.ok(), await get.text()).toBeTruthy();
+  const task = (await get.json()) as {
+    name?: string;
+    properties?: Record<string, unknown>;
+  };
+  const put = await request.put(`/backend/api/tasks/${taskId}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/json',
+    },
+    data: {
+      name: task.name,
+      properties: {
+        ...(task.properties ?? {}),
+        ...propertiesPatch,
+      },
+    },
+  });
+  expect(put.ok(), `put mia properties: ${put.status()} ${await put.text()}`).toBeTruthy();
 }
 
 export async function ensureMiaViewerAccess(
