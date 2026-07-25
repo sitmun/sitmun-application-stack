@@ -10,108 +10,84 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
-- **Mobile apps**: stack submodules for `apps/touristic-mobile-app`, `apps/edition-mobile-app`, and internal `back/mbtiles/sitmun-mbtiles`.
-- **E2E**: `npm run e2e:mobile:web` Playwright suite for edition mobile Bearer login, proxy-token exchange, touristic public config, and authenticated MBTiles through middleware (gateway blocks direct `/mbtiles`).
-- **E2E**: `npm run e2e:mobile:android` Maestro orchestrator (temporary APK builds; requires emulator + Maestro). Covers edition invalid/valid login, touristic public profile, and gateway proxy/MBTiles denial/success contracts before APK builds.
-- **Docker**: internal `mbtiles` Compose service (no host port); proxy uses `SITMUN_MBTILES_URL=http://mbtiles:8080/mbtiles`; nginx returns `404` for public `/mbtiles`.
-- **CI**: `e2e-mobile-web` and `e2e-mobile-android` jobs in `.github/workflows/e2e.yml` (Android job pins Maestro CLI `2.6.1` with SHA-256 verification).
+- **Mobile apps** / **Docker** / **CI**: Submodules for touristic/edition mobile and internal `sitmun-mbtiles`; internal `mbtiles` Compose service (`SITMUN_MBTILES_URL`, public `/mbtiles` → 404); `e2e:mobile:web` / `e2e:mobile:android` suites and matching GitHub Actions jobs (Maestro `2.6.1`).
 
 #### Backend Core
 
-- **Auth**: `POST /api/authenticate/mobile` returns JSON Bearer `access_token` for edition users with accessible `ED` applications (no cookies); restricted `ROLE_MOBILE_EDITION` client reads plus proxy-token exchange.
-- **Proxy**: mobile-derived `proxy_token` issuance via existing `POST /api/authenticate/proxy`; `POST /api/config/proxy/mbtiles` authorizes and canonicalizes tile requests from service/layer IDs.
-- **Client config**: application list responses no longer inject `config.mbtilesUrl`.
+- **Templates** / **i18n**: Template execution/preview and More Info Advanced render; literal-translation CRUD/CSV (`VARCHAR(4000)`); `Language` `enabled`/`order` + HAL projection; lossless default-language migration API; task `typeTitle` / availability `taskTypeTitle`.
+- **Auth** / **Proxy**: Mobile JSON Bearer login, `ROLE_MOBILE_EDITION`, mobile proxy tokens, and `POST /api/config/proxy/mbtiles` canonicalization.
+- **Trees** / **Applications** / **Startup**: `visible`/`loadByDefault`/`queryableActive`/`loadData` and ordered `application-trees`; `responsibleInstitutionName` + PoC policy ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)); soft built-in user repair and public `/api/dashboard/startup`.
 
 #### Proxy Middleware
 
-- **MBTiles**: authenticated `/proxy/{appId}/{terId}/mbtiles...` routes with opaque owner-bound `jobHandle` and backend canonicalization; `SITMUN_MBTILES_URL` owned by middleware only.
+- **MBTiles**: Authenticated `/proxy/{appId}/{terId}/mbtiles...` routes with opaque `jobHandle` and backend canonicalization.
 
 #### Edition Mobile App
 
-- **Auth**: login uses `/api/authenticate/mobile` (`access_token`) and exchanges for `proxy_token`; Bearer headers only; MBTiles estimate/create/status/file go through middleware with service/layer IDs.
+- **Auth** / **MBTiles**: Mobile login + proxy-token exchange; Bearer path-prefix attachment; MBTiles via middleware with service/layer IDs.
 
 #### Admin Application
 
-- **Task types**: task type list and title-only form (`/taskType`, `/taskType/:id/taskTypeForm`) with side-menu entry; duplicate action hidden because types are fixed.
-- **i18n**: task type admin strings across all five admin locales.
-- **i18n**: language list and form show the database default language; guarded set-default workflow with preview dialog for missing translations; `language.default` protected in configuration parameter screens; admin UI locale unchanged when the database default changes.
-- **i18n**: language `enabled`/`order` admin UX; toolbar/login closed ISO + open endonyms; translation dialog Accept gated on real edits; chrome menus refresh via `languagesToUse$` after save.
-- **E2E**: `e2e/admin/language-chrome.spec.ts` (project `login`) covers login language chrome.
+- **Templates** / **Task types** / **i18n**: TipTap/MIA admin UI, literal translations, task-type list/form, language `enabled`/`order` chrome and guarded database-default workflow.
+- **Trees** / **Application**: `loadData`/`queryableActive` toggles, ordered application↔tree links, responsible institution + PoC warnings ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
+- **E2E**: Admin language-chrome Playwright coverage (`login` project).
 
 #### Viewer Application
 
-- **i18n**: toolbar language chrome (closed ISO, open endonyms); omits `enabled: false`; refreshes via `languagesToUse$` when the language menu opens.
-- **E2E**: `e2e/viewer/language-chrome.spec.ts` (project `viewer-public`) covers login language chrome.
-
-#### Backend Core
-
-- **Task projections**: `typeTitle` on task and task-availability projections; `TaskType` wired with `I18nListener` for translated titles.
-- **i18n**: `Language` `enabled`/`order`, HAL `LanguageProjection` (`projection=view`), and Liquibase `11_language_order_enabled_and_labels` (development `56_…`, postgres/oracle `09_…`) for existing DBs.
-- **i18n**: request-scoped translation preload resolves `@I18n` fields for the request language.
-- **i18n**: lossless default language migration API (`/api/language-default/change-preview`, `/api/language-default/change`) backs up current main-table values as translations and restores the target language; blocks direct REST edits of `language.default` and immutable `Language.shortname` after creation.
-- **Startup**: soft built-in `admin`/`public` repair keeps the process alive and reports unrepaired admin bootstrap through `/api/dashboard/health`; optional `SITMUN_BOOTSTRAP_ADMIN_PASSWORD` creates/restores admin password only when explicitly injected.
-- **Startup**: public `/api/dashboard/startup` exposes only stable built-in-user state/reason; development property logging redacts secret-bearing keys.
+- **Map** / **i18n**: MIA render overlay; Layers/Available layers stack, **Change topic**, catalog `loadData`/radio/`loadByDefault`/GFI ([#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#142](https://github.com/sitmun/sitmun-viewer-app/issues/142), [#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); toolbar language chrome.
+- **E2E**: `viewer-catalog`, `viewer-legend`, and language-chrome Playwright coverage.
 
 #### Profile-level
 
-- **Applications**: development, PostgreSQL, and Oracle Liquibase profiles add `APP_RESPONSIBLE_INSTITUTION`; development seeds a sample institution on application 12 ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)). Built-in position cleanup is owned by backend startup repair, not profile Liquibase.
-- **E2E**: cross-stack Playwright suite (`playwright.application-contact.config.ts`) covers admin → viewer responsible institution persistence on a shared H2 backend.
-- **E2E**: `viewer-catalog` Playwright project asserts layer-catalog radio/`loadData` DOM behavior for seed tree folders ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45)).
+- **Applications** / **E2E**: Liquibase `APP_RESPONSIBLE_INSTITUTION` across profiles; application-contact and `viewer-catalog` cross-stack Playwright suites.
 
 ### Changed
 
 #### Stack-level
 
-- **Docker**: example demo DB (`demo` profile; `dev` kept as deprecated alias) and MBTiles (`mbtiles` profile) are opt-in; development `profiles/development-*.env` default to main DB only (`COMPOSE_PROFILES=postgres` or `oracle`).
-- **Docker**: frontend image builds now inject each app's version from its submodule `package.json` instead of profile `APP_VERSION`, so Admin and Viewer About dialogs reflect their real component versions.
-- **Security**: backend and proxy now use the same externally supplied middleware secret (`SITMUN_PROXY_MIDDLEWARE_SECRET` / `SITMUN_BACKEND_CONFIG_SECRET`) instead of relying on committed fallback values.
-- **Authentication**: aligned backend, proxy, viewer, and admin `401`/`403` handling so passive resource failures preserve valid sessions, blocked or invalid credentials return generic RFC 9457 `401`, resource denial returns `403`, and upstream authorization failures become sanitized proxy `502` responses. JWT infrastructure failures now fail closed as generic `500`/`503` responses instead of continuing as public, and the viewer suppresses generic `401` modals while presenting translated `403` warnings.
+- **Docker**: Opt-in `demo`/`mbtiles` Compose profiles; frontend image builds inject version from each submodule `package.json`.
+
+#### Backend Core / Proxy Middleware
+
+- **Client config** / **Security**: No `config.mbtilesUrl` in application list; proxy config handshake uses `Authorization: Bearer` only (client Bearer never forwarded upstream).
 
 #### Admin Application
 
-- **Task types**: connection, role, and task-group relation grids show localized `typeTitle` instead of internal `typeName`; connection tasks relation requests include `lang` from the active UI language.
-- **Trees**: tree-node task picker and search use localized `typeTitle`.
-- **Connections**: connection form adds field hints (name, driver, user, password, JDBC URL, validate), a Tasks tab intro, and quick search on the Tasks relation grid, aligned with service/layer form patterns.
-- **Connections**: connection form test button under the JDBC URL uses the same raised primary pattern as the service form metadata action.
-- **Data grid**: relation-grid label columns (e.g. Name) auto-size to cell content once after load, capped so flex filler columns still expand.
-- **Data grid**: introduced `app-relation-grid` wrapper with capability flags (`hasPickerAdd`, `hasRelationsUpdater`, `hasStatusColumn`, `hasTemplateDialogs`, `supportsDuplicate`); dirty tracking preserved via `BaseFormComponent` registration of nested `DataGridComponent` instances; wrapper defaults include quick search and normalized relation-grid toolbar.
-- **Data grid**: migrated all admin form relation grids to the wrapper — territory, layers (territories, permissions, trees, parameters, filters, styles), layers-permits, background-layers, role, task family (basic, more-info, query, edit, locator), user (roles, positions, applications-as-contact), application (roles, backgrounds, parameters, header params, trees), trees (roles, applications), connection (tasks), service (parameters, layers), task-edit (fields), and task groups; custom mappers and identity mappings preserved where picker-add or domain mapping required it.
-- **Data grid**: extended wrapper with template-dialog support (`templateDialogName`, capability-driven duplicate hiding), layer registration (`registerButton`, `newStatusRegister`), duplicate override (`duplicateButton`), and read-only `rowData` / `getAllCurrentData()` delegation for ViewChild validation.
-- **Data grid**: admin form relation-grid rollout complete — direct `app-data-grid` remains only in non-form templates: entity lists, picker dialogs, and the wrapper delegate.
-- **Task groups**: fixed tasks relation grid add/remove by wiring picker and group-assignment persistence.
-- **Layers**: relation tab column widths tuned so URL/value-heavy columns expand and narrow fields stay compact.
-- **Dialogs**: template form modals use shared `formDialogs` width (640px); relation picker modals hide export and compute width from column `minWidth` (640px floor).
-- **Data grid**: relation/form grids auto-show discard, undo, and redo when they own pending changes (`statusColumn` or editable columns); `readOnly` and `changeTracking` inputs express view-only and parent-managed grids; redundant per-template toolbar `true` bindings removed.
-- **Data grid**: read-only grids now hide duplicate; display-only grids on connection, layers, and user forms no longer wire no-op relation save/add handlers or redundant toolbar hide/false flags.
+- **Data grid** / **Connections** / **Trees** / **Auth**: `app-relation-grid` rollout; connection form UX; `visible`/`active` tree semantics; credentialed identity reload, coalesced 401 probe, Observable logout.
+
+#### Viewer Application / Edition Mobile App
+
+- **Map** / **Dashboard** / **Auth**: Radio folder title requires `loadData`; default-layer ordered collection; autocomplete vs Enter search; mobile Bearer path prefixes and shared middleware base for map/MBTiles.
 
 ### Fixed
 
+#### Backend Core / Proxy Middleware
+
+- **Dashboard** / **Configuration** / **Database** / **Config**: Keyword-aware dashboard queries; runtime `proxy` Configuration Parameter ([sitmun-admin-app#431](https://github.com/sitmun/sitmun-admin-app/issues/431)); Liquibase generator realignment; `SITMUN_BACKEND_CONFIG_URL` wiring for MBTiles auth.
+
 #### Admin Application
 
-- **i18n**: translation dialog Accept without edits no longer marks parent forms dirty; language chrome selectors update after enable/order save.
-- **Services**: obtaining service details prefills `Service.name` and `Service.description` translation rows from alternate `xml:lang` entries; when the DB default language is absent from capabilities, the first entry still populates the main field and its language translation row (e.g. `ca` + `es` with default `en`) ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)).
-- **Connections**: saved connections validate via `GET /connections/{id}/test` without re-entering the password; unsaved edits require a typed password before POST test ([sitmun-admin-app#424](https://github.com/sitmun/sitmun-admin-app/issues/424)).
-- **Connections**: password field uses user-form edit-session placeholder UX, `canSave()` respects form validity, and credential input is masked.
-- **Data grid**: relation-grid selection checkbox header/body alignment and flex column fill fixed (missing centered-header CSS; `autoSizeStrategy` now resolved after column prep).
-- **Data grid**: relation-grid status dots visible again (`.sitmun-status-dot` sizing); pending add/modify/delete hints show in the status column; unchanged rows leave the status cell empty.
-- **Navigation**: task query/edit connection links use `/connection/{id}/connectionForm`; connection and role task grids link via `/tasks/{id}/{typeId}`.
-- **Forms**: unsaved-changes confirmation on all admin entity form routes via `CanDeactivateGuard` on `BaseFormComponent` ([sitmun-admin-app#374](https://github.com/sitmun/sitmun-admin-app/issues/374)).
-- **Forms**: entity forms reload when route id changes; new connections no longer show a stale password placeholder.
-- **Layers**: save maps joined layer CSV fields to `layers`, `queryableLayers`, and `selectableLayers` (trimmed); preserves `spatialSelectionService` relation; load no longer clears selectable layers when queryable is disabled; queryable subset revalidates when the layer set changes; new style dialog maps flat legend fields to nested `legendURL`.
-- **Layers**: style add dialog title, form reset on reopen, filter field order, and `appUrlInput` on style URL; permissions relation updater uses saved entity proxy; removed dead `actionButton` bindings on layers form grids.
-- **Dialogs**: picker modals no longer show CSV export; form/picker modal sizing improved app-wide.
-- **Security**: service password, task-query password/API key, and connection password inputs use `type="password"` (BUG-033).
-- **Forms**: save toolbar stays disabled until entity data has loaded; translation edits and nested form changes trigger change detection so save/modified state stays accurate.
+- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence.
 
-#### Backend Core
+#### Viewer Application / Edition Mobile App
 
-- **Dashboard API**: keyword-aware `/dashboard/applications` and `/dashboard/suggestions` query the database instead of filtering only the first in-memory page.
-- **i18n**: translation cache filter resets servlet thread locale after each request so language does not leak between requests.
+- **Map** / **Dashboard** / **Auth**: Layers layout/overview/legend/`SCALE`/catalog claim hardening ([#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#135](https://github.com/sitmun/sitmun-viewer-app/issues/135), [#142](https://github.com/sitmun/sitmun-viewer-app/issues/142), [#152](https://github.com/sitmun/sitmun-viewer-app/issues/152), [#164](https://github.com/sitmun/sitmun-viewer-app/issues/164)); dashboard search/resync; passive `401` validation and proxy token refresh; mobile login/i18n error surfacing.
 
-#### Viewer Application
+### Removed
 
-- **i18n**: language toolbar control matches hamburger ink; menu open re-fetches enabled languages for the switcher.
-- **Dashboard**: pagination, server-side keyword search, autocomplete loading, searchbox/grid interaction, and dashboard-item resync fixes (see `sitmun-viewer-app` `[Unreleased]`).
+#### Admin Application
+
+- **Auth** / **User**: Unused authority helpers; built-in users no longer show applications-as-PoC tab ([#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
+
+### Security
+
+#### Stack-level / Backend / Proxy
+
+- **Security** / **Auth**: Externally supplied secrets required (no committed fallbacks); dual `viewer_access_token`/`admin_access_token` cookies; fail-closed JWT and sanitized proxy `401`/`403`/`502` handling.
+
+#### Admin / Viewer
+
+- **Auth** / **Forms** / **Service worker**: Admin scoped cookie + `X-SITMUN-Client: admin`; password `type="password"` (BUG-033); viewer logout clears only `viewer_access_token`; reject empty/root middleware URL for proxy-token attachment.
 
 ## [1.2.7] - 2026-06-05
 
