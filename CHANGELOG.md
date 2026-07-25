@@ -84,6 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level / Backend / Proxy
 
 - **Security** / **Auth**: Externally supplied secrets required (no committed fallbacks); dual `viewer_access_token`/`admin_access_token` cookies; fail-closed JWT and sanitized proxy `401`/`403`/`502` handling.
+- **Known limitations**: JDBC SQL pagination still concatenates `LIMIT`/`OFFSET` via `JdbcSqlDialect.appendPagination` (injection risk if values are not strictly numeric); credentialed CORS still allows `*` origins in some profiles — not resolved in this release.
 
 #### Admin / Viewer
 
