@@ -6,6 +6,92 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.8] - 2026-07-25
+
+### Added
+
+#### Stack-level
+
+- **Mobile apps** / **Docker** / **CI**: Submodules for touristic/edition mobile and internal `sitmun-mbtiles`; internal `mbtiles` Compose service (`SITMUN_MBTILES_URL`, public `/mbtiles` → 404); `e2e:mobile:web` / `e2e:mobile:android` suites and matching GitHub Actions jobs (Maestro `2.6.1`).
+
+#### Backend Core
+
+- **Templates** / **i18n**: Template execution/preview and More Info Advanced render; literal-translation CRUD/CSV (`VARCHAR(4000)`); `Language` `enabled`/`order` + HAL projection; lossless default-language migration API; task `typeTitle` / availability `taskTypeTitle`.
+- **Auth** / **Proxy**: Mobile JSON Bearer login, `ROLE_MOBILE_EDITION`, mobile proxy tokens, and `POST /api/config/proxy/mbtiles` canonicalization.
+- **Trees** / **Applications** / **Startup**: `visible`/`loadByDefault`/`queryableActive`/`loadData` and ordered `application-trees`; `responsibleInstitutionName` + PoC policy ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)); soft built-in user repair and public `/api/dashboard/startup`.
+
+#### Proxy Middleware
+
+- **MBTiles**: Authenticated `/proxy/{appId}/{terId}/mbtiles...` routes with opaque `jobHandle` and backend canonicalization.
+
+#### Edition Mobile App
+
+- **Auth** / **MBTiles**: Mobile login + proxy-token exchange; Bearer path-prefix attachment; MBTiles via middleware with service/layer IDs.
+
+#### Admin Application
+
+- **Templates** / **Task types** / **i18n**: TipTap/MIA admin UI, literal translations, task-type list/form, language `enabled`/`order` chrome and guarded database-default workflow.
+- **Trees** / **Application**: `loadData`/`queryableActive` toggles, ordered application↔tree links, responsible institution + PoC warnings ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
+- **E2E**: Admin language-chrome Playwright coverage (`login` project).
+
+#### Viewer Application
+
+- **Map** / **i18n**: MIA render overlay; Layers/Available layers stack, **Change topic**, catalog `loadData`/radio/`loadByDefault`/GFI ([#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#142](https://github.com/sitmun/sitmun-viewer-app/issues/142), [#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); toolbar language chrome.
+- **E2E**: `viewer-catalog`, `viewer-legend`, and language-chrome Playwright coverage.
+
+#### Profile-level
+
+- **Applications** / **E2E**: Liquibase `APP_RESPONSIBLE_INSTITUTION` across profiles; application-contact and `viewer-catalog` cross-stack Playwright suites.
+
+### Changed
+
+#### Stack-level
+
+- **Docker**: Opt-in `demo`/`mbtiles` Compose profiles; frontend image builds inject version from each submodule `package.json`.
+
+#### Backend Core / Proxy Middleware
+
+- **Client config** / **Security**: No `config.mbtilesUrl` in application list; proxy config handshake uses `Authorization: Bearer` only (client Bearer never forwarded upstream).
+
+#### Admin Application
+
+- **Data grid** / **Connections** / **Trees** / **Auth**: `app-relation-grid` rollout; connection form UX; `visible`/`active` tree semantics; credentialed identity reload, coalesced 401 probe, Observable logout.
+
+#### Viewer Application / Edition Mobile App
+
+- **Map** / **Dashboard** / **Auth**: Radio folder title requires `loadData`; default-layer ordered collection; autocomplete vs Enter search; mobile Bearer path prefixes and shared middleware base for map/MBTiles.
+
+### Fixed
+
+#### Backend Core / Proxy Middleware
+
+- **Dashboard** / **Configuration** / **Database** / **Config**: Keyword-aware dashboard queries; runtime `proxy` Configuration Parameter ([sitmun-admin-app#431](https://github.com/sitmun/sitmun-admin-app/issues/431)); Liquibase generator realignment; `SITMUN_BACKEND_CONFIG_URL` wiring for MBTiles auth.
+
+#### Admin Application
+
+- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence.
+
+#### Viewer Application / Edition Mobile App
+
+- **Map** / **Dashboard** / **Auth**: Layers layout/overview/legend/`SCALE`/catalog claim hardening ([#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#135](https://github.com/sitmun/sitmun-viewer-app/issues/135), [#142](https://github.com/sitmun/sitmun-viewer-app/issues/142), [#152](https://github.com/sitmun/sitmun-viewer-app/issues/152), [#164](https://github.com/sitmun/sitmun-viewer-app/issues/164)); dashboard search/resync; passive `401` validation and proxy token refresh; mobile login/i18n error surfacing.
+
+### Removed
+
+#### Admin Application
+
+- **Auth** / **User**: Unused authority helpers; built-in users no longer show applications-as-PoC tab ([#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
+
+### Security
+
+#### Stack-level / Backend / Proxy
+
+- **Security** / **Auth**: Externally supplied secrets required (no committed fallbacks); dual `viewer_access_token`/`admin_access_token` cookies; fail-closed JWT and sanitized proxy `401`/`403`/`502` handling.
+- **Known limitations**: JDBC SQL pagination still concatenates `LIMIT`/`OFFSET` via `JdbcSqlDialect.appendPagination` (injection risk if values are not strictly numeric); credentialed CORS still allows `*` origins in some profiles — not resolved in this release.
+
+#### Admin / Viewer
+
+- **Auth** / **Forms** / **Service worker**: Admin scoped cookie + `X-SITMUN-Client: admin`; password `type="password"` (BUG-033); viewer logout clears only `viewer_access_token`; reject empty/root middleware URL for proxy-token attachment.
+
 ## [1.2.7] - 2026-06-05
 
 ### Added
@@ -929,7 +1015,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...HEAD
+[1.2.8]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...sitmun-application-stack/1.2.8
 [1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
 [1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5

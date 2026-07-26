@@ -1,0 +1,10 @@
+appId: touristic.mobile.app
+---
+- launchApp:
+    clearState: true
+# Temp E2E env ships a single local instance, so the app auto-enters after public config load.
+# List and menu footers both expose the exit control after a successful profile load.
+- extendedWaitUntil:
+    visible: "Sortir|Salir|Exit|Sortie"
+    timeout: 90000
+- assertVisible: "Sortir|Salir|Exit|Sortie"

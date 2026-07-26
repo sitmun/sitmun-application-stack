@@ -6,6 +6,9 @@ This runbook describes the coordinated release workflow for the stack repository
 - `front/viewer/sitmun-viewer-app`
 - `back/backend/sitmun-backend-core`
 - `back/proxy/sitmun-proxy-middleware`
+- `apps/edition-mobile-app` (when mobile release is in scope)
+- `apps/touristic-mobile-app` (when mobile release is in scope)
+- `back/mbtiles/sitmun-mbtiles` (pin only; source-unchanged internal service)
 
 It assumes:
 

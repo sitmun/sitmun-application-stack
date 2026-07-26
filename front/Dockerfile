@@ -1,11 +1,10 @@
 # Stage 0, "build-apps", based on Node.js, to build and compile both frontend apps sequentially
+# Each app's About-dialog version comes from its package.json at build time (not stack VERSION).
 FROM node:20 AS build-apps
 ARG PUBLIC_BASE_PATH=/
 ARG ENVIRONMENT=development
-ARG APP_VERSION=0.0.0
 ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
 ENV ENVIRONMENT=${ENVIRONMENT}
-ENV APP_VERSION=${APP_VERSION}
 # Cache apt-get packages and install gettext
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -25,8 +24,9 @@ COPY --chown=node:node front/admin/sitmun-admin-app/*.json front/admin/sitmun-ad
 COPY --chown=node:node front/admin/sitmun-admin-app/src/ ./src/
 COPY --chown=node:node front/admin/environment.prod.ts.template ./src/environments/environment.prod.ts.template
 RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
+    export APP_VERSION=$(node -p "require('./package.json').version") && \
     if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
-    envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
+    envsubst '$BUILD_TIMESTAMP,$APP_VERSION,$FRONT_ENV,$PUBLIC_BASE_PATH' < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
 RUN if [ "${ENVIRONMENT}" = "development" ]; then \
       npm run build -- --configuration=docker-dev --base-href=${PUBLIC_BASE_PATH}admin/; \
     else \
@@ -48,8 +48,9 @@ COPY --chown=node:node front/viewer/environment.prod.ts.template ./src/environme
 COPY --chown=node:node front/viewer/index.html.template ./src/index.html.template
 COPY --chown=node:node front/viewer/webpack.config.js.template ./webpack.config.js.template
 RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
+    export APP_VERSION=$(node -p "require('./package.json').version") && \
     if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
-    envsubst < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
+    envsubst '$BUILD_TIMESTAMP,$APP_VERSION,$FRONT_ENV,$PUBLIC_BASE_PATH' < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
 RUN envsubst < ./src/index.html.template > ./src/index.html
 RUN envsubst < ./webpack.config.js.template > ./webpack.config.js
 RUN if [ "${ENVIRONMENT}" = "development" ]; then \

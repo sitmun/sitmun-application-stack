@@ -9,13 +9,14 @@
 # 1. .env (not committed) - Default development configuration
 #    - At least should include COMPOSE_PROFILES
 #    - Minimum content:
-#      COMPOSE_PROFILES=postgres,dev
+#      COMPOSE_PROFILES=postgres
 #
 # 2. Profile files (profiles/*.env) - Predefined configurations
-#    - development-postgres.env: Development with PostgreSQL + demo data
-#    - development-oracle.env: Development with Oracle + demo data
+#    - development-postgres.env: Development PostgreSQL (Liquibase seed in main DB)
+#    - development-oracle.env: Development Oracle (Liquibase seed in main DB)
 #    - postgres.env: Production with PostgreSQL (minimal seed data)
 #    - oracle.env: Production with Oracle (minimal seed data)
+#    - Optional profiles: ,demo (example demo DB; ,dev is a deprecated alias), ,mbtiles
 #
 # Docker Compose reads files in this order (last wins):
 #   .env → .env.local → Environment variables
@@ -44,14 +45,17 @@
 #   - ENVIRONMENT=development (shows "development", source maps enabled)
 #   - PUBLIC_PORT=9000 (http://localhost:9000)
 #
-# Backend:
+# Backend / Compose:
 #   - DATABASE_TYPE=postgres
-#   - SITMUN_CONFIG_DIR=development/backend (42 changesets, extensive demo data)
-#   - COMPOSE_PROFILES=postgres,dev (PostgreSQL + example demo database)
+#   - SITMUN_CONFIG_DIR=development/backend (Liquibase demo seed in main DB)
+#   - COMPOSE_PROFILES=postgres  (main PostgreSQL only)
+#   - Optional: add ,demo for example demo DB (host port 9005; ,dev still works)
+#   - Optional: add ,mbtiles for edition-mobile tile export service
 #
-# Databases:
-#   - PostgreSQL on port 9003 (docker host)
-#   - Example demo DB on port 9005 (docker host)
+# Databases (when profiles enabled):
+#   - PostgreSQL on port 9003 (profile postgres)
+#   - Example demo DB on port 9005 (profile demo; alias dev)
+#   - MBTiles internal-only (profile mbtiles; no host port)
 #
 # ============================================================================
 
@@ -63,7 +67,6 @@ services:
       args:
         - PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH:-/}
         - ENVIRONMENT=${ENVIRONMENT:-development}
-        - APP_VERSION=${APP_VERSION:-0.0.0}
     restart: always
     ports:
       - "${LOCAL_PORT:-9000}:80"
@@ -106,7 +109,8 @@ services:
       - SITMUN_PROXY_MIDDLEWARE_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}:${PUBLIC_PORT:-9000}${PUBLIC_BASE_PATH:-/}middleware
       - SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS=${SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS:-true}
       - SITMUN_BACKEND_URL=${PUBLIC_URL_SCHEME:-http}://${PUBLIC_HOSTNAME:-localhost}:${PUBLIC_PORT:-9000}${PUBLIC_BASE_PATH:-/}backend
-      - SECURITY_AUTHENTICATION_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+      - SITMUN_USER_SECRET=${SITMUN_USER_SECRET:-dev-only-insecure-user-secret-32-bytes}
+      - SITMUN_PROXY_MIDDLEWARE_SECRET=${MIDDLEWARE_SECRET:-dev-only-insecure-middleware-secret}
       - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
       - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-DEBUG}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
@@ -133,10 +137,16 @@ services:
     ports:
       - "9002:8080"
     depends_on:
-      - backend
+      backend:
+        condition: service_started
+      mbtiles:
+        condition: service_healthy
+        required: false
     environment:
       - SITMUN_BACKEND_CONFIG_URL=http://backend:8080/api/config/proxy
-      - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-9ef80c644166846897f6a87d3cf6ab204d144229}
+      - SITMUN_BACKEND_CONFIG_SECRET=${MIDDLEWARE_SECRET:-dev-only-insecure-middleware-secret}
+      - SITMUN_MBTILES_URL=http://mbtiles:8080/mbtiles
+      - SITMUN_MBTILES_JOB_HANDLE_SECRET=${SITMUN_MBTILES_JOB_HANDLE_SECRET:-dev-only-insecure-mbtiles-job-handle-secret}
       - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
       - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-DEBUG}
     healthcheck:
@@ -145,6 +155,35 @@ services:
       timeout: 30s
       start_period: 5s
       retries: 3
+
+  # Internally unauthenticated. Reachable only on the Compose network via middleware.
+  # Do not publish a host port; nginx must not route /mbtiles/**.
+  # Opt-in: COMPOSE_PROFILES must include mbtiles.
+  mbtiles:
+    profiles:
+      - mbtiles
+    build: ./back/mbtiles
+    restart: always
+    expose:
+      - "8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${MBTILES_SPRING_PROFILES_ACTIVE:-prod}
+      - LOGGING_LEVEL_ROOT=${LOGGING_LEVEL_ROOT:-INFO}
+      - LOGGING_LEVEL_ORG_SITMUN=${LOGGING_LEVEL_ORG_SITMUN:-INFO}
+    volumes:
+      - mbtiles_tmp:/tmp/mbtiles
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 30s
+      start_period: 40s
+      retries: 5
 
   postgres:
     profiles:
@@ -195,7 +234,8 @@ services:
 
   example:
     profiles:
-      - dev
+      - demo
+      - dev # deprecated alias for demo
     image: postgres:16-alpine
     restart: always
     environment:
@@ -212,3 +252,4 @@ volumes:
   pgdata:
   oradata:
   example_data:
+  mbtiles_tmp:

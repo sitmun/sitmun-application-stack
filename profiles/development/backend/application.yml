@@ -6,6 +6,10 @@ sitmun:
   module: SITMUN Core
   version: 3.0-SNAPSHOT
   language:
+  user:
+    secret: dev-only-insecure-user-secret-32-bytes
+  proxy-middleware:
+    secret: dev-only-insecure-middleware-secret
   proxy:
     config-response-validity-in-seconds: 3600
   ogc:
@@ -131,22 +135,6 @@ spring:
       thread-name-prefix: sample-scheduling-
       pool:
         size: 2
-
-# ===================================================================
-# Security
-# ===================================================================
-
-security:
-  authentication:
-    jwt:
-      secret: 9ef80c644166846897f6a87d3cf6ab204d144229
-      token-validity-in-miliseconds: 36000000
-    ldap:
-      host: ldap://localhost:1389
-      base_dn: dc=example,dc=com
-      user_dn_pattern: uid={0}
-      user_ldap: cn=admin
-      password_ldap: admin
 
 # ===================================================================
 # Server

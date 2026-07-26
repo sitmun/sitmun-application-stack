@@ -14,3 +14,15 @@
 	path = back/proxy/sitmun-proxy-middleware
 	url = https://github.com/sitmun/sitmun-proxy-middleware.git
 	branch = .
+[submodule "apps/touristic-mobile-app"]
+	path = apps/touristic-mobile-app
+	url = https://github.com/sitmun/touristic-mobile-app.git
+	branch = dev
+[submodule "apps/edition-mobile-app"]
+	path = apps/edition-mobile-app
+	url = https://github.com/sitmun/edition-mobile-app.git
+	branch = dev
+[submodule "back/mbtiles/sitmun-mbtiles"]
+	path = back/mbtiles/sitmun-mbtiles
+	url = https://github.com/sitmun/sitmun-mbtiles.git
+	branch = main
