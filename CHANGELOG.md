@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.8] - 2026-07-25
+
 ### Added
 
 #### Stack-level
@@ -1013,7 +1015,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...HEAD
+[1.2.8]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...sitmun-application-stack/1.2.8
 [1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
 [1.2.5]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.4...sitmun-application-stack/1.2.5
