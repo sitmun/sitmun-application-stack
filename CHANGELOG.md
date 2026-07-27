@@ -32,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Templates** / **Task types** / **i18n**: TipTap/MIA admin UI, literal translations, task-type list/form, language `enabled`/`order` chrome and guarded database-default workflow.
 - **Trees** / **Application**: `loadData`/`queryableActive` toggles, ordered application↔tree links, responsible institution + PoC warnings ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
-- **E2E**: Admin language-chrome Playwright coverage (`login` project).
+- **E2E**: Admin language-chrome Playwright coverage (`login` project); layers form Details + Feature Feature Information character-count oracle; layers list delete → **204** (`admin-forms`).
 
 #### Viewer Application
 
@@ -66,10 +66,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core / Proxy Middleware
 
 - **Dashboard** / **Configuration** / **Database** / **Config**: Keyword-aware dashboard queries; runtime `proxy` Configuration Parameter ([sitmun-admin-app#431](https://github.com/sitmun/sitmun-admin-app/issues/431)); Liquibase generator realignment; `SITMUN_BACKEND_CONFIG_URL` wiring for MBTiles auth.
+- **Cartography**: DELETE returns **422** when referenced by tree nodes/tasks; style-in-use **422**; SDR `returnBodyOnDelete=false` so Accept-bearing clients no longer get **500** LazyInitializationException on cartography delete.
 
 #### Admin Application
 
-- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence.
+- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence; layers Feature Information character-count probe no longer throws beside queryable-layers CSV validator.
 
 #### Viewer Application / Edition Mobile App
 
