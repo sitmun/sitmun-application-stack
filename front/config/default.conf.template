@@ -60,6 +60,14 @@ server {
       proxy_set_header X-Forwarded-Prefix "${PUBLIC_BASE_PATH}middleware"; 
     }
 
+    # MBTiles is internal-only (Compose network + middleware). Never proxy publicly.
+    location ${LOCAL_BASE_PATH}mbtiles {
+      return 404;
+    }
+    location ${LOCAL_BASE_PATH}mbtiles/ {
+      return 404;
+    }
+
     location ${LOCAL_BASE_PATH}catastro-inspire/ {
       proxy_pass https://ovc.catastro.meh.es/INSPIRE/;
       proxy_set_header Host ovc.catastro.meh.es;

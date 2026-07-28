@@ -47,6 +47,7 @@ Paths by scenario:
 | **apply-seed-data.sh** | Generate seed files then apply the Liquibase changelog to a remote database. `--db-type postgres\|oracle`; `--baseline` selects i18n language. |
 | **validate-liquibase-changelogs.sh** | List changelogs by last modification (newest first). Pass `[liquibase_dir]` as first argument (default: development). |
 | **checkout-latest-tags.sh** | Update all git submodules to their latest version tag. |
+| **bump-version.sh** | Propagate stack `VERSION` into coordinated submodule build metadata, OpenAPI docs, frontend env files, README badges, and lockfiles. See [Version and release](#version-and-release). |
 
 ```bash
 # Apply seed data to a remote PostgreSQL database (English baseline)
@@ -83,6 +84,21 @@ bash tools/scripts/validate-liquibase-changelogs.sh profiles/oracle/liquibase
 # Move submodules to latest tags
 bash tools/scripts/checkout-latest-tags.sh
 ```
+
+### Version and release
+
+Coordinated stack version lives in root `VERSION`. Propagation and status:
+
+```bash
+# Show current version across consumers
+bash tools/scripts/bump-version.sh --status
+
+# Set coordinated version (e.g. release cut or SNAPSHOT bump)
+bash tools/scripts/bump-version.sh 1.2.8
+bash tools/scripts/bump-version.sh --status
+```
+
+Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.json` / environments / badges, and regenerates frontend lockfiles when needed. Full cut/tag/merge sequence is in root [RELEASE.md](../RELEASE.md).
 
 ---
 

@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 55_fix_proxy_conf_url
+      author: sitmun
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: STM_CONF
+      changes:
+        - sql:
+            sql: >
+              UPDATE STM_CONF
+              SET CNF_VALUE = 'http://localhost:9000/middleware'
+              WHERE CNF_NAME = 'proxy'
+                AND (CNF_VALUE = 'http://localhost:9000'
+                  OR CNF_VALUE = 'http://localhost:9000/')

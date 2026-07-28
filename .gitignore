@@ -28,3 +28,9 @@ sitmun.github.io/
 
 # Harness Engineering (local orchestration state)
 .sitmun-harness/
+
+# Root E2E (Playwright)
+node_modules/
+e2e/.auth/
+playwright-report/
+test-results/
