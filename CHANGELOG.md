@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+#### Admin Application
+
+- **Templates** / **i18n**: Null-safe sorts after `language.default` change so Templates create/edit load again ([sitmun-admin-app#440](https://github.com/sitmun/sitmun-admin-app/issues/440)).
+
+### Added
+
+#### Backend Core
+
+- **i18n** / **Templates**: Enroll `<t>` literals on Task save; shared DB `language.default` resolver; continuity seed of missing literal values on default-language change; `@I18n`/catalog matrix for Task and related fields.
+
+#### Stack-level
+
+- **E2E**: `template-default-language` admin oracle and mia-cross enroll/fallback/default-change coverage for the `#440` i18n cluster (`e2e/README.md`).
+
+### Changed
+
+#### Admin Application
+
+- **Literal translations** / **Templates**: Enabled-only language selectors/preview; live `config.defaultLang` for forms.
+
 ## [1.2.8] - 2026-07-25
 
 ### Added

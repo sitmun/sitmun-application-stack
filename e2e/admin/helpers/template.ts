@@ -109,7 +109,9 @@ export async function openPlantilla(page: Page, id: number): Promise<void> {
 }
 
 export async function renderPlantillaPreview(page: Page): Promise<void> {
-  await page.getByRole('button', { name: /^Render$/i }).click();
+  await page
+    .getByRole('button', { name: /^(Render|Renderitza|Renderizar|Rendre)$/i })
+    .click();
   await expect(page.locator('.preview-panel.ql-editor')).toBeVisible({ timeout: 30_000 });
 }
 

@@ -19,6 +19,8 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
 - Literal translations grid CRUD (not `app-relation-grid`; no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
+- Templates + `language.default` i18n cluster (`e2e/admin/forms/template-default-language.spec.ts`, project `admin-forms`): enroll `<t>` on save with DB default as `sourceLanguage` (UI lang may differ); preview self-translation / translated / opaque-key fallback; Templates still load after default change; HTML/`sourceLanguage` stable; continuity seed for new default; enabled-only create dialog; CSV may import a disabled `source_language`; soft client-config task-name overlay check
+- Nested Plantilla literal preview (`e2e/admin/forms/template-nested-preview.spec.ts`): child `<t>` + Catalan value appears in parent preview for `lang=ca`
 
 ### Viewer (`npm run e2e:viewer`)
 
@@ -37,12 +39,13 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admin, viewer, application-contact, or mobile suites.
 
 - TipTap Plantilla HTML marker + CSV Catalan literal → simulated GFI → overlay (`e2e/mia-cross/mia-template-viewer.spec.ts`)
+- Enroll-on-save `<t>` → API translation for UI lang → overlay; same value after `language.default` change; enroll-only opaque-key fallback in overlay (`e2e/mia-cross/mia-template-viewer.spec.ts`)
 - MIA parameter mapping feature attr → Plantilla `$param` in overlay (`e2e/mia-cross/mia-mapping.spec.ts`)
-- Nested Plantilla A→B composition in viewer overlay (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
+- Nested Plantilla A→B composition in viewer overlay; nested child `<t>` + Catalan value in overlay for UI lang (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
 - Public-user MIA render on temporarily public app `1/1` (`e2e/mia-cross/mia-public-viewer.spec.ts`)
 - Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`); simulated GFI path remains for faster specs
 
-**Still out of Playwright:** TipTap full toolbar matrix, translation completion indicators, binary child handling, filtrable columns, Docker profile Liquibase salvage.
+**Still out of Playwright:** TipTap full toolbar matrix, binary child handling, filtrable columns, Docker profile Liquibase salvage. Viewer omits `lang` when UI language is blank (backend resolves); product lock, not a coverage gap.
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
 
