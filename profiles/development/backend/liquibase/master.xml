@@ -70,4 +70,6 @@
   <include file="changelog/63_add_translation_sequences.sql" relativeToChangelogFile="true"/>
   <include file="changelog/64_literal_translations_varchar.sql" relativeToChangelogFile="true"/>
   <include file="changelog/65_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/66_dev_plantilla_showcase.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/66_dev_plantilla_showcase_oracle.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

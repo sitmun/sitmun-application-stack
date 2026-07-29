@@ -10,9 +10,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Templates**: TipTap keeps `data-sitmun-each` so Preview still expands query-table rows after visual edits ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441)).
 - **Templates** / **i18n**: Null-safe sorts after `language.default` change so Templates create/edit load again ([sitmun-admin-app#440](https://github.com/sitmun/sitmun-admin-app/issues/440)).
+- **Templates**: Declared-only plantilla parameters (default ⇒ optional; parent pass-through only for names the child declares).
+- **Templates** / **i18n**: Sources `common.copy` aria-labels translated; nested Plantilla cards no longer show bare `entity.task.query.scope.`.
+
+#### Backend Core
+
+- **Templates** / **SQL**: JDBC `executeQuery` lowercases column labels so H2/Oracle aliases match Plantilla lowercase keys.
+- **E2E seed**: Plantilla self-JDBC uses `jdbc:h2:mem:sitmun-e2e`; Menorca GEO **1304** available only on territory **4** (avoids app **1/1** GFI pollution).
+- **Templates**: `data-sitmun-each` preview keeps TipTap `<th>` header rows outside `{{#each}}` (headers no longer repeat per row).
+
+#### Stack-level
+
+- **E2E**: Plantilla preview helpers open the preview pane before selecting language (`selectPlantillaPreviewLanguage`).
 
 ### Added
+
+#### Admin Application
+
+- **Templates**: Details / Template / Sources tabs; preview toggle in editor toolbar; **R** chip + table-only rebind; inline `{{…}}` code chips; Material Visual/HTML toolbar with labeled table delete actions.
 
 #### Backend Core
 
@@ -21,12 +38,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level
 
 - **E2E**: `template-default-language` admin oracle and mia-cross enroll/fallback/default-change coverage for the `#440` i18n cluster (`e2e/README.md`).
+- **E2E**: `template-table-each-preview` admin oracle for TipTap `data-sitmun-each` survival + preview rows ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441)).
+- **Development seed**: Liquibase `66_dev_plantilla_showcase` (PostgreSQL) — `66j` MIA control **43**; `66k`–`66m` Menorca `tu007rts_ccavalls` (GEO **1304** / node **12094**): MIA **9021** tabs over Plantillas **9020** (full+JDBC), **9025** (route/GFI), **9026** (reference), mapping GFI `nomruta` → `$featureName`.
+- **Development seed (Oracle)**: Liquibase `66_dev_plantilla_showcase_oracle` — same Plantilla/MIA IDs and admin URLs; CON **90** uses `oracle.jdbc.OracleDriver` / `jdbc:oracle:thin:@//oracle:1521/sitmun3`; SQL children use `FETCH FIRST` / `ROWNUM` / `UPPER...LIKE UPPER` instead of `LIMIT` / `ILIKE`.
+- **E2E**: `e2e/mia-cross/mia-solrustic-gfi.spec.ts` — Capas GFI on `tu007rts_ccavalls`, assert three Plantilla tabs + SQL sections in MIA overlay.
 
 ### Changed
 
 #### Admin Application
 
+- **Templates**: Preview omits `appId`/`terId`; unknown placeholders use `.sitmun-template-error`; sash drag past max closes Preview / past min hides editor.
 - **Literal translations** / **Templates**: Enabled-only language selectors/preview; live `config.defaultLang` for forms.
+
+#### Backend Core
+
+- **Templates**: Preview placeholder contract (value / bare known name / colored unknown mustache); optional `appId`/`terId` on `/api/tasks/template/preview` resolve softly.
 
 ## [1.2.8] - 2026-07-25
 
