@@ -7,6 +7,7 @@ import {
   openPlantilla,
   renderPlantillaPreview,
   savePlantillaUpdate,
+  selectPlantillaPreviewLanguage,
   setReferenceAlias,
   setTemplateHtml,
 } from '../helpers/template';
@@ -78,11 +79,7 @@ test.describe('Admin nested Plantilla preview', () => {
     expect(JSON.stringify(await childPreview.json())).toContain(translated);
 
     await openPlantilla(page, plantillaA.id);
-    const previewSelect = page.locator('mat-select').filter({ hasText: /\(/ }).first();
-    if (await previewSelect.isVisible().catch(() => false)) {
-      await previewSelect.click();
-      await page.locator('mat-option').filter({ hasText: /\(ca\)/i }).first().click();
-    }
+    await selectPlantillaPreviewLanguage(page, 'ca');
     await renderPlantillaPreview(page);
     await expect(page.locator('.preview-panel.ql-editor')).toContainText(translated, {
       timeout: 30_000,

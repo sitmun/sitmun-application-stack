@@ -15,6 +15,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Layers list delete: create via form, search, grid delete → `DELETE /api/cartographies/{id}` **204** and GET **404** (`e2e/admin/forms/layers-list-delete.spec.ts`, project `admin-forms`)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
 - Plantilla nested preview-only: create nested A→B, assert admin preview / execute-child panel contains B’s marker (`e2e/admin/forms/template-nested-preview.spec.ts`, project `admin-forms`)
+- Plantilla query-table `data-sitmun-each`: visual TipTap edit keeps the attribute and ADMIN preview still expands row cells ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441); `e2e/admin/forms/template-table-each-preview.spec.ts`, project `admin-forms`)
 - More Info Advanced **Details**: validation, create with cartography + included query child 38, layout update persistence; cartography open-in-new; deep route `/#/tasks/42/16`; Parameters `app-relation-grid` add + reload persist; child parameter mapping UI round-trip + persists across a subsequent Parameters save; orphan `childTaskParameters` keys dropped on save; Add mapping disabled when included child has no parameters; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
@@ -44,6 +45,7 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Nested Plantilla A→B composition in viewer overlay; nested child `<t>` + Catalan value in overlay for UI lang (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
 - Public-user MIA render on temporarily public app `1/1` (`e2e/mia-cross/mia-public-viewer.spec.ts`)
 - Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`); simulated GFI path remains for faster specs
+- IDE Menorca `tu007rts_ccavalls` (tree node 12094 / GEO 1304): Capas GFI → MIA Plantilla with JDBC SQL sections (languages/territories/GFI-echo) and `nomruta` → `$featureName` (`e2e/mia-cross/mia-solrustic-gfi.spec.ts`; H2 liquibase `20_menorca_solrustic_mia_e2e`)
 
 **Still out of Playwright:** TipTap full toolbar matrix, binary child handling, filtrable columns, Docker profile Liquibase salvage. Viewer omits `lang` when UI language is blank (backend resolves); product lock, not a coverage gap.
 

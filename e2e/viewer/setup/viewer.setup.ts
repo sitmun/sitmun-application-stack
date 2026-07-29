@@ -16,6 +16,8 @@ import {
   generateViewerPassword,
   LAYER_CATALOG_TASK_ID,
   LEGEND_TASK_ID,
+  MENORCA_APP_ID,
+  MENORCA_TERRITORY_ID,
   MIA_CONTROL_TASK_ID,
   MIA_PARENT_TASK_ID,
   NAV_BAR_TASK_ID,
@@ -26,6 +28,9 @@ import {
   QUERYABLE_LEAF_TREE_NODE_DB_ID,
   ROLE_ID,
   SERVICE_ID,
+  CCAVALLS_CARTOGRAPHY_ID,
+  CCAVALLS_MIA_TASK_ID,
+  CCAVALLS_TREE_NODE_DB_ID,
   STREET_VIEW_TASK_ID,
   THREE_D_TASK_ID,
   TERRITORY_ID,
@@ -109,19 +114,21 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   const userId = loginUser.userId;
   const apiOrigin = loginUser.apiOrigin;
 
-  const createConfig = await request.post('/backend/api/user-configurations', {
-    headers: adminHeaders,
-    data: {
-      user: `${apiOrigin}/api/users/${userId}`,
-      territory: `${apiOrigin}/api/territories/${TERRITORY_ID}`,
-      role: `${apiOrigin}/api/roles/${ROLE_ID}`,
-      appliesToChildrenTerritories: false,
-    },
-  });
-  expect(
-    createConfig.status(),
-    `create user-configuration failed: ${createConfig.status()}`,
-  ).toBe(201);
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    const createConfig = await request.post('/backend/api/user-configurations', {
+      headers: adminHeaders,
+      data: {
+        user: `${apiOrigin}/api/users/${userId}`,
+        territory: `${apiOrigin}/api/territories/${territoryId}`,
+        role: `${apiOrigin}/api/roles/${ROLE_ID}`,
+        appliesToChildrenTerritories: false,
+      },
+    });
+    expect(
+      createConfig.status(),
+      `create user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
+    ).toBe(201);
+  }
 
   const makeApplicationPrivate = await request.patch(
     `/backend/api/applications/${APP_ID}`,
@@ -236,7 +243,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
   // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector
   // and map-chrome nav/fullscreen/streetView/overview needed for #135 checks.
-  for (const taskId of [
+  const mapChromeTaskIds = [
     LAYER_CATALOG_TASK_ID,
     LEGEND_TASK_ID,
     WORK_LAYER_MANAGER_TASK_ID,
@@ -250,20 +257,24 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     FEATURE_INFO_TASK_ID,
     MIA_CONTROL_TASK_ID,
     MIA_PARENT_TASK_ID,
-  ]) {
-    const createAvailability = await request.post('/backend/api/task-availabilities', {
-      headers: adminHeaders,
-      data: {
-        task: `${apiOrigin}/api/tasks/${taskId}`,
-        territory: `${apiOrigin}/api/territories/${TERRITORY_ID}`,
-      },
-    });
-    const status = createAvailability.status();
-    // MIA control/parent may already be seeded in STM_AVAIL_TSK (unique ter+task).
-    expect(
-      [201, 409].includes(status),
-      `create task-availability for task ${taskId} failed: ${status} ${await createAvailability.text()}`,
-    ).toBeTruthy();
+    CCAVALLS_MIA_TASK_ID,
+  ];
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    for (const taskId of mapChromeTaskIds) {
+      const createAvailability = await request.post('/backend/api/task-availabilities', {
+        headers: adminHeaders,
+        data: {
+          task: `${apiOrigin}/api/tasks/${taskId}`,
+          territory: `${apiOrigin}/api/territories/${territoryId}`,
+        },
+      });
+      const status = createAvailability.status();
+      // May already be seeded in STM_AVAIL_TSK (unique ter+task).
+      expect(
+        [201, 409].includes(status),
+        `create task-availability task ${taskId} ter ${territoryId} failed: ${status} ${await createAvailability.text()}`,
+      ).toBeTruthy();
+    }
   }
 
   // Catalog matrix fixtures (#45): radio Ortofotos needs loadData for title activation;
@@ -308,6 +319,44 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   expect(
     patchCartography.ok(),
     `patch cartography ${QUERYABLE_LEAF_CARTOGRAPHY_ID} failed: ${patchCartography.status()} ${await patchCartography.text()}`,
+  ).toBeTruthy();
+
+  // queryableActive only — leave active false so Capas does not auto-load on Menorca
+  // (solrustic E2E loads the leaf explicitly; avoids stray GFI on other maps).
+  await patchTreeNode(CCAVALLS_TREE_NODE_DB_ID, {
+    queryableActive: true,
+  });
+  const patchCcavalls = await request.patch(
+    `/backend/api/cartographies/${CCAVALLS_CARTOGRAPHY_ID}`,
+    {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      data: {
+        queryableFeatureEnabled: true,
+        queryableFeatureAvailable: true,
+      },
+    },
+  );
+  expect(
+    patchCcavalls.ok(),
+    `patch cartography ${CCAVALLS_CARTOGRAPHY_ID} failed: ${patchCcavalls.status()} ${await patchCcavalls.text()}`,
+  ).toBeTruthy();
+
+  const makeMenorcaAppPrivate = await request.patch(
+    `/backend/api/applications/${MENORCA_APP_ID}`,
+    {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'application/merge-patch+json',
+      },
+      data: { appPrivate: true },
+    },
+  );
+  expect(
+    makeMenorcaAppPrivate.ok(),
+    `make Menorca app private failed: ${makeMenorcaAppPrivate.status()}`,
   ).toBeTruthy();
 
   await writeFile(

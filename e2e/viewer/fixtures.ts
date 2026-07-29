@@ -8,7 +8,6 @@ export const ROLE_ID = 1;
 export const SERVICE_ID = 3;
 /** WMS services backing Topográficos leaves used by catalog E2E. */
 export const CATALOG_LEAF_SERVICE_IDS = [4, 5] as const;
-
 /** Seed UI tasks required for Capas / layer catalog / legend (missing from STM_AVAIL_TSK). */
 export const LAYER_CATALOG_TASK_ID = 11;
 export const LEGEND_TASK_ID = 12;
@@ -33,6 +32,22 @@ export const MIA_CONTROL_TASK_ID = 43;
 export const MIA_PARENT_TASK_ID = 42;
 /** Seed Feature Information control — needed for identify → MIA callback path. */
 export const FEATURE_INFO_TASK_ID = 8;
+
+/** IDE Menorca (H2 slim fixture + Docker seed): app 12 / territory 4. */
+export const MENORCA_APP_ID = 12;
+export const MENORCA_TERRITORY_ID = 4;
+/** Cartography GEO 1304 — single WMS layer tu007rts_ccavalls (not a layer group). */
+export const CCAVALLS_CARTOGRAPHY_ID = 1304;
+export const CCAVALLS_LAYER = 'tu007rts_ccavalls';
+/** Tree node 12094 “Trams del camí de cavalls” under 12062 “Rutes turístiques”. */
+export const CCAVALLS_TREE_NODE_DB_ID = 12094;
+export const CCAVALLS_NODE_ID = 'node/12094';
+export const CCAVALLS_ROOT_FOLDER_TITLE = 'Turisme i patrimoni';
+export const CCAVALLS_PARENT_FOLDER_TITLE = 'Rutes turístiques';
+export const CCAVALLS_LEAF_TITLE = 'Trams del camí de cavalls';
+/** MIA parent + Plantilla seeded on GEO 1304. */
+export const CCAVALLS_MIA_TASK_ID = 9021;
+export const CCAVALLS_PLANTILLA_TASK_ID = 9020;
 
 /**
  * Catalog E2E uses the visible Topográficos branch (Ortofotos is filtered out of the

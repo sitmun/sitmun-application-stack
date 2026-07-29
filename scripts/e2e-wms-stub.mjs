@@ -7,7 +7,7 @@
  * - GetCapabilities Style/LegendURL → /legend (distinct from /wms MapServer path)
  * - GetLegendGraphic on /wms fails (native SITNA getLegend path cannot paint)
  * - GET /legend returns a stable PNG (>100 bytes) for Capas + LegendURL fallback
- * - GetFeatureInfo for 34_TOPO_TX → JSON FeatureCollection (or XML fixture)
+ * - GetFeatureInfo for 34_TOPO_TX / tu007rts_ccavalls → JSON FeatureCollection (or XML fixture)
  */
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
@@ -108,6 +108,7 @@ const LAYER_NAMES = [
   '32_VIES_LN',
   '33_VIES_LN',
   '34_TOPO_TX',
+  'tu007rts_ccavalls',
   '34_VIES_LN',
   '35_VIES_LN',
   '36_VIES_LN',
@@ -241,27 +242,42 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (method === 'OPTIONS' && url.pathname === '/wms') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    });
+    res.end();
+    return;
+  }
+
   if (method === 'GET' && url.pathname === '/wms') {
     const authorization = req.headers.authorization;
-    const accepted = authorization === EXPECTED_AUTH;
+    // Proxied E2E sends Basic; direct Menorca solrustic leaf has no browser auth.
+    const accepted = !authorization || authorization === EXPECTED_AUTH;
     const requestName = requestNameOf(url);
     console.error(
-      `[e2e-wms-stub] ${method} ${url.pathname} request=${requestName || 'capabilities'} basicAuth=${accepted ? 'accepted' : 'rejected'}`,
+      `[e2e-wms-stub] ${method} ${url.pathname} request=${requestName || 'capabilities'} basicAuth=${authorization ? (authorization === EXPECTED_AUTH ? 'accepted' : 'rejected') : 'none'}`,
     );
 
     if (!accepted) {
       res.writeHead(401, {
         'Content-Type': 'text/plain',
         'WWW-Authenticate': 'Basic realm="e2e-wms"',
+        'Access-Control-Allow-Origin': '*',
       });
       res.end('unauthorized');
       return;
     }
 
+    const cors = { 'Access-Control-Allow-Origin': '*' };
+
     if (requestName === 'describelayer') {
       res.writeHead(200, {
         'Content-Type': 'text/xml',
         'X-E2E-Upstream': 'secured-wms',
+        ...cors,
       });
       res.end(serviceException('RequestNotAllowed', 'The request not allowed.', '1.1.1'));
       return;
@@ -280,6 +296,7 @@ const server = createServer((req, res) => {
         res.writeHead(200, {
           'Content-Type': 'text/xml',
           'X-E2E-Upstream': 'secured-wms',
+          ...cors,
         });
         res.end(
           serviceException('InvalidFormat', "Parameter 'format' contains unacceptable value."),
@@ -288,6 +305,7 @@ const server = createServer((req, res) => {
         res.writeHead(200, {
           'Content-Type': 'image/png',
           'X-E2E-Upstream': 'secured-wms',
+          ...cors,
         });
         res.end(Buffer.alloc(50));
       }
@@ -298,6 +316,7 @@ const server = createServer((req, res) => {
       res.writeHead(200, {
         'Content-Type': 'image/png',
         'X-E2E-Upstream': 'secured-wms',
+        ...cors,
       });
       res.end(GETMAP_PNG);
       return;
@@ -321,10 +340,13 @@ const server = createServer((req, res) => {
       console.error(
         `[e2e-wms-stub] GetFeatureInfo queryLayers=${queryLayers} infoFormat=${infoFormat}`,
       );
-      if (!queryLayers.includes('34_topo_tx')) {
+      const isTopo = queryLayers.includes('34_topo_tx');
+      const isCcavalls = queryLayers.includes('tu007rts_ccavalls');
+      if (!isTopo && !isCcavalls) {
         res.writeHead(200, {
           'Content-Type': infoFormat || 'application/json',
           'X-E2E-Upstream': 'secured-wms',
+          ...cors,
         });
         res.end(
           infoFormatLower.includes('json')
@@ -334,16 +356,35 @@ const server = createServer((req, res) => {
         return;
       }
       if (infoFormatLower.includes('json')) {
+        const body = isCcavalls
+          ? JSON.stringify({
+              type: 'FeatureCollection',
+              crs: { type: 'name', properties: { name: 'EPSG:25831' } },
+              features: [
+                {
+                  type: 'Feature',
+                  id: 'tu007rts_ccavalls.1',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [589000, 4420000],
+                  },
+                  properties: { id: 1, nomruta: 'e2e-ccavalls' },
+                },
+              ],
+            })
+          : GFI_JSON;
         res.writeHead(200, {
           'Content-Type': infoFormat,
           'X-E2E-Upstream': 'secured-wms-gfi',
+          ...cors,
         });
-        res.end(GFI_JSON);
+        res.end(body);
         return;
       }
       res.writeHead(200, {
         'Content-Type': infoFormat || 'application/vnd.ogc.gml',
         'X-E2E-Upstream': 'secured-wms-gfi',
+        ...cors,
       });
       res.end(GFI_XML);
       return;
@@ -352,6 +393,7 @@ const server = createServer((req, res) => {
     res.writeHead(200, {
       'Content-Type': 'application/xml',
       'X-E2E-Upstream': 'secured-wms',
+      ...cors,
     });
     res.end(CAPABILITIES_XML);
     return;

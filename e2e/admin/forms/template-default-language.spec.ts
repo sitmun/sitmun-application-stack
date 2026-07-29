@@ -2,8 +2,10 @@ import { test, expect } from '../fixtures';
 import {
   assertPlantillaHtmlPersisted,
   createPlantilla,
+  ensurePlantillaPreviewOpen,
   openPlantilla,
   renderPlantillaPreview,
+  selectPlantillaPreviewLanguage,
 } from '../helpers/template';
 import { importLiteralCsv, openLiteralTranslations } from '../helpers/literal-csv';
 import { uniqueValue } from '../helpers/form';
@@ -102,15 +104,7 @@ test.describe('Templates + language.default i18n cluster', () => {
 
     // N9: preview in source language shows self-translation (key)
     await openPlantilla(page, plantilla.id);
-    const previewSelect = page.locator('mat-select').filter({ hasText: /\(/ }).first();
-    if (await previewSelect.isVisible().catch(() => false)) {
-      await previewSelect.click();
-      await page
-        .locator('mat-option')
-        .filter({ hasText: new RegExp(`\\(${initialDefault}\\)`, 'i') })
-        .first()
-        .click();
-    }
+    await selectPlantillaPreviewLanguage(page, initialDefault);
     await renderPlantillaPreview(page);
     await expect(page.locator('.preview-panel.ql-editor')).toContainText(literalKey, {
       timeout: 30_000,
@@ -136,14 +130,7 @@ test.describe('Templates + language.default i18n cluster', () => {
 
     // N4: admin preview with other lang shows translation
     await openPlantilla(page, plantilla.id);
-    if (await previewSelect.isVisible().catch(() => false)) {
-      await previewSelect.click();
-      await page
-        .locator('mat-option')
-        .filter({ hasText: new RegExp(`\\(${otherLang}\\)`, 'i') })
-        .first()
-        .click();
-    }
+    await selectPlantillaPreviewLanguage(page, otherLang);
     await renderPlantillaPreview(page);
     await expect(page.locator('.preview-panel.ql-editor')).toContainText(translated, {
       timeout: 30_000,
@@ -187,14 +174,7 @@ test.describe('Templates + language.default i18n cluster', () => {
     expect(fallbackPayload).not.toContain(translated);
 
     await openPlantilla(page, plantilla.id);
-    if (await previewSelect.isVisible().catch(() => false)) {
-      await previewSelect.click();
-      await page
-        .locator('mat-option')
-        .filter({ hasText: new RegExp(`\\(${fallbackLang}\\)`, 'i') })
-        .first()
-        .click();
-    }
+    await selectPlantillaPreviewLanguage(page, fallbackLang);
     await renderPlantillaPreview(page);
     await expect(page.locator('.preview-panel.ql-editor')).toContainText(literalKey, {
       timeout: 30_000,
@@ -326,9 +306,8 @@ test.describe('Templates + language.default i18n cluster', () => {
       await dialog.getByRole('button', { name: /Cancel|Cancel·lar|Cancelar|Annuler/i }).click();
 
       await openPlantilla(page, plantilla.id);
-      const previewSelect = page.locator('mat-select').filter({ hasText: /\(/ }).first();
-      await expect(previewSelect).toBeVisible({ timeout: 15_000 });
-      await previewSelect.click();
+      await ensurePlantillaPreviewOpen(page);
+      await page.locator('.preview-language-field mat-select').click();
       await expect(page.locator('mat-option').filter({ hasText: /\(fr\)/i })).toHaveCount(0);
       await page.keyboard.press('Escape');
       // Completeness-with-disabled-lang is covered by LiteralTranslationCompletenessIntegrationTest.
