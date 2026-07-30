@@ -6,34 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Fixed
-
-#### Admin Application
-
-- **Templates**: TipTap keeps `data-sitmun-each` so Preview still expands query-table rows after visual edits ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441)).
-- **Templates** / **i18n**: Null-safe sorts after `language.default` change so Templates create/edit load again ([sitmun-admin-app#440](https://github.com/sitmun/sitmun-admin-app/issues/440)).
-- **Templates**: Declared-only plantilla parameters (default ⇒ optional; parent pass-through only for names the child declares).
-- **Templates** / **i18n**: Sources `common.copy` aria-labels translated; nested Plantilla cards no longer show bare `entity.task.query.scope.`.
-
-#### Backend Core
-
-- **Templates** / **SQL**: JDBC `executeQuery` lowercases column labels so H2/Oracle aliases match Plantilla lowercase keys.
-- **E2E seed**: Plantilla self-JDBC uses `jdbc:h2:mem:sitmun-e2e`; Menorca GEO **1304** available only on territory **4** (avoids app **1/1** GFI pollution).
-- **Templates**: `data-sitmun-each` preview keeps TipTap `<th>` header rows outside `{{#each}}` (headers no longer repeat per row).
-
-#### Stack-level
-
-- **E2E**: Plantilla preview helpers open the preview pane before selecting language (`selectPlantillaPreviewLanguage`).
+## [1.2.8] - 2026-07-30
 
 ### Added
 
 #### Admin Application
 
 - **Templates**: Details / Template / Sources tabs; preview toggle in editor toolbar; **R** chip + table-only rebind; inline `{{…}}` code chips; Material Visual/HTML toolbar with labeled table delete actions.
+- **Templates** / **Task types** / **i18n**: TipTap/MIA admin UI, literal translations, task-type list/form, language `enabled`/`order` chrome and guarded database-default workflow.
+- **Trees** / **Application**: `loadData`/`queryableActive` toggles, ordered application↔tree links, responsible institution + PoC warnings ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
+- **E2E**: Admin language-chrome Playwright coverage (`login` project); layers form Details + Feature Feature Information character-count oracle; layers list delete → **204** (`admin-forms`).
 
 #### Backend Core
 
 - **i18n** / **Templates**: Enroll `<t>` literals on Task save; shared DB `language.default` resolver; continuity seed of missing literal values on default-language change; `@I18n`/catalog matrix for Task and related fields.
+- **Templates** / **i18n**: Template execution/preview and More Info Advanced render; literal-translation CRUD/CSV (`VARCHAR(4000)`); `Language` `enabled`/`order` + HAL projection; lossless default-language migration API; task `typeTitle` / availability `taskTypeTitle`.
+- **Auth** / **Proxy**: Mobile JSON Bearer login, `ROLE_MOBILE_EDITION`, mobile proxy tokens, and `POST /api/config/proxy/mbtiles` canonicalization.
+- **Trees** / **Applications** / **Startup**: `visible`/`loadByDefault`/`queryableActive`/`loadData` and ordered `application-trees`; `responsibleInstitutionName` + PoC policy ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)); soft built-in user repair and public `/api/dashboard/startup`.
 
 #### Stack-level
 
@@ -42,31 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Development seed**: Liquibase `66_dev_plantilla_showcase` (PostgreSQL) — `66j` MIA control **43**; `66k`–`66m` Menorca `tu007rts_ccavalls` (GEO **1304** / node **12094**): MIA **9021** tabs over Plantillas **9020** (full+JDBC), **9025** (route/GFI), **9026** (reference), mapping GFI `nomruta` → `$featureName`.
 - **Development seed (Oracle)**: Liquibase `66_dev_plantilla_showcase_oracle` — same Plantilla/MIA IDs and admin URLs; CON **90** uses `oracle.jdbc.OracleDriver` / `jdbc:oracle:thin:@//oracle:1521/sitmun3`; SQL children use `FETCH FIRST` / `ROWNUM` / `UPPER...LIKE UPPER` instead of `LIMIT` / `ILIKE`.
 - **E2E**: `e2e/mia-cross/mia-solrustic-gfi.spec.ts` — Capas GFI on `tu007rts_ccavalls`, assert three Plantilla tabs + SQL sections in MIA overlay.
-
-### Changed
-
-#### Admin Application
-
-- **Templates**: Preview omits `appId`/`terId`; unknown placeholders use `.sitmun-template-error`; sash drag past max closes Preview / past min hides editor.
-- **Literal translations** / **Templates**: Enabled-only language selectors/preview; live `config.defaultLang` for forms.
-
-#### Backend Core
-
-- **Templates**: Preview placeholder contract (value / bare known name / colored unknown mustache); optional `appId`/`terId` on `/api/tasks/template/preview` resolve softly.
-
-## [1.2.8] - 2026-07-25
-
-### Added
-
-#### Stack-level
-
 - **Mobile apps** / **Docker** / **CI**: Submodules for touristic/edition mobile and internal `sitmun-mbtiles`; internal `mbtiles` Compose service (`SITMUN_MBTILES_URL`, public `/mbtiles` → 404); `e2e:mobile:web` / `e2e:mobile:android` suites and matching GitHub Actions jobs (Maestro `2.6.1`).
-
-#### Backend Core
-
-- **Templates** / **i18n**: Template execution/preview and More Info Advanced render; literal-translation CRUD/CSV (`VARCHAR(4000)`); `Language` `enabled`/`order` + HAL projection; lossless default-language migration API; task `typeTitle` / availability `taskTypeTitle`.
-- **Auth** / **Proxy**: Mobile JSON Bearer login, `ROLE_MOBILE_EDITION`, mobile proxy tokens, and `POST /api/config/proxy/mbtiles` canonicalization.
-- **Trees** / **Applications** / **Startup**: `visible`/`loadByDefault`/`queryableActive`/`loadData` and ordered `application-trees`; `responsibleInstitutionName` + PoC policy ([sitmun-admin-app#316](https://github.com/sitmun/sitmun-admin-app/issues/316)); soft built-in user repair and public `/api/dashboard/startup`.
 
 #### Proxy Middleware
 
@@ -75,12 +40,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Edition Mobile App
 
 - **Auth** / **MBTiles**: Mobile login + proxy-token exchange; Bearer path-prefix attachment; MBTiles via middleware with service/layer IDs.
-
-#### Admin Application
-
-- **Templates** / **Task types** / **i18n**: TipTap/MIA admin UI, literal translations, task-type list/form, language `enabled`/`order` chrome and guarded database-default workflow.
-- **Trees** / **Application**: `loadData`/`queryableActive` toggles, ordered application↔tree links, responsible institution + PoC warnings ([sitmun-viewer-app#45](https://github.com/sitmun/sitmun-viewer-app/issues/45), [#316](https://github.com/sitmun/sitmun-admin-app/issues/316)).
-- **E2E**: Admin language-chrome Playwright coverage (`login` project); layers form Details + Feature Feature Information character-count oracle; layers list delete → **204** (`admin-forms`).
 
 #### Viewer Application
 
@@ -93,6 +52,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+#### Admin Application
+
+- **Templates**: Preview omits `appId`/`terId`; unknown placeholders use `.sitmun-template-error`; sash drag past max closes Preview / past min hides editor.
+- **Literal translations** / **Templates**: Enabled-only language selectors/preview; live `config.defaultLang` for forms.
+- **Data grid** / **Connections** / **Trees** / **Auth**: `app-relation-grid` rollout; connection form UX; `visible`/`active` tree semantics; credentialed identity reload, coalesced 401 probe, Observable logout.
+
+#### Backend Core
+
+- **Templates**: Preview placeholder contract (value / bare known name / colored unknown mustache); optional `appId`/`terId` on `/api/tasks/template/preview` resolve softly.
+
 #### Stack-level
 
 - **Docker**: Opt-in `demo`/`mbtiles` Compose profiles; frontend image builds inject version from each submodule `package.json`.
@@ -101,24 +70,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Client config** / **Security**: No `config.mbtilesUrl` in application list; proxy config handshake uses `Authorization: Bearer` only (client Bearer never forwarded upstream).
 
-#### Admin Application
-
-- **Data grid** / **Connections** / **Trees** / **Auth**: `app-relation-grid` rollout; connection form UX; `visible`/`active` tree semantics; credentialed identity reload, coalesced 401 probe, Observable logout.
-
 #### Viewer Application / Edition Mobile App
 
 - **Map** / **Dashboard** / **Auth**: Radio folder title requires `loadData`; default-layer ordered collection; autocomplete vs Enter search; mobile Bearer path prefixes and shared middleware base for map/MBTiles.
 
 ### Fixed
 
+#### Admin Application
+
+- **Templates**: TipTap keeps `data-sitmun-each` so Preview still expands query-table rows after visual edits ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441)).
+- **Templates** / **i18n**: Null-safe sorts after `language.default` change so Templates create/edit load again ([sitmun-admin-app#440](https://github.com/sitmun/sitmun-admin-app/issues/440)).
+- **Templates**: Declared-only plantilla parameters (default ⇒ optional; parent pass-through only for names the child declares).
+- **Templates** / **i18n**: Sources `common.copy` aria-labels translated; nested Plantilla cards no longer show bare `entity.task.query.scope.`.
+- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence; layers Feature Information character-count probe no longer throws beside queryable-layers CSV validator.
+
+#### Backend Core
+
+- **Templates** / **SQL**: JDBC `executeQuery` lowercases column labels so H2/Oracle aliases match Plantilla lowercase keys.
+- **E2E seed**: Plantilla self-JDBC uses `jdbc:h2:mem:sitmun-e2e`; Menorca GEO **1304** available only on territory **4** (avoids app **1/1** GFI pollution).
+- **Templates**: `data-sitmun-each` preview keeps TipTap `<th>` header rows outside `{{#each}}` (headers no longer repeat per row).
+
+#### Stack-level
+
+- **E2E**: Plantilla preview helpers open the preview pane before selecting language (`selectPlantillaPreviewLanguage`).
+
 #### Backend Core / Proxy Middleware
 
 - **Dashboard** / **Configuration** / **Database** / **Config**: Keyword-aware dashboard queries; runtime `proxy` Configuration Parameter ([sitmun-admin-app#431](https://github.com/sitmun/sitmun-admin-app/issues/431)); Liquibase generator realignment; `SITMUN_BACKEND_CONFIG_URL` wiring for MBTiles auth.
 - **Cartography**: DELETE returns **422** when referenced by tree nodes/tasks; style-in-use **422**; SDR `returnBodyOnDelete=false` so Accept-bearing clients no longer get **500** LazyInitializationException on cartography delete.
-
-#### Admin Application
-
-- **Forms** / **Connections** / **Services** / **Layers** / **i18n**: `CanDeactivateGuard`, URL `open_in_new`, duplicate Save ([#374](https://github.com/sitmun/sitmun-admin-app/issues/374), [#376](https://github.com/sitmun/sitmun-admin-app/issues/376), [#384](https://github.com/sitmun/sitmun-admin-app/issues/384)); connection test without re-password ([#424](https://github.com/sitmun/sitmun-admin-app/issues/424)); WMS translation prefill ([#46](https://github.com/sitmun/sitmun-application-stack/issues/46)); layer CSV mapping and background order ([#428](https://github.com/sitmun/sitmun-admin-app/issues/428)); language dialog/chrome refresh; task-group relation persistence; layers Feature Information character-count probe no longer throws beside queryable-layers CSV validator.
 
 #### Viewer Application / Edition Mobile App
 
