@@ -106,7 +106,7 @@ test.describe('Templates + language.default i18n cluster', () => {
     await openPlantilla(page, plantilla.id);
     await selectPlantillaPreviewLanguage(page, initialDefault);
     await renderPlantillaPreview(page);
-    await expect(page.locator('.preview-panel.ql-editor')).toContainText(literalKey, {
+    await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(literalKey, {
       timeout: 30_000,
     });
 
@@ -132,7 +132,7 @@ test.describe('Templates + language.default i18n cluster', () => {
     await openPlantilla(page, plantilla.id);
     await selectPlantillaPreviewLanguage(page, otherLang);
     await renderPlantillaPreview(page);
-    await expect(page.locator('.preview-panel.ql-editor')).toContainText(translated, {
+    await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(translated, {
       timeout: 30_000,
     });
 
@@ -176,10 +176,10 @@ test.describe('Templates + language.default i18n cluster', () => {
     await openPlantilla(page, plantilla.id);
     await selectPlantillaPreviewLanguage(page, fallbackLang);
     await renderPlantillaPreview(page);
-    await expect(page.locator('.preview-panel.ql-editor')).toContainText(literalKey, {
+    await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(literalKey, {
       timeout: 30_000,
     });
-    await expect(page.locator('.preview-panel.ql-editor')).not.toContainText(translated);
+    await expect(page.locator('[data-testid="template-preview-html"]')).not.toContainText(translated);
 
     // N12 before default change: overlay lang must differ from current DB default
     const overlayLang = initialDefault === 'en' ? 'ca' : 'en';

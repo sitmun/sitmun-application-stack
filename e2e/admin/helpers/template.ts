@@ -167,7 +167,7 @@ export async function openPlantilla(page: Page, id: number): Promise<void> {
 /** Preview pane (and its language mat-select) is behind template-preview-toggle. */
 export async function ensurePlantillaPreviewOpen(page: Page): Promise<void> {
   await openTemplateWorkspaceTab(page);
-  const previewPanel = page.locator('.preview-panel.ql-editor');
+  const previewPanel = page.getByTestId('template-preview-html');
   if (!(await previewPanel.isVisible().catch(() => false))) {
     await page.getByTestId('template-preview-toggle').click();
   }
@@ -196,7 +196,7 @@ export async function renderPlantillaPreview(page: Page): Promise<void> {
   await page
     .getByRole('button', { name: /^(Render|Renderitza|Renderizar|Rendre)$/i })
     .click();
-  await expect(page.locator('.preview-panel.ql-editor')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('template-preview-html')).toBeVisible({ timeout: 30_000 });
 }
 
 export async function executeNestedPlantillaCard(page: Page, childId: number): Promise<void> {

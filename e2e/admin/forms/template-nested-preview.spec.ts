@@ -81,7 +81,7 @@ test.describe('Admin nested Plantilla preview', () => {
     await openPlantilla(page, plantillaA.id);
     await selectPlantillaPreviewLanguage(page, 'ca');
     await renderPlantillaPreview(page);
-    await expect(page.locator('.preview-panel.ql-editor')).toContainText(translated, {
+    await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(translated, {
       timeout: 30_000,
     });
   });
@@ -114,7 +114,7 @@ test.describe('Admin nested Plantilla preview', () => {
     });
 
     await renderPlantillaPreview(page);
-    await expect(page.locator('.preview-panel.ql-editor')).toContainText(marker, {
+    await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(marker, {
       timeout: 30_000,
     });
   });
