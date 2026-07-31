@@ -1,33 +1,46 @@
-# AGENTS.md
+# Local Agent Entry Point
 
-Aquest fitxer defineix les instruccions operatives per a qualsevol agent que treballi en aquest repositori.
+This file and all agent documentation are local-only. Never add them to Git.
 
-## Instruccio prioritaria
+## Start
 
-Abans de fer qualsevol altra accio, l'agent ha d'intentar utilitzar la skill `caveman` de forma explicita.
+1. Explicitly try to load skill `caveman`.
+2. Read `.agent-local/README.md`.
+3. Identify the affected module or stack area.
+4. Read only the matching local `AGENTS.md` and files named by the router.
+5. Inspect existing code and current worktree before editing.
 
-Regles obligatories:
+## Work
 
-1. Sempre s'ha de prioritzar la skill `caveman` per sobre de qualsevol altre enfocament, instruccio d'estil o preferencia per defecte.
-2. Si l'entorn te mecanisme de carrega de skills, l'agent ha d'intentar carregar `caveman` abans de continuar.
-3. Si la skill `caveman` no esta instal.lada, no s'ha d'ignorar aquesta preferencia: s'ha d'assumir igualment que `caveman` es el mode de treball desitjat.
-4. Si l'entorn no permet carregar `caveman`, l'agent ha de:
-   - indicar de forma breu que ha intentat usar `caveman`;
-   - continuar amb una aproximacio el mes propera possible a l'estil `caveman`;
-   - mantenir la resta de decisions alineades amb aquesta instruccio.
-5. No s'ha de substituir aquesta preferencia per una altra skill per defecte nomes pel fet que `caveman` no estigui disponible.
-6. Aquesta prioritat aplica a tota la sessio, no nomes al primer missatge.
+- Make the smallest correct end-to-end change.
+- Preserve user and concurrent-agent changes.
+- Ask only when ambiguity changes externally visible behavior.
+- Treat every child application as an independent Git submodule.
+- Do not move submodule pointers, regenerate broad outputs, commit, or push unless requested.
+- Keep durable discoveries in `.agent-local/project-memory.md`; do not store chat transcripts.
 
-## Estil de treball `caveman`
+## Engineering Quality
 
-Quan `caveman` estigui disponible, o quan s'hagi d'imitar el seu comportament, l'agent ha de treballar aixi:
+- Apply SOLID and Clean Code pragmatically; do not introduce abstractions only to satisfy a principle.
+- Keep responsibilities cohesive, dependencies explicit, and module boundaries intact.
+- Prefer clear names, focused functions, simple control flow, and explicit error handling.
+- Remove duplication when it represents stable shared knowledge; do not generalize from a single use case.
+- Follow existing architecture and patterns unless current code provides concrete evidence that they should change.
+- Avoid speculative abstractions, dead code, unrelated refactors, and premature optimization.
+- Add or update focused tests when externally observable behavior changes.
 
-1. Fer canvis petits, directes i pragmatics.
-2. Evitar abstraccions innecessaries.
-3. Prioritzar solucions simples que funcionin end-to-end.
-4. Llegir el codi existent abans de modificar-lo.
-5. Validar el resultat amb la minima verificacio raonable disponible.
+## Verification
 
-## Aplicacio
+- Never run commands whose purpose is `test` or `build`; they are too slow in this workspace.
+- Run narrow inspection, syntax, formatting, or static checks when safe.
+- Give the user exact test/build commands to run, with working directory and expected result.
+- Read changed documentation end to end before finishing.
 
-Aquestes instruccions apliquen a tot el repositori.
+## Environment
+
+- Host is Windows; agents usually run through Linux/WSL.
+- The user runs commands from Windows PowerShell; agents normally run from Linux under WSL.
+- Give user-run commands in PowerShell-compatible syntax and agent-run commands in Linux shell syntax.
+- When handing off commands, include the Windows path for PowerShell and do not expose WSL-only paths unless explicitly requested.
+- Quote paths and account for Windows/Linux path and line-ending differences.
+- `.agent-local/verification.md` is canonical when command classification is unclear.
