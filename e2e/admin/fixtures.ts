@@ -1,7 +1,7 @@
 import { test as base, expect, APIRequestContext } from '@playwright/test';
 
 export type CreatedResource = {
-  collection: 'roles' | 'users' | 'territories' | 'tasks';
+  collection: 'roles' | 'users' | 'territories' | 'tasks' | 'cartographies';
   id: number;
 };
 
@@ -19,6 +19,13 @@ async function deleteResource(
     },
   });
   if (response.ok() || response.status() === 404) {
+    return;
+  }
+  // Referential integrity blocks delete with 422; H2 suite teardown can leave orphans.
+  if (resource.collection === 'cartographies' && response.status() === 422) {
+    console.warn(
+      `Cleanup skipped for cartographies/${resource.id}: ${response.status()} ${await response.text()}`,
+    );
     return;
   }
   throw new Error(

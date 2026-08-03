@@ -2,20 +2,31 @@ import { expect, type Page } from '@playwright/test';
 import {
   APP_ID,
   isBackendRequest,
+  MENORCA_APP_ID,
+  MENORCA_TERRITORY_ID,
   MIA_PARENT_TASK_ID,
   NON_RADIO_ROOT_FOLDER_TITLE,
   QUERYABLE_LEAF_NODE_ID,
   RADIO_FOLDER_TITLE,
   readViewerCredentials,
+  CCAVALLS_NODE_ID,
+  CCAVALLS_PARENT_FOLDER_TITLE,
+  CCAVALLS_ROOT_FOLDER_TITLE,
   TERRITORY_ID,
 } from '../fixtures';
 
 export async function loginAndOpenMap(
   page: Page,
-  options?: { appId?: number; territoryId?: number },
+  options?: {
+    appId?: number;
+    territoryId?: number;
+    /** Cartography id of the expected type-16 MIA parent (default Toponímia 6). */
+    miaCartographyId?: number | string;
+  },
 ): Promise<void> {
   const appId = options?.appId ?? APP_ID;
   const territoryId = options?.territoryId ?? TERRITORY_ID;
+  const miaCartographyId = String(options?.miaCartographyId ?? 6);
   const credentials = await readViewerCredentials();
 
   await page.addInitScript(() => {
@@ -54,6 +65,9 @@ export async function loginAndOpenMap(
   const profileResponse = await profile;
   const profileBody = (await profileResponse.json()) as {
     tasks?: Array<{ 'ui-control'?: string; typeId?: number; cartographyId?: string }>;
+    backgrounds?: Array<{ id?: string; title?: string }>;
+    groups?: Array<{ id?: string; layers?: string[] }>;
+    layers?: Array<{ id?: string; layers?: string[] | string; name?: string }>;
   };
   expect(
     profileBody.tasks?.some((task) => task['ui-control'] === 'sitna.moreInfoAdvanced'),
@@ -61,11 +75,10 @@ export async function loginAndOpenMap(
   ).toBeTruthy();
   expect(
     profileBody.tasks?.some(
-      (task) => task.typeId === 16 && String(task.cartographyId) === '6',
+      (task) => task.typeId === 16 && String(task.cartographyId) === miaCartographyId,
     ),
-    'profile must include MIA parent on cartography 6',
+    `profile must include MIA parent on cartography ${miaCartographyId}`,
   ).toBeTruthy();
-
   await page.locator('#tc-slot-toc').waitFor({ state: 'attached', timeout: 90_000 });
   await page.locator('.tc-tools-panel').evaluate((panel) => {
     panel.classList.remove('tc-collapsed-right');
@@ -101,6 +114,35 @@ export async function loadQueryableLeafIntoCapas(page: Page): Promise<void> {
   await expect(page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id]')).toBeVisible({
     timeout: 90_000,
   });
+}
+
+/** Open IDE Menorca map (app 12 / territory 4) with MIA on tu007rts_ccavalls. */
+export async function loginAndOpenMenorcaMap(page: Page): Promise<void> {
+  await loginAndOpenMap(page, {
+    appId: MENORCA_APP_ID,
+    territoryId: MENORCA_TERRITORY_ID,
+    miaCartographyId: 1304,
+  });
+}
+
+/** Activate tree node 12094 (tu007rts_ccavalls) into Capas. */
+export async function loadCcavallsLeafIntoCapas(page: Page): Promise<void> {
+  const wlm = page.locator('#tc-slot-wlm');
+  await wlm.waitFor({ state: 'attached', timeout: 30_000 });
+  await wlm.evaluate((el) => el.classList.remove('tc-collapsed'));
+  await expandNodeByTitle(page, CCAVALLS_ROOT_FOLDER_TITLE);
+  await expandNodeByTitle(page, CCAVALLS_PARENT_FOLDER_TITLE);
+  const leafLoad = page.locator(
+    `#tc-slot-toc input.sitmun-lcat-leaf-load[data-layer-name="${CCAVALLS_NODE_ID}"]`,
+  );
+  await expect(leafLoad).toBeVisible({ timeout: 30_000 });
+  if (!(await leafLoad.isChecked())) {
+    await leafLoad.click({ force: true });
+  }
+  // Capas row may stay CSS-hidden while the tools panel is folded; attached is enough.
+  const capasRow = page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id]').first();
+  await expect(capasRow).toBeAttached({ timeout: 90_000 });
+  await expect(leafLoad).toBeChecked({ timeout: 15_000 });
 }
 
 export type MiaGfiFeatureAttrs = Record<string, unknown>;

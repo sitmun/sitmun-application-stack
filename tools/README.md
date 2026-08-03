@@ -10,6 +10,7 @@ tools/
 ├── bin/              Python tooling — generators, importers, utilities
 ├── scripts/          operational shell scripts (apply, validate)
 ├── tests/            integration test scripts (Docker-based Liquibase tests)
+├── examples/         illustrative ops samples (not production ETL)
 └── i18n-utils/       frontend i18n helpers
 ```
 
@@ -157,6 +158,12 @@ python3 tools/bin/check_changelog_integrity.py
 ```
 
 ---
+
+## tools/examples/ — Ejemplos ilustrativos
+
+| Path | Purpose |
+|------|---------|
+| **[sitmun2-to-sitmun3/](examples/sitmun2-to-sitmun3/)** | Ejemplo SQL Oracle (castellano): catálogo núcleo SITMUN 2→3; orden de `INSERT` por topo de FK (`06_topo_order.py`). Véase el README del directorio. |
 
 ## tools/i18n-utils/ — Frontend i18n
 

@@ -11,12 +11,17 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Role form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
+- Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`; relation tabs not exercised)
+- Layers list delete: create via form, search, grid delete → `DELETE /api/cartographies/{id}` **204** and GET **404** (`e2e/admin/forms/layers-list-delete.spec.ts`, project `admin-forms`)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
 - Plantilla nested preview-only: create nested A→B, assert admin preview / execute-child panel contains B’s marker (`e2e/admin/forms/template-nested-preview.spec.ts`, project `admin-forms`)
+- Plantilla query-table `data-sitmun-each`: visual TipTap edit keeps the attribute and ADMIN preview still expands row cells ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441); `e2e/admin/forms/template-table-each-preview.spec.ts`, project `admin-forms`)
 - More Info Advanced **Details**: validation, create with cartography + included query child 38, layout update persistence; cartography open-in-new; deep route `/#/tasks/42/16`; Parameters `app-relation-grid` add + reload persist; child parameter mapping UI round-trip + persists across a subsequent Parameters save; orphan `childTaskParameters` keys dropped on save; Add mapping disabled when included child has no parameters; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
 - Literal translations grid CRUD (not `app-relation-grid`; no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
+- Templates + `language.default` i18n cluster (`e2e/admin/forms/template-default-language.spec.ts`, project `admin-forms`): enroll `<t>` on save with DB default as `sourceLanguage` (UI lang may differ); preview self-translation / translated / opaque-key fallback; Templates still load after default change; HTML/`sourceLanguage` stable; continuity seed for new default; enabled-only create dialog; CSV may import a disabled `source_language`; soft client-config task-name overlay check
+- Nested Plantilla literal preview (`e2e/admin/forms/template-nested-preview.spec.ts`): child `<t>` + Catalan value appears in parent preview for `lang=ca`
 
 ### Viewer (`npm run e2e:viewer`)
 
@@ -35,12 +40,14 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admin, viewer, application-contact, or mobile suites.
 
 - TipTap Plantilla HTML marker + CSV Catalan literal → simulated GFI → overlay (`e2e/mia-cross/mia-template-viewer.spec.ts`)
+- Enroll-on-save `<t>` → API translation for UI lang → overlay; same value after `language.default` change; enroll-only opaque-key fallback in overlay (`e2e/mia-cross/mia-template-viewer.spec.ts`)
 - MIA parameter mapping feature attr → Plantilla `$param` in overlay (`e2e/mia-cross/mia-mapping.spec.ts`)
-- Nested Plantilla A→B composition in viewer overlay (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
+- Nested Plantilla A→B composition in viewer overlay; nested child `<t>` + Catalan value in overlay for UI lang (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
 - Public-user MIA render on temporarily public app `1/1` (`e2e/mia-cross/mia-public-viewer.spec.ts`)
 - Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`); simulated GFI path remains for faster specs
+- IDE Menorca `tu007rts_ccavalls` (tree node 12094 / GEO 1304): Capas GFI → MIA Plantilla with JDBC SQL sections (languages/territories/GFI-echo) and `nomruta` → `$featureName` (`e2e/mia-cross/mia-solrustic-gfi.spec.ts`; H2 liquibase `20_menorca_solrustic_mia_e2e`)
 
-**Still out of Playwright:** TipTap full toolbar matrix, translation completion indicators, binary child handling, filtrable columns, Docker profile Liquibase salvage.
+**Still out of Playwright:** TipTap full toolbar matrix, binary child handling, filtrable columns, Docker profile Liquibase salvage. Viewer omits `lang` when UI language is blank (backend resolves); product lock, not a coverage gap.
 
 ### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
 
@@ -79,7 +86,20 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Admin dependencies: `cd front/admin/sitmun-admin-app && npm ci`
 - Viewer dependencies: `cd front/viewer/sitmun-viewer-app && npm ci`
 - Root dependencies: `npm ci` (from stack root)
-- Chromium: `npm run e2e:install`
+- Chromium: `npm run e2e:install` (re-run after `@playwright/test` upgrades)
+
+### Playwright browser missing
+
+If launch fails with `browserType.launch: Executable doesn't exist` (path may
+include `cursor-sandbox-cache/.../playwright/` when run inside a Cursor
+sandbox):
+
+```bash
+npm run e2e:install
+```
+
+Then rerun the suite outside the sandbox. That error is an environment setup
+problem, not an application regression.
 
 ## Owned ports
 
