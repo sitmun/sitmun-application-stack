@@ -72,4 +72,6 @@
   <include file="changelog/65_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
   <include file="changelog/66_dev_plantilla_showcase.sql" relativeToChangelogFile="true"/>
   <include file="changelog/66_dev_plantilla_showcase_oracle.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/67_align_dev_dialects.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/68_align_nullability.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
