@@ -1,0 +1,50 @@
+databaseChangeLog:
+  # Brownfield: ATR_ID/ATR_ORDER were folded into sitmun:1 (01_schema) without an incremental
+  # migration. Greenfield DBs already have the columns → MARK_RAN.
+  - changeSet:
+      id: 20_application_tree_order_oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: STM_APP_TREE
+                columnName: ATR_ID
+      changes:
+        - addColumn:
+            tableName: STM_APP_TREE
+            columns:
+              - column:
+                  name: ATR_ID
+                  type: NUMBER(10, 0)
+              - column:
+                  name: ATR_ORDER
+                  type: NUMBER(10, 0)
+        - sql:
+            sql: |
+              MERGE INTO STM_APP_TREE t
+              USING (
+                SELECT ATR_APPID, ATR_TREEID, ROW_NUMBER() OVER (ORDER BY ATR_APPID, ATR_TREEID) AS NEW_ID
+                FROM STM_APP_TREE
+              ) s ON (t.ATR_APPID = s.ATR_APPID AND t.ATR_TREEID = s.ATR_TREEID)
+              WHEN MATCHED THEN UPDATE SET t.ATR_ID = s.NEW_ID;
+              UPDATE STM_APP_TREE SET ATR_ORDER = 0 WHERE ATR_ORDER IS NULL;
+        # Inline PRIMARY KEY is SYS_C… on Oracle, not STM_ATR_PK
+        - dropPrimaryKey:
+            tableName: STM_APP_TREE
+        - addNotNullConstraint:
+            tableName: STM_APP_TREE
+            columnName: ATR_ID
+            columnDataType: NUMBER(10, 0)
+        - addPrimaryKey:
+            tableName: STM_APP_TREE
+            columnNames: ATR_ID
+            constraintName: STM_ATR_PK
+        - addUniqueConstraint:
+            tableName: STM_APP_TREE
+            columnNames: ATR_APPID, ATR_TREEID
+            constraintName: STM_ATR_UK
+        - sql:
+            sql: "MERGE INTO STM_SEQUENCE t USING (SELECT 'ATR_ID' n, COALESCE(MAX(ATR_ID),0)+1 v FROM STM_APP_TREE) s ON (t.SEQ_NAME=s.n) WHEN MATCHED THEN UPDATE SET t.SEQ_COUNT=s.v WHEN NOT MATCHED THEN INSERT(SEQ_NAME,SEQ_COUNT) VALUES(s.n,s.v)"

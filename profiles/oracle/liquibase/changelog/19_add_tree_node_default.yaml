@@ -1,0 +1,16 @@
+databaseChangeLog:
+  # Brownfield: TNO_DEFAULT was folded into sitmun:1 (01_schema) without an incremental
+  # migration. Greenfield DBs already have the column → MARK_RAN.
+  - changeSet:
+      id: 19-add-tno-default-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: STM_TREE_NOD
+              columnName: TNO_DEFAULT
+      changes:
+        - sql:
+            sql: ALTER TABLE STM_TREE_NOD ADD TNO_DEFAULT NUMBER(1,0) DEFAULT 0 NOT NULL
