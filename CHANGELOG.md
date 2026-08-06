@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level
 
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
-- **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); in-template QA captions (broken img/iframe until Sources → Execute `foto` + Render); open `/#/taskTemplate/9030/15`.
+- **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
 
 #### Backend Core
 
