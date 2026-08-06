@@ -14,17 +14,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Mustache `img`/`iframe` visual placeholders + `src`/`alt`/`title` inspector; single-quoted `data-sitmun-each` alias rename. See `sitmun-admin-app` `[Unreleased]`.
+- **Templates / Preview**: Preview language stays Template-pane-only; Sources inherits it. See `sitmun-admin-app` `[Unreleased]`.
 
 #### Viewer Application
 
 - **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[Unreleased]`.
+- **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[Unreleased]`.
 
 #### Stack-level
 
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
 - **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); in-template QA captions (broken img/iframe until Sources → Execute `foto` + Render); open `/#/taskTemplate/9030/15`.
-- **Follow-ups** (confirmed; not fixed here): Admin Sources preview-language UX preference; SITNA `currentFeature` reference-identity spike in `resolveMiaGfiTarget` (see `sitmun-admin-app` `[Unreleased]`).
 
 #### Backend Core
 
