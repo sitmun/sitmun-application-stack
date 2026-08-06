@@ -120,6 +120,39 @@ export async function assertPlantillaHtmlPersisted(
   );
 }
 
+/** Exact equality for no-edit persistence (visual open → save without TipTap update). */
+export async function assertPlantillaHtmlExact(
+  request: import('@playwright/test').APIRequestContext,
+  taskId: number,
+  expectedHtml: string,
+): Promise<void> {
+  const response = await request.get(`/backend/api/tasks/${taskId}`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(response.ok(), await response.text()).toBeTruthy();
+  const task = (await response.json()) as { properties?: { templateHtml?: string } };
+  expect(task.properties?.templateHtml ?? '').toBe(expectedHtml);
+}
+
+/**
+ * Insert a sibling paragraph after a block element (img/table) without editing that block.
+ * Mirrors #441: click target → ArrowDown → End → Enter → type.
+ */
+export async function insertVisualSiblingAfter(
+  page: Page,
+  targetSelector: string,
+  text: string,
+): Promise<void> {
+  await switchTemplateEditorToVisual(page);
+  const prose = page.locator('app-template-editor .ProseMirror').first();
+  await expect(prose).toBeVisible({ timeout: 15_000 });
+  await prose.locator(targetSelector).first().click();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('End');
+  await page.keyboard.press('Enter');
+  await page.keyboard.type(text);
+}
+
 /** Open the Sources tab (linked tasks + query cards). */
 export async function openTemplateSourcesTab(page: Page): Promise<void> {
   const tab = page.getByRole('tab', { name: /^(Sources|Fuentes|Fonts)$/i });

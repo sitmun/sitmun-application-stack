@@ -74,4 +74,6 @@
   <include file="changelog/66_dev_plantilla_showcase_oracle.sql" relativeToChangelogFile="true"/>
   <include file="changelog/67_align_dev_dialects.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/68_align_nullability.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/69_dev_plantilla_tiptap_chip_fixes.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/69_dev_plantilla_tiptap_chip_fixes_oracle.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
