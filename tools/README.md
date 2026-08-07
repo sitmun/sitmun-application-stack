@@ -47,6 +47,7 @@ Paths by scenario:
 |--------|---------|
 | **apply-seed-data.sh** | Generate seed files then apply the Liquibase changelog to a remote database. `--db-type postgres\|oracle`; `--baseline` selects i18n language. |
 | **validate-liquibase-changelogs.sh** | List changelogs by last modification (newest first). Pass `[liquibase_dir]` as first argument (default: development). |
+| **compare-schema-drift.sh** | Apply development vs postgres/oracle Liquibase (Docker), report PROBLEM/INFO drift, write **draft fix YAML** under `tools/out/schema-drift/`. Optional `--against jpa`. Target `dev-dialects` compares development postgresql vs oracle. |
 | **checkout-latest-tags.sh** | Update all git submodules to their latest version tag. |
 | **bump-version.sh** | Propagate stack `VERSION` into coordinated submodule build metadata, OpenAPI docs, frontend env files, README badges, and lockfiles. See [Version and release](#version-and-release). |
 
@@ -82,9 +83,18 @@ bash tools/scripts/validate-liquibase-changelogs.sh
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/postgres/liquibase
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/oracle/liquibase
 
+# Schema drift → draft fix changelogs (development = reference, profile = fixable)
+bash tools/scripts/compare-schema-drift.sh postgres --fail-on none
+# Review tools/out/schema-drift/postgres/21_schema_drift_fix.yaml
+# then add the line from MASTER_INCLUDE.txt to profiles/postgres/liquibase/master.xml
+bash tools/scripts/compare-schema-drift.sh oracle --fail-on none
+bash tools/scripts/compare-schema-drift.sh postgres --against jpa --fail-on none
+
 # Move submodules to latest tags
 bash tools/scripts/checkout-latest-tags.sh
 ```
+
+Drafts are **not** auto-wired into `master.xml`. Do not rewrite `sitmun:1`; only add incremental changesets after review. Java field defaults / Bean Validation are annotated as INFO via `extract_jpa_column_hints.py` — they do not invent SQL `DEFAULT` clauses.
 
 ### Version and release
 
@@ -109,6 +119,7 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 |--------|---------|
 | **test_liquibase_scenarios.sh** | Docker-based Liquibase test for PostgreSQL (5 scenarios, language switching). |
 | **test_liquibase_scenarios_oracle.sh** | Same for Oracle. |
+| **test_report_schema_drift.py** | Unit tests for schema-drift reporter / draft changelog emitter. |
 
 ```bash
 bash tools/tests/test_liquibase_scenarios.sh
@@ -135,6 +146,8 @@ See [seed-data/README.md](seed-data/README.md) for the full workflow.
 | **import_from_generated_csvs.py** | Import from generated `STM_TRANSLATION_*.csv` into a baseline. | `--scenario`; `--baseline` |
 | **sort_codelist.py** | Sort and renumber `STM_CODELIST.csv`. | pass input file path |
 | **check_changelog_integrity.py** | Verify Liquibase changelog immutability by commit chronology checks. | — |
+| **report_schema_drift.py** | Compare schema dumps; emit PROBLEM/INFO report + draft Liquibase YAML. | `--out-dir`; `--fail-on`; `--dbms` |
+| **extract_jpa_column_hints.py** | Scan domain entities for java defaults / validation / auditing → JSON hints. | `--out` |
 
 ```bash
 # Generate translation + seed files for both production profiles (default baseline)

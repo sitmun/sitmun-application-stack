@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+#### Admin Application
+
+- **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[Unreleased]`.
+- **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
+- **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[Unreleased]`.
+- **Templates / TipTap**: Mustache `img`/`iframe` visual placeholders + `src`/`alt`/`title` inspector; single-quoted `data-sitmun-each` alias rename. See `sitmun-admin-app` `[Unreleased]`.
+- **Templates / Preview**: Preview language stays Template-pane-only; Sources inherits it. See `sitmun-admin-app` `[Unreleased]`.
+
+#### Viewer Application
+
+- **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[Unreleased]`.
+- **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[Unreleased]`.
+- **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[Unreleased]`.
+
+#### Stack-level
+
+- **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
+- **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
+
+#### Backend Core
+
+- **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[Unreleased]`.
+
 ## [1.2.8] - 2026-07-30
 
 ### Added

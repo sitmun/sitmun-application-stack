@@ -1,0 +1,23 @@
+databaseChangeLog:
+  # Brownfield: TNO_DEFAULT was folded into sitmun:1 (01_schema) without an incremental
+  # migration. Greenfield DBs already have the column → MARK_RAN.
+  - changeSet:
+      id: 19-add-tno-default-postgresql
+      author: sitmun
+      dbms: postgresql
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: STM_TREE_NOD
+              columnName: TNO_DEFAULT
+      changes:
+        - addColumn:
+            tableName: STM_TREE_NOD
+            columns:
+              - column:
+                  name: TNO_DEFAULT
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
