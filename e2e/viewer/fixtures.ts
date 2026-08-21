@@ -32,6 +32,8 @@ export const MIA_CONTROL_TASK_ID = 43;
 export const MIA_PARENT_TASK_ID = 42;
 /** Seed Feature Information control — needed for identify → MIA callback path. */
 export const FEATURE_INFO_TASK_ID = 8;
+/** Seed STM_TASK id for sitna.printMap (STM_TSK_UI TUI_ID 20) — print preview sizing (#160). */
+export const PRINT_MAP_TASK_ID = 20;
 
 /** IDE Menorca (H2 slim fixture + Docker seed): app 12 / territory 4. */
 export const MENORCA_APP_ID = 12;
