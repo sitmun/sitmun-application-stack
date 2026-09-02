@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 72_document_export_tasks
+      author: sitmun
+      context: dev,prod
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_TTASKID, TAS_TUIID, TAS_PARAMS)
+              SELECT next_id, 'Exportar PDF A4 Vertical', 17, 1,
+                     '{"exportEngine":"openhtmltopdf","downloadFormat":"pdf","pageSize":"A4","pageOrientation":"portrait"}'
+              FROM (SELECT COALESCE(MAX(TAS_ID), 0) + 1 AS next_id FROM STM_TASK) ids
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_TASK
+                WHERE TAS_NAME = 'Exportar PDF A4 Vertical' AND TAS_TTASKID = 17
+              )
+        - sql:
+            sql: >
+              INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_TTASKID, TAS_TUIID, TAS_PARAMS)
+              SELECT next_id, 'Exportar PDF A3 Vertical', 17, 1,
+                     '{"exportEngine":"openhtmltopdf","downloadFormat":"pdf","pageSize":"A3","pageOrientation":"portrait"}'
+              FROM (SELECT COALESCE(MAX(TAS_ID), 0) + 1 AS next_id FROM STM_TASK) ids
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_TASK
+                WHERE TAS_NAME = 'Exportar PDF A3 Vertical' AND TAS_TTASKID = 17
+              )
+        - sql:
+            sql: >
+              INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_TTASKID, TAS_TUIID, TAS_PARAMS)
+              SELECT next_id, 'Exportar PDF A4 Horitzontal', 17, 1,
+                     '{"exportEngine":"openhtmltopdf","downloadFormat":"pdf","pageSize":"A4","pageOrientation":"landscape"}'
+              FROM (SELECT COALESCE(MAX(TAS_ID), 0) + 1 AS next_id FROM STM_TASK) ids
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_TASK
+                WHERE TAS_NAME = 'Exportar PDF A4 Horitzontal' AND TAS_TTASKID = 17
+              )
+        - sql:
+            sql: >
+              INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_TTASKID, TAS_TUIID, TAS_PARAMS)
+              SELECT next_id, 'Exportar PDF A3 Horitzontal', 17, 1,
+                     '{"exportEngine":"openhtmltopdf","downloadFormat":"pdf","pageSize":"A3","pageOrientation":"landscape"}'
+              FROM (SELECT COALESCE(MAX(TAS_ID), 0) + 1 AS next_id FROM STM_TASK) ids
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_TASK
+                WHERE TAS_NAME = 'Exportar PDF A3 Horitzontal' AND TAS_TTASKID = 17
+              )
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TAS_ID), 0) + 1 FROM STM_TASK)
+              WHERE SEQ_NAME = 'TAS_ID'

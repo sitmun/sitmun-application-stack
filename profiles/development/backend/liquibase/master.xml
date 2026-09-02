@@ -50,7 +50,6 @@
   <include file="changelog/43_rename_moreinfo_control.sql" relativeToChangelogFile="true"/>
   <include file="changelog/44_add_codelist_description_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/45_fix_layer_catalog_task_display_names.sql" relativeToChangelogFile="true"/>
-  <include file="changelog/46_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/46_fix_driver_codelist_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/40_add_template_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/41_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
@@ -79,9 +78,12 @@
   <include file="changelog/65_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
   <include file="changelog/66_dev_plantilla_showcase.sql" relativeToChangelogFile="true"/>
   <include file="changelog/66_dev_plantilla_showcase_oracle.sql" relativeToChangelogFile="true"/>
-  <include file="changelog/67_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/67_align_dev_dialects.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/68_align_nullability.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/69_dev_plantilla_tiptap_chip_fixes.sql" relativeToChangelogFile="true"/>
   <include file="changelog/69_dev_plantilla_tiptap_chip_fixes_oracle.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/70_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/71_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/72_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/73_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

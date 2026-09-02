@@ -10,25 +10,27 @@
   <include file="changelog/05_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/06_params.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/07_sequences.yaml" relativeToChangelogFile="true"/>
-  <include file="changelog/08_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/08_application_responsible_institution.sql" relativeToChangelogFile="true"/>
-  <include file="changelog/16_language_admin_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/09_language_order_enabled_and_labels.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/08_add_template_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/09_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/10_add_template_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/11_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/12_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
-  <include file="changelog/10_add_template_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/11_add_template_reference_alias.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/12_add_more_info_advanced_ui_control.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/13_add_more_info_advanced_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/14_add_literal_translations.sql" relativeToChangelogFile="true"/>
   <include file="changelog/15_add_literal_translation_source_language.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/16_language_admin_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/16_add_translation_sequences.sql" relativeToChangelogFile="true"/>
   <include file="changelog/17_literal_translations_varchar.sql" relativeToChangelogFile="true"/>
   <include file="changelog/18_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
-  <include file="changelog/17_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/19_add_tree_node_default.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/20_application_tree_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/21_align_schema_with_development.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/22_add_document_export_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/23_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/24_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/25_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
