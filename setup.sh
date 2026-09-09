@@ -74,12 +74,12 @@ update_from_remote() {
     fi
 }
 
-# Copy default profile to .env if .env does not exist
+# Copy default development profile to .env if .env does not exist
 copy_env_file_if_missing() {
     if [ ! -f ".env" ]; then
-        echo -e "${YELLOW}.env file is missing. Copying profiles/postgres.env to .env...${NC}"
-        cp profiles/postgres.env .env
-        echo -e "${GREEN}.env file created from profiles/postgres.env.${NC}"
+        echo -e "${YELLOW}.env file is missing. Copying profiles/development-postgres.env to .env...${NC}"
+        cp profiles/development-postgres.env .env
+        echo -e "${GREEN}.env file created from profiles/development-postgres.env.${NC}"
     fi
 }
 

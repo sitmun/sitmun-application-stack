@@ -108,7 +108,7 @@ The stack has four main components:
    ```
 
    Notes:
-   - The setup scripts create `.env` from `profiles/postgres.env` **only if** `.env` is missing.
+   - The setup scripts create `.env` from `profiles/development-postgres.env` **only if** `.env` is missing.
    - You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
 
 4. **Start the SITMUN Application Stack**
