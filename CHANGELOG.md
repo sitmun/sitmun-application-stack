@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **Seed / docs**: Restore platform `admin` seed usernames, README login examples, seed JSON, and demo-data publication IDs accidentally nulled by the GeoServer credential purge `--replace-text` pass (GeoServer `stm_service.csv` scrub kept).
 - **E2E**: Service form Get Metadata MapServer `?map=` regression (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
 - **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.

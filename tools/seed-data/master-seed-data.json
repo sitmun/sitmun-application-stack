@@ -1033,7 +1033,7 @@
       "rows": [
         {
           "use_id": 1,
-          "use_user": "NULL",
+          "use_user": "admin",
           "use_pwd": "$2a$10$fxkKe8bLwlWNitI49I6DBeNtOhjTqkMw2KKWg8pPd8k2jOT5dYc/W",
           "use_name": "Administrator",
           "use_surname": null,

@@ -774,8 +774,8 @@ The SITMUN Backend Core provides comprehensive REST API functionality:
 POST /api/authenticate
 Content-Type: application/json
 {
-  "username": "NULL",
-  "password": "NULL"
+  "username": "admin",
+  "password": "admin"
 }
 
 GET /api/account
@@ -1023,7 +1023,7 @@ curl -b cookies.txt http://localhost:9001/api/account
 curl -X POST http://localhost:9001/api/authenticate \
   -c cookies.txt \
   -H "Content-Type: application/json" \
-  -d '{"username":"NULL","password":"NULL"}'
+  -d '{"username":"admin","password":"admin"}'
 ```
 
 #### Frontend Build Issues
