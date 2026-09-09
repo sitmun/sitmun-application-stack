@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Services / Capabilities**: MapServer URLs that already have a query string (e.g. `?map=`) build GetCapabilities with `&` and encode `helpers/capabilities?url=` so the backend no longer receives HTML browse-mode responses. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[Unreleased]`.
@@ -24,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **E2E**: Service form Get Metadata MapServer `?map=` regression (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
 - **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
 

@@ -12,6 +12,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
 - Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`; relation tabs not exercised)
+- Service form Get Metadata: MapServer-style URL with existing `?map=` builds `helpers/capabilities` with `&request=GetCapabilities&service=WMS` (intercepted stub; no live ICGC) (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`, project `admin-forms`)
 - Layers list delete: create via form, search, grid delete → `DELETE /api/cartographies/{id}` **204** and GET **404** (`e2e/admin/forms/layers-list-delete.spec.ts`, project `admin-forms`)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
 - Plantilla nested preview-only: create nested A→B, assert admin preview / execute-child panel contains B’s marker (`e2e/admin/forms/template-nested-preview.spec.ts`, project `admin-forms`)
