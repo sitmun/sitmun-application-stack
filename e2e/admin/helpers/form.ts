@@ -39,7 +39,7 @@ export async function touchAndClear(page: Page, fieldName: string): Promise<void
 
 export async function saveAndCaptureId(
   page: Page,
-  collection: 'roles' | 'users' | 'territories' | 'tasks' | 'cartographies',
+  collection: 'roles' | 'users' | 'territories' | 'tasks' | 'cartographies' | 'trees',
 ): Promise<number> {
   const responsePromise = page.waitForResponse((response) => {
     try {
@@ -82,7 +82,8 @@ export async function saveUpdate(
     | 'applications'
     | 'tasks'
     | 'languages'
-    | 'cartographies',
+    | 'cartographies'
+    | 'trees',
   id: number,
 ): Promise<void> {
   const responsePromise = page.waitForResponse((response) => {

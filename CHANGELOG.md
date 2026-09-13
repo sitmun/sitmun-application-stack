@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a Liquibase include below the tree tip. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
