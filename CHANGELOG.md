@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
 
 ### Fixed

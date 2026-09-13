@@ -120,8 +120,11 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 | **test_liquibase_scenarios.sh** | Docker-based Liquibase test for PostgreSQL (5 scenarios, language switching). |
 | **test_liquibase_scenarios_oracle.sh** | Same for Oracle. |
 | **test_report_schema_drift.py** | Unit tests for schema-drift reporter / draft changelog emitter. |
+| **test_liquibase_1.2.7_to_head_upgrade.sh** | Apply 1.2.7, expect 1.2.8 checksum fail, apply HEAD 19/20. CI runs `postgres`. `oracle` stays local. |
 
 ```bash
+python3 tools/tests/test_report_schema_drift.py
+bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
 bash tools/tests/test_liquibase_scenarios.sh
 bash tools/tests/test_liquibase_scenarios_oracle.sh
 ```
