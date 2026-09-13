@@ -22,6 +22,7 @@ import {
   MIA_PARENT_TASK_ID,
   NAV_BAR_TASK_ID,
   OVERVIEW_MAP_TASK_ID,
+  PRINT_MAP_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
   SEARCH_TASK_ID,
   QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
@@ -243,6 +244,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
   // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector
   // and map-chrome nav/fullscreen/streetView/overview needed for #135 checks.
+  // sitna.printMap is omitted too; print preview sizing is checked in #160.
   const mapChromeTaskIds = [
     LAYER_CATALOG_TASK_ID,
     LEGEND_TASK_ID,
@@ -257,6 +259,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     FEATURE_INFO_TASK_ID,
     MIA_CONTROL_TASK_ID,
     MIA_PARENT_TASK_ID,
+    PRINT_MAP_TASK_ID,
     CCAVALLS_MIA_TASK_ID,
   ];
   for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
@@ -276,6 +279,26 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
       ).toBeTruthy();
     }
   }
+
+  // Seed STM_TASK 20 carries a `div: "print"` parameter naming a container the
+  // viewer never renders, so api-sitna throws while building the control and no
+  // print button appears. The seed logo is an external URL; drop both so the print
+  // preview is exercised without leaving the local stack (#160).
+  const patchPrintTask = await request.patch(`/backend/api/tasks/${PRINT_MAP_TASK_ID}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: {
+      properties: {
+        parameters: [{ name: 'legend', type: 'object', value: '{"visible":true}' }],
+      },
+    },
+  });
+  expect(
+    patchPrintTask.ok(),
+    `patch print task failed: ${patchPrintTask.status()} ${await patchPrintTask.text()}`,
+  ).toBeTruthy();
 
   // Catalog matrix fixtures (#45): radio Ortofotos needs loadData for title activation;
   // clear Infrarrojo load-by-default so title-click selection is observable; enable
