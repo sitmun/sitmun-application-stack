@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
 - **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[Unreleased]`.
 - **Services / Capabilities**: MapServer URLs that already have a query string (e.g. `?map=`) build GetCapabilities with `&` and encode `helpers/capabilities?url=` so the backend no longer receives HTML browse-mode responses. See `sitmun-admin-app` `[Unreleased]`.
@@ -59,6 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
+- **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[Unreleased]`.
 - **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[Unreleased]`.
 
 ## [1.2.8] - 2026-07-30
