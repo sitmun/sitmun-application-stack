@@ -73,9 +73,9 @@ test.describe('Admin Plantilla attribute mustache preview', () => {
 
     await openPlantilla(page, plantilla.id);
     await switchTemplateEditorToVisual(page);
-    await expect(page.locator('app-template-editor .ProseMirror img')).toBeVisible({
-      timeout: 15_000,
-    });
+    const mustacheImg = '[data-sitmun-mustache-media="img"]';
+    await expect(page.locator(`app-template-editor ${mustacheImg}`)).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('app-template-editor .ProseMirror img[src*="{{"]')).toHaveCount(0);
 
     // Mode toggle before the sibling edit (user repro step).
     await switchTemplateEditorToHtml(page);
@@ -85,7 +85,7 @@ test.describe('Admin Plantilla attribute mustache preview', () => {
       .toContain('src="{{task_1.url}}"');
 
     await switchTemplateEditorToVisual(page);
-    await insertVisualSiblingAfter(page, 'img', siblingMarker);
+    await insertVisualSiblingAfter(page, mustacheImg, siblingMarker);
 
     await switchTemplateEditorToHtml(page);
     const afterEdit = await source.inputValue();
