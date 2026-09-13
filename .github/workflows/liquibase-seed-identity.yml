@@ -1,0 +1,37 @@
+name: Liquibase seed identity
+
+on:
+  pull_request:
+    paths:
+      - '**/02_codelists/STM_CODELIST.csv'
+      - '**/02_codelists/stm_codelist.csv'
+      - 'tools/bin/check_seed_identity_swap.py'
+      - 'tools/tests/test_seed_identity_swap.py'
+      - '.github/workflows/liquibase-seed-identity.yml'
+  workflow_dispatch:
+
+jobs:
+  seed-identity-swap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Unit tests
+        run: python3 tools/tests/test_seed_identity_swap.py
+
+      - name: Fetch PR base
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags origin "${{ github.base_ref }}"
+
+      - name: PR diff gate
+        if: github.event_name == 'pull_request'
+        run: python3 tools/bin/check_seed_identity_swap.py --base "origin/${{ github.base_ref }}"

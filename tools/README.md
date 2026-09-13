@@ -120,8 +120,12 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 | **test_liquibase_scenarios.sh** | Docker-based Liquibase test for PostgreSQL (5 scenarios, language switching). |
 | **test_liquibase_scenarios_oracle.sh** | Same for Oracle. |
 | **test_report_schema_drift.py** | Unit tests for schema-drift reporter / draft changelog emitter. |
+| **test_seed_identity_swap.py** | Unit tests for the STM_CODELIST unique-key swap gate (`#45`). |
+| **test_liquibase_codelist_auth_mode_swap.sh** | Docker upgrade fixture for the 1.2.6→1.2.7 auth-mode ID swap. Local only. |
 
 ```bash
+python3 tools/tests/test_report_schema_drift.py
+python3 tools/tests/test_seed_identity_swap.py
 bash tools/tests/test_liquibase_scenarios.sh
 bash tools/tests/test_liquibase_scenarios_oracle.sh
 ```
@@ -146,6 +150,7 @@ See [seed-data/README.md](seed-data/README.md) for the full workflow.
 | **import_from_generated_csvs.py** | Import from generated `STM_TRANSLATION_*.csv` into a baseline. | `--scenario`; `--baseline` |
 | **sort_codelist.py** | Sort and renumber `STM_CODELIST.csv`. | pass input file path |
 | **check_changelog_integrity.py** | Verify Liquibase changelog immutability by commit chronology checks. | — |
+| **check_seed_identity_swap.py** | Fail a PR diff that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID`. | `--base`; `--changed-file`; `--no-git` |
 | **report_schema_drift.py** | Compare schema dumps; emit PROBLEM/INFO report + draft Liquibase YAML. | `--out-dir`; `--fail-on`; `--dbms` |
 | **extract_jpa_column_hints.py** | Scan domain entities for java defaults / validation / auditing → JSON hints. | `--out` |
 
