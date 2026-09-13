@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+#### Backend Core
+
+- **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
+
 #### Stack-level
 
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
