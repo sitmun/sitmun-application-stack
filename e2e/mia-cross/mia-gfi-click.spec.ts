@@ -9,6 +9,40 @@ import {
 import { withViewerPage } from './helpers/viewer-context';
 import { waitForMiaRender } from './helpers/overlay';
 
+async function identifyAtMapCenter(viewer: import('@playwright/test').Page): Promise<void> {
+  await viewer.evaluate(async () => {
+    const w = window as unknown as {
+      TC?: {
+        Map?: {
+          get: (el: Element) => {
+            controls?: Array<{ callback?: (coords: number[]) => Promise<unknown> }>;
+            getCenter?: () => number[];
+            wrap?: { map?: { getView: () => { getCenter: () => number[] } } };
+          };
+        };
+        control?: { FeatureInfo?: new () => unknown };
+      };
+    };
+    const mapEl = document.querySelector('.tc-map');
+    if (!w.TC?.Map?.get || !mapEl) {
+      throw new Error('TC.Map not available');
+    }
+    const map = w.TC.Map.get(mapEl);
+    const FeatureInfo = w.TC.control?.FeatureInfo;
+    const fi = (map.controls || []).find(
+      (ctl) => FeatureInfo && ctl instanceof (FeatureInfo as unknown as Function),
+    );
+    if (!fi?.callback) {
+      throw new Error('FeatureInfo.callback not found');
+    }
+    const center = map.getCenter?.() || map.wrap?.map?.getView()?.getCenter() || null;
+    if (!center) {
+      throw new Error('map center unavailable');
+    }
+    await fi.callback(center);
+  });
+}
+
 /**
  * Integration oracle for stubbed WMS GetFeatureInfo:
  * Capas GFI on + FeatureInfo.callback → stub GetFeatureInfo for 34_TOPO_TX → MIA render.
@@ -30,38 +64,7 @@ test.describe('Map-click GetFeatureInfo → MIA overlay', () => {
       );
       const renderPromise = waitForMiaRender(viewer);
 
-      await viewer.evaluate(async () => {
-        const w = window as unknown as {
-          TC?: {
-            Map?: {
-              get: (el: Element) => {
-                controls?: Array<{ callback?: (coords: number[]) => Promise<unknown> }>;
-                getCenter?: () => number[];
-                wrap?: { map?: { getView: () => { getCenter: () => number[] } } };
-              };
-            };
-            control?: { FeatureInfo?: new () => unknown };
-          };
-        };
-        const mapEl = document.querySelector('.tc-map');
-        if (!w.TC?.Map?.get || !mapEl) {
-          throw new Error('TC.Map not available');
-        }
-        const map = w.TC.Map.get(mapEl);
-        const FeatureInfo = w.TC.control?.FeatureInfo;
-        const fi = (map.controls || []).find(
-          (ctl) => FeatureInfo && ctl instanceof (FeatureInfo as unknown as Function),
-        );
-        if (!fi?.callback) {
-          throw new Error('FeatureInfo.callback not found');
-        }
-        const center =
-          map.getCenter?.() || map.wrap?.map?.getView()?.getCenter() || null;
-        if (!center) {
-          throw new Error('map center unavailable');
-        }
-        await fi.callback(center);
-      });
+      await identifyAtMapCenter(viewer);
 
       const gfi = await gfiRequest;
       expect(gfi.url()).toMatch(/GetFeatureInfo/i);
@@ -69,16 +72,11 @@ test.describe('Map-click GetFeatureInfo → MIA overlay', () => {
       const gfiResponse = await gfi.response();
       expect(gfiResponse, 'GetFeatureInfo response missing').toBeTruthy();
       expect(gfiResponse!.status()).toBe(200);
-
-      const overlayAppeared = await viewer
-        .locator('.sitmun-mia-popup-overlay.sitmun-mia-popup-visible')
-        .waitFor({ state: 'visible', timeout: 8_000 })
-        .then(() => true)
-        .catch(() => false);
-      if (!overlayAppeared) {
-        // Stub was hit; complete MIA via the same responseCallback shape a successful parse uses.
-        await simulateGetFeatureInfo(viewer, { id: 1, name: 'e2e-gfi-click' });
-      }
+      const gfiJson = JSON.parse(await gfiResponse!.text()) as { features?: unknown[] };
+      expect(
+        gfiJson.features?.length,
+        'stub GetFeatureInfo must return GeoJSON features for 34_TOPO_TX',
+      ).toBeGreaterThan(0);
 
       const renderResponse = await renderPromise;
       const json = (await renderResponse.json()) as {
@@ -90,6 +88,19 @@ test.describe('Map-click GetFeatureInfo → MIA overlay', () => {
       ).toBe(200);
       expect(json.tasks?.some((task) => task.taskId === MIA_PARENT_TASK_ID)).toBeTruthy();
 
+      await expect(
+        viewer.locator('.sitmun-mia-popup-overlay.sitmun-mia-popup-visible'),
+      ).toBeVisible({ timeout: 15_000 });
+    });
+  });
+
+  test('simulated GetFeatureInfo opens live MIA render', async ({ browser }) => {
+    await withViewerPage(browser, async (viewer) => {
+      await loginAndOpenMap(viewer);
+      const renderPromise = waitForMiaRender(viewer);
+      await simulateGetFeatureInfo(viewer, { id: 1, name: 'e2e-gfi-click' });
+      const renderResponse = await renderPromise;
+      expect(renderResponse.status()).toBe(200);
       await expect(
         viewer.locator('.sitmun-mia-popup-overlay.sitmun-mia-popup-visible'),
       ).toBeVisible({ timeout: 15_000 });
