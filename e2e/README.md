@@ -61,9 +61,9 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 
 ### Mobile web (`npm run e2e:mobile:web`)
 
-- Disposable setup patches application `1` to type `ED`, rewrites WMTS service `1` to the local stub, and creates a regular edition user
+- Disposable setup patches application `1` to type `ED` with `title: null`, rewrites WMTS service `1` to the local stub, and creates a regular edition user
 - Edition: `POST /api/authenticate/mobile` returns JSON `access_token` (no cookie); viewer/admin cookie logins remain empty-body
-- Edition: Bearer `access_token` exchanges for distinct `proxy_token`; client apps list only `ED` and never includes `config.mbtilesUrl`
+- Edition: Bearer `access_token` exchanges for distinct `proxy_token`; client apps list only `ED`, each app has a non-blank `name`, and never includes `config.mbtilesUrl`
 - Edition: mobile token cannot call account/admin APIs
 - Touristic: anonymous client application list includes type `T`; private profile denied
 - Proxy/MBTiles: missing bearer and `access_token`-as-proxy denied; authorized `proxy_token` estimate/create through `/middleware/proxy/{app}/{ter}/mbtiles...`; opaque `jobHandle`; direct gateway `/mbtiles` is `404`

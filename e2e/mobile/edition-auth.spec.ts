@@ -56,6 +56,8 @@ test.describe('edition mobile authentication', () => {
     expect((page.content ?? []).length).toBeGreaterThan(0);
     for (const app of page.content ?? []) {
       expect(app.type).toBe('ED');
+      expect(typeof app.name).toBe('string');
+      expect(app.name.trim().length).toBeGreaterThan(0);
       expect(app.config?.mbtilesUrl).toBeUndefined();
     }
   });

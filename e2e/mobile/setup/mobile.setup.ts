@@ -32,7 +32,7 @@ setup('provision edition mobile ED application and user', async ({ request }) =>
       'X-SITMUN-Client': 'admin',
       'Content-Type': 'application/merge-patch+json',
     },
-    data: { type: 'ED', appPrivate: false },
+    data: { type: 'ED', appPrivate: false, title: null },
   });
   expect(patchApp.ok(), `patch application type failed: ${patchApp.status()}`).toBeTruthy();
 
