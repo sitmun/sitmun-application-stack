@@ -30,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level
 
 - **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
+- **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
+- **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a Liquibase include below the tree tip. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
@@ -39,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[Unreleased]`.
 - **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
 - **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[Unreleased]`.
@@ -51,9 +54,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
+- **Map**: Print preview sizes the map to the selected page format instead of the browser window ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)). See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[Unreleased]`.
+
+#### Edition Mobile App
+
+- **Applications**: Main list and offline cache show `name` when `title` is null ([sitmun/edition-mobile-app#5](https://github.com/sitmun/edition-mobile-app/issues/5)). See `edition-mobile-app` `[Unreleased]`.
 
 #### Stack-level
 
@@ -63,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
 - **E2E**: N13 writes the generated CSV under the OS temp dir so CI checkout does not need `e2e/admin/fixtures/`.
 - **E2E**: Android touristic provisioning attaches the tree with `POST /api/application-trees` (join entity), not `PUT /api/applications/{id}/trees`.
+- **E2E**: Mobile setup clears application `1` `title` so the ED client list asserts a non-blank `name` ([sitmun/edition-mobile-app#5](https://github.com/sitmun/edition-mobile-app/issues/5)).
 - **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
 
 #### Backend Core

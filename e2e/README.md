@@ -12,7 +12,8 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
 - Tree form **Details** SVG local-file persist and touristic **Tree structure** node Appearance SVG persist: picker `accept` includes `.svg`; POST/PUT stores `data:image/svg+xml;base64,...` without raster scaling; reload preview stays SVG ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330); `e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`)
-- Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`; relation tabs not exercised)
+- Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`)
+- Layers form relation tabs: opening Details must not GET `/cartographies/{id}/availabilities|permissions|treeNodes`; those association requests fire only after the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); same spec)
 - Service form Get Metadata: MapServer-style URL with existing `?map=` builds `helpers/capabilities` with `&request=GetCapabilities&service=WMS` (intercepted stub; no live ICGC) (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`, project `admin-forms`)
 - Layers list delete: create via form, search, grid delete → `DELETE /api/cartographies/{id}` **204** and GET **404** (`e2e/admin/forms/layers-list-delete.spec.ts`, project `admin-forms`)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
@@ -36,6 +37,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Layer catalog (`viewer-catalog`): radio folder children render native radios; `loadData` folders get a visible load control (checkbox, or radio when the folder is radio; title expand-only); non-radio cartography leaves get `sitmun-lcat-leaf-load` checkboxes (toggle work layer); child radios still work when `loadData` is off; queryable leaves show `.sitmun-lcat-gfi` after select when setup enables `queryableActive` + layer `queryableFeatureEnabled` (meta stamp asserted when SITNA renders info); row geometry asserts fixed 18px select/GFI controls when present (no empty spacers), level-stamped inset (`data-sitmun-lcat-level` 0/1/2…), nest step = type-icon width (16px, parent pad cancelled on nested `ul`), vertical centers, and meta ≥18×18 hit box; visible Capas disponibles rows stamp alternating `data-sitmun-lcat-zebra`; folder titles stay roman under `tc-checked`. Capas trash-then-clear after partial remove is asserted in viewer Jest (`layer-catalog-control.handler`). Playwright covers Capas row after radio load, out-of-scale `#777777` path color (#92), WLM/LCAT non-overlap and runtime tools-panel splitters (#142), and map-chrome stacking at 480/768/1024 (#135); stub serves GetMap PNG and GetMap OnlineResource (rewritten by proxy) so Capas rows are not cleared by TILELOADERROR.
 - Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
 - No base map (`viewer-basemap`): basemap selector option `sitmun-no-base-map` clears raster basemap to a white viewport while a catalog leaf stays visible (#167); setup enables `sitna.basemapSelector` task-availability
+- Print preview (`viewer-print`): 1600×700 window; A4 landscape map becomes 1040×704 and A4 portrait 712×1034 while `tc-ctl-prnmap-printing` is set, then returns to window size ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)); setup enables `sitna.printMap` and drops seed `div: "print"` / external logo
 - More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia (seed parent 42 includes query child 38); synthetic FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); also asserts live backend render, overlay error on 500, close, multi-feature GFI re-render (`selectMiaGfiFeature`), and deferred-route races (late first identify must not overwrite a newer one; close-during-load ignores late fulfill); setup enables MIA + featureInfo task-availability. Shared helpers live in `e2e/viewer/helpers/mia.ts`.
 - Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); capabilities advertise `GetFeatureInfo` `application/json` so SITNA sets `INFO_FORMAT`; GetFeatureInfo for layer `34_TOPO_TX` returns JSON FeatureCollection (XML fixture fallback). Production Liquibase is not modified.
 
@@ -60,9 +62,9 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 
 ### Mobile web (`npm run e2e:mobile:web`)
 
-- Disposable setup patches application `1` to type `ED`, rewrites WMTS service `1` to the local stub, and creates a regular edition user
+- Disposable setup patches application `1` to type `ED` with `title: null`, rewrites WMTS service `1` to the local stub, and creates a regular edition user
 - Edition: `POST /api/authenticate/mobile` returns JSON `access_token` (no cookie); viewer/admin cookie logins remain empty-body
-- Edition: Bearer `access_token` exchanges for distinct `proxy_token`; client apps list only `ED` and never includes `config.mbtilesUrl`
+- Edition: Bearer `access_token` exchanges for distinct `proxy_token`; client apps list only `ED`, each app has a non-blank `name`, and never includes `config.mbtilesUrl`
 - Edition: mobile token cannot call account/admin APIs
 - Touristic: anonymous client application list includes type `T`; private profile denied
 - Proxy/MBTiles: missing bearer and `access_token`-as-proxy denied; authorized `proxy_token` estimate/create through `/middleware/proxy/{app}/{ter}/mbtiles...`; opaque `jobHandle`; direct gateway `/mbtiles` is `404`
@@ -214,7 +216,7 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task `app-relation-grid` CRUD except MIA Parameters add+reload in `mia-form.spec.ts`. Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation grids
+- Admin suite does not cover Application / Layer / Task `app-relation-grid` **CRUD** except MIA Parameters add+reload in `mia-form.spec.ts`. Layers form now asserts lazy association GETs for Territories / Permissions / Trees (not grid CRUD). Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation-grid CRUD
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)
