@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
 - **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[Unreleased]`.
-- **Services / Capabilities**: MapServer URLs that already have a query string (e.g. `?map=`) build GetCapabilities with `&` and encode `helpers/capabilities?url=` so the backend no longer receives HTML browse-mode responses. See `sitmun-admin-app` `[Unreleased]`.
+- **Services / Capabilities**: Admin Fetch details/layers POST `helpers/capabilities` JSON; backend builds GetCapabilities (keeps MapServer `?map=`) and can send origin HTTP Basic. GET helper is removed. See `sitmun-backend-core` / `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[Unreleased]`.
@@ -62,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Seed / docs**: Restore platform `admin` seed usernames, README login examples, seed JSON, and demo-data publication IDs accidentally nulled by the GeoServer credential purge `--replace-text` pass (GeoServer `stm_service.csv` scrub kept).
 - **E2E**: WMS stub advertises GetFeatureInfo JSON so live GFI parse is the oracle (`mia-gfi-click`); language i18n specs fail if French language id 5 is missing from H2.
-- **E2E**: Service form Get Metadata MapServer `?map=` regression (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
+- **E2E**: Service form Get Metadata MapServer POST `helpers/capabilities` JSON (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
 - **E2E**: N13 writes the generated CSV under the OS temp dir so CI checkout does not need `e2e/admin/fixtures/`.
 - **E2E**: Android touristic provisioning attaches the tree with `POST /api/application-trees` (join entity), not `PUT /api/applications/{id}/trees`.
@@ -71,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
+- **Services / Capabilities**: `POST /api/helpers/capabilities` form overlay DTO, server-side WMS GetCapabilities URL, origin HTTP Basic; GET removed. Null Service password PUT keeps `SER_PWD`; auth other than `None` forces `isProxied`. See `sitmun-backend-core` `[Unreleased]`.
 - **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[Unreleased]`.
 - **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[Unreleased]`.
 

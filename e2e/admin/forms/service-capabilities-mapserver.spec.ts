@@ -38,7 +38,7 @@ async function selectServiceTypeWms(page: import('@playwright/test').Page): Prom
 }
 
 test.describe('Service form MapServer capabilities', () => {
-  test('builds GetCapabilities with & when service URL already has ?map=', async ({ page }) => {
+  test('POSTs form URL and type; backend owns GetCapabilities', async ({ page }) => {
     await gotoCreateForm(page, '/#/service/-1/serviceForm', 'name');
     await selectServiceTypeWms(page);
     await control(page, 'serviceURL').fill(MAPSERVER_SERVICE_URL);
@@ -46,24 +46,32 @@ test.describe('Service form MapServer capabilities', () => {
     await expect(page.locator('.sitmun-service-form-metadata-button')).toBeVisible();
 
     await page.route('**/helpers/capabilities**', async (route) => {
-      if (route.request().method() !== 'GET') {
+      if (route.request().method() !== 'POST') {
         await route.continue();
         return;
       }
 
-      const requestUrl = new URL(route.request().url());
-      const upstreamRaw = requestUrl.searchParams.get('url');
-      expect(upstreamRaw, 'helpers/capabilities must send a single url query param').toBeTruthy();
+      const helperUrl = new URL(route.request().url());
+      expect(helperUrl.searchParams.get('url')).toBeNull();
 
-      const questionMarks = (upstreamRaw!.match(/\?/g) ?? []).length;
-      expect(questionMarks, `upstream must not use a second ?: ${upstreamRaw}`).toBe(1);
+      const body = route.request().postDataJSON() as {
+        url?: string;
+        type?: string;
+        id?: number;
+      };
+      expect(body.url, 'helpers/capabilities must send the form URL').toBe(MAPSERVER_SERVICE_URL);
+      expect(body.type).toBe('WMS');
+      expect(body.id, 'create must omit id').toBeUndefined();
 
-      const upstream = new URL(upstreamRaw!);
+      const questionMarks = (body.url!.match(/\?/g) ?? []).length;
+      expect(questionMarks, `form URL must not use a second ?: ${body.url}`).toBe(1);
+
+      const upstream = new URL(body.url!);
       expect(upstream.searchParams.get('map')).toBe(
         '/opt/idec/dades/pcivil/risc_quimic.map',
       );
-      expect(upstream.searchParams.get('request')).toBe('GetCapabilities');
-      expect(upstream.searchParams.get('service')).toBe('WMS');
+      expect(upstream.searchParams.get('request')).toBeNull();
+      expect(upstream.searchParams.get('service')).toBeNull();
 
       await route.fulfill({
         status: 200,
