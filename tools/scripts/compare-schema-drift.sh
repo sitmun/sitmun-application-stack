@@ -22,7 +22,7 @@ shift || true
 AGAINST="profiles"
 OUT_ROOT=""
 FAIL_ON="problem"
-CHANGESET_PREFIX="21_schema_drift_fix"
+CHANGESET_PREFIX="22_schema_drift_fix"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in

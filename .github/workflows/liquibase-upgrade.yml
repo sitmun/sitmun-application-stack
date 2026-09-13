@@ -1,0 +1,29 @@
+name: Liquibase upgrade
+
+on:
+  pull_request:
+    paths:
+      - 'profiles/postgres/liquibase/**'
+      - 'profiles/oracle/liquibase/**'
+      - 'tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh'
+      - '.github/workflows/liquibase-upgrade.yml'
+  workflow_dispatch:
+
+jobs:
+  postgres-1-2-7-to-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch 1.2.7 and 1.2.8 tags
+        run: |
+          git fetch --no-tags origin tag sitmun-application-stack/1.2.7
+          git fetch --no-tags origin tag sitmun-application-stack/1.2.8
+
+      - name: Upgrade 1.2.7 then 1.2.8 fail then HEAD
+        run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
