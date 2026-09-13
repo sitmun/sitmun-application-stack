@@ -7,10 +7,14 @@ import {
   uniqueValue,
   waitForFormReady,
 } from '../helpers/form';
-import type { ConsoleMessage, Page } from '@playwright/test';
+import type { APIRequestContext, ConsoleMessage, Page } from '@playwright/test';
 
 const FEATURE_INFORMATION_TAB =
   /Alphanumeric information|Información alfanumérica|Informació alfanumèrica|Informacion alfanumerica|Information alphanumérique/i;
+
+const TERRITORIES_TAB = /Territories|Territorios|Territoris|Territòris|Territoires/i;
+const PERMISSIONS_TAB = /Permissions|Permisos|Autorisations/i;
+const TREES_TAB = /^Trees$|^Árboles$|^Arboles$|^Arbres$/i;
 
 const SPLIT_ERROR = /raw\.split is not a function|parseLayerList/i;
 
@@ -39,6 +43,40 @@ async function selectServiceByName(page: Page, name: string | RegExp): Promise<v
   await expect(
     control(page, 'serviceId').locator('.mat-mdc-select-value-text'),
   ).not.toBeEmpty();
+}
+
+type CartographyRelation = 'availabilities' | 'permissions' | 'treeNodes';
+
+function cartographyRelationName(url: string, cartographyId: number): CartographyRelation | null {
+  try {
+    const pathname = new URL(url).pathname;
+    const match = pathname.match(
+      new RegExp(`/api/cartographies/${cartographyId}/(availabilities|permissions|treeNodes)(?:/|$)`),
+    );
+    return (match?.[1] as CartographyRelation | undefined) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function listEmbeddedTerritories(
+  request: APIRequestContext,
+): Promise<Array<{ id: number }>> {
+  const response = await request.get('/backend/api/territories?size=20', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(response.ok(), `GET territories: ${response.status()} ${await response.text()}`).toBeTruthy();
+  const body = (await response.json()) as { _embedded?: { territories?: Array<{ id?: number }> } };
+  return (body._embedded?.territories ?? []).filter(
+    (item): item is { id: number } => typeof item.id === 'number',
+  );
+}
+
+async function openLayersRelationTab(page: Page, name: RegExp): Promise<void> {
+  const tab = page.getByRole('tab', { name }).first();
+  await tab.scrollIntoViewIfNeeded();
+  await tab.click();
+  await expect(tab).toHaveAttribute('aria-selected', 'true', { timeout: 10_000 });
 }
 
 async function openFeatureInformationTab(page: Page): Promise<void> {
@@ -115,5 +153,85 @@ test.describe('Layers form', () => {
       splitErrors,
       `characterCount probe must not throw; got: ${splitErrors.slice(0, 3).join(' | ')}`,
     ).toEqual([]);
+  });
+
+  test('defers relation collection GETs until the tab is selected', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
+    const name = uniqueValue('e2e-layer-lazy');
+    const layerSet = uniqueValue('e2e-wms-layer');
+
+    await gotoCreateForm(page, '/#/layers/-1/layersForm', 'name');
+    await control(page, 'name').fill(name);
+    await selectServiceByName(page, /^PNOA$/);
+    await control(page, 'joinedLayers').fill(layerSet);
+    await control(page, 'joinedLayers').blur();
+    await expect(page.getByTestId('form-save')).toBeEnabled({ timeout: 15_000 });
+
+    const id = await saveAndCaptureId(page, 'cartographies');
+    createdResources.push({ collection: 'cartographies', id });
+
+    const territories = await listEmbeddedTerritories(request);
+    const linked = territories.slice(0, Math.min(5, territories.length));
+    for (const territory of linked) {
+      const create = await request.post('/backend/api/cartography-availabilities', {
+        headers: {
+          'X-SITMUN-Client': 'admin',
+          'Content-Type': 'application/json',
+        },
+        data: {
+          cartography: `http://localhost:18080/api/cartographies/${id}`,
+          territory: `http://localhost:18080/api/territories/${territory.id}`,
+        },
+      });
+      expect(
+        [201, 409].includes(create.status()),
+        `link availability territory ${territory.id}: ${create.status()} ${await create.text()}`,
+      ).toBeTruthy();
+    }
+
+    const relationGets: Record<'availabilities' | 'permissions' | 'treeNodes', string[]> = {
+      availabilities: [],
+      permissions: [],
+      treeNodes: [],
+    };
+    page.on('request', (req) => {
+      if (req.method() !== 'GET') {
+        return;
+      }
+      const relation = cartographyRelationName(req.url(), id);
+      if (relation) {
+        relationGets[relation].push(req.url());
+      }
+    });
+
+    await page.goto(`/#/layers/${id}/layersForm`);
+    await waitForFormReady(page, 'name');
+    await expect(control(page, 'name')).toHaveValue(name);
+
+    expect(
+      relationGets.availabilities,
+      'availabilities must not load on Details',
+    ).toEqual([]);
+    expect(relationGets.permissions, 'permissions must not load on Details').toEqual([]);
+    expect(relationGets.treeNodes, 'treeNodes must not load on Details').toEqual([]);
+
+    await openLayersRelationTab(page, TERRITORIES_TAB);
+    await expect
+      .poll(() => relationGets.availabilities.length, { timeout: 15_000 })
+      .toBeGreaterThan(0);
+    expect(relationGets.permissions).toEqual([]);
+    expect(relationGets.treeNodes).toEqual([]);
+
+    await openLayersRelationTab(page, PERMISSIONS_TAB);
+    await expect
+      .poll(() => relationGets.permissions.length, { timeout: 15_000 })
+      .toBeGreaterThan(0);
+    expect(relationGets.treeNodes).toEqual([]);
+
+    await openLayersRelationTab(page, TREES_TAB);
+    await expect.poll(() => relationGets.treeNodes.length, { timeout: 15_000 }).toBeGreaterThan(0);
   });
 });

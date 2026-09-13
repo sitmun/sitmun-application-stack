@@ -11,7 +11,8 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Role form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
-- Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`; relation tabs not exercised)
+- Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`)
+- Layers form relation tabs: opening Details must not GET `/cartographies/{id}/availabilities|permissions|treeNodes`; those association requests fire only after the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); same spec)
 - Service form Get Metadata: MapServer-style URL with existing `?map=` builds `helpers/capabilities` with `&request=GetCapabilities&service=WMS` (intercepted stub; no live ICGC) (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`, project `admin-forms`)
 - Layers list delete: create via form, search, grid delete → `DELETE /api/cartographies/{id}` **204** and GET **404** (`e2e/admin/forms/layers-list-delete.spec.ts`, project `admin-forms`)
 - Plantilla dry-run: ADMIN `POST /api/tasks/template/preview` and `/execute-child` without required `appId`/`terId` (`e2e/admin/forms/template-execute-child.spec.ts`, project `admin-forms`)
@@ -213,7 +214,7 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task `app-relation-grid` CRUD except MIA Parameters add+reload in `mia-form.spec.ts`. Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation grids
+- Admin suite does not cover Application / Layer / Task `app-relation-grid` **CRUD** except MIA Parameters add+reload in `mia-form.spec.ts`. Layers form now asserts lazy association GETs for Territories / Permissions / Trees (not grid CRUD). Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation-grid CRUD
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)
