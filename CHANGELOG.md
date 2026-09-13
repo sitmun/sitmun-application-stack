@@ -23,8 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+#### Backend Core
+
+- **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
+
 #### Stack-level
 
+- **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
 - **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
 - **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).

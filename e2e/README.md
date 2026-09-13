@@ -11,6 +11,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Role form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
+- Tree form **Details** SVG local-file persist and touristic **Tree structure** node Appearance SVG persist: picker `accept` includes `.svg`; POST/PUT stores `data:image/svg+xml;base64,...` without raster scaling; reload preview stays SVG ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330); `e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`)
 - Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`)
 - Layers form relation tabs: opening Details must not GET `/cartographies/{id}/availabilities|permissions|treeNodes`; those association requests fire only after the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); same spec)
 - Service form Get Metadata: MapServer-style URL with existing `?map=` builds `helpers/capabilities` with `&request=GetCapabilities&service=WMS` (intercepted stub; no live ICGC) (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`, project `admin-forms`)
