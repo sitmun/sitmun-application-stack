@@ -56,6 +56,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **E2E**: WMS stub advertises GetFeatureInfo JSON so live GFI parse is the oracle (`mia-gfi-click`); language i18n specs fail if French language id 5 is missing from H2.
 - **E2E**: Service form Get Metadata MapServer `?map=` regression (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
 - **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
+- **E2E**: N13 writes the generated CSV under the OS temp dir so CI checkout does not need `e2e/admin/fixtures/`.
+- **E2E**: Android touristic provisioning attaches the tree with `POST /api/application-trees` (join entity), not `PUT /api/applications/{id}/trees`.
 - **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
 
 #### Backend Core

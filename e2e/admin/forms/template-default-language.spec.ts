@@ -1,3 +1,6 @@
+import { writeFile, unlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { test, expect } from '../fixtures';
 import {
   assertPlantillaHtmlPersisted,
@@ -333,9 +336,6 @@ test.describe('Templates + language.default i18n cluster', () => {
   });
 
   test('N13 CSV import may use disabled language', async ({ page, request }) => {
-    const path = await import('node:path');
-    const { writeFile, unlink } = await import('node:fs/promises');
-
     const frGet = await request.get(`/backend/api/languages/${FR_LANGUAGE_ID}`, {
       headers: { 'X-SITMUN-Client': 'admin' },
     });
@@ -345,7 +345,7 @@ test.describe('Templates + language.default i18n cluster', () => {
     ).toBeTruthy();
     const fr = await frGet.json();
     const literal = `e2e-disabled-csv-${uniqueValue('LIT')}`;
-    const csvPath = path.join(process.cwd(), 'e2e/admin/fixtures', `literal-disabled-${Date.now()}.csv`);
+    const csvPath = path.join(tmpdir(), `literal-disabled-${Date.now()}.csv`);
     await writeFile(
       csvPath,
       `source_language,literal,translation\nfr,${literal},valeur-fr\n`,

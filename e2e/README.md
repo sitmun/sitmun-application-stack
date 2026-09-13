@@ -23,7 +23,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
 - Literal translations grid CRUD (not `app-relation-grid`; no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
-- Templates + `language.default` i18n cluster (`e2e/admin/forms/template-default-language.spec.ts`, project `admin-forms`): enroll `<t>` on save with DB default as `sourceLanguage` (UI lang may differ); preview self-translation / translated / opaque-key fallback; Templates still load after default change; HTML/`sourceLanguage` stable; continuity seed for new default; enabled-only create dialog; CSV may import a disabled `source_language`; soft client-config task-name overlay check
+- Templates + `language.default` i18n cluster (`e2e/admin/forms/template-default-language.spec.ts`, project `admin-forms`): enroll `<t>` on save with DB default as `sourceLanguage` (UI lang may differ); preview self-translation / translated / opaque-key fallback; Templates still load after default change; HTML/`sourceLanguage` stable; continuity seed for new default; enabled-only create dialog; CSV may import a disabled `source_language` (generated CSV is written to the OS temp dir); soft client-config task-name overlay check
 - Nested Plantilla literal preview (`e2e/admin/forms/template-nested-preview.spec.ts`): child `<t>` + Catalan value appears in parent preview for `lang=ca`
 
 ### Viewer (`npm run e2e:viewer`)
@@ -75,7 +75,7 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Uses `adb reverse tcp:18081` and Maestro flows under `e2e/mobile/android/`
 - Records source SHA and APK SHA-256 under `test-results/mobile-android/`
 - Split coverage (Phase 8):
-  - **Maestro UI**: edition invalid login (`#login-error` via `androidWebViewHierarchy: devtools`), edition valid login/profile, touristic public profile (auto-enter after tree provisioning)
+  - **Maestro UI**: edition invalid login (`#login-error` via `androidWebViewHierarchy: devtools`), edition valid login/profile, touristic public profile (auto-enter after tree provisioning via `POST /api/application-trees`)
   - **Gateway/API contracts** (before APK builds): missing bearer, wrong territory, `access_token` rejected as proxy, estimate/create/status/file with opaque `jobHandle`, direct `/mbtiles` is `404`
 - Orchestrator runs `adb shell am kill-all` before Maestro to avoid stale WebView DevTools sockets on Maestro 2.6.1
 - Separate `e2e-mobile-touristic.mjs` / `e2e-mobile-edition.mjs` shell scripts are not used; Ionic web shells are covered by API-only `e2e:mobile:web`

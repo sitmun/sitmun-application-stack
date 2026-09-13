@@ -454,10 +454,13 @@ async function provisionTouristicTree(gatewayBackend, cookieHeader) {
     throw new Error(`create touristic root node failed: ${node.res.status} ${node.text}`);
   }
 
-  const appTrees = await jsonFetch(`${gatewayBackend}/api/applications/6/trees`, {
-    method: 'PUT',
-    headers: uriHeaders,
-    body: treeUri,
+  const appTrees = await jsonFetch(`${gatewayBackend}/api/application-trees`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify({
+      application: `${gatewayBackend}/api/applications/${TOURISTIC_APP_ID}`,
+      tree: treeUri,
+    }),
   });
   if (!appTrees.res.ok) {
     throw new Error(`attach tree to app failed: ${appTrees.res.status} ${appTrees.text}`);
