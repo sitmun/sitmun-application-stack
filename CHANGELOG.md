@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a Liquibase include below the tree tip. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
 - **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
 
 ### Fixed

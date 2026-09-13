@@ -1,0 +1,36 @@
+name: Liquibase immutability
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  changelog-immutability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Unit tests
+        run: python3 tools/tests/test_changelog_immutability.py
+
+      - name: Fetch PR base
+        if: github.event_name == 'pull_request'
+        run: git fetch --no-tags origin "${{ github.base_ref }}"
+
+      - name: PR diff gate
+        if: github.event_name == 'pull_request'
+        run: python3 tools/bin/check_changelog_immutability.py --base "origin/${{ github.base_ref }}"
+
+      - name: Working-tree gate
+        if: github.event_name != 'pull_request'
+        run: python3 tools/bin/check_changelog_immutability.py
