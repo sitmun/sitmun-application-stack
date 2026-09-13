@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+#### Admin Application
+
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes Sonar `lcov` / `ut_report`. Jest stubs AG Grid, echarts, and Material barrels. Form specs import standalone `EntityFormAlertsComponent`; `dialog-form` uses `configureLoggerForTests`. See `sitmun-admin-app` `[Unreleased]`.
+
+#### Viewer Application
+
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes `coverage/lcov.info`. See `sitmun-viewer-app` `[Unreleased]`.
+
 #### Stack-level
 
 - **Setup**: `setup.sh` / `setup.ps1` create `.env` from `profiles/development-postgres.env` when missing (was production `profiles/postgres.env`).
@@ -22,6 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
+- **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
+- **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[Unreleased]`.
 - **Services / Capabilities**: MapServer URLs that already have a query string (e.g. `?map=`) build GetCapabilities with `&` and encode `helpers/capabilities?url=` so the backend no longer receives HTML browse-mode responses. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
