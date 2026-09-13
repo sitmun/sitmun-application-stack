@@ -776,7 +776,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--mode", choices=("profiles", "jpa"), default="profiles")
     p.add_argument("--dbms", choices=("postgresql", "oracle"), default="postgresql")
     p.add_argument("--out-dir", type=Path, help="Write report.txt, drift.json, draft YAML")
-    p.add_argument("--changeset-prefix", default="21_schema_drift_fix")
+    p.add_argument("--changeset-prefix", default="22_schema_drift_fix")
     p.add_argument("--include-info-changelogs", action="store_true")
     p.add_argument("--hints", type=Path, help="JSON map TABLE.COLUMN → metadata")
     p.add_argument(

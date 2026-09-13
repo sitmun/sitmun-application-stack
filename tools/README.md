@@ -46,7 +46,7 @@ Paths by scenario:
 | Script | Purpose |
 |--------|---------|
 | **apply-seed-data.sh** | Generate seed files then apply the Liquibase changelog to a remote database. `--db-type postgres\|oracle`; `--baseline` selects i18n language. |
-| **validate-liquibase-changelogs.sh** | List changelogs by last modification (newest first). Pass `[liquibase_dir]` as first argument (default: development). |
+| **validate-liquibase-changelogs.sh** | List changelogs by last modification (newest first). Not an immutability gate. Pass `[liquibase_dir]` as first argument (default: development). |
 | **compare-schema-drift.sh** | Apply development vs postgres/oracle Liquibase (Docker), report PROBLEM/INFO drift, write **draft fix YAML** under `tools/out/schema-drift/`. Optional `--against jpa`. Target `dev-dialects` compares development postgresql vs oracle. |
 | **checkout-latest-tags.sh** | Update all git submodules to their latest version tag. |
 | **bump-version.sh** | Propagate stack `VERSION` into coordinated submodule build metadata, OpenAPI docs, frontend env files, README badges, and lockfiles. See [Version and release](#version-and-release). |
@@ -78,14 +78,18 @@ bash tools/scripts/apply-seed-data.sh \
   --username sitmun3 --password secret \
   --dry-run
 
-# Validate changelogs
+# Check changelog immutability (PR diff / working tree). Exit 1 if an old include is edited.
+python3 tools/bin/check_changelog_immutability.py
+python3 tools/tests/test_changelog_immutability.py
+
+# List changelog mtimes (not a checksum gate)
 bash tools/scripts/validate-liquibase-changelogs.sh
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/postgres/liquibase
 bash tools/scripts/validate-liquibase-changelogs.sh profiles/oracle/liquibase
 
 # Schema drift → draft fix changelogs (development = reference, profile = fixable)
 bash tools/scripts/compare-schema-drift.sh postgres --fail-on none
-# Review tools/out/schema-drift/postgres/21_schema_drift_fix.yaml
+# Review tools/out/schema-drift/postgres/22_schema_drift_fix.yaml
 # then add the line from MASTER_INCLUDE.txt to profiles/postgres/liquibase/master.xml
 bash tools/scripts/compare-schema-drift.sh oracle --fail-on none
 bash tools/scripts/compare-schema-drift.sh postgres --against jpa --fail-on none
@@ -94,7 +98,9 @@ bash tools/scripts/compare-schema-drift.sh postgres --against jpa --fail-on none
 bash tools/scripts/checkout-latest-tags.sh
 ```
 
-Drafts are **not** auto-wired into `master.xml`. Do not rewrite `sitmun:1`; only add incremental changesets after review. Java field defaults / Bean Validation are annotated as INFO via `extract_jpa_column_hints.py` — they do not invent SQL `DEFAULT` clauses.
+Drafts are **not** auto-wired into `master.xml`. Do not rewrite `sitmun:1`; only add incremental changesets after review. Default draft prefix is `22_schema_drift_fix`. Java field defaults / Bean Validation are annotated as INFO via `extract_jpa_column_hints.py`. They do not invent SQL `DEFAULT` clauses.
+
+Applied profile/schema changesets are frozen. `check_changelog_immutability.py` fails a diff that edits an include numbered below the tree tip. Allowlisted exceptions are generated production seeds `02`–`06` (`runOnChange`) and development `04_initial_data_dev` (`validCheckSum: ANY`). `check_changelog_integrity.py` is a git-ancestry report on backend-core files. It does not fail CI.
 
 ### Version and release
 
@@ -120,11 +126,11 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 | **test_liquibase_scenarios.sh** | Docker-based Liquibase test for PostgreSQL (5 scenarios, language switching). |
 | **test_liquibase_scenarios_oracle.sh** | Same for Oracle. |
 | **test_report_schema_drift.py** | Unit tests for schema-drift reporter / draft changelog emitter. |
-| **test_liquibase_1.2.7_to_head_upgrade.sh** | Apply 1.2.7, expect 1.2.8 checksum fail, apply HEAD 19/20. CI runs `postgres`. `oracle` stays local. |
+| **test_changelog_immutability.py** | Unit tests for the PR-diff Liquibase immutability gate. |
 
 ```bash
 python3 tools/tests/test_report_schema_drift.py
-bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
+python3 tools/tests/test_changelog_immutability.py
 bash tools/tests/test_liquibase_scenarios.sh
 bash tools/tests/test_liquibase_scenarios_oracle.sh
 ```
@@ -148,7 +154,8 @@ See [seed-data/README.md](seed-data/README.md) for the full workflow.
 | **import_from_csv.py** | One-time import from legacy Liquibase translation CSVs into a baseline. | `--scenario`; `--baseline` |
 | **import_from_generated_csvs.py** | Import from generated `STM_TRANSLATION_*.csv` into a baseline. | `--scenario`; `--baseline` |
 | **sort_codelist.py** | Sort and renumber `STM_CODELIST.csv`. | pass input file path |
-| **check_changelog_integrity.py** | Verify Liquibase changelog immutability by commit chronology checks. | — |
+| **check_changelog_immutability.py** | Fail if a diff edits a Liquibase include below the tree tip. `--base` for CI. | `--tree`; `--changed-file`; `--base`; `--no-git` |
+| **check_changelog_integrity.py** | Git-ancestry report (backend-core default). Prints violations. Does not exit 1. | — |
 | **report_schema_drift.py** | Compare schema dumps; emit PROBLEM/INFO report + draft Liquibase YAML. | `--out-dir`; `--fail-on`; `--dbms` |
 | **extract_jpa_column_hints.py** | Scan domain entities for java defaults / validation / auditing → JSON hints. | `--out` |
 
@@ -169,7 +176,8 @@ python3 tools/bin/switch_default_language.py es
 # Sort a codelist CSV
 python3 tools/bin/sort_codelist.py profiles/postgres/liquibase/changelog/02_codelists/STM_CODELIST.csv
 
-# Check changelog integrity against next-changelog commit boundaries
+# Check changelog immutability (also run by .github/workflows/liquibase-immutability.yml)
+python3 tools/bin/check_changelog_immutability.py
 python3 tools/bin/check_changelog_integrity.py
 ```
 
