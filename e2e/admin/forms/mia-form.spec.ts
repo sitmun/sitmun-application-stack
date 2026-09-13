@@ -19,6 +19,9 @@ import {
   expectChildTaskMapping,
   getMiaTaskProperties,
   gotoMiaDetailsTab,
+  includedOwner,
+  mappingAddTestId,
+  mappingSelect,
   openMia,
   putMiaTaskProperties,
   saveMiaParameters,
@@ -185,6 +188,7 @@ test.describe('MIA form', () => {
     const paramValue = uniqueValue('feature');
     await addMiaParameter(page, { label: paramLabel, value: paramValue });
     await addChildMapping(page, {
+      owner: includedOwner(SEEDED_QUERY_CHILD_ID),
       miaParamLabel: paramLabel,
       childParamLabel: CHILD_PARAM_LABEL,
     });
@@ -196,9 +200,13 @@ test.describe('MIA form', () => {
 
     await openMia(page, id);
     await gotoMiaDetailsTab(page);
-    const row = page.locator('.mapping-row').first();
-    await expect(row.locator('mat-select').nth(0)).toContainText(paramLabel);
-    await expect(row.locator('mat-select').nth(1)).toContainText(CHILD_PARAM_LABEL);
+    const mappingOwner = includedOwner(SEEDED_QUERY_CHILD_ID);
+    await expect(
+      mappingSelect(page, { owner: mappingOwner, rowIndex: 0, side: 'mia' }),
+    ).toContainText(paramLabel);
+    await expect(
+      mappingSelect(page, { owner: mappingOwner, rowIndex: 0, side: 'child' }),
+    ).toContainText(CHILD_PARAM_LABEL);
   });
 
   test('keeps edited mapping after a subsequent Parameters save', async ({
@@ -228,12 +236,16 @@ test.describe('MIA form', () => {
       expectedLabels: [firstLabel, secondLabel],
     });
     await addChildMapping(page, {
+      owner: includedOwner(SEEDED_QUERY_CHILD_ID),
       miaParamLabel: firstLabel,
       childParamLabel: CHILD_PARAM_LABEL,
     });
     await saveMiaUpdate(page, id);
 
-    await changeChildMappingMiaParam(page, { miaParamLabel: secondLabel });
+    await changeChildMappingMiaParam(page, {
+      owner: includedOwner(SEEDED_QUERY_CHILD_ID),
+      miaParamLabel: secondLabel,
+    });
     // Parameters save must keep the unsaved mapping edit (Maps ahead of properties).
     await addMiaParameter(page, {
       label: uniqueValue('e2e-map-c'),
@@ -265,6 +277,7 @@ test.describe('MIA form', () => {
     const paramValue = uniqueValue('feature');
     await addMiaParameter(page, { label: paramLabel, value: paramValue });
     await addChildMapping(page, {
+      owner: includedOwner(SEEDED_QUERY_CHILD_ID),
       miaParamLabel: paramLabel,
       childParamLabel: CHILD_PARAM_LABEL,
     });
@@ -317,6 +330,8 @@ test.describe('MIA form', () => {
       value: uniqueValue('feature'),
     });
     await gotoMiaDetailsTab(page);
-    await expect(page.locator('.mapping-actions-row button').first()).toBeDisabled();
+    await expect(
+      page.getByTestId(mappingAddTestId(includedOwner(plantilla.id))),
+    ).toBeDisabled();
   });
 });

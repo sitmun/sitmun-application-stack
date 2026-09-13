@@ -101,7 +101,7 @@ async function expandBasemapSelector(page: Page): Promise<void> {
   if (await heading.count()) {
     const collapsed = await bms.evaluate((el) => el.classList.contains('tc-collapsed'));
     if (collapsed) {
-      await heading.click({ force: true });
+      await heading.click();
     }
   }
   await expect(bms).not.toHaveClass(/tc-collapsed/, { timeout: 10_000 });

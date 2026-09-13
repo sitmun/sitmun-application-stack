@@ -1,5 +1,5 @@
 import { test, expect } from '../fixtures';
-import { control, gotoCreateForm } from '../helpers/form';
+import { control, dismissBlockingOverlays, gotoCreateForm } from '../helpers/form';
 
 const MAPSERVER_SERVICE_URL =
   'https://pcivil.icgc.cat/ogc/geoservei?map=/opt/idec/dades/pcivil/risc_quimic.map';
@@ -28,6 +28,8 @@ const CAPABILITIES_STUB = {
 async function selectServiceTypeWms(page: import('@playwright/test').Page): Promise<void> {
   const typeSelect = control(page, 'type');
   await typeSelect.scrollIntoViewIfNeeded();
+  await dismissBlockingOverlays(page);
+  // Required-marker span in mdc-notched-outline covers the type mat-select trigger.
   await typeSelect.locator('.mat-mdc-select-trigger').click({ force: true });
   const option = page.getByRole('option', { name: 'WMS', exact: true });
   await option.waitFor({ state: 'visible', timeout: 15_000 });

@@ -10,6 +10,15 @@ import {
   uniqueValue,
   waitForFormReady,
 } from './form';
+import {
+  mappingAddTestId,
+  mappingOptionTestId,
+  mappingSelectTestId,
+  type MappingOwner,
+  type MappingSelectRef,
+} from './mia-mapping-testid';
+
+export { includedOwner, mappingAddTestId } from './mia-mapping-testid';
 
 export const MIA_CREATE_PATH = '/#/tasksMoreInfoAdvanced/-1/16';
 export const CARTOGRAPHY_SEARCH = 'Toponimia';
@@ -56,10 +65,10 @@ export async function createMiaWithChild(
 export async function openMia(page: Page, id: number): Promise<void> {
   await page.goto(`/#/tasksMoreInfoAdvanced/${id}/16`);
   await page.getByTestId('form-save').waitFor({ state: 'visible', timeout: 15_000 });
-  await page
-    .getByText('Loading...', { exact: false })
-    .waitFor({ state: 'hidden', timeout: 30_000 })
-    .catch(() => {});
+  const loading = page.getByText('Loading...', { exact: false });
+  if ((await loading.count()) > 0) {
+    await loading.first().waitFor({ state: 'hidden', timeout: 30_000 });
+  }
   // mat-tab can leave the name control in a hidden panel after reload; select Details first.
   await gotoMiaDetailsTab(page);
   await expect(control(page, 'name')).toBeVisible({ timeout: 15_000 });
@@ -191,42 +200,70 @@ export async function gotoMiaDetailsTab(page: Page): Promise<void> {
   });
 }
 
+async function countMappingRows(page: Page, owner: MappingOwner): Promise<number> {
+  let rowIndex = 0;
+  while ((await mappingSelect(page, { owner, rowIndex, side: 'mia' }).count()) > 0) {
+    rowIndex += 1;
+  }
+  return rowIndex;
+}
+
+export function mappingSelect(page: Page, ref: MappingSelectRef): Locator {
+  return page.getByTestId(mappingSelectTestId(ref));
+}
+
 async function selectMappingOption(
   page: Page,
-  select: Locator,
-  optionName: string,
+  ref: MappingSelectRef,
+  label: string,
 ): Promise<void> {
   await dismissBlockingOverlays(page);
+  const select = mappingSelect(page, ref);
   await select.scrollIntoViewIfNeeded();
-  await select.click({ force: true });
-  const option = page.getByRole('option', { name: optionName, exact: true });
+  // Empty outline mat-label covers the trigger center; the arrow is the uncovered hit target.
+  await select.locator('.mat-mdc-select-arrow-wrapper').click();
+  const option = page.getByTestId(mappingOptionTestId({ ...ref, label })).filter({ visible: true });
   await expect(option).toBeVisible({ timeout: 15_000 });
   await option.click();
 }
 
 export async function addChildMapping(
   page: Page,
-  options: { miaParamLabel: string; childParamLabel: string },
+  options: {
+    owner: MappingOwner;
+    miaParamLabel: string;
+    childParamLabel: string;
+  },
 ): Promise<void> {
   await gotoMiaDetailsTab(page);
   await dismissBlockingOverlays(page);
-  const addRow = page.locator('.mapping-actions-row button').first();
+  const addRow = page.getByTestId(mappingAddTestId(options.owner));
   await expect(addRow).toBeEnabled({ timeout: 15_000 });
+  const rowIndex = await countMappingRows(page, options.owner);
   await addRow.click();
-  const row = page.locator('.mapping-row').last();
-  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
-  await selectMappingOption(page, row.locator('mat-select').nth(1), options.childParamLabel);
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex, side: 'mia' },
+    options.miaParamLabel,
+  );
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex, side: 'child' },
+    options.childParamLabel,
+  );
 }
 
 export async function changeChildMappingMiaParam(
   page: Page,
-  options: { miaParamLabel: string; rowIndex?: number },
+  options: { owner: MappingOwner; miaParamLabel: string; rowIndex?: number },
 ): Promise<void> {
   await gotoMiaDetailsTab(page);
   await dismissBlockingOverlays(page);
-  const row = page.locator('.mapping-row').nth(options.rowIndex ?? 0);
-  await expect(row).toBeVisible({ timeout: 15_000 });
-  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex: options.rowIndex ?? 0, side: 'mia' },
+    options.miaParamLabel,
+  );
 }
 
 export async function getMiaTaskProperties(

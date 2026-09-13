@@ -127,7 +127,7 @@ async function openLegendPanel(page: Page): Promise<void> {
       !el.classList.contains('tc-collapsed'),
   );
   if (!alreadyOpen) {
-    await legendTab.click({ force: true });
+    await legendTab.click();
   } else {
     // Panel open on tools: switch to legend content.
     const toolsVisible = await page.locator('#tools-tab').evaluate((el) => {
@@ -135,10 +135,10 @@ async function openLegendPanel(page: Page): Promise<void> {
     });
     if (toolsVisible) {
       // Collapse then reopen on legend-tab so script.js shows .tc-ctl-legend.
-      await page.locator('#tools-tab').click({ force: true });
+      await page.locator('#tools-tab').click();
       await expect(leftPanel).toHaveClass(/tc-collapsed-left/, { timeout: 10_000 });
       await legendTab.evaluate((tab) => tab.classList.remove('tc-hidden'));
-      await legendTab.click({ force: true });
+      await legendTab.click();
     }
   }
 

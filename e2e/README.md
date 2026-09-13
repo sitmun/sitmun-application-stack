@@ -36,7 +36,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
 - No base map (`viewer-basemap`): basemap selector option `sitmun-no-base-map` clears raster basemap to a white viewport while a catalog leaf stays visible (#167); setup enables `sitna.basemapSelector` task-availability
 - More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia (seed parent 42 includes query child 38); synthetic FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); also asserts live backend render, overlay error on 500, close, multi-feature GFI re-render (`selectMiaGfiFeature`), and deferred-route races (late first identify must not overwrite a newer one; close-during-load ignores late fulfill); setup enables MIA + featureInfo task-availability. Shared helpers live in `e2e/viewer/helpers/mia.ts`.
-- Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); GetFeatureInfo for layer `34_TOPO_TX` returns JSON FeatureCollection (XML fixture fallback). Production Liquibase is not modified.
+- Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); capabilities advertise `GetFeatureInfo` `application/json` so SITNA sets `INFO_FORMAT`; GetFeatureInfo for layer `34_TOPO_TX` returns JSON FeatureCollection (XML fixture fallback). Production Liquibase is not modified.
 
 ### MIA cross (`npm run e2e:mia-cross`)
 
@@ -47,12 +47,12 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - MIA parameter mapping feature attr → Plantilla `$param` in overlay (`e2e/mia-cross/mia-mapping.spec.ts`)
 - Nested Plantilla A→B composition in viewer overlay; nested child `<t>` + Catalan value in overlay for UI lang (`e2e/mia-cross/mia-nested-viewer.spec.ts`)
 - Public-user MIA render on temporarily public app `1/1` (`e2e/mia-cross/mia-public-viewer.spec.ts`)
-- Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`); simulated GFI path remains for faster specs
+- Map-click GetFeatureInfo through stub → live MIA overlay (`e2e/mia-cross/mia-gfi-click.spec.ts`; strict overlay, no silent simulate fallback). Simulated GFI is a separate named test in the same file; other specs still use simulate for speed.
 - IDE Menorca `tu007rts_ccavalls` (tree node 12094 / GEO 1304): Capas GFI → MIA Plantilla with JDBC SQL sections (languages/territories/GFI-echo) and `nomruta` → `$featureName` (`e2e/mia-cross/mia-solrustic-gfi.spec.ts`; H2 liquibase `20_menorca_solrustic_mia_e2e`)
 
 **Still out of Playwright:** TipTap full toolbar matrix, binary child handling, filtrable columns, Docker profile Liquibase salvage. Viewer omits `lang` when UI language is blank (backend resolves); product lock, not a coverage gap.
 
-### Application contact (`npx playwright test --config=playwright.application-contact.config.ts`)
+### Application contact (`npm run e2e:application-contact`)
 
 - Shared one-backend suite: admin sets `responsibleInstitutionName` on application 2, reload persists, viewer public dashboard shows the value in application details
 - Starts admin (4300), viewer (4400), and a single backend (18080)
@@ -147,7 +147,7 @@ npm run e2e:mia-cross
 npm run e2e:mia-cross:ui
 
 # admin → viewer responsible institution (shared backend)
-npx playwright test --config=playwright.application-contact.config.ts
+npm run e2e:application-contact
 
 # mobile edition auth + MBTiles via middleware
 npm run e2e:mobile:web
@@ -182,12 +182,13 @@ harness or document the gap when the behavior is outside current coverage.
 
 ## State model
 
-- Fresh in-memory H2 database per suite run
+- Fresh in-memory H2 database per suite run (Playwright `reuseExistingServer` is always `false`)
 - Liquibase seeds `admin` / `admin`
 - Admin form tests create unique entities and delete them via authenticated API cleanup
 - Viewer setup provisions a dedicated regular user (password suite) plus disposable PoC users for applications 2/3; rewrites seeded WMS service 3 to the local stub through the admin API; adds task-availability for `sitna.layerCatalog` / `workLayerManager` and patches tree-node `loadData`/`active` fixtures for catalog E2E; H2 is discarded when backend exits
 - Application-contact suite uses one shared backend for admin write and viewer read of the same application row
 - Auth/fixture files live under `e2e/.auth/` (gitignored)
+- Seed IDs for viewer / mia-cross / mobile setup are declared in [e2e/viewer/fixtures.ts](viewer/fixtures.ts) and [e2e/mobile/fixtures.ts](mobile/fixtures.ts) (examples: app `1`, WMS service `3`, MIA parent task `42`, Menorca app `12` / territory `4` / GEO `1304` / tree node `12094`). Liquibase drift of those IDs fails E2E opaquely.
 
 ## Credential boundaries (viewer)
 
@@ -217,3 +218,4 @@ npx playwright show-report
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)
 - MBTiles protected-source credentials, job-handle key rotation multi-key support, rate/size/time limits, and iOS are absent from this harness
+- SITNA identify and simulate plus catalog layout measurements use `page.evaluate` on TC or DOM boxes as harness hooks, not MCP verification.
