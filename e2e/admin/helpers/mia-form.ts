@@ -398,11 +398,22 @@ export async function createDocumentExportTask(
   const groupHref = groupsBody._embedded?.['task-groups']?.[0]?._links?.self?.href;
   expect(groupHref, 'H2 must contain at least one task group').toBeTruthy();
 
+  const typeGet = await request.get('/backend/api/task-types/17', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(
+    typeGet.ok(),
+    `H2 must have STM_TSK_TYP 17 documentExport (${typeGet.status()} ${await typeGet.text()})`,
+  ).toBeTruthy();
+
   const created = await request.post('/backend/api/tasks', {
     headers: ADMIN_JSON_HEADERS,
     data: {
       name,
-      properties: { downloadFormat: 'pdf' },
+      properties: {
+        downloadFormat: 'pdf',
+        exportEngine: 'openhtmltopdf',
+      },
     },
   });
   expect(
