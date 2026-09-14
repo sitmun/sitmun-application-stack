@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { attachChildLifecycle, fail, isWindows, spawnDetached } from './e2e-process.mjs';
@@ -8,7 +8,14 @@ import { attachChildLifecycle, fail, isWindows, spawnDetached } from './e2e-proc
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const stackRoot = resolve(__dirname, '..');
 const backendRoot = join(stackRoot, 'back', 'backend', 'sitmun-backend-core');
-const changelog = join(backendRoot, 'config', 'db', 'changelog', 'db.changelog-master.yaml');
+const changelogDir = join(backendRoot, 'config', 'db', 'changelog');
+const backendChangelog = join(changelogDir, 'db.changelog-master.yaml');
+const fixtureYaml = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type.yaml');
+const fixtureSpecDir = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type');
+const fixtureSpec = join(fixtureSpecDir, '07_DocumentExportTaskDefinition.json');
+const stagedWrapper = join(changelogDir, 'db.changelog-e2e.yaml');
+const stagedYaml = join(changelogDir, 'ensure-document-export-task-type.yaml');
+const stagedSpecDir = join(changelogDir, 'ensure-document-export-task-type');
 const prefix = 'e2e-backend';
 const gradlew = join(backendRoot, isWindows ? 'gradlew.bat' : 'gradlew');
 
@@ -18,8 +25,11 @@ if (!existsSync(backendRoot)) {
 if (!existsSync(gradlew)) {
   fail(prefix, `Gradle wrapper missing at ${gradlew}`);
 }
-if (!existsSync(changelog)) {
-  fail(prefix, `Liquibase changelog missing at ${changelog}`);
+if (!existsSync(backendChangelog)) {
+  fail(prefix, `Liquibase changelog missing at ${backendChangelog}`);
+}
+if (!existsSync(fixtureYaml) || !existsSync(fixtureSpec)) {
+  fail(prefix, `Document-export type fixture missing under ${join(stackRoot, 'e2e', 'fixtures')}`);
 }
 
 try {
@@ -31,6 +41,34 @@ try {
   );
 }
 
+function unstageE2eChangelog() {
+  rmSync(stagedWrapper, { force: true });
+  rmSync(stagedYaml, { force: true });
+  rmSync(stagedSpecDir, { recursive: true, force: true });
+}
+
+function stageE2eChangelog() {
+  unstageE2eChangelog();
+  writeFileSync(
+    stagedWrapper,
+    [
+      'databaseChangeLog:',
+      '  - include:',
+      '      file: db.changelog-master.yaml',
+      '      relativeToChangelogFile: true',
+      '  - include:',
+      '      file: ensure-document-export-task-type.yaml',
+      '      relativeToChangelogFile: true',
+      '',
+    ].join('\n'),
+  );
+  copyFileSync(fixtureYaml, stagedYaml);
+  cpSync(fixtureSpecDir, stagedSpecDir, { recursive: true });
+}
+
+process.on('exit', unstageE2eChangelog);
+stageE2eChangelog();
+
 const springArgs = [
   '--spring.profiles.active=dev',
   '--server.port=18080',
@@ -40,6 +78,7 @@ const springArgs = [
   '--spring.datasource.password=',
   '--server.forward-headers-strategy=framework',
   '--sitmun.proxy-middleware.url=http://localhost:4400/middleware',
+  '--spring.liquibase.change-log=file:./config/db/changelog/db.changelog-e2e.yaml',
 ].join(' ');
 
 const child = spawnDetached(gradlew, ['bootRun', '--no-daemon', `--args=${springArgs}`], {
@@ -51,4 +90,5 @@ const child = spawnDetached(gradlew, ['bootRun', '--no-daemon', `--args=${spring
   },
 });
 
+child.on('exit', unstageE2eChangelog);
 attachChildLifecycle(child, { prefix });
