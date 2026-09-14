@@ -36,12 +36,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
 - **Liquibase**: Append document-export (TTY 17), map-image (TTY 18), PDF export tasks, and default template regions as new tip incrementals (dev 70-72, postgres/oracle 22-24). Closed PR 50 history was not replayed. GeoServer `stm_service.csv` scrub is unchanged.
+- **E2E**: Nested Plantilla execute-child asserts composed HTML from the sandboxed iframe `srcdoc` (`e2e/admin/forms/template-nested-preview.spec.ts`).
 - **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
 
 ### Fixed
 
 #### Admin Application
 
+- **Literal translations**: Infinite grid reload no longer sticks on the loading spinner. Stale AG Grid `getRows` now complete so a replacement datasource can load ([sitmun-admin-app#461](https://github.com/sitmun/sitmun-admin-app/pull/461)).
 - **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[Unreleased]`.
 - **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[Unreleased]`.
 - **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
