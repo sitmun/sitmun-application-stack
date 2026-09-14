@@ -60,6 +60,34 @@ def _write_yaml_tree(root: Path) -> Path:
     return liquibase
 
 
+SHIPPED_POSTGRES_INCLUDES = frozenset(
+    {
+        "changelog/01_schema.postgresql.sql",
+        "changelog/02_codelists.yaml",
+        "changelog/04_seed_data.yaml",
+        "changelog/21_align.yaml",
+    }
+)
+
+
+def _append_includes(liquibase: Path, names: tuple[str, ...]) -> None:
+    changelog = liquibase / "changelog"
+    master = liquibase / "master.xml"
+    extra = "".join(
+        f'  <include file="changelog/{name}" relativeToChangelogFile="true"/>\n'
+        for name in names
+    )
+    for name in names:
+        (changelog / name).write_text(f"id: {name}\n", encoding="utf-8")
+    master.write_text(
+        master.read_text(encoding="utf-8").replace(
+            '  <include file="changelog/21_align.yaml" relativeToChangelogFile="true"/>',
+            '  <include file="changelog/21_align.yaml" relativeToChangelogFile="true"/>\n' + extra.rstrip("\n"),
+        ),
+        encoding="utf-8",
+    )
+
+
 class FixtureGateTest(unittest.TestCase):
     def test_editing_old_include_fails(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -98,6 +126,63 @@ class FixtureGateTest(unittest.TestCase):
                 repo_root=root,
             )
             self.assertEqual(violations, [])
+
+    def test_adding_several_newer_includes_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            liquibase = _write_xml_tree(root)
+            _append_includes(liquibase, ("22_types.yaml", "23_tasks.yaml", "24_regions.yaml"))
+            sidecar = liquibase / "changelog" / "22_types" / "18_MapImageTaskDefinition.json"
+            sidecar.parent.mkdir()
+            sidecar.write_text("{}\n", encoding="utf-8")
+            violations = cci.check_tree(
+                liquibase,
+                [
+                    "profiles/postgres/liquibase/changelog/22_types.yaml",
+                    "profiles/postgres/liquibase/changelog/22_types/18_MapImageTaskDefinition.json",
+                    "profiles/postgres/liquibase/changelog/23_tasks.yaml",
+                    "profiles/postgres/liquibase/changelog/24_regions.yaml",
+                    "profiles/postgres/liquibase/master.xml",
+                ],
+                repo_root=root,
+                shipped_includes=SHIPPED_POSTGRES_INCLUDES,
+            )
+            self.assertEqual(violations, [])
+
+    def test_new_sidecar_on_shipped_include_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            liquibase = _write_xml_tree(root)
+            _append_includes(liquibase, ("22_types.yaml",))
+            sidecar = liquibase / "changelog" / "21_align" / "extra.json"
+            sidecar.parent.mkdir()
+            sidecar.write_text("{}\n", encoding="utf-8")
+            violations = cci.check_tree(
+                liquibase,
+                ["profiles/postgres/liquibase/changelog/21_align/extra.json"],
+                repo_root=root,
+                shipped_includes=SHIPPED_POSTGRES_INCLUDES,
+            )
+            self.assertTrue(violations)
+            self.assertEqual(violations[0].rel_path, "changelog/21_align/extra.json")
+            self.assertEqual(violations[0].prefix, 21)
+
+    def test_editing_shipped_include_fails_when_adding_newer(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            liquibase = _write_xml_tree(root)
+            _append_includes(liquibase, ("22_types.yaml",))
+            violations = cci.check_tree(
+                liquibase,
+                [
+                    "profiles/postgres/liquibase/changelog/01_schema.postgresql.sql",
+                    "profiles/postgres/liquibase/changelog/22_types.yaml",
+                ],
+                repo_root=root,
+                shipped_includes=SHIPPED_POSTGRES_INCLUDES,
+            )
+            self.assertEqual(len(violations), 1)
+            self.assertEqual(violations[0].rel_path, "changelog/01_schema.postgresql.sql")
 
     def test_editing_tip_include_passes(self) -> None:
         with tempfile.TemporaryDirectory() as td:

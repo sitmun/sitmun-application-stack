@@ -4,9 +4,9 @@
 Checksums live in DATABASECHANGELOG. Editing an applied changeset breaks
 upgrade. This gate looks at the PR diff, not git ancestry.
 
-Allow edits to the highest numbered include in that tree, new files, master
-files, and the seed paths in TREE_ALLOWLIST. Everything else with a lower
-number fails.
+Allow edits to the highest numbered include in that tree, includes that were
+not on the diff base, master files, and the seed paths in TREE_ALLOWLIST.
+Everything else with a lower number fails.
 """
 
 from __future__ import annotations
@@ -115,11 +115,50 @@ def find_master(liquibase_dir: Path) -> Path:
     raise FileNotFoundError(f"no master.xml or db.changelog-master.yaml in {liquibase_dir}")
 
 
-def parse_includes(master: Path) -> list[str]:
-    text = master.read_text(encoding="utf-8")
-    if master.suffix == ".xml":
+def parse_includes_text(text: str, *, xml: bool) -> list[str]:
+    if xml:
         return INCLUDE_XML.findall(text)
     return [p.strip().strip("\"'") for p in INCLUDE_YAML.findall(text)]
+
+
+def parse_includes(master: Path) -> list[str]:
+    return parse_includes_text(master.read_text(encoding="utf-8"), xml=master.suffix == ".xml")
+
+
+def git_diff_start(repo_root: Path, base: str | None) -> str:
+    if not base:
+        return "HEAD"
+    mb = subprocess.run(
+        ["git", "merge-base", "HEAD", base],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return mb.stdout.strip() if mb.returncode == 0 and mb.stdout.strip() else base
+
+
+def includes_at_ref(repo_root: Path, tree_rel: str, ref: str) -> frozenset[str] | None:
+    verified = subprocess.run(
+        ["git", "rev-parse", "--verify", ref],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if verified.returncode != 0:
+        return None
+    for name, xml in (("master.xml", True), ("db.changelog-master.yaml", False)):
+        shown = subprocess.run(
+            ["git", "show", f"{ref}:{tree_rel}/{name}"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if shown.returncode == 0:
+            return frozenset(parse_includes_text(shown.stdout, xml=xml))
+    return frozenset()
 
 
 def matching_include(rel_path: str, includes: list[str]) -> str | None:
@@ -138,6 +177,7 @@ def check_tree(
     liquibase_dir: Path,
     changed_files: list[str],
     repo_root: Path,
+    shipped_includes: frozenset[str] | None = None,
 ) -> list[Violation]:
     liquibase_dir = liquibase_dir.resolve()
     repo_root = repo_root.resolve()
@@ -170,6 +210,8 @@ def check_tree(
         prefix = include_prefix(include)
         if prefix is None or prefix >= max_prefix:
             continue
+        if shipped_includes is not None and include not in shipped_includes:
+            continue
         violations.append(
             Violation(rel_path=rel, prefix=prefix, max_prefix=max_prefix, tree=tree_key)
         )
@@ -179,14 +221,7 @@ def check_tree(
 def git_changed_files(repo_root: Path, base: str | None) -> list[str]:
     files: set[str] = set()
     if base:
-        mb = subprocess.run(
-            ["git", "merge-base", "HEAD", base],
-            cwd=repo_root,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        start = mb.stdout.strip() if mb.returncode == 0 and mb.stdout.strip() else base
+        start = git_diff_start(repo_root, base)
         diff = subprocess.run(
             ["git", "diff", "--name-only", f"{start}...HEAD"],
             cwd=repo_root,
@@ -232,17 +267,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.changed_files is not None:
         changed = [p for p in args.changed_files if p]
+        start = None
     elif args.no_git:
         changed = []
+        start = None
     else:
         changed = git_changed_files(repo_root, args.base)
+        start = git_diff_start(repo_root, args.base)
 
     all_violations: list[Violation] = []
     for tree in trees:
         if not tree.is_dir():
             print(f"skip missing tree: {tree}", file=sys.stderr)
             continue
-        all_violations.extend(check_tree(tree, changed, repo_root))
+        shipped = includes_at_ref(repo_root, posix_rel(tree, repo_root), start) if start else None
+        all_violations.extend(check_tree(tree, changed, repo_root, shipped_includes=shipped))
 
     if all_violations:
         print("Liquibase immutability: do not edit includes below the tree tip.")

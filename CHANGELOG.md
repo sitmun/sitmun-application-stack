@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
-- **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a Liquibase include below the tree tip. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
+- **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
 - **Liquibase**: Append document-export (TTY 17), map-image (TTY 18), PDF export tasks, and default template regions as new tip incrementals (dev 70-72, postgres/oracle 22-24). Closed PR 50 history was not replayed. GeoServer `stm_service.csv` scrub is unchanged.
 - **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
 
