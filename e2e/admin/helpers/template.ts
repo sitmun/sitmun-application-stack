@@ -239,3 +239,16 @@ export async function executeNestedPlantillaCard(page: Page, childId: number): P
   await card.getByRole('button', { name: /Ejecutar plantilla|Execute template/i }).click();
   await expect(card.locator('.template-result-panel')).toBeVisible({ timeout: 30_000 });
 }
+
+/** Nested execute-child HTML lives in a sandboxed iframe `srcdoc`, not host text. */
+export async function expectSandboxedTemplateResult(
+  page: Page,
+  text: string,
+  timeout = 15_000,
+): Promise<void> {
+  const panel = page.locator('.template-result-panel');
+  await expect(panel).toBeVisible({ timeout });
+  await expect
+    .poll(async () => panel.locator('iframe').getAttribute('srcdoc'), { timeout })
+    .toContain(text);
+}
