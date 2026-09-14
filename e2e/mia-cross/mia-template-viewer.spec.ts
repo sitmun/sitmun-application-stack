@@ -4,6 +4,7 @@ import { writeFile, unlink } from 'node:fs/promises';
 import { assertPlantillaHtmlPersisted, createPlantilla } from '../admin/helpers/template';
 import { importLiteralCsv } from '../admin/helpers/literal-csv';
 import {
+  createDocumentExportTask,
   createMiaWithChild,
   ensureMiaViewerAccess,
   uniqueValue,
@@ -14,7 +15,7 @@ import {
   simulateGetFeatureInfo,
 } from '../viewer/helpers/mia';
 import { withViewerPage } from './helpers/viewer-context';
-import { expectOverlayContains, waitForMiaRender } from './helpers/overlay';
+import { expectOverlayContains, exportMiaOverlayPdf, waitForMiaRender } from './helpers/overlay';
 
 test.describe('MIA TipTap + CSV → viewer overlay', () => {
   test('TipTap Plantilla marker appears after simulated GFI', async ({
@@ -275,6 +276,60 @@ test.describe('MIA TipTap + CSV → viewer overlay', () => {
       const payload = JSON.stringify(await renderResponse.json());
       expect(payload).toContain(literalKey);
       await expectOverlayContains(viewer, { miaName: mia.name, text: literalKey });
+    });
+  });
+
+  test('overlay download bar exports PDF through template/export', async ({
+    page,
+    browser,
+    request,
+    createdResources,
+  }) => {
+    const marker = uniqueValue('PDF');
+    const bodyText = `plantilla-pdf-${marker}`;
+    const plantilla = await createPlantilla(page, {
+      html: `<p class="sitmun-pdf-header" data-sitmun-pdf-template-scope="root">${bodyText}</p>`,
+    });
+    createdResources.push({ collection: 'tasks', id: plantilla.id });
+    await ensureMiaViewerAccess(request, plantilla.id);
+
+    const mia = await createMiaWithChild(page, {
+      childSearch: plantilla.name,
+      childOption: new RegExp(
+        `${plantilla.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} \\(ID: ${plantilla.id}\\)`,
+      ),
+      childId: plantilla.id,
+    });
+    createdResources.push({ collection: 'tasks', id: mia.id });
+    await ensureMiaViewerAccess(request, mia.id);
+
+    const exportTask = await createDocumentExportTask(request);
+    createdResources.push({ collection: 'tasks', id: exportTask.id });
+    await ensureMiaViewerAccess(request, exportTask.id);
+
+    await withViewerPage(browser, async (viewer) => {
+      await loginAndOpenMap(viewer);
+      await loadQueryableLeafIntoCapas(viewer);
+
+      const render = waitForMiaRender(viewer);
+      await simulateGetFeatureInfo(viewer);
+      const renderResponse = await render;
+      expect(renderResponse.status(), await renderResponse.text()).toBe(200);
+      const renderBody = renderResponse.request().postDataJSON() as Record<string, unknown>;
+      expect(renderBody, 'simulated GFI features have no extent').not.toHaveProperty('featureBbox');
+
+      await expectOverlayContains(viewer, { miaName: mia.name, text: bodyText });
+      await expect(viewer.locator('.sitmun-mia-download-bar')).toBeVisible({ timeout: 15_000 });
+      await expect(viewer.locator('[data-mia-export-template]')).toBeVisible();
+
+      const exportResponse = await exportMiaOverlayPdf(viewer);
+      expect(exportResponse.status(), await exportResponse.text()).toBe(200);
+      expect(exportResponse.headers()['content-type'] ?? '').toMatch(/application\/pdf/i);
+      expect(exportResponse.headers()['content-disposition'] ?? '').toMatch(/filename/i);
+      const xml = exportResponse.request().postData() ?? '';
+      expect(xml).toContain('<templateExportRequest>');
+      expect(xml).toContain('<output>pdf</output>');
+      expect(xml).toContain(`<taskId>${exportTask.id}</taskId>`);
     });
   });
 });

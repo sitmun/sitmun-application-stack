@@ -27,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
 
+#### Viewer Application
+
+- **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
+
 #### Stack-level
 
 - **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
@@ -36,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
 - **Liquibase**: Append document-export (TTY 17), map-image (TTY 18), PDF export tasks, and default template regions as new tip incrementals (dev 70-72, postgres/oracle 22-24). Closed PR 50 history was not replayed. GeoServer `stm_service.csv` scrub is unchanged.
+- **E2E**: MIA overlay PDF export (authenticated + public) via HAL type-17 task and `POST /api/tasks/template/export` (`e2e/mia-cross/mia-template-viewer.spec.ts`, `e2e/mia-cross/mia-public-viewer.spec.ts`).
 - **E2E**: Nested Plantilla execute-child asserts composed HTML from the sandboxed iframe `srcdoc` (`e2e/admin/forms/template-nested-preview.spec.ts`).
 - **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
 
