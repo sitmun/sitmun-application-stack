@@ -99,5 +99,10 @@ export default defineConfig({
       dependencies: ['viewer-setup'],
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'viewer-gfi',
+      testMatch: /gfi-html-embed\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });

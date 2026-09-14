@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
 - **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
 - **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
+- **E2E**: HTML GetFeatureInfo nested-context probe against the WMS stub (`e2e/viewer/gfi-html-embed.spec.ts`, project `viewer-gfi`; [sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). Stub `GET /embed/allow` has no frame-ancestors block. `GET /embed/deny` sends `X-Frame-Options: DENY`.
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
 - **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
@@ -73,10 +74,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[Unreleased]`.
 - **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[Unreleased]`.
+- **Map / FeatureInfo**: HTML GetFeatureInfo embed probe after `load`. Nested context when embeddable; new tab when `X-Frame-Options` / `frame-ancestors` leave `about:blank` ([sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). See `sitmun-viewer-app` `[Unreleased]`.
 
 #### Edition Mobile App
 
 - **Applications**: Main list and offline cache show `name` when `title` is null ([sitmun/edition-mobile-app#5](https://github.com/sitmun/edition-mobile-app/issues/5)). See `edition-mobile-app` `[Unreleased]`.
+- **WFS**: Relative middleware `/proxy/...` URLs no longer resolve against Capacitor `https://localhost`. GetFeature sends the proxy Bearer token ([sitmun/edition-mobile-app#6](https://github.com/sitmun/edition-mobile-app/issues/6)). See `edition-mobile-app` `[Unreleased]`.
+
+#### Touristic Mobile App
+
+- **Near me / GPS**: Permission request plus Android Location settings when GPS is off ([sitmun/touristic-mobile-app#5](https://github.com/sitmun/touristic-mobile-app/issues/5)). See `touristic-mobile-app` `[Unreleased]`.
+- **Layout**: Tablet landscape menu, wrapping tree titles with descriptions, and toolbar crowding ([sitmun/touristic-mobile-app#3](https://github.com/sitmun/touristic-mobile-app/issues/3)). See `touristic-mobile-app` `[Unreleased]`.
 
 #### Stack-level
 
