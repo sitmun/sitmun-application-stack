@@ -139,6 +139,16 @@ assert_eq "queryTask.scope 'resource' removed by changeset 42" "0" "$RESOURCE_SC
 TSK_TYP_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP;")
 assert_ge "STM_TSK_TYP rows" 4 "$TSK_TYP_COUNT"
 
+DOC_EXPORT_TASK=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17 AND TTY_NAME = 'documentExport';")
+assert_eq "document export task type inserted" "1" "$DOC_EXPORT_TASK"
+
+DOC_EXPORT_ENGINE=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.engine' AND COD_VALUE='openhtmltopdf';")
+assert_eq "documentExport.engine codelist inserted" "1" "$DOC_EXPORT_ENGINE"
+
+DOC_EXPORT_OUTPUT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.output' AND COD_VALUE='pdf';")
+assert_eq "documentExport.output codelist inserted" "1" "$DOC_EXPORT_OUTPUT"
+
+
 LANG_COUNT=$(psql_q "SELECT COUNT(*) FROM STM_LANGUAGE;")
 assert_eq "STM_LANGUAGE rows" 5 "$LANG_COUNT"
 

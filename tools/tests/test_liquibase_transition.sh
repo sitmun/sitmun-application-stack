@@ -227,6 +227,16 @@ assert_ge "Phase2 STM_CODELIST rows (upsert safe)" 90 "$P2_CODELIST"
 P2_TSK_TYP=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP;")
 assert_ge "Phase2 STM_TSK_TYP rows (upsert safe)" 4 "$P2_TSK_TYP"
 
+P2_DOC_EXPORT_TASK=$(psql_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17 AND TTY_NAME = 'documentExport';")
+assert_eq "Phase2 document export task type inserted" "1" "$P2_DOC_EXPORT_TASK"
+
+P2_DOC_EXPORT_ENGINE=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.engine' AND COD_VALUE='openhtmltopdf';")
+assert_eq "Phase2 documentExport.engine codelist inserted" "1" "$P2_DOC_EXPORT_ENGINE"
+
+P2_DOC_EXPORT_OUTPUT=$(psql_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST='documentExport.output' AND COD_VALUE='pdf';")
+assert_eq "Phase2 documentExport.output codelist inserted" "1" "$P2_DOC_EXPORT_OUTPUT"
+
+
 P2_LANG=$(psql_q "SELECT COUNT(*) FROM STM_LANGUAGE;")
 assert_eq "Phase2 STM_LANGUAGE count unchanged" "$P1_LANG" "$P2_LANG"
 

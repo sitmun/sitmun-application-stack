@@ -24,4 +24,7 @@
   <include file="changelog/19_add_tree_node_default.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/20_application_tree_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/21_align_schema_with_development.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/22_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/23_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/24_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
