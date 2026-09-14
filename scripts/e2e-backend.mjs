@@ -12,6 +12,7 @@ const changelogDir = join(backendRoot, 'config', 'db', 'changelog');
 const backendChangelog = join(changelogDir, 'db.changelog-master.yaml');
 const fixtureYaml = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type.yaml');
 const fixtureSpecDir = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type');
+const fixtureSpec = join(fixtureSpecDir, '07_DocumentExportTaskDefinition.json');
 const stagedWrapper = join(changelogDir, 'db.changelog-e2e.yaml');
 const stagedYaml = join(changelogDir, 'ensure-document-export-task-type.yaml');
 const stagedSpecDir = join(changelogDir, 'ensure-document-export-task-type');
@@ -27,7 +28,7 @@ if (!existsSync(gradlew)) {
 if (!existsSync(backendChangelog)) {
   fail(prefix, `Liquibase changelog missing at ${backendChangelog}`);
 }
-if (!existsSync(fixtureYaml) || !existsSync(fixtureSpecDir)) {
+if (!existsSync(fixtureYaml) || !existsSync(fixtureSpec)) {
   fail(prefix, `Document-export type fixture missing under ${join(stackRoot, 'e2e', 'fixtures')}`);
 }
 
@@ -65,11 +66,8 @@ function stageE2eChangelog() {
   cpSync(fixtureSpecDir, stagedSpecDir, { recursive: true });
 }
 
-stageE2eChangelog();
-for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
-  process.on(signal, unstageE2eChangelog);
-}
 process.on('exit', unstageE2eChangelog);
+stageE2eChangelog();
 
 const springArgs = [
   '--spring.profiles.active=dev',
