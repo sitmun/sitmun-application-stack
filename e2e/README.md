@@ -89,6 +89,7 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Orchestrator runs `adb shell am kill-all` before Maestro to avoid stale WebView DevTools sockets on Maestro 2.6.1
 - Separate `e2e-mobile-touristic.mjs` / `e2e-mobile-edition.mjs` shell scripts are not used; Ionic web shells are covered by API-only `e2e:mobile:web`
 - CI installs Maestro `2.6.1` with SHA-256 verification of `maestro.zip`
+- CI `e2e-mobile-android` overrides `android-emulator-runner` to `-gpu software -no-snapshot-load -no-snapshot-save` (not the deprecated default `-gpu swiftshader_indirect`)
 
 ## Prerequisites
 
