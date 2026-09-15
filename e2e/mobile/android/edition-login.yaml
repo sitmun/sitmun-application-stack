@@ -1,4 +1,5 @@
 appId: edition.mobile.app
+androidWebViewHierarchy: devtools
 ---
 - launchApp:
     clearState: true
@@ -28,6 +29,7 @@ appId: edition.mobile.app
 - tapOn:
     id: "login-password"
 - inputText: ${EDITION_PASSWORD}
+- hideKeyboard
 - tapOn:
     id: "login-access"
 - extendedWaitUntil:

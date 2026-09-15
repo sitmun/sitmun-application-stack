@@ -243,6 +243,25 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (method === 'GET' && url.pathname === '/embed/allow') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end('<!DOCTYPE html><html><body>e2e-embed-allow</body></html>');
+    return;
+  }
+
+  if (method === 'GET' && url.pathname === '/embed/deny') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Frame-Options': 'DENY',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end('<!DOCTYPE html><html><body>e2e-embed-deny</body></html>');
+    return;
+  }
+
   // Capas / LegendURL fallback: no Basic auth (browser <img> cannot send it).
   if (method === 'GET' && url.pathname === '/legend') {
     console.error(`[e2e-wms-stub] GET /legend layer=${url.searchParams.get('layer') ?? ''}`);

@@ -16,7 +16,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -675,11 +675,21 @@ async function main() {
       join(stackRoot, 'e2e', 'mobile', 'android', 'edition-login.yaml'),
       join(stackRoot, 'e2e', 'mobile', 'android', 'touristic-public.yaml'),
     ];
-    run('adb', ['shell', 'am', 'kill-all']);
     for (const flow of flows) {
       run('adb', ['shell', 'am', 'force-stop', 'edition.mobile.app']);
       run('adb', ['shell', 'am', 'force-stop', 'touristic.mobile.app']);
-      run('maestro', ['test', ...maestroEnv, flow]);
+      const maestroOut = join(artifactDir, 'maestro', basename(flow, '.yaml'));
+      mkdirSync(maestroOut, { recursive: true });
+      run('maestro', [
+        'test',
+        '--debug-output',
+        maestroOut,
+        '--test-output-dir',
+        maestroOut,
+        '--flatten-debug-output',
+        ...maestroEnv,
+        flow,
+      ]);
     }
 
     console.error('[e2e-mobile-android] Maestro flows completed.');

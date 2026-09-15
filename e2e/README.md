@@ -41,6 +41,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Map legend (`viewer-legend`): after loading a stubbed catalog leaf, Capas shows capabilities `LegendURL` imagery and the Legend task shows symbology when the stub denies `DescribeLayer` and fails `/wms` GetLegendGraphic (DiBa/ArcGIS-style #164); setup enables `sitna.legend` task-availability
 - No base map (`viewer-basemap`): basemap selector option `sitmun-no-base-map` clears raster basemap to a white viewport while a catalog leaf stays visible (#167); setup enables `sitna.basemapSelector` task-availability
 - Print preview (`viewer-print`): 1600×700 window; A4 landscape map becomes 1040×704 and A4 portrait 712×1034 while `tc-ctl-prnmap-printing` is set, then returns to window size ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)); setup enables `sitna.printMap` and drops seed `div: "print"` / external logo
+- HTML GetFeatureInfo embed (`viewer-gfi`): `e2e/viewer/gfi-html-embed.spec.ts` loads the viewer origin, then nested `iframe`s against the WMS stub. Playwright `frame.url()` is the oracle. `/embed/allow` (no `X-Frame-Options`) commits `http://127.0.0.1:18093/embed/allow`. `/embed/deny` (`X-Frame-Options: DENY`) does not. Same-origin `location.href` is not used. Chromium opaque error documents can throw `SecurityError` for both outcomes. Jest covers hide/load/probe ([sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)).
 - More Info Advanced (`viewer-mia`): profile includes `sitna.moreInfoAdvanced` + type-16 parent on Toponímia (seed parent 42 includes query child 38); synthetic FeatureInfo `responseCallback` opens `.sitmun-mia-popup-overlay` and `POST /api/tasks/template/more-info-advanced/render` carries `appId`/`terId` body plus `lang` query ([sitmun-viewer-app#162](https://github.com/sitmun/sitmun-viewer-app/pull/162)); also asserts live backend render, overlay error on 500, close, multi-feature GFI re-render (`selectMiaGfiFeature`), and deferred-route races (late first identify must not overwrite a newer one; close-during-load ignores late fulfill); setup enables MIA + featureInfo task-availability. Shared helpers live in `e2e/viewer/helpers/mia.ts`.
 - Local Basic-auth upstream stub (plus unauthenticated `/legend` PNG for #164); capabilities advertise `GetFeatureInfo` `application/json` so SITNA sets `INFO_FORMAT`; GetFeatureInfo for layer `34_TOPO_TX` returns JSON FeatureCollection (XML fixture fallback). Production Liquibase is not modified.
 
@@ -83,11 +84,13 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Uses `adb reverse tcp:18081` and Maestro flows under `e2e/mobile/android/`
 - Records source SHA and APK SHA-256 under `test-results/mobile-android/`
 - Split coverage (Phase 8):
-  - **Maestro UI**: edition invalid login (`#login-error` via `androidWebViewHierarchy: devtools`), edition valid login/profile, touristic public profile (auto-enter after tree provisioning via `POST /api/application-trees`)
+  - **Maestro UI**: edition invalid and valid login (HTML ids via `androidWebViewHierarchy: devtools`; `hideKeyboard` before submit), touristic public profile (same DevTools hierarchy; auto-enter after tree provisioning via `POST /api/application-trees`)
   - **Gateway/API contracts** (before APK builds): missing bearer, wrong territory, `access_token` rejected as proxy, estimate/create/status/file with opaque `jobHandle`, direct `/mbtiles` is `404`
-- Orchestrator runs `adb shell am kill-all` before Maestro to avoid stale WebView DevTools sockets on Maestro 2.6.1
+- Does not run `adb shell am kill-all` (it ANRs `system`/`systemui` and hides the WebView)
+- Writes Maestro debug output under `test-results/mobile-android/maestro/<flow>/` (`--debug-output` + `--test-output-dir`; CI uploads that tree on failure)
 - Separate `e2e-mobile-touristic.mjs` / `e2e-mobile-edition.mjs` shell scripts are not used; Ionic web shells are covered by API-only `e2e:mobile:web`
 - CI installs Maestro `2.6.1` with SHA-256 verification of `maestro.zip`
+- CI `e2e-mobile-android` overrides `android-emulator-runner` to `-gpu software -no-snapshot-load -no-snapshot-save` (not the deprecated default `-gpu swiftshader_indirect`)
 
 ## Prerequisites
 
@@ -211,6 +214,7 @@ harness or document the gap when the behavior is outside current coverage.
 
 - HTML report: `playwright-report/`
 - Traces / screenshots / videos: `test-results/`
+- Android Maestro debug (CI upload on failure): `test-results/mobile-android/maestro/`
 - Treat reports as restricted CI artifacts; do not paste Authorization values from traces into tickets
 
 ```bash
@@ -224,6 +228,8 @@ npx playwright show-report
 - Admin suite does not cover Application / Layer / Task `app-relation-grid` **CRUD** except MIA Parameters add+reload in `mia-form.spec.ts`. Layers form now asserts lazy association GETs for Territories / Permissions / Trees (not grid CRUD). Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation-grid CRUD
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
+- Edition mobile WFS origin (`/proxy/...` vs Capacitor `https://localhost`) is covered by edition Jest, not `e2e:mobile:web`
+- Touristic GPS permission sheet and tablet APK layout are not in Maestro or Playwright
 - Mobile Android suite does not harden release manifests (app Android source is unchanged)
 - MBTiles protected-source credentials, job-handle key rotation multi-key support, rate/size/time limits, and iOS are absent from this harness
 - SITNA identify and simulate plus catalog layout measurements use `page.evaluate` on TC or DOM boxes as harness hooks, not MCP verification.

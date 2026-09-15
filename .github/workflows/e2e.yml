@@ -313,6 +313,9 @@ jobs:
           api-level: 34
           arch: x86_64
           profile: pixel_6
+          # Replaces the action default `-gpu swiftshader_indirect` (deprecated in
+          # emulator 36.4.9). `-gpu software` is the current Android software mode.
+          emulator-options: -no-window -gpu software -noaudio -no-boot-anim -camera-back none -no-snapshot-load -no-snapshot-save
           script: npm run e2e:mobile:android
         env:
           CI: true
