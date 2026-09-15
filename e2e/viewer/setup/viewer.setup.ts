@@ -194,10 +194,11 @@ async function clearCreatedDate(
     data: {
       user: `${apiOrigin}/api/users/${userId}`,
       territory: `${apiOrigin}/api/territories/${territoryId}`,
-      name: match.name ?? 'cargo',
+      name: 'e2e-null-dates',
       organization: match.organization ?? 'org',
       email: match.email ?? null,
       createdDate: null,
+      expirationDate: null,
     },
   });
   expect(put.ok(), `clear createdDate failed: ${put.status()} ${await put.text()}`).toBeTruthy();
@@ -205,8 +206,12 @@ async function clearCreatedDate(
     headers: adminHeaders,
   });
   expect(reloaded.ok()).toBeTruthy();
-  const body = (await reloaded.json()) as { createdDate?: string | null };
+  const body = (await reloaded.json()) as {
+    createdDate?: string | null;
+    expirationDate?: string | null;
+  };
   expect(body.createdDate, 'PUT createdDate: null must stay null').toBeNull();
+  expect(body.expirationDate, 'PUT expirationDate: null must stay null').toBeNull();
 }
 
 async function grantTerritory(
