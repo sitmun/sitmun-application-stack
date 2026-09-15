@@ -104,4 +104,25 @@ test.describe('edition mobile authentication', () => {
     });
     expect(users.status()).toBeGreaterThanOrEqual(400);
   });
+
+  test('edition Bearer to /refresh does not mint a viewer cookie', async ({ request }) => {
+    const access_token = await mobileAccessToken(request);
+    const refresh = await request.post(`${BACKEND}/api/authenticate/refresh`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    expect(refresh.status()).toBeGreaterThanOrEqual(400);
+    expect(refresh.headers()['set-cookie'] ?? '').not.toMatch(/viewer_access_token=/);
+    await mkdir('test-results', { recursive: true });
+    await writeFile(
+      'test-results/refresh-mobile.json',
+      JSON.stringify(
+        {
+          status: refresh.status(),
+          setCookie: refresh.headers()['set-cookie'] ?? '',
+        },
+        null,
+        2,
+      ),
+    );
+  });
 });

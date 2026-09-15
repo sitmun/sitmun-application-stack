@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **E2E**: Viewer and admin session cookie refresh (`POST /api/authenticate/refresh`) plus kick when every cargo is expired ([sitmun-backend-core#264](https://github.com/sitmun/sitmun-backend-core/issues/264); `e2e/viewer/password-access.spec.ts`, `e2e/admin/login.spec.ts`, `e2e/mobile/edition-auth.spec.ts`).
 - **Setup**: `setup.sh` / `setup.ps1` create `.env` from `profiles/development-postgres.env` when missing (was production `profiles/postgres.env`).
 - **E2E**: Shared `scripts/e2e-process.mjs` for webServer spawn/kill; Playwright `reuseExistingServer` is always false; `forbidOnly` on CI; `e2e:application-contact` npm script.
 

@@ -241,4 +241,93 @@ test.describe('Viewer password access', () => {
     expect(listed.ids).toContain(credentials.childrenChildTerritoryId);
     await savePositionEvidence(page, '184-children.png');
   });
+
+  test('refreshes the session cookie after login', async ({ page }) => {
+    const credentials = await readViewerCredentials();
+    await page.goto('/auth/login');
+    await page.locator('input[name="username"]').fill(credentials.username);
+    await page.locator('input[name="password"]').fill(credentials.password);
+
+    const started = Date.now();
+    const refresh = page.waitForResponse(
+      (response) => isBackendRequest(response, '/authenticate/refresh', 'POST'),
+    );
+    await page.locator('form .login-button button').click();
+    const refreshResponse = await refresh;
+    const elapsed = Date.now() - started;
+    expect(refreshResponse.status()).toBe(200);
+    await expect(page).toHaveURL(/\/user\/dashboard/, { timeout: 30_000 });
+    await mkdir('test-results', { recursive: true });
+    await page.screenshot({ path: 'test-results/refresh-regression.png' });
+    await writeFile(
+      'test-results/refresh-perf-head.json',
+      JSON.stringify({ elapsedMs: elapsed, status: refreshResponse.status() }, null, 2),
+    );
+    expect(elapsed).toBeLessThan(2000);
+  });
+
+  test('keeps the user JWT timer after reload', async ({ page }) => {
+    const credentials = await readViewerCredentials();
+    await page.goto('/auth/login');
+    await page.locator('input[name="username"]').fill(credentials.username);
+    await page.locator('input[name="password"]').fill(credentials.password);
+    await page.locator('form .login-button button').click();
+    await expect(page).toHaveURL(/\/user\/dashboard/, { timeout: 30_000 });
+
+    const [refresh] = await Promise.all([
+      page.waitForResponse(
+        (response) =>
+          isBackendRequest(response, '/authenticate/refresh', 'POST') && response.ok(),
+      ),
+      page.reload(),
+    ]);
+    expect(refresh.ok()).toBeTruthy();
+    await mkdir('test-results', { recursive: true });
+    await page.screenshot({ path: 'test-results/refresh-reload.png' });
+    await expect(page).toHaveURL(/\/user\/dashboard/);
+  });
+
+  test('mixed live and expired cargos stay signed in', async ({ page }) => {
+    const credentials = await readViewerCredentials();
+    await page.goto('/auth/login');
+    await page.locator('input[name="username"]').fill(credentials.expiryUsername);
+    await page.locator('input[name="password"]').fill(credentials.expiryPassword);
+    const refresh = page.waitForResponse(
+      (response) =>
+        isBackendRequest(response, '/authenticate/refresh', 'POST') && response.ok(),
+    );
+    await page.locator('form .login-button button').click();
+    await refresh;
+    await expect(page).toHaveURL(/\/user\/dashboard/, { timeout: 30_000 });
+
+    const expiredProfile = await page.evaluate(
+      async ({ appId, territoryId }) => {
+        const response = await fetch(
+          `/backend/api/config/client/profile/${appId}/${territoryId}`,
+          { credentials: 'same-origin' },
+        );
+        return response.status;
+      },
+      { appId: APP_ID, territoryId: MENORCA_TERRITORY_ID },
+    );
+    expect(expiredProfile).toBe(403);
+    await mkdir('test-results', { recursive: true });
+    await page.screenshot({ path: 'test-results/refresh-mixed.png' });
+  });
+
+  test('zero live cargos are kicked on refresh', async ({ page }) => {
+    const credentials = await readViewerCredentials();
+    await page.goto('/auth/login');
+    await page.locator('input[name="username"]').fill(credentials.kickedUsername);
+    await page.locator('input[name="password"]').fill(credentials.kickedPassword);
+    const refresh = page.waitForResponse(
+      (response) => isBackendRequest(response, '/authenticate/refresh', 'POST'),
+    );
+    await page.locator('form .login-button button').click();
+    const refreshResponse = await refresh;
+    expect(refreshResponse.status()).toBe(401);
+    await expect(page).toHaveURL(/session-expired=true/, { timeout: 30_000 });
+    await mkdir('test-results', { recursive: true });
+    await page.screenshot({ path: 'test-results/refresh-kicked.png' });
+  });
 });
