@@ -217,29 +217,3 @@ test.describe('Viewer password access', () => {
     await savePositionEvidence(page, '184-children.png');
   });
 });
-
-    const samples: number[] = [];
-    for (let i = 0; i < 20; i += 1) {
-      const elapsed = await page.evaluate(async () => {
-        const started = performance.now();
-        const response = await fetch('/backend/api/config/client/application', {
-          credentials: 'same-origin',
-        });
-        await response.arrayBuffer();
-        return { status: response.status, ms: performance.now() - started };
-      });
-      expect(elapsed.status).toBe(200);
-      expect(elapsed.ms).toBeLessThan(5000);
-      samples.push(elapsed.ms);
-      await page.waitForTimeout(1000);
-    }
-    const sorted = [...samples].sort((a, b) => a - b);
-    const median = (sorted[9] + sorted[10]) / 2;
-    await mkdir('test-results', { recursive: true });
-    await writeFile(
-      'test-results/184-perf-head.json',
-      JSON.stringify({ median, max: Math.max(...samples), samples }, null, 2),
-    );
-    expect(median).toBeLessThan(5000);
-  });
-});
