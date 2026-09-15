@@ -43,6 +43,15 @@ async function listApplicationTerritoryIds(
   }, appId);
 }
 
+async function openLimitedProvincial(page: Page): Promise<void> {
+  await page.getByRole('tab', { name: 'Limited access applications' }).click();
+  const provincial = page
+    .getByRole('tabpanel', { name: 'Limited access applications' })
+    .locator('mat-card.dashboard-item')
+    .filter({ hasText: 'SITMUN - Provincial' });
+  await provincial.locator('.primary-button').click();
+}
+
 test.describe('Viewer password access', () => {
   test('logs in as regular user and loads secured WMS through proxy', async ({ page }) => {
     const credentials = await readViewerCredentials();
@@ -116,7 +125,6 @@ test.describe('Viewer password access', () => {
     expect(listed.status).toBe(200);
     expect(listed.ids).toContain(TERRITORY_ID);
     expect(listed.ids).not.toContain(MENORCA_TERRITORY_ID);
-    await savePositionEvidence(page, '184-regression-picker.png');
 
     const expiredProfile = await page.evaluate(
       async ({ appId, territoryId }) => {
@@ -129,7 +137,6 @@ test.describe('Viewer password access', () => {
       { appId: APP_ID, territoryId: MENORCA_TERRITORY_ID },
     );
     expect(expiredProfile).toBe(403);
-    await savePositionEvidence(page, '184-profile-denied.png');
 
     const liveProfile = await page.evaluate(
       async ({ appId, territoryId }) => {
@@ -143,13 +150,17 @@ test.describe('Viewer password access', () => {
     );
     expect(liveProfile).toBe(200);
 
-    await page.getByRole('tab', { name: 'Limited access applications' }).click();
-    const provincial = page
-      .getByRole('tabpanel', { name: 'Limited access applications' })
-      .locator('mat-card.dashboard-item')
-      .filter({ hasText: 'SITMUN - Provincial' });
-    await provincial.locator('.primary-button').click();
+    await openLimitedProvincial(page);
     await expect(page).toHaveURL(new RegExp(`/user/map/${APP_ID}/${TERRITORY_ID}`));
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    await savePositionEvidence(page, '184-regression-picker.png');
+    await savePositionEvidence(page, '184-review-picker.png');
+
+    await page.goto(`/user/map/${APP_ID}/${MENORCA_TERRITORY_ID}`);
+    await expect(page.getByRole('alertdialog')).toContainText(
+      'Failed to load map configuration. Please try again.',
+    );
+    await savePositionEvidence(page, '184-profile-denied.png');
   });
 
   test('dest still lists expired cargo before the hide/block gate', async ({ page }) => {
@@ -160,6 +171,9 @@ test.describe('Viewer password access', () => {
     expect(listed.status).toBe(200);
     expect(listed.ids).toContain(TERRITORY_ID);
     expect(listed.ids).toContain(MENORCA_TERRITORY_ID);
+    await openLimitedProvincial(page);
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page).not.toHaveURL(/\/user\/map\//);
     await savePositionEvidence(page, '184-regression-picker-dest.png');
   });
 

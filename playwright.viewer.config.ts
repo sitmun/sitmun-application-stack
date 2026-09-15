@@ -17,7 +17,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4400',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.SITMUN_E2E_VIDEO === '1' ? 'on' : 'retain-on-failure',
     serviceWorkers: 'allow',
   },
   webServer: [
