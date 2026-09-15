@@ -18,4 +18,5 @@ test('admin UI login reaches dashboard', async ({ page }) => {
   await expect(page).toHaveURL(/\/#\/dashboard/);
   const account = await accountPromise;
   expect(account.ok()).toBeTruthy();
+  await page.screenshot({ path: 'test-results/184-admin-login.png' });
 });

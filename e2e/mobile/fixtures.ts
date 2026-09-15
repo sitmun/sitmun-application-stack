@@ -24,6 +24,8 @@ export function generateEditionPassword(): string {
 export type MobileFixture = {
   username: string;
   password: string;
+  expiryUsername: string;
+  expiryPassword: string;
   appId: number;
   territoryId: number;
   serviceId: number;

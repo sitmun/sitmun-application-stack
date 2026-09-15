@@ -29,6 +29,7 @@ async function openPublicDashboard(page: import('@playwright/test').Page): Promi
   await page.getByRole('button', { name: /Acceso público|Public access/i }).click();
   await Promise.all([logout, dashboardApps]);
   await expect(page).toHaveURL(/\/public\/dashboard/);
+  await page.screenshot({ path: 'test-results/184-public.png' });
 }
 
 async function openApplicationDetails(

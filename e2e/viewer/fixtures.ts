@@ -109,6 +109,8 @@ export type ViewerFixture = {
   userId: number;
   eligiblePocUserId: number;
   blockedPocUserId: number;
+  expiryUsername: string;
+  expiryPassword: string;
 };
 
 export type CapabilitiesResult = {
@@ -282,7 +284,9 @@ export async function readViewerCredentials(): Promise<ViewerFixture> {
     !fixture.password ||
     !fixture.userId ||
     !fixture.eligiblePocUserId ||
-    !fixture.blockedPocUserId
+    !fixture.blockedPocUserId ||
+    !fixture.expiryUsername ||
+    !fixture.expiryPassword
   ) {
     throw new Error('viewer fixture is incomplete');
   }

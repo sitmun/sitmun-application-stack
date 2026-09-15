@@ -87,6 +87,53 @@ async function createUser(
   return { userId: userId as number, userSelf, apiOrigin };
 }
 
+async function expireTerritoryPosition(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<void> {
+  const positions = await request.get(
+    `/backend/api/users/${userId}/positions?size=50&projection=view`,
+    { headers: adminHeaders },
+  );
+  expect(
+    positions.ok(),
+    `list positions failed: ${positions.status()} ${await positions.text()}`,
+  ).toBeTruthy();
+  const body = (await positions.json()) as {
+    _embedded?: Record<
+      string,
+      Array<{
+        id?: number;
+        territoryId?: number;
+        _links?: { self?: { href?: string }; territory?: { href?: string } };
+      }>
+    >;
+  };
+  const items = Object.values(body._embedded ?? {}).flat();
+  const match = items.find(
+    (item) =>
+      item.territoryId === territoryId ||
+      (item._links?.territory?.href ?? '').includes(`/territories/${territoryId}`),
+  );
+  const selfHref = match?._links?.self?.href;
+  expect(
+    selfHref,
+    `position for territory ${territoryId} missing in ${JSON.stringify(body)}`,
+  ).toBeTruthy();
+  const idMatch = selfHref?.match(/\/user-positions\/(\d+)/);
+  const positionId = match?.id ?? (idMatch ? Number(idMatch[1]) : undefined);
+  expect(positionId, 'position id missing').toBeTruthy();
+  const patch = await request.patch(`/backend/api/user-positions/${positionId}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { expirationDate: '2020-01-01T00:00:00.000Z' },
+  });
+  expect(patch.ok(), `expire position failed: ${patch.status()} ${await patch.text()}`).toBeTruthy();
+}
+
 setup('provision viewer user and secured WMS service', async ({ request }) => {
   await mkdir(path.dirname(VIEWER_FIXTURE_FILE), { recursive: true });
 
@@ -130,6 +177,31 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
       `create user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
     ).toBe(201);
   }
+
+  const expiryUsername = uniqueViewerUsername();
+  const expiryPassword = generateViewerPassword();
+  const expiryUser = await createUser(request, {
+    username: expiryUsername,
+    password: expiryPassword,
+    email: 'e2e-viewer-expiry@example.com',
+    firstName: 'Expiry',
+  });
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    const createConfig = await request.post('/backend/api/user-configurations', {
+      headers: adminHeaders,
+      data: {
+        user: `${apiOrigin}/api/users/${expiryUser.userId}`,
+        territory: `${apiOrigin}/api/territories/${territoryId}`,
+        role: `${apiOrigin}/api/roles/${ROLE_ID}`,
+        appliesToChildrenTerritories: false,
+      },
+    });
+    expect(
+      createConfig.status(),
+      `create expiry user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
+    ).toBe(201);
+  }
+  await expireTerritoryPosition(request, expiryUser.userId, MENORCA_TERRITORY_ID);
 
   const makeApplicationPrivate = await request.patch(
     `/backend/api/applications/${APP_ID}`,
@@ -389,6 +461,8 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         username,
         password,
         userId,
+        expiryUsername,
+        expiryPassword,
         eligiblePocUserId: eligiblePoc.userId,
         blockedPocUserId: blockedPoc.userId,
       },

@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **E2E**: Password viewer hides an expired cargo and denies its profile ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184); `e2e/viewer/password-access.spec.ts`).
 - **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
 - **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
 - **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
@@ -84,6 +85,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
+- **Authorization**: Client-config lists, profile, and roles omit expired `UserPosition` grants. Inclusive last civil day. `public`/`admin` exempt. `/api/authenticate/proxy` unchanged ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184)).
 - **Services / Capabilities**: `POST /api/helpers/capabilities` form overlay DTO, server-side WMS GetCapabilities URL, origin HTTP Basic; GET removed. Null Service password PUT keeps `SER_PWD`; auth other than `None` forces `isProxied`. See `sitmun-backend-core` `[Unreleased]`.
 - **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[Unreleased]`.
 - **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[Unreleased]`.
