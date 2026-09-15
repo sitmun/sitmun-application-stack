@@ -1,9 +1,17 @@
 import { test, expect } from '../fixtures';
 import {
   ADMIN_HEADERS,
+  EMPTY_CREATED_DATE,
+  EMPTY_EXPIRATION_DATE,
+  EN_CREATED_DATE_HEADER,
+  EN_EXPIRATION_DATE_HEADER,
+  ES_CREATED_DATE_HEADER,
+  ES_EXPIRATION_DATE_HEADER,
+  EXPIRATION_HEADER_TOOLTIP,
   POSITIONS_TAB,
   createUserViaForm,
   editAltaCell,
+  expectCreatedThenExpiration,
   headerTexts,
   openPositions,
   postPosition,
@@ -15,20 +23,17 @@ import {
 import { waitForFormReady, uniqueValue } from '../helpers/form';
 
 test.describe('User Positions tab', () => {
-  test('shows Alta immediately before Baja', async ({ page, request, createdResources }) => {
+  test('shows Valid from immediately before Valid until', async ({ page, request, createdResources }) => {
     const { id } = await createUserViaForm(page, 'e2epos');
     createdResources.push({ collection: 'users', id });
     await postPosition(request, id);
 
     await openPositions(page, id);
     const headers = await headerTexts(page);
-    const alta = headers.indexOf('Alta');
-    const baja = headers.indexOf('Baja');
-    expect(alta, `headers=${headers.join('|')}`).toBeGreaterThan(-1);
-    expect(baja, `headers=${headers.join('|')}`).toBe(alta + 1);
+    expectCreatedThenExpiration(headers, EN_CREATED_DATE_HEADER, EN_EXPIRATION_DATE_HEADER);
     expect(headers).not.toContain('Caducidad');
     expect(headers).not.toContain('Expiration');
-    await expect(page.locator('app-relation-grid')).toContainText(/Active|Activo/i);
+    await expect(page.locator('app-relation-grid')).toContainText(EMPTY_EXPIRATION_DATE);
 
     await saveShot(page, 'admin-positions-review.png');
     await saveShot(page, 'admin-regression.png');
@@ -41,7 +46,7 @@ test.describe('User Positions tab', () => {
     await putPosition(request, id, positionId, { createdDate: null });
 
     await openPositions(page, id);
-    await expect(page.locator('app-relation-grid')).toContainText(/Unknown start|Inicio desconocido/i, {
+    await expect(page.locator('app-relation-grid')).toContainText(EMPTY_CREATED_DATE, {
       timeout: 15_000,
     });
     await saveShot(page, 'admin-null-alta.png');
@@ -85,7 +90,7 @@ test.describe('User Positions tab', () => {
           (await bajaHeader.locator('[title]').first().getAttribute('title')),
         { timeout: 8_000 },
       )
-      .toMatch(/calendar day|día civil|dia civ/i);
+      .toMatch(EXPIRATION_HEADER_TOOLTIP);
     await saveShot(page, 'admin-baja-today.png');
   });
 
@@ -104,7 +109,11 @@ test.describe('User Positions tab', () => {
     await saveShot(page, 'admin-public.png');
   });
 
-  test('locale es headers are Alta then Baja', async ({ page, request, createdResources }) => {
+  test('locale es headers are Fecha de alta then Fecha de baja', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
     await page.addInitScript(() => {
       localStorage.setItem('lang', 'es');
     });
@@ -113,7 +122,7 @@ test.describe('User Positions tab', () => {
     await postPosition(request, id);
     await openPositions(page, id);
     const headers = await headerTexts(page);
-    expect(headers.indexOf('Baja'), `headers=${headers.join('|')}`).toBe(headers.indexOf('Alta') + 1);
+    expectCreatedThenExpiration(headers, ES_CREATED_DATE_HEADER, ES_EXPIRATION_DATE_HEADER);
     expect(headers).not.toContain('Caducidad');
     await saveShot(page, 'admin-es.png');
   });
@@ -126,7 +135,7 @@ test.describe('User Positions tab', () => {
     createdResources.push({ collection: 'users', id });
     await postThenSetDates(request, id, { createdDate: null, expirationDate: null });
     await openPositions(page, id);
-    await expect(page.locator('app-relation-grid')).toContainText('Unknown start');
+    await expect(page.locator('app-relation-grid')).toContainText('Not set');
     await expect(page.locator('app-relation-grid')).toContainText('Active');
     await saveShot(page, 'admin-en.png');
   });

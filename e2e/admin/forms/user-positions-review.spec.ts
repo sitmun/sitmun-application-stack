@@ -3,8 +3,11 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { test, expect } from '../fixtures';
 import {
+  EN_CREATED_DATE_HEADER,
+  EN_EXPIRATION_DATE_HEADER,
   createUserViaForm,
   editAltaCell,
+  expectCreatedThenExpiration,
   headerTexts,
   openPositions,
   postPosition,
@@ -53,5 +56,5 @@ test('User Positions tab review video records Alta then Baja', async ({
   await expect(page.getByTestId('form-save')).toBeEnabled({ timeout: 10_000 });
   await page.getByTestId('form-save').click();
   const headers = await headerTexts(page);
-  expect(headers.indexOf('Baja')).toBe(headers.indexOf('Alta') + 1);
+  expectCreatedThenExpiration(headers, EN_CREATED_DATE_HEADER, EN_EXPIRATION_DATE_HEADER);
 });

@@ -6,6 +6,25 @@ export const POSITIONS_TAB =
   /Data associated to territory|Puestos por territorio|Positions par territoire/i;
 export const ADMIN_HEADERS = { 'X-SITMUN-Client': 'admin' };
 export const TERRITORY_URI = 'http://localhost:18080/api/territories/1';
+export const EN_CREATED_DATE_HEADER = 'Valid from';
+export const EN_EXPIRATION_DATE_HEADER = 'Valid until';
+export const ES_CREATED_DATE_HEADER = 'Fecha de alta';
+export const ES_EXPIRATION_DATE_HEADER = 'Fecha de baja';
+export const EMPTY_CREATED_DATE = /Not set|No informada|Non renseignée|Non informada/i;
+export const EMPTY_EXPIRATION_DATE = /Active|Activo|Actiu|Actif/i;
+export const EXPIRATION_HEADER_TOOLTIP =
+  /last day|último día|darrer dia|dernier jour|darrèr dia/i;
+
+export function expectCreatedThenExpiration(
+  headers: string[],
+  created: string,
+  expiration: string,
+): void {
+  const createdAt = headers.indexOf(created);
+  const expirationAt = headers.indexOf(expiration);
+  expect(createdAt, `headers=${headers.join('|')}`).toBeGreaterThan(-1);
+  expect(expirationAt, `headers=${headers.join('|')}`).toBe(createdAt + 1);
+}
 
 type PositionBody = {
   user: string;
