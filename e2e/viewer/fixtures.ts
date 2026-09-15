@@ -121,6 +121,8 @@ export type ViewerFixture = {
   childrenPassword: string;
   childrenParentTerritoryId: number;
   childrenChildTerritoryId: number;
+  kickedUsername: string;
+  kickedPassword: string;
 };
 
 export type CapabilitiesResult = {
@@ -311,7 +313,9 @@ export async function readViewerCredentials(): Promise<ViewerFixture> {
     !fixture.childrenUsername ||
     !fixture.childrenPassword ||
     !fixture.childrenParentTerritoryId ||
-    !fixture.childrenChildTerritoryId
+    !fixture.childrenChildTerritoryId ||
+    !fixture.kickedUsername ||
+    !fixture.kickedPassword
   ) {
     throw new Error('viewer fixture is incomplete');
   }

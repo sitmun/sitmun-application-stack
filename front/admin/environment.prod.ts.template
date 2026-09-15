@@ -6,5 +6,6 @@ export const environment = {
   logLevel: LogLevel.Error,
   version: '${APP_VERSION}',
   buildTimestamp: '${BUILD_TIMESTAMP}' as string | undefined,
-  environmentName: '${FRONT_ENV}'
+  environmentName: '${FRONT_ENV}',
+  sessionTokenRefreshIntervalMs: 2 * 60 * 1000
 };

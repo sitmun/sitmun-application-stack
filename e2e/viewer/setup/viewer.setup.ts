@@ -403,6 +403,19 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   await grantTerritory(request, apiOrigin, childrenUser.userId, parentTerritoryId, true);
   }
 
+  const kickedUsername = uniqueViewerUsername();
+  const kickedPassword = generateViewerPassword();
+  const kickedUser = await createUser(request, {
+    username: kickedUsername,
+    password: kickedPassword,
+    email: 'e2e-viewer-kicked@example.com',
+    firstName: 'Kicked',
+  });
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    await grantTerritory(request, apiOrigin, kickedUser.userId, territoryId);
+    await expireTerritoryPosition(request, kickedUser.userId, territoryId);
+  }
+
   const makeApplicationPrivate = await request.patch(
     `/backend/api/applications/${APP_ID}`,
     {
@@ -671,6 +684,8 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         childrenPassword,
         childrenParentTerritoryId: parentTerritoryId,
         childrenChildTerritoryId: childTerritoryId,
+        kickedUsername,
+        kickedPassword,
         eligiblePocUserId: eligiblePoc.userId,
         blockedPocUserId: blockedPoc.userId,
       },
