@@ -55,6 +55,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+#### Stack-level
+
+- **E2E**: Edition valid-login and touristic Maestro flows use WebView DevTools hierarchy; valid login dismisses the keyboard before submit. Orchestrator no longer runs `am kill-all` (ANR). Maestro debug output is written under `test-results/mobile-android/maestro/` for the CI artifact.
+
 #### Admin Application
 
 - **Literal translations**: Infinite grid reload no longer sticks on the loading spinner. Stale AG Grid `getRows` now complete so a replacement datasource can load ([sitmun-admin-app#461](https://github.com/sitmun/sitmun-admin-app/pull/461)).

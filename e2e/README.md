@@ -84,9 +84,10 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 - Uses `adb reverse tcp:18081` and Maestro flows under `e2e/mobile/android/`
 - Records source SHA and APK SHA-256 under `test-results/mobile-android/`
 - Split coverage (Phase 8):
-  - **Maestro UI**: edition invalid login (`#login-error` via `androidWebViewHierarchy: devtools`), edition valid login/profile, touristic public profile (auto-enter after tree provisioning via `POST /api/application-trees`)
+  - **Maestro UI**: edition invalid and valid login (HTML ids via `androidWebViewHierarchy: devtools`; `hideKeyboard` before submit), touristic public profile (same DevTools hierarchy; auto-enter after tree provisioning via `POST /api/application-trees`)
   - **Gateway/API contracts** (before APK builds): missing bearer, wrong territory, `access_token` rejected as proxy, estimate/create/status/file with opaque `jobHandle`, direct `/mbtiles` is `404`
-- Orchestrator runs `adb shell am kill-all` before Maestro to avoid stale WebView DevTools sockets on Maestro 2.6.1
+- Does not run `adb shell am kill-all` (it ANRs `system`/`systemui` and hides the WebView)
+- Writes Maestro debug output under `test-results/mobile-android/maestro/<flow>/` (`--debug-output` + `--test-output-dir`; CI uploads that tree on failure)
 - Separate `e2e-mobile-touristic.mjs` / `e2e-mobile-edition.mjs` shell scripts are not used; Ionic web shells are covered by API-only `e2e:mobile:web`
 - CI installs Maestro `2.6.1` with SHA-256 verification of `maestro.zip`
 - CI `e2e-mobile-android` overrides `android-emulator-runner` to `-gpu software -no-snapshot-load -no-snapshot-save` (not the deprecated default `-gpu swiftshader_indirect`)
@@ -213,6 +214,7 @@ harness or document the gap when the behavior is outside current coverage.
 
 - HTML report: `playwright-report/`
 - Traces / screenshots / videos: `test-results/`
+- Android Maestro debug (CI upload on failure): `test-results/mobile-android/maestro/`
 - Treat reports as restricted CI artifacts; do not paste Authorization values from traces into tickets
 
 ```bash
