@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
 
+#### Admin Application
+
+- **Users**: Positions tab Alta then Baja with editable Alta, empty-cell placeholders, and inverted-interval warning. See `sitmun-admin-app` `[Unreleased]` ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
+
 #### Viewer Application
 
 - **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
@@ -35,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Stack-level
 
 - **E2E**: Password viewer hides an expired cargo and denies its profile; `expirationDate` today and null `createdDate` stay listed; active parent grants still expand children ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184); `e2e/viewer/password-access.spec.ts`).
+- **E2E**: Admin user Positions tab Valid from then Valid until, empty `createdDate`/`expirationDate` placeholders, Alta persist, inclusive last-day tooltip, hidden for `public`, locale copy, pre-2000 Alta, viewer cannot write Alta, 20-row open under 3s (`e2e/admin/forms/user-positions.spec.ts`, project `admin-forms`; [sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
 - **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
 - **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
 - **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
