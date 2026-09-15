@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Page, Response } from '@playwright/test';
 
@@ -103,6 +103,8 @@ export const VIEWER_FIXTURE_FILE = path.join(
   'e2e/.auth/viewer-fixture.json',
 );
 
+export const POSITION_EVIDENCE_DIR = '/tmp/sitmun-position-expiry-evidence';
+
 export type ViewerFixture = {
   username: string;
   password: string;
@@ -111,6 +113,14 @@ export type ViewerFixture = {
   blockedPocUserId: number;
   expiryUsername: string;
   expiryPassword: string;
+  expirationTodayUsername: string;
+  expirationTodayPassword: string;
+  nullCreatedDateUsername: string;
+  nullCreatedDatePassword: string;
+  childrenUsername: string;
+  childrenPassword: string;
+  childrenParentTerritoryId: number;
+  childrenChildTerritoryId: number;
 };
 
 export type CapabilitiesResult = {
@@ -276,6 +286,13 @@ export async function fetchCapabilities(page: Page): Promise<CapabilitiesResult>
   }, CAPABILITIES_URL);
 }
 
+export async function savePositionEvidence(page: Page, filename: string): Promise<void> {
+  await mkdir('test-results', { recursive: true });
+  await mkdir(POSITION_EVIDENCE_DIR, { recursive: true });
+  await page.screenshot({ path: path.join('test-results', filename) });
+  await page.screenshot({ path: path.join(POSITION_EVIDENCE_DIR, filename) });
+}
+
 export async function readViewerCredentials(): Promise<ViewerFixture> {
   const raw = await readFile(VIEWER_FIXTURE_FILE, 'utf8');
   const fixture = JSON.parse(raw) as ViewerFixture;
@@ -286,7 +303,15 @@ export async function readViewerCredentials(): Promise<ViewerFixture> {
     !fixture.eligiblePocUserId ||
     !fixture.blockedPocUserId ||
     !fixture.expiryUsername ||
-    !fixture.expiryPassword
+    !fixture.expiryPassword ||
+    !fixture.expirationTodayUsername ||
+    !fixture.expirationTodayPassword ||
+    !fixture.nullCreatedDateUsername ||
+    !fixture.nullCreatedDatePassword ||
+    !fixture.childrenUsername ||
+    !fixture.childrenPassword ||
+    !fixture.childrenParentTerritoryId ||
+    !fixture.childrenChildTerritoryId
   ) {
     throw new Error('viewer fixture is incomplete');
   }

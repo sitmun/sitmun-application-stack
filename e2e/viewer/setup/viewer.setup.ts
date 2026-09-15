@@ -87,11 +87,33 @@ async function createUser(
   return { userId: userId as number, userSelf, apiOrigin };
 }
 
-async function expireTerritoryPosition(
+type PositionHal = {
+  id?: number;
+  name?: string;
+  organization?: string;
+  email?: string;
+  createdDate?: string | null;
+  territoryId?: number;
+  _links?: { self?: { href?: string }; territory?: { href?: string } };
+};
+
+function localCivilNoonIso(dayOffset = 0): string {
+  const now = new Date();
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + dayOffset,
+    12,
+    0,
+    0,
+  ).toISOString();
+}
+
+async function findUserPosition(
   request: APIRequestContext,
   userId: number,
   territoryId: number,
-): Promise<void> {
+): Promise<PositionHal> {
   const positions = await request.get(
     `/backend/api/users/${userId}/positions?size=50&projection=view`,
     { headers: adminHeaders },
@@ -101,14 +123,7 @@ async function expireTerritoryPosition(
     `list positions failed: ${positions.status()} ${await positions.text()}`,
   ).toBeTruthy();
   const body = (await positions.json()) as {
-    _embedded?: Record<
-      string,
-      Array<{
-        id?: number;
-        territoryId?: number;
-        _links?: { self?: { href?: string }; territory?: { href?: string } };
-      }>
-    >;
+    _embedded?: Record<string, PositionHal[]>;
   };
   const items = Object.values(body._embedded ?? {}).flat();
   const match = items.find(
@@ -116,15 +131,28 @@ async function expireTerritoryPosition(
       item.territoryId === territoryId ||
       (item._links?.territory?.href ?? '').includes(`/territories/${territoryId}`),
   );
-  const selfHref = match?._links?.self?.href;
   expect(
-    selfHref,
+    match?._links?.self?.href,
     `position for territory ${territoryId} missing in ${JSON.stringify(body)}`,
   ).toBeTruthy();
+  return match as PositionHal;
+}
+
+function positionIdOf(match: PositionHal): number {
+  const selfHref = match._links?.self?.href;
   const idMatch = selfHref?.match(/\/user-positions\/(\d+)/);
-  const positionId = match?.id ?? (idMatch ? Number(idMatch[1]) : undefined);
+  const positionId = match.id ?? (idMatch ? Number(idMatch[1]) : undefined);
   expect(positionId, 'position id missing').toBeTruthy();
-  const patch = await request.patch(`/backend/api/user-positions/${positionId}`, {
+  return positionId as number;
+}
+
+async function expireTerritoryPosition(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const patch = await request.patch(`/backend/api/user-positions/${positionIdOf(match)}`, {
     headers: {
       'X-SITMUN-Client': 'admin',
       'Content-Type': 'application/merge-patch+json',
@@ -132,6 +160,116 @@ async function expireTerritoryPosition(
     data: { expirationDate: '2020-01-01T00:00:00.000Z' },
   });
   expect(patch.ok(), `expire position failed: ${patch.status()} ${await patch.text()}`).toBeTruthy();
+}
+
+async function setExpirationToday(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const patch = await request.patch(`/backend/api/user-positions/${positionIdOf(match)}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { expirationDate: localCivilNoonIso(0) },
+  });
+  expect(
+    patch.ok(),
+    `set expirationDate to today failed: ${patch.status()} ${await patch.text()}`,
+  ).toBeTruthy();
+}
+
+async function clearCreatedDate(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+  apiOrigin: string,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const positionId = positionIdOf(match);
+  const put = await request.put(`/backend/api/user-positions/${positionId}`, {
+    headers: adminHeaders,
+    data: {
+      user: `${apiOrigin}/api/users/${userId}`,
+      territory: `${apiOrigin}/api/territories/${territoryId}`,
+      name: match.name ?? 'cargo',
+      organization: match.organization ?? 'org',
+      email: match.email ?? null,
+      createdDate: null,
+    },
+  });
+  expect(put.ok(), `clear createdDate failed: ${put.status()} ${await put.text()}`).toBeTruthy();
+  const reloaded = await request.get(`/backend/api/user-positions/${positionId}`, {
+    headers: adminHeaders,
+  });
+  expect(reloaded.ok()).toBeTruthy();
+  const body = (await reloaded.json()) as { createdDate?: string | null };
+  expect(body.createdDate, 'PUT createdDate: null must stay null').toBeNull();
+}
+
+async function grantTerritory(
+  request: APIRequestContext,
+  apiOrigin: string,
+  userId: number,
+  territoryId: number,
+  appliesToChildrenTerritories = false,
+): Promise<void> {
+  const createConfig = await request.post('/backend/api/user-configurations', {
+    headers: adminHeaders,
+    data: {
+      user: `${apiOrigin}/api/users/${userId}`,
+      territory: `${apiOrigin}/api/territories/${territoryId}`,
+      role: `${apiOrigin}/api/roles/${ROLE_ID}`,
+      appliesToChildrenTerritories,
+    },
+  });
+  expect(
+    createConfig.status(),
+    `create user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
+  ).toBe(201);
+}
+
+async function createTerritory(
+  request: APIRequestContext,
+  name: string,
+): Promise<number> {
+  const types = await request.get('/backend/api/territory-types?size=1', {
+    headers: adminHeaders,
+  });
+  expect(types.ok(), `list territory-types failed: ${types.status()}`).toBeTruthy();
+  const typeBody = (await types.json()) as {
+    _embedded?: Record<string, Array<{ _links?: { self?: { href?: string } } }>>;
+  };
+  const typeHref = Object.values(typeBody._embedded ?? {}).flat()[0]?._links?.self?.href;
+  expect(typeHref, 'territory type href missing').toBeTruthy();
+  const created = await request.post('/backend/api/territories', {
+    headers: adminHeaders,
+    data: {
+      name,
+      code: name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20) || 'e2echild',
+      blocked: false,
+      territorialAuthorityName: 'E2E',
+      territorialAuthorityEmail: 'e2e@example.com',
+      type: typeHref,
+    },
+  });
+  if (created.status() !== 201) {
+    throw new Error(`create territory failed: ${created.status()} ${await created.text()}`);
+  }
+  const createdTerritory = (await created.json()) as {
+    id?: number;
+    _links?: { self?: { href?: string } };
+  };
+  let territoryId = createdTerritory.id;
+  if (!territoryId) {
+    const location = created.headers()['location'] ?? createdTerritory._links?.self?.href;
+    const match = location?.match(/\/territories\/(\d+)/);
+    territoryId = match ? Number(match[1]) : undefined;
+  }
+  expect(territoryId, 'created territory id missing').toBeTruthy();
+  return territoryId as number;
 }
 
 setup('provision viewer user and secured WMS service', async ({ request }) => {
@@ -187,21 +325,67 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     firstName: 'Expiry',
   });
   for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
-    const createConfig = await request.post('/backend/api/user-configurations', {
-      headers: adminHeaders,
-      data: {
-        user: `${apiOrigin}/api/users/${expiryUser.userId}`,
-        territory: `${apiOrigin}/api/territories/${territoryId}`,
-        role: `${apiOrigin}/api/roles/${ROLE_ID}`,
-        appliesToChildrenTerritories: false,
-      },
-    });
-    expect(
-      createConfig.status(),
-      `create expiry user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
-    ).toBe(201);
+    await grantTerritory(request, apiOrigin, expiryUser.userId, territoryId);
   }
   await expireTerritoryPosition(request, expiryUser.userId, MENORCA_TERRITORY_ID);
+
+  const expirationTodayUsername = uniqueViewerUsername();
+  const expirationTodayPassword = generateViewerPassword();
+  const expirationTodayUser = await createUser(request, {
+    username: expirationTodayUsername,
+    password: expirationTodayPassword,
+    email: 'e2e-viewer-expiration-today@example.com',
+    firstName: 'ExpirationToday',
+  });
+  await grantTerritory(request, apiOrigin, expirationTodayUser.userId, TERRITORY_ID);
+  await setExpirationToday(request, expirationTodayUser.userId, TERRITORY_ID);
+
+  const nullCreatedDateUsername = uniqueViewerUsername();
+  const nullCreatedDatePassword = generateViewerPassword();
+  const nullCreatedDateUser = await createUser(request, {
+    username: nullCreatedDateUsername,
+    password: nullCreatedDatePassword,
+    email: 'e2e-viewer-null-created-date@example.com',
+    firstName: 'NullCreatedDate',
+  });
+  await grantTerritory(request, apiOrigin, nullCreatedDateUser.userId, TERRITORY_ID);
+  await clearCreatedDate(request, nullCreatedDateUser.userId, TERRITORY_ID, apiOrigin);
+
+  const enableChildrenAccess = await request.patch(`/backend/api/applications/${APP_ID}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { accessParentTerritory: true, accessChildrenTerritory: true },
+  });
+  expect(
+    enableChildrenAccess.ok(),
+    `enable children access failed: ${enableChildrenAccess.status()} ${await enableChildrenAccess.text()}`,
+  ).toBeTruthy();
+
+  const parentTerritoryId = await createTerritory(request, `e2e-parent-${Date.now()}`);
+  const childTerritoryId = await createTerritory(request, `e2e-child-${Date.now()}`);
+  const linkMembers = await request.put(`/backend/api/territories/${parentTerritoryId}/members`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'text/uri-list',
+    },
+    data: `${apiOrigin}/api/territories/${childTerritoryId}`,
+  });
+  expect(
+    [200, 204].includes(linkMembers.status()),
+    `link territory members failed: ${linkMembers.status()} ${await linkMembers.text()}`,
+  ).toBeTruthy();
+
+  const childrenUsername = uniqueViewerUsername();
+  const childrenPassword = generateViewerPassword();
+  const childrenUser = await createUser(request, {
+    username: childrenUsername,
+    password: childrenPassword,
+    email: 'e2e-viewer-children@example.com',
+    firstName: 'Children',
+  });
+  await grantTerritory(request, apiOrigin, childrenUser.userId, parentTerritoryId, true);
 
   const makeApplicationPrivate = await request.patch(
     `/backend/api/applications/${APP_ID}`,
@@ -463,6 +647,14 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         userId,
         expiryUsername,
         expiryPassword,
+        expirationTodayUsername,
+        expirationTodayPassword,
+        nullCreatedDateUsername,
+        nullCreatedDatePassword,
+        childrenUsername,
+        childrenPassword,
+        childrenParentTerritoryId: parentTerritoryId,
+        childrenChildTerritoryId: childTerritoryId,
         eligiblePocUserId: eligiblePoc.userId,
         blockedPocUserId: blockedPoc.userId,
       },
