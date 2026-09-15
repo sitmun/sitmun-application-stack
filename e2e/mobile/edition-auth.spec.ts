@@ -76,6 +76,11 @@ test.describe('edition mobile authentication', () => {
   }) => {
     const { access_token, proxy_token } = await mobileTokens(request);
     expect(proxy_token).toBeTruthy();
+    await mkdir('test-results', { recursive: true });
+    await writeFile(
+      'test-results/refresh-mobile-proxy.json',
+      JSON.stringify({ status: 200, hasProxyToken: true }, null, 2),
+    );
 
     const apps = await request.get(`${BACKEND}/api/config/client/application`, {
       headers: { Authorization: `Bearer ${access_token}` },
