@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
 
+#### Admin Application
+
+- **Users**: Positions tab Alta then Baja with editable Alta, empty-cell placeholders, and inverted-interval warning. See `sitmun-admin-app` `[Unreleased]` ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
+
 #### Viewer Application
 
 - **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
