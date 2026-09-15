@@ -329,27 +329,42 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   }
   await expireTerritoryPosition(request, expiryUser.userId, MENORCA_TERRITORY_ID);
 
-  const expirationTodayUsername = uniqueViewerUsername();
-  const expirationTodayPassword = generateViewerPassword();
+  const destBaseline = process.env.SITMUN_DEST_BASELINE === '1';
+  let expirationTodayUsername = 'dest-skip';
+  let expirationTodayPassword = 'dest-skip';
+  let nullCreatedDateUsername = 'dest-skip';
+  let nullCreatedDatePassword = 'dest-skip';
+  let childrenUsername = 'dest-skip';
+  let childrenPassword = 'dest-skip';
+  let parentTerritoryId = TERRITORY_ID;
+  let childTerritoryId = MENORCA_TERRITORY_ID;
+
+  if (!destBaseline) {
+  const expirationTodayUsernameLive = uniqueViewerUsername();
+  const expirationTodayPasswordLive = generateViewerPassword();
   const expirationTodayUser = await createUser(request, {
-    username: expirationTodayUsername,
-    password: expirationTodayPassword,
+    username: expirationTodayUsernameLive,
+    password: expirationTodayPasswordLive,
     email: 'e2e-viewer-expiration-today@example.com',
     firstName: 'ExpirationToday',
   });
   await grantTerritory(request, apiOrigin, expirationTodayUser.userId, TERRITORY_ID);
   await setExpirationToday(request, expirationTodayUser.userId, TERRITORY_ID);
+  expirationTodayUsername = expirationTodayUsernameLive;
+  expirationTodayPassword = expirationTodayPasswordLive;
 
-  const nullCreatedDateUsername = uniqueViewerUsername();
-  const nullCreatedDatePassword = generateViewerPassword();
+  const nullCreatedDateUsernameLive = uniqueViewerUsername();
+  const nullCreatedDatePasswordLive = generateViewerPassword();
   const nullCreatedDateUser = await createUser(request, {
-    username: nullCreatedDateUsername,
-    password: nullCreatedDatePassword,
+    username: nullCreatedDateUsernameLive,
+    password: nullCreatedDatePasswordLive,
     email: 'e2e-viewer-null-created-date@example.com',
     firstName: 'NullCreatedDate',
   });
   await grantTerritory(request, apiOrigin, nullCreatedDateUser.userId, TERRITORY_ID);
   await clearCreatedDate(request, nullCreatedDateUser.userId, TERRITORY_ID, apiOrigin);
+  nullCreatedDateUsername = nullCreatedDateUsernameLive;
+  nullCreatedDatePassword = nullCreatedDatePasswordLive;
 
   const enableChildrenAccess = await request.patch(`/backend/api/applications/${APP_ID}`, {
     headers: {
@@ -363,8 +378,8 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     `enable children access failed: ${enableChildrenAccess.status()} ${await enableChildrenAccess.text()}`,
   ).toBeTruthy();
 
-  const parentTerritoryId = await createTerritory(request, `e2e-parent-${Date.now()}`);
-  const childTerritoryId = await createTerritory(request, `e2e-child-${Date.now()}`);
+  parentTerritoryId = await createTerritory(request, `e2e-parent-${Date.now()}`);
+  childTerritoryId = await createTerritory(request, `e2e-child-${Date.now()}`);
   const linkMembers = await request.put(`/backend/api/territories/${parentTerritoryId}/members`, {
     headers: {
       'X-SITMUN-Client': 'admin',
@@ -377,8 +392,8 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     `link territory members failed: ${linkMembers.status()} ${await linkMembers.text()}`,
   ).toBeTruthy();
 
-  const childrenUsername = uniqueViewerUsername();
-  const childrenPassword = generateViewerPassword();
+  childrenUsername = uniqueViewerUsername();
+  childrenPassword = generateViewerPassword();
   const childrenUser = await createUser(request, {
     username: childrenUsername,
     password: childrenPassword,
@@ -386,6 +401,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     firstName: 'Children',
   });
   await grantTerritory(request, apiOrigin, childrenUser.userId, parentTerritoryId, true);
+  }
 
   const makeApplicationPrivate = await request.patch(
     `/backend/api/applications/${APP_ID}`,

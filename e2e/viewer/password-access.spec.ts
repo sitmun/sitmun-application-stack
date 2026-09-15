@@ -152,6 +152,17 @@ test.describe('Viewer password access', () => {
     await expect(page).toHaveURL(new RegExp(`/user/map/${APP_ID}/${TERRITORY_ID}`));
   });
 
+  test('dest still lists expired cargo before the hide/block gate', async ({ page }) => {
+    test.skip(process.env.SITMUN_DEST_BASELINE !== '1', 'dest baseline only');
+    const credentials = await readViewerCredentials();
+    await loginPasswordUser(page, credentials.expiryUsername, credentials.expiryPassword);
+    const listed = await listApplicationTerritoryIds(page, APP_ID);
+    expect(listed.status).toBe(200);
+    expect(listed.ids).toContain(TERRITORY_ID);
+    expect(listed.ids).toContain(MENORCA_TERRITORY_ID);
+    await savePositionEvidence(page, '184-regression-picker-dest.png');
+  });
+
   test('client application list for mixed-grant user stays under 5s', async ({ page }) => {
     const credentials = await readViewerCredentials();
     await loginPasswordUser(page, credentials.expiryUsername, credentials.expiryPassword);
