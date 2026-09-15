@@ -14,10 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
+- **Profile**: Cargo table headers and empty date cells match admin Positions. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177)).
 - **Tests**: `npm test` skips coverage; `npm run test:coverage` writes `coverage/lcov.info`. See `sitmun-viewer-app` `[Unreleased]`.
 
 #### Stack-level
 
+- **E2E**: Viewer `/user/profile` cargo table copy matches admin Positions ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177); `e2e/viewer/profile-positions.spec.ts`).
 - **E2E**: Viewer and admin session cookie refresh (`POST /api/authenticate/refresh`) plus kick when every cargo is expired ([sitmun-backend-core#264](https://github.com/sitmun/sitmun-backend-core/issues/264); `e2e/viewer/password-access.spec.ts`, `e2e/admin/login.spec.ts`, `e2e/mobile/edition-auth.spec.ts`).
 - **Setup**: `setup.sh` / `setup.ps1` create `.env` from `profiles/development-postgres.env` when missing (was production `profiles/postgres.env`).
 - **E2E**: Shared `scripts/e2e-process.mjs` for webServer spawn/kill; Playwright `reuseExistingServer` is always false; `forbidOnly` on CI; `e2e:application-contact` npm script.
