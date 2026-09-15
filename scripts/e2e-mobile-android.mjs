@@ -583,17 +583,17 @@ async function main() {
       ['e2e:mobile:gateway', 'http://127.0.0.1:18081/health'],
     ];
 
-    for (const [script] of webServers) {
+    const gradleOpts = [process.env.GRADLE_OPTS, '-Dorg.gradle.daemon=false']
+      .filter(Boolean)
+      .join(' ');
+    for (const [script, url] of webServers) {
       const child = spawn('npm', ['run', script], {
         cwd: stackRoot,
         stdio: 'inherit',
         detached: true,
-        env: process.env,
+        env: { ...process.env, GRADLE_OPTS: gradleOpts },
       });
       children.push(child);
-    }
-
-    for (const [, url] of webServers) {
       await waitFor(url);
     }
 
@@ -677,6 +677,8 @@ async function main() {
     ];
     run('adb', ['shell', 'am', 'kill-all']);
     for (const flow of flows) {
+      run('adb', ['shell', 'am', 'force-stop', 'edition.mobile.app']);
+      run('adb', ['shell', 'am', 'force-stop', 'touristic.mobile.app']);
       run('maestro', ['test', ...maestroEnv, flow]);
     }
 

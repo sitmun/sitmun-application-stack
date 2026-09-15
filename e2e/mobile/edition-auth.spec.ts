@@ -1,3 +1,4 @@
+import { mkdir, writeFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import { BACKEND } from './fixtures';
 import { loadMobileFixture, mobileAccessToken, mobileTokens } from './helpers';
@@ -16,8 +17,23 @@ test.describe('edition mobile authentication', () => {
     expect(mobileBody.access_token).toBeTruthy();
     expect(mobileBody.token_type).toBe('Bearer');
     expect(mobileBody.expires_in).toBeGreaterThan(0);
+    expect(mobileBody.expires_in).toBeGreaterThanOrEqual(3500);
+    expect(mobileBody.expires_in).toBeLessThanOrEqual(3700);
     expect(mobileBody.id_token).toBeUndefined();
     expect(mobile.headers()['set-cookie'] ?? '').not.toMatch(/access_token=/);
+    await mkdir('test-results', { recursive: true });
+    await writeFile(
+      'test-results/184-mobile-live.json',
+      JSON.stringify(
+        {
+          status: mobile.status(),
+          expires_in: mobileBody.expires_in,
+          setCookie: mobile.headers()['set-cookie'] ?? '',
+        },
+        null,
+        2,
+      ),
+    );
 
     const viewer = await request.post(`${BACKEND}/api/authenticate`, {
       data: { username: 'admin', password: 'admin' },
@@ -40,6 +56,19 @@ test.describe('edition mobile authentication', () => {
       data: { username: fixture.username, password: 'wrong-password' },
     });
     expect(response.status()).toBe(401);
+  });
+
+  test('mobile login is forbidden when every grant is expired', async ({ request }) => {
+    const fixture = await loadMobileFixture();
+    const response = await request.post(`${BACKEND}/api/authenticate/mobile`, {
+      data: { username: fixture.expiryUsername, password: fixture.expiryPassword },
+    });
+    expect(response.status(), await response.text()).toBe(403);
+    await mkdir('test-results', { recursive: true });
+    await writeFile(
+      'test-results/184-mobile-expired.json',
+      JSON.stringify({ status: response.status() }, null, 2),
+    );
   });
 
   test('access_token exchanges for proxy_token and lists only ED apps without mbtilesUrl', async ({

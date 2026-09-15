@@ -1,3 +1,4 @@
+import { mkdir, writeFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import { BACKEND, TOURISTIC_APP_ID } from './fixtures';
 
@@ -9,6 +10,11 @@ test.describe('touristic public client configuration', () => {
     const touristic = (page.content ?? []).filter((app: { type?: string }) => app.type === 'T');
     expect(touristic.length).toBeGreaterThan(0);
     expect(touristic.some((app: { id?: number }) => app.id === TOURISTIC_APP_ID)).toBeTruthy();
+    await mkdir('test-results', { recursive: true });
+    await writeFile(
+      'test-results/184-touristic.json',
+      JSON.stringify({ status: apps.status(), touristicCount: touristic.length }, null, 2),
+    );
   });
 
   test('anonymous profile for private application is denied', async ({ request }) => {
