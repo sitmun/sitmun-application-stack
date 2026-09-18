@@ -644,6 +644,8 @@ run_dev_oracle_from() {
     echo ""
     echo "── Liquibase: $label ──"
     set +e
+    # context=dev: 04_initial_data_prod maps USE_GENERIC, which
+    # 01_schema.oracle.sql never created (04_dev CSV omits that column).
     LB_OUTPUT=$(docker run --rm \
       --network "$NETWORK" \
       -v "$changelog_dir:/liquibase/changelog:ro" \
@@ -652,6 +654,7 @@ run_dev_oracle_from() {
       --username="$DB_USER" \
       --password="$DB_PASS" \
       --changeLogFile="changelog/master.xml" \
+      --contexts=dev \
       update 2>&1)
     LB_RC=$?
     set -e
@@ -668,7 +671,7 @@ DOCKEREOF
 
   echo ""
   echo "════════════════════════════════════════════════════"
-  echo " Development Oracle: $tag → HEAD"
+  echo " Development Oracle (context=dev): $tag → HEAD"
   echo "════════════════════════════════════════════════════"
 
   docker rm -f "$CONTAINER" 2>/dev/null || true
