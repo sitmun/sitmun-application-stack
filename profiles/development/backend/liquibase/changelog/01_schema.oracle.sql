@@ -1,5 +1,6 @@
 --liquibase formatted sql
 --changeset sitmun:1 dbms:oracle
+--validCheckSum: 9:023fbd3133f569aa97c69ebebdf02cfe
 
 CREATE TABLE STM_APP
 (

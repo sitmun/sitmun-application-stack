@@ -21,6 +21,7 @@ from pathlib import Path
 INCLUDE_XML = re.compile(r"<include\s+file=\"([^\"]+)\"")
 INCLUDE_YAML = re.compile(r"^\s+file:\s+(\S+)", re.M)
 PREFIX_RE = re.compile(r"(?:^|/)(\d+)_")
+VALID_CHECKSUM_LINE = re.compile(r"^--validCheckSum(?:\s|:)\s*\S+")
 
 DEFAULT_TREES = (
     "profiles/development/backend/liquibase",
@@ -92,6 +93,33 @@ def include_prefix(path: str) -> int | None:
 
 def posix_rel(path: Path, root: Path) -> str:
     return path.resolve().relative_to(root.resolve()).as_posix()
+
+
+def is_valid_checksum_only_diff(diff_text: str) -> bool:
+    """True when the unified diff only adds --validCheckSum lines."""
+    added = False
+    for line in diff_text.splitlines():
+        if line.startswith(("diff ", "index ", "+++", "---", "@@", "new file", "old mode", "new mode")):
+            continue
+        if line.startswith("+"):
+            body = line[1:].strip()
+            if not body:
+                continue
+            if not VALID_CHECKSUM_LINE.match(body):
+                return False
+            added = True
+        elif line.startswith("-"):
+            return False
+    return added
+
+
+def git_diff_text(repo_root: Path, start: str | None, path: str) -> str:
+    if start and start != "HEAD":
+        args = ["git", "diff", f"{start}...HEAD", "--", path]
+    else:
+        args = ["git", "diff", "HEAD", "--", path]
+    shown = subprocess.run(args, cwd=repo_root, capture_output=True, text=True, check=False)
+    return shown.stdout
 
 
 def is_allowlisted(tree_key: str, rel_path: str) -> bool:
@@ -283,11 +311,18 @@ def main(argv: list[str] | None = None) -> int:
         shipped = includes_at_ref(repo_root, posix_rel(tree, repo_root), start) if start else None
         all_violations.extend(check_tree(tree, changed, repo_root, shipped_includes=shipped))
 
-    if all_violations:
+    kept: list[Violation] = []
+    for v in all_violations:
+        path = f"{v.tree}/{v.rel_path}"
+        if "01_schema." in v.rel_path and is_valid_checksum_only_diff(git_diff_text(repo_root, start, path)):
+            continue
+        kept.append(v)
+
+    if kept:
         print("Liquibase immutability: do not edit includes below the tree tip.")
         print("Add a new numbered changeset and a master include instead.")
         print()
-        for v in all_violations:
+        for v in kept:
             print(f"  {v.tree}/{v.rel_path}  (changelog {v.prefix} < tip {v.max_prefix})")
         return 1
     return 0
