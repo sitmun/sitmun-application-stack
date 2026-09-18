@@ -100,7 +100,7 @@ bash tools/scripts/checkout-latest-tags.sh
 
 Drafts are **not** auto-wired into `master.xml`. Do not rewrite `sitmun:1`; only add incremental changesets after review. Default draft prefix is `22_schema_drift_fix`. Java field defaults / Bean Validation are annotated as INFO via `extract_jpa_column_hints.py`. They do not invent SQL `DEFAULT` clauses.
 
-Applied profile/schema changesets are frozen. `check_changelog_immutability.py` fails a diff that edits a shipped include numbered below the HEAD tip. Includes that were not on the diff base (new incrementals in the same PR) are allowed. Allowlisted exceptions are generated production seeds `02`–`06` (`runOnChange`) and development `04_initial_data_dev` (`validCheckSum: ANY`). Adding only `--validCheckSum` lines to `01_schema.*` is also allowed so historical `sitmun:1` hashes can be accepted without rewriting the schema. `check_changelog_integrity.py` is a git-ancestry report on backend-core files. It does not fail CI.
+Applied profile/schema changesets are frozen. `check_changelog_immutability.py` fails a diff that edits a shipped include numbered below the HEAD tip. Includes that were not on the diff base (new incrementals in the same PR) are allowed. Allowlisted exceptions are generated production seeds `02`–`06` (`runOnChange`), production Postgres `07_sequences.yaml` (`runOnChange`), and development `04_initial_data_dev` (`validCheckSum: ANY`). Adding only `--validCheckSum` lines to `01_schema.*` is also allowed so historical `sitmun:1` hashes can be accepted without rewriting the schema. `check_changelog_integrity.py` is a git-ancestry report on backend-core files. It does not fail CI.
 
 ### Version and release
 
@@ -127,13 +127,15 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 | **test_liquibase_scenarios_oracle.sh** | Same for Oracle. |
 | **test_report_schema_drift.py** | Unit tests for schema-drift reporter / draft changelog emitter. |
 | **test_changelog_immutability.py** | Unit tests for the PR-diff Liquibase immutability gate. |
+| **test_prepare_extracted_liquibase.py** | Unit tests for 1.2.6 CSV width rewrite and case-alias copies. |
 | **test_seed_identity_swap.py** | Unit tests for the STM_CODELIST unique-key swap gate (`#45`). |
-| **test_liquibase_1.2.7_to_head_upgrade.sh** | Apply 1.2.7, expect 1.2.8 checksum fail, apply HEAD 19/20. CI runs `postgres`. `oracle` stays local. |
-| **test_liquibase_codelist_auth_mode_swap.sh** | Docker upgrade fixture for the 1.2.6→1.2.7 auth-mode ID swap. Local only. |
+| **test_liquibase_1.2.7_to_head_upgrade.sh** | Tag → HEAD upgrade. CI: postgres 1.2.7/1.2.8, Oracle 1.2.6–1.2.8, development Oracle 1.2.6. |
+| **test_liquibase_codelist_auth_mode_swap.sh** | Docker fixture for the 1.2.6→1.2.7 auth-mode ID swap. CI job `postgres-auth-mode-swap`. |
 
 ```bash
 python3 tools/tests/test_report_schema_drift.py
 python3 tools/tests/test_changelog_immutability.py
+python3 tools/tests/test_prepare_extracted_liquibase.py
 python3 tools/tests/test_seed_identity_swap.py
 bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
 bash tools/tests/test_liquibase_scenarios.sh
@@ -160,6 +162,7 @@ See [seed-data/README.md](seed-data/README.md) for the full workflow.
 | **import_from_generated_csvs.py** | Import from generated `STM_TRANSLATION_*.csv` into a baseline. | `--scenario`; `--baseline` |
 | **sort_codelist.py** | Sort and renumber `STM_CODELIST.csv`. | pass input file path |
 | **check_changelog_immutability.py** | Fail if a diff edits a Liquibase include below the tree tip. `--base` for CI. | `--tree`; `--changed-file`; `--base`; `--no-git` |
+| **prepare_extracted_liquibase.py** | Rewrite pre-1.2.7 CSV width; copy case-mismatched CSV names for Linux. Used by the upgrade harness on extracted tags. | `--csv-width DIR`; `--alias-case DIR` |
 | **check_seed_identity_swap.py** | Fail a PR diff that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID`. | `--base`; `--changed-file`; `--no-git` |
 | **check_changelog_integrity.py** | Git-ancestry report (backend-core default). Prints violations. Does not exit 1. | — |
 | **report_schema_drift.py** | Compare schema dumps; emit PROBLEM/INFO report + draft Liquibase YAML. | `--out-dir`; `--fail-on`; `--dbms` |

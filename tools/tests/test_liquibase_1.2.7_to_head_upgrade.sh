@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # test_liquibase_1.2.7_to_head_upgrade.sh
-# Upgrade path:
-#   Phase 1 — apply sitmun-application-stack/1.2.7 (baseline)
-#   Phase 2 — apply sitmun-application-stack/1.2.8 (expect checksum fail, no DB change)
-#   Phase 3 — apply working-tree HEAD fix (expect success + 19/20 columns)
+# Upgrade paths:
+#   postgres|oracle|both — 1.2.7 → 1.2.8 (checksum fail) → HEAD
+#   postgres-from X.Y.Z | oracle-from X.Y.Z | dev-oracle-from X.Y.Z — tag → HEAD
+#   all — every path above
 #
 # Usage:
 #   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
-#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle
-#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh both
+#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres-from 1.2.6
+#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from 1.2.8
+#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh all
 
 set -uo pipefail
 
@@ -50,6 +51,29 @@ extract_tag_liquibase() {
   echo "$dest/profiles/$profile/liquibase"
 }
 
+PREPARE_LB="$REPO_ROOT/tools/bin/prepare_extracted_liquibase.py"
+
+quote_csv_embedded_commas() {
+  python3 "$PREPARE_LB" --csv-width "$1"
+}
+
+alias_csv_case() {
+  python3 "$PREPARE_LB" --alias-case "$1"
+}
+
+print_lb_snippet() {
+  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40 || true
+}
+
+print_lb_errors() {
+  echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30 || true
+}
+
+stack_tag() {
+  echo "sitmun-application-stack/$1"
+}
+
+
 # ── PostgreSQL ────────────────────────────────────────────────────────────────
 
 run_postgres() {
@@ -81,7 +105,7 @@ run_postgres() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   psql_q() {
@@ -119,7 +143,7 @@ run_postgres() {
     ok "Phase1 Liquibase 1.2.7 succeeded"
   else
     fail "Phase1 Liquibase 1.2.7 failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
 
   P1_MD5=$(psql_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
@@ -162,7 +186,7 @@ run_postgres() {
     ok "Phase3 Liquibase HEAD fix succeeded"
   else
     fail "Phase3 Liquibase HEAD fix failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.postgresql.sql::1::sitmun"; then
     fail "Phase3 re-ran sitmun:1 (should only validate)"
@@ -193,6 +217,117 @@ run_postgres() {
 
   echo ""
   echo "── Postgres teardown ──"
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  rm -rf "$TMP"
+}
+
+run_postgres_from() {
+  local version="$1"
+  local tag
+  tag=$(stack_tag "$version")
+  local CONTAINER=sitmun_upgrade_pg_from
+  local NETWORK=sitmun_upgrade_pg_from_net
+  local DB=sitmun_upgrade
+  local DB_USER=sitmun3
+  local DB_PASS=sitmun3
+  local TMP
+  TMP=$(mktemp -d)
+  local LB_SRC LB_HEAD
+  LB_SRC=$(extract_tag_liquibase "$tag" postgres "$TMP/src")
+  if [[ "$version" < "1.2.7" ]]; then
+    quote_csv_embedded_commas "$LB_SRC"
+  fi
+  LB_HEAD="$REPO_ROOT/profiles/postgres/liquibase"
+
+  liquibase_pg() {
+    local label="$1" changelog_dir="$2"
+    echo ""
+    echo "── Liquibase: $label ──"
+    set +e
+    LB_OUTPUT=$(docker run --rm \
+      --network "$NETWORK" \
+      -v "$changelog_dir:/liquibase/changelog:ro" \
+      liquibase/liquibase:4.29 \
+      --url="jdbc:postgresql://$CONTAINER:5432/$DB" \
+      --username="$DB_USER" \
+      --password="$DB_PASS" \
+      --changeLogFile="changelog/master.xml" \
+      update 2>&1)
+    LB_RC=$?
+    set -e
+    print_lb_snippet
+  }
+
+  psql_q() {
+    docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB" -t -A -c "$1" 2>/dev/null | tr -d ' \n'
+  }
+
+  echo ""
+  echo "════════════════════════════════════════════════════"
+  echo " PostgreSQL: $tag → HEAD"
+  echo "════════════════════════════════════════════════════"
+
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  docker network create "$NETWORK"
+  docker run -d --name "$CONTAINER" --network "$NETWORK" \
+    -e POSTGRES_DB="$DB" \
+    -e POSTGRES_USER="$DB_USER" \
+    -e POSTGRES_PASSWORD="$DB_PASS" \
+    postgres:16-alpine
+
+  echo -n "  Waiting for Postgres"
+  for _ in $(seq 1 40); do
+    if docker exec "$CONTAINER" pg_isready -U "$DB_USER" -d "$DB" -q 2>/dev/null; then
+      echo " ready."
+      break
+    fi
+    sleep 1
+    echo -n "."
+  done
+
+  echo ""
+  echo "════ PHASE 1: apply $tag ════"
+  liquibase_pg "$version" "$LB_SRC"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase1 Liquibase $version succeeded"
+  else
+    fail "Phase1 Liquibase $version failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  SRC_MD5=$(psql_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
+  assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
+  ok "Phase1 md5=$SRC_MD5"
+
+  echo ""
+  echo "════ PHASE 2: apply HEAD ════"
+  liquibase_pg "HEAD" "$LB_HEAD"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase2 Liquibase HEAD succeeded"
+  else
+    fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
+    fail "Phase2 reported checksum validation failure"
+  else
+    ok "Phase2 no checksum validation failure"
+  fi
+  if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.postgresql.sql::1::sitmun"; then
+    fail "Phase2 re-ran sitmun:1"
+  else
+    ok "Phase2 did not re-run sitmun:1"
+  fi
+  P2_TNO=$(psql_q "SELECT COUNT(*) FROM information_schema.columns WHERE table_name='stm_tree_nod' AND column_name='tno_default';")
+  P2_ATR=$(psql_q "SELECT COUNT(*) FROM information_schema.columns WHERE table_name='stm_app_tree' AND column_name='atr_id';")
+  P2_SEQ=$(psql_q "SELECT COUNT(*) FROM STM_SEQUENCE;")
+  assert_eq "Phase2 TNO_DEFAULT present" "1" "$P2_TNO"
+  assert_eq "Phase2 ATR_ID present" "1" "$P2_ATR"
+  assert_ne "Phase2 STM_SEQUENCE nonempty" "0" "$P2_SEQ"
+
+  echo ""
+  echo "── Postgres-from teardown ──"
   docker rm -f "$CONTAINER" 2>/dev/null || true
   docker network rm "$NETWORK" 2>/dev/null || true
   rm -rf "$TMP"
@@ -230,7 +365,7 @@ run_oracle() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   sqlplus_q() {
@@ -282,7 +417,7 @@ DOCKEREOF
     ok "Phase1 Liquibase 1.2.7 succeeded"
   else
     fail "Phase1 Liquibase 1.2.7 failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
 
   P1_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
@@ -325,7 +460,7 @@ DOCKEREOF
     ok "Phase3 Liquibase HEAD fix succeeded"
   else
     fail "Phase3 Liquibase HEAD fix failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.oracle.sql::1::sitmun"; then
     fail "Phase3 re-ran sitmun:1 (should only validate)"
@@ -361,10 +496,251 @@ DOCKEREOF
   rm -rf "$TMP"
 }
 
+run_oracle_from() {
+  local version="$1"
+  local tag
+  tag=$(stack_tag "$version")
+  local CONTAINER=sitmun_upgrade_ora_from
+  local NETWORK=sitmun_upgrade_ora_from_net
+  local DB=sitmun_upgrade
+  local DB_USER=sitmun3
+  local DB_PASS=sitmun3
+  local ORACLE_PWD=password
+  local TMP
+  TMP=$(mktemp -d)
+  local LB_SRC LB_HEAD
+  LB_SRC=$(extract_tag_liquibase "$tag" oracle "$TMP/src")
+  if [[ "$version" < "1.2.7" ]]; then
+    quote_csv_embedded_commas "$LB_SRC"
+  fi
+  LB_HEAD="$REPO_ROOT/profiles/oracle/liquibase"
+
+  liquibase_ora() {
+    local label="$1" changelog_dir="$2"
+    echo ""
+    echo "── Liquibase: $label ──"
+    set +e
+    LB_OUTPUT=$(docker run --rm \
+      --network "$NETWORK" \
+      -v "$changelog_dir:/liquibase/changelog:ro" \
+      liquibase/liquibase:4.29 \
+      --url="jdbc:oracle:thin:@//$CONTAINER:1521/$DB" \
+      --username="$DB_USER" \
+      --password="$DB_PASS" \
+      --changeLogFile="changelog/master.xml" \
+      update 2>&1)
+    LB_RC=$?
+    set -e
+    print_lb_snippet
+  }
+
+  sqlplus_q() {
+    local sql="$1"
+    docker exec -i "$CONTAINER" bash 2>/dev/null << DOCKEREOF | tr -d ' \n\r\t'
+printf '%s\n' "SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON" "${sql}" "EXIT" \
+  | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
+DOCKEREOF
+  }
+
+  echo ""
+  echo "════════════════════════════════════════════════════"
+  echo " Oracle: $tag → HEAD"
+  echo "════════════════════════════════════════════════════"
+
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  docker network create "$NETWORK"
+  docker run -d --name "$CONTAINER" --network "$NETWORK" \
+    -e ORACLE_PASSWORD="$ORACLE_PWD" \
+    -e APP_USER="$DB_USER" \
+    -e APP_USER_PASSWORD="$DB_PASS" \
+    -e ORACLE_DATABASE="$DB" \
+    gvenzl/oracle-free:23-slim
+
+  echo -n "  Waiting for Oracle"
+  for i in $(seq 1 90); do
+    result=$(docker exec "$CONTAINER" bash -c "
+      printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
+      | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
+    " 2>/dev/null | tr -d ' \n\r\t' || true)
+    if [[ "$result" == "42" ]]; then
+      echo " ready."
+      break
+    fi
+    sleep 3
+    echo -n "."
+    if [[ $i -eq 90 ]]; then
+      echo " TIMEOUT"
+      fail "Oracle container failed to become ready"
+      return 1
+    fi
+  done
+
+  echo ""
+  echo "════ PHASE 1: apply $tag ════"
+  liquibase_ora "$version" "$LB_SRC"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase1 Liquibase $version succeeded"
+  else
+    fail "Phase1 Liquibase $version failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  SRC_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
+  assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
+
+  echo ""
+  echo "════ PHASE 2: apply HEAD ════"
+  liquibase_ora "HEAD" "$LB_HEAD"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase2 Liquibase HEAD succeeded"
+  else
+    fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
+    fail "Phase2 reported checksum validation failure"
+  else
+    ok "Phase2 no checksum validation failure"
+  fi
+  if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.oracle.sql::1::sitmun"; then
+    fail "Phase2 re-ran sitmun:1"
+  else
+    ok "Phase2 did not re-run sitmun:1"
+  fi
+  P2_TNO=$(sqlplus_q "SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME='STM_TREE_NOD' AND COLUMN_NAME='TNO_DEFAULT';")
+  P2_ATR=$(sqlplus_q "SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME='STM_APP_TREE' AND COLUMN_NAME='ATR_ID';")
+  assert_eq "Phase2 TNO_DEFAULT present" "1" "$P2_TNO"
+  assert_eq "Phase2 ATR_ID present" "1" "$P2_ATR"
+
+  echo ""
+  echo "── Oracle-from teardown ──"
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  rm -rf "$TMP"
+}
+
+run_dev_oracle_from() {
+  local version="$1"
+  local tag
+  tag=$(stack_tag "$version")
+  local CONTAINER=sitmun_upgrade_devora_from
+  local NETWORK=sitmun_upgrade_devora_from_net
+  local DB=sitmun_upgrade
+  local DB_USER=sitmun3
+  local DB_PASS=sitmun3
+  local ORACLE_PWD=password
+  local TMP
+  TMP=$(mktemp -d)
+  local LB_SRC LB_HEAD
+  LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
+  alias_csv_case "$LB_SRC"
+  LB_HEAD="$TMP/head"
+  mkdir -p "$LB_HEAD"
+  cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
+  alias_csv_case "$LB_HEAD"
+
+  liquibase_ora() {
+    local label="$1" changelog_dir="$2"
+    echo ""
+    echo "── Liquibase: $label ──"
+    set +e
+    # context=dev: 04_initial_data_prod maps USE_GENERIC, which
+    # 01_schema.oracle.sql never created (04_dev CSV omits that column).
+    LB_OUTPUT=$(docker run --rm \
+      --network "$NETWORK" \
+      -v "$changelog_dir:/liquibase/changelog:ro" \
+      liquibase/liquibase:4.29 \
+      --url="jdbc:oracle:thin:@//$CONTAINER:1521/$DB" \
+      --username="$DB_USER" \
+      --password="$DB_PASS" \
+      --changeLogFile="changelog/master.xml" \
+      --contexts=dev \
+      update 2>&1)
+    LB_RC=$?
+    set -e
+    print_lb_snippet
+  }
+
+  sqlplus_q() {
+    local sql="$1"
+    docker exec -i "$CONTAINER" bash 2>/dev/null << DOCKEREOF | tr -d ' \n\r\t'
+printf '%s\n' "SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON" "${sql}" "EXIT" \
+  | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
+DOCKEREOF
+  }
+
+  echo ""
+  echo "════════════════════════════════════════════════════"
+  echo " Development Oracle (context=dev): $tag → HEAD"
+  echo "════════════════════════════════════════════════════"
+
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  docker network create "$NETWORK"
+  docker run -d --name "$CONTAINER" --network "$NETWORK" \
+    -e ORACLE_PASSWORD="$ORACLE_PWD" \
+    -e APP_USER="$DB_USER" \
+    -e APP_USER_PASSWORD="$DB_PASS" \
+    -e ORACLE_DATABASE="$DB" \
+    gvenzl/oracle-free:23-slim
+
+  echo -n "  Waiting for Oracle"
+  for i in $(seq 1 90); do
+    result=$(docker exec "$CONTAINER" bash -c "
+      printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
+      | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
+    " 2>/dev/null | tr -d ' \n\r\t' || true)
+    if [[ "$result" == "42" ]]; then
+      echo " ready."
+      break
+    fi
+    sleep 3
+    echo -n "."
+    if [[ $i -eq 90 ]]; then
+      echo " TIMEOUT"
+      fail "Oracle container failed to become ready"
+      return 1
+    fi
+  done
+
+  echo ""
+  echo "════ PHASE 1: apply $tag ════"
+  liquibase_ora "$version" "$LB_SRC"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase1 Liquibase $version succeeded"
+  else
+    fail "Phase1 Liquibase $version failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  SRC_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
+  assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
+
+  echo ""
+  echo "════ PHASE 2: apply HEAD ════"
+  liquibase_ora "HEAD" "$LB_HEAD"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase2 Liquibase HEAD succeeded"
+  else
+    fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
+    fail "Phase2 reported checksum validation failure"
+  else
+    ok "Phase2 no checksum validation failure"
+  fi
+
+  echo ""
+  echo "── Dev-oracle-from teardown ──"
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  rm -rf "$TMP"
+}
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 echo "════════════════════════════════════════════════════"
-echo " SITMUN Liquibase upgrade: 1.2.7 → 1.2.8 → HEAD fix"
+echo " SITMUN Liquibase upgrade"
 echo "════════════════════════════════════════════════════"
 
 case "$TARGET" in
@@ -374,8 +750,26 @@ case "$TARGET" in
     run_postgres
     run_oracle
     ;;
+  postgres-from)
+    run_postgres_from "${2:?usage: $0 postgres-from <X.Y.Z>}"
+    ;;
+  oracle-from)
+    run_oracle_from "${2:?usage: $0 oracle-from <X.Y.Z>}"
+    ;;
+  dev-oracle-from)
+    run_dev_oracle_from "${2:?usage: $0 dev-oracle-from <X.Y.Z>}"
+    ;;
+  all)
+    run_postgres
+    run_postgres_from 1.2.8
+    run_oracle
+    run_oracle_from 1.2.6
+    run_oracle_from 1.2.7
+    run_oracle_from 1.2.8
+    run_dev_oracle_from 1.2.6
+    ;;
   *)
-    echo "Usage: $0 [postgres|oracle|both]"
+    echo "Usage: $0 [postgres|oracle|both|postgres-from <ver>|oracle-from <ver>|dev-oracle-from <ver>|all]"
     exit 2
     ;;
 esac

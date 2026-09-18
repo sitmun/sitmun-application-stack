@@ -277,6 +277,14 @@ class PrefixAndAllowlistTest(unittest.TestCase):
             )
         )
 
+    def test_postgres_sequences_are_allowlisted(self) -> None:
+        self.assertTrue(
+            cci.is_allowlisted(
+                "profiles/postgres/liquibase",
+                "changelog/07_sequences.yaml",
+            )
+        )
+
     def test_development_changeset_4_is_allowlisted(self) -> None:
         self.assertTrue(
             cci.is_allowlisted(
