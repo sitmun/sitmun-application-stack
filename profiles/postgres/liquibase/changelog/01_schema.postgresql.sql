@@ -1,5 +1,6 @@
 --liquibase formatted sql
 --changeset sitmun:1 dbms:postgresql
+--validCheckSum: 9:5e70534cb73f2b7b81d9b8164e162036
 
 -- ===================================================================
 -- Application

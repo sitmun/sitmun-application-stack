@@ -285,6 +285,25 @@ class PrefixAndAllowlistTest(unittest.TestCase):
             )
         )
 
+    def test_valid_checksum_only_diff_passes(self) -> None:
+        diff = """diff --git a/profiles/postgres/liquibase/changelog/01_schema.postgresql.sql b/profiles/postgres/liquibase/changelog/01_schema.postgresql.sql
+--- a/profiles/postgres/liquibase/changelog/01_schema.postgresql.sql
++++ b/profiles/postgres/liquibase/changelog/01_schema.postgresql.sql
+@@ -2,0 +3 @@ --changeset sitmun:1 dbms:postgresql
++--validCheckSum: 9:5e70534cb73f2b7b81d9b8164e162036
+"""
+        self.assertTrue(cci.is_valid_checksum_only_diff(diff))
+
+    def test_schema_sql_edit_is_not_valid_checksum_only(self) -> None:
+        diff = """@@ -10,1 +10,1 @@
+-  APP_NAME VARCHAR(50),
++  APP_NAME VARCHAR(80),
+"""
+        self.assertFalse(cci.is_valid_checksum_only_diff(diff))
+
+    def test_empty_diff_is_not_valid_checksum_only(self) -> None:
+        self.assertFalse(cci.is_valid_checksum_only_diff(""))
+
 
 if __name__ == "__main__":
     unittest.main()

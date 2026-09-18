@@ -1,5 +1,7 @@
 --liquibase formatted sql
 --changeset sitmun:1 dbms:oracle
+--validCheckSum: 9:99cf8d3a597aeccf7d77f7a7e417469c
+--validCheckSum: 9:211fa448334b56313d53f73616d7e2b2
 
 -- ===================================================================
 -- Application
