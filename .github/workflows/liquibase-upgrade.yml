@@ -5,9 +5,16 @@ on:
     paths:
       - 'profiles/postgres/liquibase/**'
       - 'profiles/oracle/liquibase/**'
+      - 'profiles/development/backend/liquibase/**'
       - 'tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh'
+      - 'tools/tests/test_liquibase_codelist_auth_mode_swap.sh'
       - '.github/workflows/liquibase-upgrade.yml'
   workflow_dispatch:
+    inputs:
+      source:
+        description: Optional X.Y.Z override for a single postgres-from run
+        required: false
+        default: ''
 
 jobs:
   postgres-1-2-7-to-head:
@@ -27,3 +34,71 @@ jobs:
 
       - name: Upgrade 1.2.7 then 1.2.8 fail then HEAD
         run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
+
+  postgres-from:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ['1.2.8']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch source tag
+        run: git fetch --no-tags origin tag sitmun-application-stack/${{ matrix.source }}
+
+      - name: Upgrade ${{ matrix.source }} to HEAD
+        run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres-from ${{ matrix.source }}
+
+  postgres-auth-mode-swap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Auth-mode COD_ID swap (#45)
+        run: bash tools/tests/test_liquibase_codelist_auth_mode_swap.sh
+
+  oracle-from:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ['1.2.6', '1.2.7', '1.2.8']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch source tag
+        run: git fetch --no-tags origin tag sitmun-application-stack/${{ matrix.source }}
+
+      - name: Upgrade Oracle ${{ matrix.source }} to HEAD
+        run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from ${{ matrix.source }}
+
+  dev-oracle-from:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch 1.2.6 tag
+        run: git fetch --no-tags origin tag sitmun-application-stack/1.2.6
+
+      - name: Upgrade development Oracle 1.2.6 to HEAD
+        run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh dev-oracle-from 1.2.6
