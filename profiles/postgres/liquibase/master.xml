@@ -4,6 +4,7 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
   <include file="changelog/01_schema.postgresql.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/25_fix_auth_mode_swap.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/02_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/03_task_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/04_seed_data.yaml" relativeToChangelogFile="true"/>
