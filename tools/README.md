@@ -111,7 +111,7 @@ Coordinated stack version lives in root `VERSION`. Propagation and status:
 bash tools/scripts/bump-version.sh --status
 
 # Set coordinated version (e.g. release cut or SNAPSHOT bump)
-bash tools/scripts/bump-version.sh 1.2.8
+bash tools/scripts/bump-version.sh 1.2.9
 bash tools/scripts/bump-version.sh --status
 ```
 

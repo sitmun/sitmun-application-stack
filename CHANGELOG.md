@@ -6,19 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.9] - 2026-09-18
+
 ### Changed
 
 #### Admin Application
 
-- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes Sonar `lcov` / `ut_report`. Jest stubs AG Grid, echarts, and Material barrels. Form specs import standalone `EntityFormAlertsComponent`; `dialog-form` uses `configureLoggerForTests`. See `sitmun-admin-app` `[Unreleased]`.
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes Sonar `lcov` / `ut_report`. Jest stubs AG Grid, echarts, and Material barrels. Form specs import standalone `EntityFormAlertsComponent`; `dialog-form` uses `configureLoggerForTests`. See `sitmun-admin-app` `[1.2.9]`.
 
 #### Viewer Application
 
-- **Profile**: Cargo table headers and empty date cells match admin Positions. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177)).
-- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes `coverage/lcov.info`. See `sitmun-viewer-app` `[Unreleased]`.
+- **Profile**: Cargo table headers and empty date cells match admin Positions. See `sitmun-viewer-app` `[1.2.9]` ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177)).
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes `coverage/lcov.info`. See `sitmun-viewer-app` `[1.2.9]`.
 
 #### Stack-level
 
+- **Release**: Backend, admin, viewer, and proxy submodule pointers at `sitmun-*/1.2.9`.
 - **E2E**: Viewer `/user/profile` cargo table copy matches admin Positions ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177); `e2e/viewer/profile-positions.spec.ts`).
 - **E2E**: Viewer and admin session cookie refresh (`POST /api/authenticate/refresh`) plus kick when every cargo is expired ([sitmun-backend-core#264](https://github.com/sitmun/sitmun-backend-core/issues/264); `e2e/viewer/password-access.spec.ts`, `e2e/admin/login.spec.ts`, `e2e/mobile/edition-auth.spec.ts`).
 - **Setup**: `setup.sh` / `setup.ps1` create `.env` from `profiles/development-postgres.env` when missing (was production `profiles/postgres.env`).
@@ -32,11 +35,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Admin Application
 
-- **Users**: Positions tab Alta then Baja with editable Alta, empty-cell placeholders, and inverted-interval warning. See `sitmun-admin-app` `[Unreleased]` ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
+- **Users**: Positions tab Alta then Baja with editable Alta, empty-cell placeholders, and inverted-interval warning. See `sitmun-admin-app` `[1.2.9]` ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
 
 #### Viewer Application
 
-- **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[Unreleased]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
+- **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[1.2.9]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
 
 #### Stack-level
 
@@ -48,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **E2E**: HTML GetFeatureInfo nested-context probe against the WMS stub (`e2e/viewer/gfi-html-embed.spec.ts`, project `viewer-gfi`; [sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). Stub `GET /embed/allow` has no frame-ancestors block. `GET /embed/deny` sends `X-Frame-Options: DENY`.
 - **CI**: `e2e-mobile-android` launches the emulator with `-gpu software` and no snapshot load/save. The action default `-gpu swiftshader_indirect` is deprecated (emulator 36.4.9) and is the usual CI ColorBuffer path.
 - **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
-- **CI**: `.github/workflows/liquibase-upgrade.yml` runs `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres` on profile Liquibase PRs (1.2.7 apply, 1.2.8 checksum fail, HEAD incrementals 19/20).
+- **CI**: `.github/workflows/liquibase-upgrade.yml` covers postgres 1.2.7→HEAD and 1.2.8 greenfield, pre-1.2.7 auth-mode swap, Oracle 1.2.6–1.2.8, and development Oracle 1.2.6 (`--contexts=dev`). Origin 1.2.6 CSVs cannot replay under Liquibase 4.29.
 - **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
 - **Liquibase**: Append document-export (TTY 17), map-image (TTY 18), PDF export tasks, and default template regions as new tip incrementals (dev 70-72, postgres/oracle 22-24). Closed PR 50 history was not replayed. GeoServer `stm_service.csv` scrub is unchanged.
 - **E2E**: MIA overlay PDF export (authenticated + public) via HAL type-17 task and `POST /api/tasks/template/export` (`e2e/mia-cross/mia-template-viewer.spec.ts`, `e2e/mia-cross/mia-public-viewer.spec.ts`). H2 `bootRun` stages `e2e/fixtures/ensure-document-export-task-type.yaml` beside the backend master changelog so `STM_TSK_TYP` 17 exists when the submodule has not published that type yet.
@@ -64,24 +67,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Admin Application
 
 - **Literal translations**: Infinite grid reload no longer sticks on the loading spinner. Stale AG Grid `getRows` now complete so a replacement datasource can load ([sitmun-admin-app#461](https://github.com/sitmun/sitmun-admin-app/pull/461)).
-- **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[Unreleased]`.
-- **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[Unreleased]`.
-- **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[Unreleased]`.
-- **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[Unreleased]`.
-- **Services / Capabilities**: Admin Fetch details/layers POST `helpers/capabilities` JSON; backend builds GetCapabilities (keeps MapServer `?map=`) and can send origin HTTP Basic. GET helper is removed. See `sitmun-backend-core` / `sitmun-admin-app` `[Unreleased]`.
-- **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[Unreleased]`.
-- **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[Unreleased]`.
-- **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[Unreleased]`.
-- **Templates / TipTap**: Mustache `img`/`iframe` visual placeholders + `src`/`alt`/`title` inspector; single-quoted `data-sitmun-each` alias rename. See `sitmun-admin-app` `[Unreleased]`.
-- **Templates / Preview**: Preview language stays Template-pane-only; Sources inherits it. See `sitmun-admin-app` `[Unreleased]`.
+- **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[1.2.9]`.
+- **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[1.2.9]`.
+- **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[1.2.9]`.
+- **Services / Capabilities**: Admin Fetch details/layers POST `helpers/capabilities` JSON; backend builds GetCapabilities (keeps MapServer `?map=`) and can send origin HTTP Basic. GET helper is removed. See `sitmun-backend-core` / `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Mustache `img`/`iframe` visual placeholders + `src`/`alt`/`title` inspector; single-quoted `data-sitmun-each` alias rename. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Preview**: Preview language stays Template-pane-only; Sources inherits it. See `sitmun-admin-app` `[1.2.9]`.
 
 #### Viewer Application
 
-- **Map**: Print preview sizes the map to the selected page format instead of the browser window ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)). See `sitmun-viewer-app` `[Unreleased]`.
-- **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[Unreleased]`.
-- **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[Unreleased]`.
-- **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[Unreleased]`.
-- **Map / FeatureInfo**: HTML GetFeatureInfo embed probe after `load`. Nested context when embeddable; new tab when `X-Frame-Options` / `frame-ancestors` leave `about:blank` ([sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). See `sitmun-viewer-app` `[Unreleased]`.
+- **Map**: Print preview sizes the map to the selected page format instead of the browser window ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)). See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / FeatureInfo**: HTML GetFeatureInfo embed probe after `load`. Nested context when embeddable; new tab when `X-Frame-Options` / `frame-ancestors` leave `about:blank` ([sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). See `sitmun-viewer-app` `[1.2.9]`.
 
 #### Edition Mobile App
 
@@ -107,9 +110,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Backend Core
 
 - **Authorization**: Client-config lists, profile, and roles omit expired `UserPosition` grants. Inclusive last civil day. `public`/`admin` exempt. `/api/authenticate/proxy` unchanged ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184)).
-- **Services / Capabilities**: `POST /api/helpers/capabilities` form overlay DTO, server-side WMS GetCapabilities URL, origin HTTP Basic; GET removed. Null Service password PUT keeps `SER_PWD`; auth other than `None` forces `isProxied`. See `sitmun-backend-core` `[Unreleased]`.
-- **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[Unreleased]`.
-- **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[Unreleased]`.
+- **Services / Capabilities**: `POST /api/helpers/capabilities` form overlay DTO, server-side WMS GetCapabilities URL, origin HTTP Basic; GET removed. Null Service password PUT keeps `SER_PWD`; auth other than `None` forces `isProxied`. See `sitmun-backend-core` `[1.2.9]`.
+- **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[1.2.9]`.
+- **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[1.2.9]`.
 
 ## [1.2.8] - 2026-07-30
 
@@ -1148,7 +1151,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.9...HEAD
+[1.2.9]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...sitmun-application-stack/1.2.9
 [1.2.8]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...sitmun-application-stack/1.2.8
 [1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6
