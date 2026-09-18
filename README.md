@@ -303,14 +303,12 @@ docker compose up -d
 cp profiles/development-oracle.env .env
 docker compose up -d
 
-# External PostgreSQL (edit .env first)
-cp profiles/postgres-external.env .env
-# Edit .env with your connection details
+# External PostgreSQL (set connection details in .env, then start app services only)
+# See "External Database" section below for the required variables
 docker compose up -d front backend proxy
 
-# External Oracle (edit .env first)
-cp profiles/oracle-external.env .env
-# Edit .env with your connection details
+# External Oracle (set connection details in .env, then start app services only)
+# See "External Database" section below for the required variables
 docker compose up -d front backend proxy
 ```
 
@@ -406,12 +404,17 @@ docker compose logs -f oracle
 
 For an external database not managed by Docker Compose:
 
-1. Copy the appropriate external profile to `.env` and edit with your connection details:
+1. Set the required variables in `.env` (no template file is provided; see the variables below):
 
-   ```bash
-   cp profiles/postgres-external.env .env
-   # Or: cp profiles/oracle-external.env .env
-   # Edit .env with your connection details
+   ```env
+   COMPOSE_PROFILES=
+   SPRING_PROFILES_ACTIVE=postgres
+   DATABASE_URL=jdbc:postgresql://your-host:5432/
+   DATABASE=sitmun3
+   DATABASE_USERNAME=sitmun3
+   DATABASE_PASSWORD=sitmun3
+   SITMUN_USER_SECRET=<32+ char random value>
+   MIDDLEWARE_SECRET=<32+ char random value>
    ```
 
 2. Start services without a database container:
@@ -719,7 +722,7 @@ For debugging issues in a Docker environment, use the `docker-dev` configuration
 
 ```bash
 # Build Docker image with source maps for debugging
-BUILD_MODE=docker-dev docker compose build front
+ENVIRONMENT=development docker compose build front
 ```
 
 This creates unoptimized builds with source maps enabled, while still using the template-based API URL configuration for Docker.
