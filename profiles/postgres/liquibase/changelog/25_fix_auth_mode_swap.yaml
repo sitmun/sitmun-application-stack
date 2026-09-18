@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 25-fix-auth-mode-swap
+      author: sitmun
+      runOnChange: false
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT COUNT(*) FROM STM_CODELIST
+              WHERE COD_ID = 53
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = 'None'
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = '__sitmun_tmp_auth_mode__',
+                  COD_DESCRIPTION = '__sitmun_tmp_auth_mode__'
+              WHERE COD_ID = 53
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = 'None'
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = 'None',
+                  COD_DESCRIPTION = 'None'
+              WHERE COD_ID = 54
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = 'HTTP Basic authentication'
+                AND EXISTS (
+                  SELECT 1 FROM STM_CODELIST t
+                  WHERE t.COD_ID = 53
+                    AND t.COD_LIST = 'service.authenticationMode'
+                    AND t.COD_VALUE = '__sitmun_tmp_auth_mode__'
+                )
+        - sql:
+            sql: |
+              UPDATE STM_CODELIST
+              SET COD_VALUE = 'HTTP Basic authentication',
+                  COD_DESCRIPTION = 'HTTP Basic authentication'
+              WHERE COD_ID = 53
+                AND COD_LIST = 'service.authenticationMode'
+                AND COD_VALUE = '__sitmun_tmp_auth_mode__'
