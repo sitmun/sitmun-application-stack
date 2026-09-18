@@ -42,6 +42,7 @@ TREE_ALLOWLIST: dict[str, tuple[str, ...]] = {
         "changelog/05_translations/",
         "changelog/06_params.yaml",
         "changelog/06_params/",
+        "changelog/07_sequences.yaml",
     ),
     "profiles/oracle/liquibase": (
         "changelog/02_codelists.yaml",

@@ -100,7 +100,7 @@ bash tools/scripts/checkout-latest-tags.sh
 
 Drafts are **not** auto-wired into `master.xml`. Do not rewrite `sitmun:1`; only add incremental changesets after review. Default draft prefix is `22_schema_drift_fix`. Java field defaults / Bean Validation are annotated as INFO via `extract_jpa_column_hints.py`. They do not invent SQL `DEFAULT` clauses.
 
-Applied profile/schema changesets are frozen. `check_changelog_immutability.py` fails a diff that edits a shipped include numbered below the HEAD tip. Includes that were not on the diff base (new incrementals in the same PR) are allowed. Allowlisted exceptions are generated production seeds `02`–`06` (`runOnChange`) and development `04_initial_data_dev` (`validCheckSum: ANY`). Adding only `--validCheckSum` lines to `01_schema.*` is also allowed so historical `sitmun:1` hashes can be accepted without rewriting the schema. `check_changelog_integrity.py` is a git-ancestry report on backend-core files. It does not fail CI.
+Applied profile/schema changesets are frozen. `check_changelog_immutability.py` fails a diff that edits a shipped include numbered below the HEAD tip. Includes that were not on the diff base (new incrementals in the same PR) are allowed. Allowlisted exceptions are generated production seeds `02`–`06` (`runOnChange`), production Postgres `07_sequences.yaml` (`runOnChange`), and development `04_initial_data_dev` (`validCheckSum: ANY`). Adding only `--validCheckSum` lines to `01_schema.*` is also allowed so historical `sitmun:1` hashes can be accepted without rewriting the schema. `check_changelog_integrity.py` is a git-ancestry report on backend-core files. It does not fail CI.
 
 ### Version and release
 
