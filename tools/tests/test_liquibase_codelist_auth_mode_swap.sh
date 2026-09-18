@@ -62,9 +62,9 @@ liquibase_update() {
     update 2>&1)
   local rc=$?
   set -e
-  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR)" | head -30
+  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR)" | head -30 || true
   if [[ $rc -ne 0 ]]; then
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|unique\|constraint\|STM_COD" | head -20
+    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|unique\|constraint\|STM_COD" | head -20 || true
     fail "Liquibase update '$label' failed (exit $rc)"
     return 1
   fi

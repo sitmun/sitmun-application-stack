@@ -51,32 +51,22 @@ extract_tag_liquibase() {
   echo "$dest/profiles/$profile/liquibase"
 }
 
+PREPARE_LB="$REPO_ROOT/tools/bin/prepare_extracted_liquibase.py"
+
 quote_csv_embedded_commas() {
-  local changelog_dir="$1"
-  python3 - "$changelog_dir" <<'PY'
-from pathlib import Path
-import sys
-root = Path(sys.argv[1])
-for path in root.rglob("*.csv"):
-    lines = path.read_text(encoding="utf-8").splitlines()
-    if len(lines) < 2:
-        continue
-    width = lines[0].count(",") + 1
-    out = [lines[0]]
-    changed = False
-    for line in lines[1:]:
-        parts = line.split(",")
-        if len(parts) > width:
-            head, tail = parts[: width - 1], parts[width - 1 :]
-            last = ",".join(tail)
-            if not (last.startswith('"') and last.endswith('"')):
-                last = '"' + last.replace('"', '""') + '"'
-            line = ",".join(head + [last])
-            changed = True
-        out.append(line)
-    if changed:
-        path.write_text("\n".join(out) + "\n", encoding="utf-8")
-PY
+  python3 "$PREPARE_LB" --csv-width "$1"
+}
+
+alias_csv_case() {
+  python3 "$PREPARE_LB" --alias-case "$1"
+}
+
+print_lb_snippet() {
+  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40 || true
+}
+
+print_lb_errors() {
+  echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30 || true
 }
 
 stack_tag() {
@@ -115,7 +105,7 @@ run_postgres() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   psql_q() {
@@ -153,7 +143,7 @@ run_postgres() {
     ok "Phase1 Liquibase 1.2.7 succeeded"
   else
     fail "Phase1 Liquibase 1.2.7 failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
 
   P1_MD5=$(psql_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
@@ -196,7 +186,7 @@ run_postgres() {
     ok "Phase3 Liquibase HEAD fix succeeded"
   else
     fail "Phase3 Liquibase HEAD fix failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.postgresql.sql::1::sitmun"; then
     fail "Phase3 re-ran sitmun:1 (should only validate)"
@@ -266,7 +256,7 @@ run_postgres_from() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   psql_q() {
@@ -304,7 +294,7 @@ run_postgres_from() {
     ok "Phase1 Liquibase $version succeeded"
   else
     fail "Phase1 Liquibase $version failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
   SRC_MD5=$(psql_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
   assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
@@ -317,7 +307,7 @@ run_postgres_from() {
     ok "Phase2 Liquibase HEAD succeeded"
   else
     fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
     fail "Phase2 reported checksum validation failure"
@@ -375,7 +365,7 @@ run_oracle() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   sqlplus_q() {
@@ -427,7 +417,7 @@ DOCKEREOF
     ok "Phase1 Liquibase 1.2.7 succeeded"
   else
     fail "Phase1 Liquibase 1.2.7 failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
 
   P1_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
@@ -470,7 +460,7 @@ DOCKEREOF
     ok "Phase3 Liquibase HEAD fix succeeded"
   else
     fail "Phase3 Liquibase HEAD fix failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -q "Running Changeset:.*01_schema.oracle.sql::1::sitmun"; then
     fail "Phase3 re-ran sitmun:1 (should only validate)"
@@ -541,7 +531,7 @@ run_oracle_from() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   sqlplus_q() {
@@ -593,7 +583,7 @@ DOCKEREOF
     ok "Phase1 Liquibase $version succeeded"
   else
     fail "Phase1 Liquibase $version failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
   SRC_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
   assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
@@ -605,7 +595,7 @@ DOCKEREOF
     ok "Phase2 Liquibase HEAD succeeded"
   else
     fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
     fail "Phase2 reported checksum validation failure"
@@ -643,7 +633,11 @@ run_dev_oracle_from() {
   TMP=$(mktemp -d)
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
-  LB_HEAD="$REPO_ROOT/profiles/development/backend/liquibase"
+  alias_csv_case "$LB_SRC"
+  LB_HEAD="$TMP/head"
+  mkdir -p "$LB_HEAD"
+  cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
+  alias_csv_case "$LB_HEAD"
 
   liquibase_ora() {
     local label="$1" changelog_dir="$2"
@@ -661,7 +655,7 @@ run_dev_oracle_from() {
       update 2>&1)
     LB_RC=$?
     set -e
-    echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40
+    print_lb_snippet
   }
 
   sqlplus_q() {
@@ -713,7 +707,7 @@ DOCKEREOF
     ok "Phase1 Liquibase $version succeeded"
   else
     fail "Phase1 Liquibase $version failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -20
+    print_lb_errors
   fi
   SRC_MD5=$(sqlplus_q "SELECT MD5SUM FROM DATABASECHANGELOG WHERE ID='1' AND AUTHOR='sitmun';")
   assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
@@ -725,7 +719,7 @@ DOCKEREOF
     ok "Phase2 Liquibase HEAD succeeded"
   else
     fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
-    echo "$LB_OUTPUT" | grep -i "error\|exception\|failed\|checksum" | head -30
+    print_lb_errors
   fi
   if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
     fail "Phase2 reported checksum validation failure"

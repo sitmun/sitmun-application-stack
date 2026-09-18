@@ -8,6 +8,8 @@ on:
       - 'profiles/development/backend/liquibase/**'
       - 'tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh'
       - 'tools/tests/test_liquibase_codelist_auth_mode_swap.sh'
+      - 'tools/tests/test_prepare_extracted_liquibase.py'
+      - 'tools/bin/prepare_extracted_liquibase.py'
       - '.github/workflows/liquibase-upgrade.yml'
   workflow_dispatch:
     inputs:
@@ -17,6 +19,16 @@ on:
         default: ''
 
 jobs:
+  prepare-extracted-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extracted-tree helper unit tests
+        run: python3 tools/tests/test_prepare_extracted_liquibase.py
+
   postgres-1-2-7-to-head:
     runs-on: ubuntu-latest
     timeout-minutes: 20
