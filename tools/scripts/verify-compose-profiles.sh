@@ -41,18 +41,10 @@ fail() { echo "[FAIL] $*"; FAIL=$((FAIL + 1)); ERRORS+=("$*"); }
 EPHEMERAL_USER_SECRET="verify-compose-profiles-user-secret-32ch"
 EPHEMERAL_MIDDLEWARE_SECRET="verify-compose-profiles-middleware-secret-32"
 
-# Project counter using a temp file so it persists across function calls
-# (command substitution creates subshells that can't mutate the parent counter).
-COUNTER_FILE="$(mktemp)"
-echo 0 > "$COUNTER_FILE"
-
-next_project() {
-  local n
-  n=$(cat "$COUNTER_FILE")
-  n=$((n + 1))
-  echo "$n" > "$COUNTER_FILE"
-  echo "sitmun-verify-$$-${n}"
-}
+# Fixed project names, one per ENVIRONMENT. All targets within a project share images,
+# so images are built once (not once per target as the old per-target project names caused).
+PROJECT_DEV="sitmun-verify-dev"
+PROJECT_PROD="sitmun-verify-prod"
 
 make_env_file() {
   local base="$1" extra="$2" out="$3"
@@ -64,6 +56,17 @@ make_env_file() {
       echo "$extra"
     fi
   } > "$out"
+}
+
+# Derive the fixed project name from the env file content.
+# Development env files set ENVIRONMENT=development; all others use the production project.
+project_for() {
+  local env_file="$1"
+  if grep -q 'ENVIRONMENT=development' "$env_file" 2>/dev/null; then
+    echo "$PROJECT_DEV"
+  else
+    echo "$PROJECT_PROD"
+  fi
 }
 
 # Wait for a service to return HTTP 2xx, up to $2 seconds.
@@ -79,11 +82,63 @@ wait_healthy() {
   return 0
 }
 
+# Strings whose presence in the backend log indicates a migration or startup failure.
+BACKEND_FAILURE_MARKERS=(
+  "APPLICATION FAILED TO START"
+  "UnexpectedLiquibaseException"
+  "ValidationFailedException"
+  "ChangeLogParseException"
+  "liquibase.exception"
+  "Migration failed for changeset"
+  "LiquibaseException"
+)
+
+# Assert the backend container started cleanly:
+#   1. No failure markers in the log.
+#   2. 'Started Application in' appears in the log (server came up).
+#   3. 'Started Application in' appears after the last liquibase line (migrations first).
+#   4. RestartCount is 0 (no crash loop masked by restart:always).
+assert_backend_log() {
+  local label="$1"; shift
+  local log cid restarts gate_ok=true
+
+  log="$(docker compose "$@" logs --no-color --timestamps backend 2>/dev/null || true)"
+  cid="$(docker compose "$@" ps -q backend 2>/dev/null | head -1 || true)"
+  restarts="$(docker inspect -f '{{.RestartCount}}' "$cid" 2>/dev/null || echo 0)"
+
+  for marker in "${BACKEND_FAILURE_MARKERS[@]}"; do
+    if echo "$log" | grep -q "$marker"; then
+      fail "$label: backend log: failure marker '$marker'"
+      gate_ok=false
+    fi
+  done
+
+  local start_line liq_last_line
+  start_line="$(echo "$log" | grep -n "Started Application in" | tail -1 | cut -d: -f1 || true)"
+  liq_last_line="$(echo "$log" | grep -in "liquibase" | tail -1 | cut -d: -f1 || true)"
+
+  if [[ -z "$start_line" ]]; then
+    fail "$label: backend log: missing 'Started Application in'"
+    gate_ok=false
+  elif [[ -n "$liq_last_line" && "$start_line" -le "$liq_last_line" ]]; then
+    fail "$label: backend log: 'Started Application in' (line $start_line) not after last liquibase line ($liq_last_line)"
+    gate_ok=false
+  fi
+
+  if [[ "$restarts" != "0" ]]; then
+    fail "$label: backend RestartCount=$restarts (crash loop masked by restart:always)"
+    gate_ok=false
+  fi
+
+  if [[ "$gate_ok" == "true" ]]; then
+    pass "$label: backend log gate"
+  fi
+}
+
 run_target() {
   local label="$1" env_file="$2" compose_file="${3:-}"
   local project
-  project="$(next_project)"
-  ACTIVE_PROJECTS+=("$project")
+  project="$(project_for "$env_file")"
 
   local compose_args=(-p "$project" --env-file "$env_file")
   if [[ -n "$compose_file" ]]; then
@@ -106,12 +161,6 @@ run_target() {
   if [[ "$up_ok" == "false" ]]; then
     fail "$label: up failed"
     docker compose "${compose_args[@]}" down -v --remove-orphans 2>/dev/null || true
-    # Remove from active list since we already tore down.
-    local new_active=()
-    for p in "${ACTIVE_PROJECTS[@]}"; do
-      [[ "$p" != "$project" ]] && new_active+=("$p")
-    done
-    ACTIVE_PROJECTS=("${new_active[@]:-}")
     return
   fi
 
@@ -143,66 +192,52 @@ run_target() {
     ok=false
   fi
 
+  # Backend-log gate: assert Liquibase completed before accepting requests, no restarts.
+  assert_backend_log "$label" "${compose_args[@]}"
+
   if [[ "$ok" == "true" ]]; then
     pass "$label"
   fi
 
   docker compose "${compose_args[@]}" down -v --remove-orphans 2>/dev/null || true
-  # Remove from active list since teardown is done.
-  local new_active=()
-  for p in "${ACTIVE_PROJECTS[@]}"; do
-    [[ "$p" != "$project" ]] && new_active+=("$p")
-  done
-  ACTIVE_PROJECTS=("${new_active[@]:-}")
   # Give the Docker daemon a moment to release ports and volumes before the next target.
   sleep 5
 }
 
 # ---------------------------------------------------------------------------
-# Temp dir for env file copies + project registry for EXIT cleanup
+# Temp dir for env file copies + cleanup trap
 # ---------------------------------------------------------------------------
 
 TMPDIR_ENV="$(mktemp -d)"
-ACTIVE_PROJECTS=()
 
 cleanup_all() {
-  for proj in "${ACTIVE_PROJECTS[@]:-}"; do
-    docker compose -p "$proj" down -v --remove-orphans 2>/dev/null || true
-  done
-  rm -rf "$TMPDIR_ENV" "$COUNTER_FILE"
+  docker compose -p "$PROJECT_DEV"  down -v --remove-orphans 2>/dev/null || true
+  docker compose -p "$PROJECT_PROD" down -v --remove-orphans 2>/dev/null || true
+  rm -rf "$TMPDIR_ENV"
 }
 trap 'cleanup_all' EXIT
 
 # ---------------------------------------------------------------------------
-# Build all images (no-cache)
+# Build all images once per ENVIRONMENT project
 # ---------------------------------------------------------------------------
 
 if [[ "$SKIP_BUILD" == "false" ]]; then
   echo ""
-  echo "=== Building images (no-cache) ==="
+  echo "=== Building images ==="
 
-  if ENVIRONMENT=development docker compose build --no-cache front 2>&1 | tail -3; then
-    pass "build: ENVIRONMENT=development front"
+  # Development project: --no-cache so the first pass is genuinely from scratch.
+  if ENVIRONMENT=development docker compose -p "$PROJECT_DEV" build --no-cache front backend proxy mbtiles 2>&1 | tail -3; then
+    pass "build: dev project (ENVIRONMENT=development)"
   else
-    fail "build: ENVIRONMENT=development front"
+    fail "build: dev project"
   fi
 
-  if ENVIRONMENT=production docker compose build --no-cache front 2>&1 | tail -3; then
-    pass "build: ENVIRONMENT=production front"
+  # Production project: draws on the cache this run just created for backend/proxy/mbtiles.
+  # front rebuilds from the layer that consumes ARG ENVIRONMENT because the value changed.
+  if ENVIRONMENT=production docker compose -p "$PROJECT_PROD" build front backend proxy mbtiles 2>&1 | tail -3; then
+    pass "build: prod project (ENVIRONMENT=production)"
   else
-    fail "build: ENVIRONMENT=production front"
-  fi
-
-  if docker compose build --no-cache backend proxy 2>&1 | tail -3; then
-    pass "build: backend proxy"
-  else
-    fail "build: backend proxy"
-  fi
-
-  if docker compose build --no-cache mbtiles 2>&1 | tail -3; then
-    pass "build: mbtiles"
-  else
-    fail "build: mbtiles"
+    fail "build: prod project"
   fi
 else
   echo ""
