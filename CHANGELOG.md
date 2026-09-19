@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [1.2.9] - 2026-09-18
+## [1.2.9] - 2026-09-19
 
 ### Changed
 
@@ -62,10 +62,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **Docker**: `front/Dockerfile` caps the viewer webpack heap at 4096 MiB so `docker compose build front` fits the default Docker VM on hosts where `NODE_OPTIONS` is unset.
+- **Tooling**: `tools/scripts/verify-compose-profiles.sh` now builds images once per `ENVIRONMENT` (`sitmun-verify-dev` / `sitmun-verify-prod`) and reuses them across all 20 targets instead of rebuilding per target. A backend-log gate asserts Liquibase completed, `Started Application in` appears after the last Liquibase line, and `RestartCount` is 0.
+- **Tooling**: `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh` gains a `dev-postgres-from` path and a `matrix` target covering postgres, oracle, dev-postgres, and dev-oracle from every tag back to 1.2.3. Version comparisons are now numeric (`sort -V`) instead of lexicographic, fixing the `1.2.10 < 1.2.7` misclassification.
 - **E2E**: Edition valid-login and touristic Maestro flows use WebView DevTools hierarchy; valid login dismisses the keyboard before submit. Orchestrator no longer runs `am kill-all` (ANR). Maestro debug output is written under `test-results/mobile-android/maestro/` for the CI artifact.
+
+#### Backend Core
+
+- **Dashboard**: Users-per-application counts no longer dropped by date-series parsing; user activity bucketed by day; per-application count excludes expired `UserPosition` grants and children-only configurations. See `sitmun-backend-core` `[1.2.9]`.
 
 #### Admin Application
 
+- **Dashboard**: Registration chart plots every day instead of capping at the last 30 points. See `sitmun-admin-app` `[1.2.9]`.
 - **Literal translations**: Infinite grid reload no longer sticks on the loading spinner. Stale AG Grid `getRows` now complete so a replacement datasource can load ([sitmun-admin-app#461](https://github.com/sitmun/sitmun-admin-app/pull/461)).
 - **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[1.2.9]`.
 - **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[1.2.9]`.
