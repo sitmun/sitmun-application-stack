@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # test_liquibase_1.2.7_to_head_upgrade.sh
 # Upgrade paths:
-#   postgres|oracle|both — 1.2.7 → 1.2.8 (checksum fail) → HEAD
-#   postgres-from X.Y.Z | oracle-from X.Y.Z | dev-oracle-from X.Y.Z — tag → HEAD
-#   all — every path above
+#   postgres|oracle|both     — 1.2.7 → 1.2.8 (checksum fail) → HEAD
+#   postgres-from X.Y.Z      — tag → HEAD (postgres profile)
+#   oracle-from X.Y.Z        — tag → HEAD (oracle profile)
+#   dev-postgres-from X.Y.Z  — tag → HEAD (development profile, --contexts=dev, postgres)
+#   dev-oracle-from X.Y.Z    — tag → HEAD (development profile, --contexts=dev, oracle)
+#   all                      — the 1.2.7/1.2.8 checksum paths + a curated from-set
+#   matrix                   — all four from-paths for every tag 1.2.3 through 1.2.8
 #
 # Usage:
 #   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
 #   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres-from 1.2.6
-#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from 1.2.8
-#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh all
+#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh dev-postgres-from 1.2.3
+#   bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh matrix
 
 set -uo pipefail
 
@@ -71,6 +75,12 @@ print_lb_errors() {
 
 stack_tag() {
   echo "sitmun-application-stack/$1"
+}
+
+# True if $1 is strictly less than $2 using semantic version ordering (sort -V).
+# Uses sort -V so "1.2.10" > "1.2.7" rather than the lexicographic "<" which gets it wrong.
+version_lt() {
+  [[ "$1" != "$2" && "$(printf '%s\n' "$1" "$2" | sort -V | head -1)" == "$1" ]]
 }
 
 
@@ -235,7 +245,7 @@ run_postgres_from() {
   TMP=$(mktemp -d)
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" postgres "$TMP/src")
-  if [[ "$version" < "1.2.7" ]]; then
+  if version_lt "$version" "1.2.7"; then
     quote_csv_embedded_commas "$LB_SRC"
   fi
   LB_HEAD="$REPO_ROOT/profiles/postgres/liquibase"
@@ -510,7 +520,7 @@ run_oracle_from() {
   TMP=$(mktemp -d)
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" oracle "$TMP/src")
-  if [[ "$version" < "1.2.7" ]]; then
+  if version_lt "$version" "1.2.7"; then
     quote_csv_embedded_commas "$LB_SRC"
   fi
   LB_HEAD="$REPO_ROOT/profiles/oracle/liquibase"
@@ -634,6 +644,9 @@ run_dev_oracle_from() {
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
   alias_csv_case "$LB_SRC"
+  if version_lt "$version" "1.2.7"; then
+    quote_csv_embedded_commas "$LB_SRC"
+  fi
   LB_HEAD="$TMP/head"
   mkdir -p "$LB_HEAD"
   cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
@@ -737,6 +750,114 @@ DOCKEREOF
   rm -rf "$TMP"
 }
 
+# ── Development PostgreSQL from tag ───────────────────────────────────────────
+
+run_dev_postgres_from() {
+  local version="$1"
+  local tag
+  tag=$(stack_tag "$version")
+  local CONTAINER=sitmun_upgrade_devpg_from
+  local NETWORK=sitmun_upgrade_devpg_from_net
+  local DB=sitmun_upgrade
+  local DB_USER=sitmun3
+  local DB_PASS=sitmun3
+  local TMP
+  TMP=$(mktemp -d)
+  local LB_SRC LB_HEAD
+  LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
+  alias_csv_case "$LB_SRC"
+  if version_lt "$version" "1.2.7"; then
+    quote_csv_embedded_commas "$LB_SRC"
+  fi
+  LB_HEAD="$TMP/head"
+  mkdir -p "$LB_HEAD"
+  cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
+  alias_csv_case "$LB_HEAD"
+
+  liquibase_pg() {
+    local label="$1" changelog_dir="$2"
+    echo ""
+    echo "── Liquibase: $label ──"
+    set +e
+    # context=dev: 04_initial_data_prod maps USE_GENERIC, which
+    # 01_schema.postgresql.sql never created (04_dev CSV omits that column).
+    LB_OUTPUT=$(docker run --rm \
+      --network "$NETWORK" \
+      -v "$changelog_dir:/liquibase/changelog:ro" \
+      liquibase/liquibase:4.29 \
+      --url="jdbc:postgresql://$CONTAINER:5432/$DB" \
+      --username="$DB_USER" \
+      --password="$DB_PASS" \
+      --changeLogFile="changelog/master.xml" \
+      --contexts=dev \
+      update 2>&1)
+    LB_RC=$?
+    set -e
+    print_lb_snippet
+  }
+
+  psql_q() {
+    docker exec "$CONTAINER" psql -U "$DB_USER" -d "$DB" -t -A -c "$1" 2>/dev/null | tr -d ' \n'
+  }
+
+  echo ""
+  echo "════════════════════════════════════════════════════"
+  echo " Development PostgreSQL (context=dev): $tag → HEAD"
+  echo "════════════════════════════════════════════════════"
+
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  docker network create "$NETWORK"
+  docker run -d --name "$CONTAINER" --network "$NETWORK" \
+    -e POSTGRES_DB="$DB" \
+    -e POSTGRES_USER="$DB_USER" \
+    -e POSTGRES_PASSWORD="$DB_PASS" \
+    postgres:16-alpine
+
+  echo -n "  Waiting for Postgres"
+  for _ in $(seq 1 40); do
+    if docker exec "$CONTAINER" pg_isready -U "$DB_USER" -d "$DB" -q 2>/dev/null; then
+      echo " ready."
+      break
+    fi
+    sleep 1
+    echo -n "."
+  done
+
+  echo ""
+  echo "════ PHASE 1: apply $tag ════"
+  liquibase_pg "$version" "$LB_SRC"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase1 Liquibase $version succeeded"
+  else
+    fail "Phase1 Liquibase $version failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  SRC_MD5=$(psql_q "SELECT md5sum FROM databasechangelog WHERE id='1' AND author='sitmun';")
+  assert_ne "Phase1 sitmun:1 MD5SUM set" "" "$SRC_MD5"
+
+  echo ""
+  echo "════ PHASE 2: apply HEAD ════"
+  liquibase_pg "HEAD" "$LB_HEAD"
+  if [[ $LB_RC -eq 0 ]]; then
+    ok "Phase2 Liquibase HEAD succeeded"
+  else
+    fail "Phase2 Liquibase HEAD failed (exit $LB_RC)"
+    print_lb_errors
+  fi
+  if echo "$LB_OUTPUT" | grep -qi "Validation Failed\|checksum"; then
+    fail "Phase2 reported checksum validation failure"
+  else
+    ok "Phase2 no checksum validation failure"
+  fi
+
+  echo ""
+  echo "── Dev-postgres-from teardown ──"
+  docker rm -f "$CONTAINER" 2>/dev/null || true
+  docker network rm "$NETWORK" 2>/dev/null || true
+  rm -rf "$TMP"
+}
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 echo "════════════════════════════════════════════════════"
@@ -756,6 +877,9 @@ case "$TARGET" in
   oracle-from)
     run_oracle_from "${2:?usage: $0 oracle-from <X.Y.Z>}"
     ;;
+  dev-postgres-from)
+    run_dev_postgres_from "${2:?usage: $0 dev-postgres-from <X.Y.Z>}"
+    ;;
   dev-oracle-from)
     run_dev_oracle_from "${2:?usage: $0 dev-oracle-from <X.Y.Z>}"
     ;;
@@ -766,10 +890,19 @@ case "$TARGET" in
     run_oracle_from 1.2.6
     run_oracle_from 1.2.7
     run_oracle_from 1.2.8
+    run_dev_postgres_from 1.2.6
     run_dev_oracle_from 1.2.6
     ;;
+  matrix)
+    for v in 1.2.3 1.2.4 1.2.5 1.2.6 1.2.7 1.2.8; do
+      run_postgres_from "$v"
+      run_oracle_from "$v"
+      run_dev_postgres_from "$v"
+      run_dev_oracle_from "$v"
+    done
+    ;;
   *)
-    echo "Usage: $0 [postgres|oracle|both|postgres-from <ver>|oracle-from <ver>|dev-oracle-from <ver>|all]"
+    echo "Usage: $0 [postgres|oracle|both|postgres-from <ver>|oracle-from <ver>|dev-postgres-from <ver>|dev-oracle-from <ver>|all|matrix]"
     exit 2
     ;;
 esac
