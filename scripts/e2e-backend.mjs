@@ -1,36 +1,73 @@
 #!/usr/bin/env node
-import { spawn, execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { copyFileSync, cpSync, existsSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { attachChildLifecycle, fail, isWindows, spawnDetached } from './e2e-process.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const stackRoot = resolve(__dirname, '..');
 const backendRoot = join(stackRoot, 'back', 'backend', 'sitmun-backend-core');
-const changelog = join(backendRoot, 'config', 'db', 'changelog', 'db.changelog-master.yaml');
-const isWindows = process.platform === 'win32';
+const changelogDir = join(backendRoot, 'config', 'db', 'changelog');
+const backendChangelog = join(changelogDir, 'db.changelog-master.yaml');
+const fixtureYaml = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type.yaml');
+const fixtureSpecDir = join(stackRoot, 'e2e', 'fixtures', 'ensure-document-export-task-type');
+const fixtureSpec = join(fixtureSpecDir, '07_DocumentExportTaskDefinition.json');
+const stagedWrapper = join(changelogDir, 'db.changelog-e2e.yaml');
+const stagedYaml = join(changelogDir, 'ensure-document-export-task-type.yaml');
+const stagedSpecDir = join(changelogDir, 'ensure-document-export-task-type');
+const prefix = 'e2e-backend';
 const gradlew = join(backendRoot, isWindows ? 'gradlew.bat' : 'gradlew');
 
-function fail(message) {
-  console.error(`[e2e-backend] ${message}`);
-  process.exit(1);
-}
-
 if (!existsSync(backendRoot)) {
-  fail(`Backend submodule missing at ${backendRoot}. Run: git submodule update --init --recursive`);
+  fail(prefix, `Backend submodule missing at ${backendRoot}. Run: git submodule update --init --recursive`);
 }
 if (!existsSync(gradlew)) {
-  fail(`Gradle wrapper missing at ${gradlew}`);
+  fail(prefix, `Gradle wrapper missing at ${gradlew}`);
 }
-if (!existsSync(changelog)) {
-  fail(`Liquibase changelog missing at ${changelog}`);
+if (!existsSync(backendChangelog)) {
+  fail(prefix, `Liquibase changelog missing at ${backendChangelog}`);
+}
+if (!existsSync(fixtureYaml) || !existsSync(fixtureSpec)) {
+  fail(prefix, `Document-export type fixture missing under ${join(stackRoot, 'e2e', 'fixtures')}`);
 }
 
 try {
   execSync('java -version 2>&1', { encoding: 'utf8' });
 } catch {
-  fail('Java is not available on PATH. Install Java 17 (or a JDK that Gradle can use for the Java 17 toolchain).');
+  fail(
+    prefix,
+    'Java is not available on PATH. Install Java 17 (or a JDK that Gradle can use for the Java 17 toolchain).',
+  );
 }
+
+function unstageE2eChangelog() {
+  rmSync(stagedWrapper, { force: true });
+  rmSync(stagedYaml, { force: true });
+  rmSync(stagedSpecDir, { recursive: true, force: true });
+}
+
+function stageE2eChangelog() {
+  unstageE2eChangelog();
+  writeFileSync(
+    stagedWrapper,
+    [
+      'databaseChangeLog:',
+      '  - include:',
+      '      file: db.changelog-master.yaml',
+      '      relativeToChangelogFile: true',
+      '  - include:',
+      '      file: ensure-document-export-task-type.yaml',
+      '      relativeToChangelogFile: true',
+      '',
+    ].join('\n'),
+  );
+  copyFileSync(fixtureYaml, stagedYaml);
+  cpSync(fixtureSpecDir, stagedSpecDir, { recursive: true });
+}
+
+process.on('exit', unstageE2eChangelog);
+stageE2eChangelog();
 
 const springArgs = [
   '--spring.profiles.active=dev',
@@ -41,82 +78,17 @@ const springArgs = [
   '--spring.datasource.password=',
   '--server.forward-headers-strategy=framework',
   '--sitmun.proxy-middleware.url=http://localhost:4400/middleware',
+  '--spring.liquibase.change-log=file:./config/db/changelog/db.changelog-e2e.yaml',
 ].join(' ');
 
-const gradleArgs = ['bootRun', '--no-daemon', `--args=${springArgs}`];
-
-const env = {
-  ...process.env,
-  SITMUN_USER_SECRET: 'test-only-insecure-user-secret-32-bytes',
-  SITMUN_PROXY_MIDDLEWARE_SECRET: 'test-only-insecure-middleware-secret',
-};
-
-const child = spawn(gradlew, gradleArgs, {
+const child = spawnDetached(gradlew, ['bootRun', '--no-daemon', `--args=${springArgs}`], {
   cwd: backendRoot,
-  env,
-  stdio: 'inherit',
-  shell: isWindows,
-  detached: !isWindows,
+  env: {
+    ...process.env,
+    SITMUN_USER_SECRET: 'test-only-insecure-user-secret-32-bytes',
+    SITMUN_PROXY_MIDDLEWARE_SECRET: 'test-only-insecure-middleware-secret',
+  },
 });
 
-let shuttingDown = false;
-
-function killTree(force = false) {
-  if (!child.pid) {
-    return;
-  }
-  if (isWindows) {
-    try {
-      execSync(`taskkill /PID ${child.pid} /T /F`, { stdio: 'ignore' });
-    } catch {
-      // already gone
-    }
-    return;
-  }
-  try {
-    process.kill(-child.pid, force ? 'SIGKILL' : 'SIGTERM');
-  } catch {
-    try {
-      child.kill(force ? 'SIGKILL' : 'SIGTERM');
-    } catch {
-      // already gone
-    }
-  }
-}
-
-function shutdown(signal) {
-  if (shuttingDown) {
-    return;
-  }
-  shuttingDown = true;
-  console.error(`[e2e-backend] Shutting down (${signal})...`);
-  killTree(false);
-  const timer = setTimeout(() => {
-    console.error('[e2e-backend] Force-killing backend process tree...');
-    killTree(true);
-  }, 10_000);
-  child.once('exit', () => {
-    clearTimeout(timer);
-  });
-}
-
-for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
-  process.on(signal, () => shutdown(signal));
-}
-
-child.on('error', (error) => {
-  fail(`Failed to start Gradle: ${error.message}`);
-});
-
-child.on('exit', (code, signal) => {
-  if (shuttingDown) {
-    process.exit(0);
-  }
-  if (signal) {
-    fail(`Backend process terminated by signal ${signal}`);
-  }
-  if (code !== 0) {
-    fail(`Backend exited with code ${code}`);
-  }
-  process.exit(0);
-});
+child.on('exit', unstageE2eChangelog);
+attachChildLifecycle(child, { prefix });

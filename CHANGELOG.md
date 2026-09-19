@@ -6,6 +6,122 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.9] - 2026-09-19
+
+### Changed
+
+#### Admin Application
+
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes Sonar `lcov` / `ut_report`. Jest stubs AG Grid, echarts, and Material barrels. Form specs import standalone `EntityFormAlertsComponent`; `dialog-form` uses `configureLoggerForTests`. See `sitmun-admin-app` `[1.2.9]`.
+
+#### Viewer Application
+
+- **Profile**: Cargo table headers and empty date cells match admin Positions. See `sitmun-viewer-app` `[1.2.9]` ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177)).
+- **Tests**: `npm test` skips coverage; `npm run test:coverage` writes `coverage/lcov.info`. See `sitmun-viewer-app` `[1.2.9]`.
+
+#### Stack-level
+
+- **Release**: Backend, admin, viewer, and proxy submodule pointers at `sitmun-*/1.2.9`.
+- **E2E**: Viewer `/user/profile` cargo table copy matches admin Positions ([sitmun-viewer-app#177](https://github.com/sitmun/sitmun-viewer-app/issues/177); `e2e/viewer/profile-positions.spec.ts`).
+- **E2E**: Viewer and admin session cookie refresh (`POST /api/authenticate/refresh`) plus kick when every cargo is expired ([sitmun-backend-core#264](https://github.com/sitmun/sitmun-backend-core/issues/264); `e2e/viewer/password-access.spec.ts`, `e2e/admin/login.spec.ts`, `e2e/mobile/edition-auth.spec.ts`).
+- **Setup**: `setup.sh` / `setup.ps1` create `.env` from `profiles/development-postgres.env` when missing (was production `profiles/postgres.env`).
+- **E2E**: Shared `scripts/e2e-process.mjs` for webServer spawn/kill; Playwright `reuseExistingServer` is always false; `forbidOnly` on CI; `e2e:application-contact` npm script.
+
+### Added
+
+#### Backend Core
+
+- **Trees** / **Images**: Tree and tree-node images accept SVG. Stored as `data:image/svg+xml;base64,...` without raster scaling ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)). Docker profile `profiles/development/backend/application.yml` includes `svg` in `sitmun.ui.image.supportedFormats`.
+
+#### Admin Application
+
+- **Users**: Positions tab Alta then Baja with editable Alta, empty-cell placeholders, and inverted-interval warning. See `sitmun-admin-app` `[1.2.9]` ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
+
+#### Viewer Application
+
+- **Map / MIA**: Overlay PDF export (`POST /api/tasks/template/export`) with type-17 discovery, map-session `appId`/`terId`, and `featureBbox` on render. See `sitmun-viewer-app` `[1.2.9]` ([sitmun-viewer-app#171](https://github.com/sitmun/sitmun-viewer-app/pull/171)).
+
+#### Stack-level
+
+- **E2E**: Password viewer hides an expired cargo and denies its profile; `expirationDate` today and null `createdDate` stay listed; active parent grants still expand children ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184); `e2e/viewer/password-access.spec.ts`).
+- **E2E**: Admin user Positions tab Valid from then Valid until, empty `createdDate`/`expirationDate` placeholders, Alta persist, inclusive last-day tooltip, hidden for `public`, locale copy, pre-2000 Alta, viewer cannot write Alta, 20-row open under 3s (`e2e/admin/forms/user-positions.spec.ts`, project `admin-forms`; [sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462)).
+- **E2E**: Admin tree Details + touristic node Appearance SVG local-file persist without raster scaling (`e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`; [sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330)).
+- **E2E**: Layers form defers `/cartographies/{id}/availabilities|permissions|treeNodes` until the matching tab is selected ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41); `e2e/admin/forms/layers-form.spec.ts`).
+- **E2E**: Print preview map sizing for A4 landscape and portrait (`e2e/viewer/print-map.spec.ts`, project `viewer-print`; [sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)).
+- **E2E**: HTML GetFeatureInfo nested-context probe against the WMS stub (`e2e/viewer/gfi-html-embed.spec.ts`, project `viewer-gfi`; [sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). Stub `GET /embed/allow` has no frame-ancestors block. `GET /embed/deny` sends `X-Frame-Options: DENY`.
+- **CI**: `e2e-mobile-android` launches the emulator with `-gpu software` and no snapshot load/save. The action default `-gpu swiftshader_indirect` is deprecated (emulator 36.4.9) and is the usual CI ColorBuffer path.
+- **CI**: `.github/workflows/liquibase-seed-identity.yml` fails a PR that moves an `STM_CODELIST` unique key `(COD_LIST, COD_VALUE)` onto a different `COD_ID` (issue `#45`).
+- **CI**: `.github/workflows/liquibase-upgrade.yml` covers postgres 1.2.7→HEAD and 1.2.8 greenfield, pre-1.2.7 auth-mode swap, Oracle 1.2.6–1.2.8, and development Oracle 1.2.6 (`--contexts=dev`). Origin 1.2.6 CSVs cannot replay under Liquibase 4.29.
+- **Tooling**: `tools/bin/check_changelog_immutability.py` fails a PR that edits a shipped Liquibase include below the HEAD tip. New incrementals in the same PR are allowed. CI job `.github/workflows/liquibase-immutability.yml`. Schema drift drafts default to `22_schema_drift_fix`.
+- **Liquibase**: Append document-export (TTY 17), map-image (TTY 18), PDF export tasks, and default template regions as new tip incrementals (dev 70-72, postgres/oracle 22-24). Closed PR 50 history was not replayed. GeoServer `stm_service.csv` scrub is unchanged.
+- **E2E**: MIA overlay PDF export (authenticated + public) via HAL type-17 task and `POST /api/tasks/template/export` (`e2e/mia-cross/mia-template-viewer.spec.ts`, `e2e/mia-cross/mia-public-viewer.spec.ts`). H2 `bootRun` stages `e2e/fixtures/ensure-document-export-task-type.yaml` beside the backend master changelog so `STM_TSK_TYP` 17 exists when the submodule has not published that type yet.
+- **E2E**: Nested Plantilla execute-child asserts composed HTML from the sandboxed iframe `srcdoc` (`e2e/admin/forms/template-nested-preview.spec.ts`).
+- **Docs**: README troubleshooting for boot-time `GET /backend/api/languages` 404 (submodules, default GitHub `main`, `ng serve` without Compose on :9000).
+
+### Fixed
+
+#### Stack-level
+
+- **Docker**: `front/Dockerfile` caps the viewer webpack heap at 4096 MiB so `docker compose build front` fits the default Docker VM on hosts where `NODE_OPTIONS` is unset.
+- **Tooling**: `tools/scripts/verify-compose-profiles.sh` now builds images once per `ENVIRONMENT` (`sitmun-verify-dev` / `sitmun-verify-prod`) and reuses them across all 20 targets instead of rebuilding per target. A backend-log gate asserts Liquibase completed, `Started Application in` appears after the last Liquibase line, and `RestartCount` is 0.
+- **Tooling**: `tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh` gains a `dev-postgres-from` path and a `matrix` target covering postgres, oracle, dev-postgres, and dev-oracle from every tag back to 1.2.3. Version comparisons are now numeric (`sort -V`) instead of lexicographic, fixing the `1.2.10 < 1.2.7` misclassification.
+- **E2E**: Edition valid-login and touristic Maestro flows use WebView DevTools hierarchy; valid login dismisses the keyboard before submit. Orchestrator no longer runs `am kill-all` (ANR). Maestro debug output is written under `test-results/mobile-android/maestro/` for the CI artifact.
+
+#### Backend Core
+
+- **Dashboard**: Users-per-application counts no longer dropped by date-series parsing; user activity bucketed by day; per-application count excludes expired `UserPosition` grants and children-only configurations. See `sitmun-backend-core` `[1.2.9]`.
+
+#### Admin Application
+
+- **Dashboard**: Registration chart plots every day instead of capping at the last 30 points. See `sitmun-admin-app` `[1.2.9]`.
+- **Literal translations**: Infinite grid reload no longer sticks on the loading spinner. Stale AG Grid `getRows` now complete so a replacement datasource can load ([sitmun-admin-app#461](https://github.com/sitmun/sitmun-admin-app/pull/461)).
+- **Layers**: Relation tabs load on select; Details-only save skips unvisited grids ([#41](https://github.com/sitmun/sitmun-application-stack/issues/41)). See `sitmun-admin-app` `[1.2.9]`.
+- **Users / Positions**: Built-in `admin` leftover Positions are delete-only; hidden for `public`. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Unclosed or almost-closed HTML comments no longer delete later markup on HTML↔visual switch. See `sitmun-admin-app` `[1.2.9]`.
+- **Query tasks**: `configureForm` no-ops when scope is unset instead of logging an unknown type. See `sitmun-admin-app` `[1.2.9]`.
+- **Services / Capabilities**: Admin Fetch details/layers POST `helpers/capabilities` JSON; backend builds GetCapabilities (keeps MapServer `?map=`) and can send origin HTTP Basic. GET helper is removed. See `sitmun-backend-core` / `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Attribute mustaches stay literal attrs; text-only chips; `else if`; T-wrap chip restore; edited `div`/bare-table/link shape preservation (toolbar links still get `_blank` + `noopener noreferrer`). See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Preview**: Navigable preview links open in a new tab. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Sources**: Stable `rootParameterDefaults` + live Parameters grid for preview `$…` context. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / TipTap**: Mustache `img`/`iframe` visual placeholders + `src`/`alt`/`title` inspector; single-quoted `data-sitmun-each` alias rename. See `sitmun-admin-app` `[1.2.9]`.
+- **Templates / Preview**: Preview language stays Template-pane-only; Sources inherits it. See `sitmun-admin-app` `[1.2.9]`.
+
+#### Viewer Application
+
+- **Map**: Print preview sizes the map to the selected page format instead of the browser window ([sitmun-viewer-app#160](https://github.com/sitmun/sitmun-viewer-app/issues/160)). See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: Force `target="_blank"` + `noopener noreferrer` on navigable anchors in sanitized MIA HTML. See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: Missing `appId`/`terId` emits one error per task id (fixes stuck spinner). See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / MIA**: `currentFeature` matched by stable feature key, not object identity. See `sitmun-viewer-app` `[1.2.9]`.
+- **Map / FeatureInfo**: HTML GetFeatureInfo embed probe after `load`. Nested context when embeddable; new tab when `X-Frame-Options` / `frame-ancestors` leave `about:blank` ([sitmun-viewer-app#169](https://github.com/sitmun/sitmun-viewer-app/issues/169)). See `sitmun-viewer-app` `[1.2.9]`.
+
+#### Edition Mobile App
+
+- **Applications**: Main list and offline cache show `name` when `title` is null ([sitmun/edition-mobile-app#5](https://github.com/sitmun/edition-mobile-app/issues/5)). See `edition-mobile-app` `[Unreleased]`.
+- **WFS**: Relative middleware `/proxy/...` URLs no longer resolve against Capacitor `https://localhost`. GetFeature sends the proxy Bearer token ([sitmun/edition-mobile-app#6](https://github.com/sitmun/edition-mobile-app/issues/6)). See `edition-mobile-app` `[Unreleased]`.
+
+#### Touristic Mobile App
+
+- **Near me / GPS**: Permission request plus Android Location settings when GPS is off ([sitmun/touristic-mobile-app#5](https://github.com/sitmun/touristic-mobile-app/issues/5)). See `touristic-mobile-app` `[Unreleased]`.
+- **Layout**: Tablet landscape menu, wrapping tree titles with descriptions, and toolbar crowding ([sitmun/touristic-mobile-app#3](https://github.com/sitmun/touristic-mobile-app/issues/3)). See `touristic-mobile-app` `[Unreleased]`.
+
+#### Stack-level
+
+- **Seed / docs**: Restore platform `admin` seed usernames, README login examples, seed JSON, and demo-data publication IDs accidentally nulled by the GeoServer credential purge `--replace-text` pass (GeoServer `stm_service.csv` scrub kept).
+- **E2E**: WMS stub advertises GetFeatureInfo JSON so live GFI parse is the oracle (`mia-gfi-click`); language i18n specs fail if French language id 5 is missing from H2.
+- **E2E**: Service form Get Metadata MapServer POST `helpers/capabilities` JSON (`e2e/admin/forms/service-capabilities-mapserver.spec.ts`; intercepted stub).
+- **E2E**: `template-attr-mustache-preview` admin oracle — img/href attribute survival, no-edit exact persistence (Save stays disabled), edited div/table/link shapes, attribute-safe `{{#APP_NAME}}` preview (`e2e/README.md`).
+- **E2E**: N13 writes the generated CSV under the OS temp dir so CI checkout does not need `e2e/admin/fixtures/`.
+- **E2E**: Android touristic provisioning attaches the tree with `POST /api/application-trees` (join entity), not `PUT /api/applications/{id}/trees`.
+- **E2E**: Mobile setup clears application `1` `title` so the ED client list asserts a non-blank `name` ([sitmun/edition-mobile-app#5](https://github.com/sitmun/edition-mobile-app/issues/5)).
+- **Development seed**: Liquibase `69_dev_plantilla_tiptap_chip_fixes` (+ Oracle twin) — Plantilla **9030** + URL child **9031** (`foto`); media-UX refresh (`qa-media-ux`): mustache img/iframe placeholders + src inspector QA, preview new-tab links, Template-only preview language, single-quoted `data-sitmun-each`; open `/#/taskTemplate/9030/15`.
+
+#### Backend Core
+
+- **Authorization**: Client-config lists, profile, and roles omit expired `UserPosition` grants. Inclusive last civil day. `public`/`admin` exempt. `/api/authenticate/proxy` unchanged ([sitmun-backend-core#184](https://github.com/sitmun/sitmun-backend-core/issues/184)).
+- **Services / Capabilities**: `POST /api/helpers/capabilities` form overlay DTO, server-side WMS GetCapabilities URL, origin HTTP Basic; GET removed. Null Service password PUT keeps `SER_PWD`; auth other than `None` forces `isProxied`. See `sitmun-backend-core` `[1.2.9]`.
+- **Users / Positions**: Saving a `UserConfiguration` no longer auto-creates a `UserPosition` for built-in `admin` or `public`. See `sitmun-backend-core` `[1.2.9]`.
+- **Templates / Preview**: Attribute-safe unresolved `{{#APP_NAME}}` / task placeholders (no highlight spans inside attrs). See `sitmun-backend-core` `[1.2.9]`.
+
 ## [1.2.8] - 2026-07-30
 
 ### Added
@@ -1043,7 +1159,8 @@ For detailed changelogs of individual components, see:
 
 ## Links
 
-[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...HEAD
+[unreleased]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.9...HEAD
+[1.2.9]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.8...sitmun-application-stack/1.2.9
 [1.2.8]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.7...sitmun-application-stack/1.2.8
 [1.2.7]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.6...sitmun-application-stack/1.2.7
 [1.2.6]: https://github.com/sitmun/sitmun-application-stack/compare/sitmun-application-stack/1.2.5...sitmun-application-stack/1.2.6

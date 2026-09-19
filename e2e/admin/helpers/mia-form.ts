@@ -10,6 +10,15 @@ import {
   uniqueValue,
   waitForFormReady,
 } from './form';
+import {
+  mappingAddTestId,
+  mappingOptionTestId,
+  mappingSelectTestId,
+  type MappingOwner,
+  type MappingSelectRef,
+} from './mia-mapping-testid';
+
+export { includedOwner, mappingAddTestId } from './mia-mapping-testid';
 
 export const MIA_CREATE_PATH = '/#/tasksMoreInfoAdvanced/-1/16';
 export const CARTOGRAPHY_SEARCH = 'Toponimia';
@@ -56,10 +65,10 @@ export async function createMiaWithChild(
 export async function openMia(page: Page, id: number): Promise<void> {
   await page.goto(`/#/tasksMoreInfoAdvanced/${id}/16`);
   await page.getByTestId('form-save').waitFor({ state: 'visible', timeout: 15_000 });
-  await page
-    .getByText('Loading...', { exact: false })
-    .waitFor({ state: 'hidden', timeout: 30_000 })
-    .catch(() => {});
+  const loading = page.getByText('Loading...', { exact: false });
+  if ((await loading.count()) > 0) {
+    await loading.first().waitFor({ state: 'hidden', timeout: 30_000 });
+  }
   // mat-tab can leave the name control in a hidden panel after reload; select Details first.
   await gotoMiaDetailsTab(page);
   await expect(control(page, 'name')).toBeVisible({ timeout: 15_000 });
@@ -191,42 +200,70 @@ export async function gotoMiaDetailsTab(page: Page): Promise<void> {
   });
 }
 
+async function countMappingRows(page: Page, owner: MappingOwner): Promise<number> {
+  let rowIndex = 0;
+  while ((await mappingSelect(page, { owner, rowIndex, side: 'mia' }).count()) > 0) {
+    rowIndex += 1;
+  }
+  return rowIndex;
+}
+
+export function mappingSelect(page: Page, ref: MappingSelectRef): Locator {
+  return page.getByTestId(mappingSelectTestId(ref));
+}
+
 async function selectMappingOption(
   page: Page,
-  select: Locator,
-  optionName: string,
+  ref: MappingSelectRef,
+  label: string,
 ): Promise<void> {
   await dismissBlockingOverlays(page);
+  const select = mappingSelect(page, ref);
   await select.scrollIntoViewIfNeeded();
-  await select.click({ force: true });
-  const option = page.getByRole('option', { name: optionName, exact: true });
+  // Empty outline mat-label covers the trigger center; the arrow is the uncovered hit target.
+  await select.locator('.mat-mdc-select-arrow-wrapper').click();
+  const option = page.getByTestId(mappingOptionTestId({ ...ref, label })).filter({ visible: true });
   await expect(option).toBeVisible({ timeout: 15_000 });
   await option.click();
 }
 
 export async function addChildMapping(
   page: Page,
-  options: { miaParamLabel: string; childParamLabel: string },
+  options: {
+    owner: MappingOwner;
+    miaParamLabel: string;
+    childParamLabel: string;
+  },
 ): Promise<void> {
   await gotoMiaDetailsTab(page);
   await dismissBlockingOverlays(page);
-  const addRow = page.locator('.mapping-actions-row button').first();
+  const addRow = page.getByTestId(mappingAddTestId(options.owner));
   await expect(addRow).toBeEnabled({ timeout: 15_000 });
+  const rowIndex = await countMappingRows(page, options.owner);
   await addRow.click();
-  const row = page.locator('.mapping-row').last();
-  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
-  await selectMappingOption(page, row.locator('mat-select').nth(1), options.childParamLabel);
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex, side: 'mia' },
+    options.miaParamLabel,
+  );
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex, side: 'child' },
+    options.childParamLabel,
+  );
 }
 
 export async function changeChildMappingMiaParam(
   page: Page,
-  options: { miaParamLabel: string; rowIndex?: number },
+  options: { owner: MappingOwner; miaParamLabel: string; rowIndex?: number },
 ): Promise<void> {
   await gotoMiaDetailsTab(page);
   await dismissBlockingOverlays(page);
-  const row = page.locator('.mapping-row').nth(options.rowIndex ?? 0);
-  await expect(row).toBeVisible({ timeout: 15_000 });
-  await selectMappingOption(page, row.locator('mat-select').nth(0), options.miaParamLabel);
+  await selectMappingOption(
+    page,
+    { owner: options.owner, rowIndex: options.rowIndex ?? 0, side: 'mia' },
+    options.miaParamLabel,
+  );
 }
 
 export async function getMiaTaskProperties(
@@ -314,6 +351,137 @@ export async function ensureMiaViewerAccess(
   expect(
     roles.ok() || roles.status() === 204,
     `attach role for task ${taskId}: ${roles.status()} ${await roles.text()}`,
+  ).toBeTruthy();
+}
+
+const ADMIN_JSON_HEADERS = {
+  'X-SITMUN-Client': 'admin',
+  'Content-Type': 'application/json',
+} as const;
+
+const ADMIN_URI_LIST_HEADERS = {
+  'X-SITMUN-Client': 'admin',
+  'Content-Type': 'text/uri-list',
+} as const;
+
+/** Toponímia GEO_ID 6 — same cartography as MIA parent 42 / mia-cross GFI. */
+export const TOPONIMIA_CARTOGRAPHY_ID = 6;
+
+function localhostApiUri(href: string, resource: string): string {
+  const match = href.match(new RegExp(`/api/${resource}/\\d+`));
+  return match ? `http://localhost${match[0]}` : href.split('?')[0];
+}
+
+function halNumericId(body: { id?: number; _links?: { self?: { href?: string } } }): number | undefined {
+  if (typeof body.id === 'number') {
+    return body.id;
+  }
+  const href = body._links?.self?.href;
+  const match = href?.match(/\/(\d+)(?:\?|$)/);
+  return match ? Number(match[1]) : undefined;
+}
+
+export async function createDocumentExportTask(
+  request: APIRequestContext,
+  options?: { name?: string; cartographyId?: number },
+): Promise<{ id: number; name: string }> {
+  const name = options?.name ?? uniqueValue('e2e-pdf-export');
+  const cartographyId = options?.cartographyId ?? TOPONIMIA_CARTOGRAPHY_ID;
+
+  const groups = await request.get('/backend/api/task-groups?size=1', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(groups.ok(), `list task-groups: ${groups.status()} ${await groups.text()}`).toBeTruthy();
+  const groupsBody = (await groups.json()) as {
+    _embedded?: { 'task-groups'?: Array<{ _links?: { self?: { href?: string } } }> };
+  };
+  const groupHref = groupsBody._embedded?.['task-groups']?.[0]?._links?.self?.href;
+  expect(groupHref, 'H2 must contain at least one task group').toBeTruthy();
+
+  const typeGet = await request.get('/backend/api/task-types/17', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(
+    typeGet.ok(),
+    `H2 must have STM_TSK_TYP 17 documentExport (${typeGet.status()} ${await typeGet.text()})`,
+  ).toBeTruthy();
+
+  const created = await request.post('/backend/api/tasks', {
+    headers: ADMIN_JSON_HEADERS,
+    data: {
+      name,
+      properties: {
+        downloadFormat: 'pdf',
+        exportEngine: 'openhtmltopdf',
+      },
+    },
+  });
+  expect(
+    created.ok(),
+    `create document-export task: ${created.status()} ${await created.text()}`,
+  ).toBeTruthy();
+  const createdBody = (await created.json()) as {
+    id?: number;
+    _links?: { self?: { href?: string } };
+  };
+  const id = halNumericId(createdBody);
+  expect(id, 'created document-export task id').toBeTruthy();
+
+  const typePut = await request.put(`/backend/api/tasks/${id}/type`, {
+    headers: ADMIN_URI_LIST_HEADERS,
+    data: 'http://localhost/api/task-types/17',
+  });
+  expect(
+    typePut.ok() || typePut.status() === 204,
+    `attach type 17: ${typePut.status()} ${await typePut.text()}`,
+  ).toBeTruthy();
+
+  const cartographyPut = await request.put(`/backend/api/tasks/${id}/cartography`, {
+    headers: ADMIN_URI_LIST_HEADERS,
+    data: `http://localhost/api/cartographies/${cartographyId}`,
+  });
+  expect(
+    cartographyPut.ok() || cartographyPut.status() === 204,
+    `attach cartography ${cartographyId}: ${cartographyPut.status()} ${await cartographyPut.text()}`,
+  ).toBeTruthy();
+
+  const groupPut = await request.put(`/backend/api/tasks/${id}/group`, {
+    headers: ADMIN_URI_LIST_HEADERS,
+    data: localhostApiUri(String(groupHref), 'task-groups'),
+  });
+  expect(
+    groupPut.ok() || groupPut.status() === 204,
+    `attach task group: ${groupPut.status()} ${await groupPut.text()}`,
+  ).toBeTruthy();
+
+  return { id: id as number, name };
+}
+
+export async function copyTaskRoles(
+  request: APIRequestContext,
+  fromTaskId: number,
+  toTaskId: number,
+): Promise<void> {
+  const get = await request.get(`/backend/api/tasks/${fromTaskId}/roles`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(get.ok(), `list roles for task ${fromTaskId}: ${get.status()} ${await get.text()}`).toBeTruthy();
+  const body = (await get.json()) as {
+    _embedded?: { roles?: Array<{ _links?: { self?: { href?: string } } }> };
+  };
+  const hrefs = (body._embedded?.roles ?? [])
+    .map((role) => role._links?.self?.href)
+    .filter((href): href is string => Boolean(href))
+    .map((href) => localhostApiUri(href, 'roles'));
+  expect(hrefs.length, `task ${fromTaskId} must have roles to copy`).toBeGreaterThan(0);
+
+  const put = await request.put(`/backend/api/tasks/${toTaskId}/roles`, {
+    headers: ADMIN_URI_LIST_HEADERS,
+    data: hrefs.join('\n'),
+  });
+  expect(
+    put.ok() || put.status() === 204,
+    `copy roles onto task ${toTaskId}: ${put.status()} ${await put.text()}`,
   ).toBeTruthy();
 }
 

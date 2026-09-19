@@ -1,3 +1,6 @@
+import { writeFile, unlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { test, expect } from '../fixtures';
 import {
   assertPlantillaHtmlPersisted,
@@ -265,7 +268,10 @@ test.describe('Templates + language.default i18n cluster', () => {
     const frGet = await request.get(`/backend/api/languages/${FR_LANGUAGE_ID}`, {
       headers: { 'X-SITMUN-Client': 'admin' },
     });
-    test.skip(!frGet.ok(), 'French language id 5 not present');
+    expect(
+      frGet.ok(),
+      `French language id ${FR_LANGUAGE_ID} must be present in the H2 seed: ${frGet.status()}`,
+    ).toBeTruthy();
     const fr = await frGet.json();
     const wasEnabled = fr.enabled !== false;
     const n5Key = `e2e-n5-${uniqueValue('KEY')}`;
@@ -330,16 +336,16 @@ test.describe('Templates + language.default i18n cluster', () => {
   });
 
   test('N13 CSV import may use disabled language', async ({ page, request }) => {
-    const path = await import('node:path');
-    const { writeFile, unlink } = await import('node:fs/promises');
-
     const frGet = await request.get(`/backend/api/languages/${FR_LANGUAGE_ID}`, {
       headers: { 'X-SITMUN-Client': 'admin' },
     });
-    test.skip(!frGet.ok(), 'French language id 5 not present');
+    expect(
+      frGet.ok(),
+      `French language id ${FR_LANGUAGE_ID} must be present in the H2 seed: ${frGet.status()}`,
+    ).toBeTruthy();
     const fr = await frGet.json();
     const literal = `e2e-disabled-csv-${uniqueValue('LIT')}`;
-    const csvPath = path.join(process.cwd(), 'e2e/admin/fixtures', `literal-disabled-${Date.now()}.csv`);
+    const csvPath = path.join(tmpdir(), `literal-disabled-${Date.now()}.csv`);
     await writeFile(
       csvPath,
       `source_language,literal,translation\nfr,${literal},valeur-fr\n`,

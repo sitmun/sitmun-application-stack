@@ -120,6 +120,39 @@ export async function assertPlantillaHtmlPersisted(
   );
 }
 
+/** Exact equality for no-edit persistence (visual open → save without TipTap update). */
+export async function assertPlantillaHtmlExact(
+  request: import('@playwright/test').APIRequestContext,
+  taskId: number,
+  expectedHtml: string,
+): Promise<void> {
+  const response = await request.get(`/backend/api/tasks/${taskId}`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(response.ok(), await response.text()).toBeTruthy();
+  const task = (await response.json()) as { properties?: { templateHtml?: string } };
+  expect(task.properties?.templateHtml ?? '').toBe(expectedHtml);
+}
+
+/**
+ * Insert a sibling paragraph after a block element (img/table) without editing that block.
+ * Mirrors #441: click target → ArrowDown → End → Enter → type.
+ */
+export async function insertVisualSiblingAfter(
+  page: Page,
+  targetSelector: string,
+  text: string,
+): Promise<void> {
+  await switchTemplateEditorToVisual(page);
+  const prose = page.locator('app-template-editor .ProseMirror').first();
+  await expect(prose).toBeVisible({ timeout: 15_000 });
+  await prose.locator(targetSelector).first().click();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('End');
+  await page.keyboard.press('Enter');
+  await page.keyboard.type(text);
+}
+
 /** Open the Sources tab (linked tasks + query cards). */
 export async function openTemplateSourcesTab(page: Page): Promise<void> {
   const tab = page.getByRole('tab', { name: /^(Sources|Fuentes|Fonts)$/i });
@@ -205,4 +238,17 @@ export async function executeNestedPlantillaCard(page: Page, childId: number): P
   await expect(card).toBeVisible({ timeout: 15_000 });
   await card.getByRole('button', { name: /Ejecutar plantilla|Execute template/i }).click();
   await expect(card.locator('.template-result-panel')).toBeVisible({ timeout: 30_000 });
+}
+
+/** Nested execute-child HTML lives in a sandboxed iframe `srcdoc`, not host text. */
+export async function expectSandboxedTemplateResult(
+  page: Page,
+  text: string,
+  timeout = 15_000,
+): Promise<void> {
+  const panel = page.locator('.template-result-panel');
+  await expect(panel).toBeVisible({ timeout });
+  await expect
+    .poll(async () => panel.locator('iframe').getAttribute('srcdoc'), { timeout })
+    .toContain(text);
 }

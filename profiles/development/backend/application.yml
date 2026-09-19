@@ -32,6 +32,7 @@ sitmun:
         - png
         - jpg
         - jpeg
+        - svg
       defaultWidth: 125
       defaultHeight: 125
       sizes:

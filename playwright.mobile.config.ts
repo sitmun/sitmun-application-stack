@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: './e2e/mobile',
   fullyParallel: false,
   workers: 1,
+  forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   timeout: 180_000,
   expect: {

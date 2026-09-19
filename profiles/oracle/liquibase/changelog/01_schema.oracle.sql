@@ -1,5 +1,7 @@
 --liquibase formatted sql
 --changeset sitmun:1 dbms:oracle
+--validCheckSum: 9:99cf8d3a597aeccf7d77f7a7e417469c
+--validCheckSum: 9:211fa448334b56313d53f73616d7e2b2
 
 -- ===================================================================
 -- Application
@@ -80,15 +82,10 @@ CREATE TABLE STM_APP_ROL
 
 CREATE TABLE STM_APP_TREE
 (
-  ATR_ID     NUMBER(10, 0) NOT NULL,
   ATR_APPID  NUMBER(10, 0) NOT NULL,
   ATR_TREEID NUMBER(10, 0) NOT NULL,
-  ATR_ORDER  NUMBER(10, 0),
-  PRIMARY KEY (ATR_ID)
+  PRIMARY KEY (ATR_APPID, ATR_TREEID)
 );
-
-ALTER TABLE STM_APP_TREE
-  ADD CONSTRAINT STM_ATR_UK UNIQUE (ATR_APPID, ATR_TREEID);
 
 -- ===================================================================
 -- Available Geographic Information
@@ -659,10 +656,9 @@ CREATE TABLE STM_TREE_NOD
   TNO_NAME       VARCHAR2(80 CHAR) NOT NULL,
   TNO_ABSTRACT   VARCHAR2(250 CHAR),
   TNO_TOOLTIP    VARCHAR2(100 CHAR),
-  TNO_ACTIVE     NUMBER(1, 0) DEFAULT 1 NOT NULL,
+  TNO_ACTIVE     NUMBER(1, 0),
   TNO_RADIO      NUMBER(1, 0),
   TNO_LOAD_DATA  NUMBER(1, 0) DEFAULT 0,
-  TNO_DEFAULT    NUMBER(1, 0) DEFAULT 0 NOT NULL,
   TNO_ORDER      NUMBER(10, 0),
   TNO_METAURL    VARCHAR2(4000 CHAR),
   TNO_DATAURL    VARCHAR2(4000 CHAR),

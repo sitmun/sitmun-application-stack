@@ -4071,10 +4071,10 @@ INSERT INTO dbo.WEBRELPUBMAT (ID,IDPUBLICACIO,NPUBLICACIO,IDMATERIA,NMATERIA) VA
 	 (7640,12336,NULL,678,N'Formació, cursos i tallers'),
 	 (7641,12336,NULL,682,N'Conferències, congressos, debats i tertúlies');
 INSERT INTO dbo.WEBRELPUBMAT (ID,IDPUBLICACIO,NPUBLICACIO,IDMATERIA,NMATERIA) VALUES
-	 (7646,NULL,NULL,705,N'Ferreries'),
-	 (7647,NULL,NULL,672,N'Història i arqueologia'),
-	 (7648,NULL,NULL,676,N'Ciència i tecnologia'),
-	 (7649,NULL,NULL,681,N'Activitats per a infants i joves'),
+	 (7646,12345,NULL,705,N'Ferreries'),
+	 (7647,12345,NULL,672,N'Història i arqueologia'),
+	 (7648,12345,NULL,676,N'Ciència i tecnologia'),
+	 (7649,12345,NULL,681,N'Activitats per a infants i joves'),
 	 (7652,12348,NULL,697,N'Maó'),
 	 (7653,12348,NULL,668,N'Cinema i audiovisuals'),
 	 (7718,12364,NULL,677,N'Visites guiades, excursions, rutes i itineraris'),

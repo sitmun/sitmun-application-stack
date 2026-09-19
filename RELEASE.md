@@ -119,6 +119,12 @@ Keep release evidence (links/screenshots/log excerpts):
 - If a submodule has no functional changes, still document explicit release alignment in changelog when bumping version.
 - Do not force-push release branches.
 
+## Upgrade notes
+
+- Liquibase upgrades are supported from `sitmun-application-stack/1.2.2` through the previous release.
+- Upgrade from 1.2.0 or 1.2.1 is not supported via Liquibase. Those tags have no `profiles/postgres` or `profiles/oracle` trees. Dump and restore, or deploy fresh.
+- Origin tag 1.2.6 CSVs cannot be re-applied with Liquibase 4.29 (unquoted commas and short rows). Postgres `sitmun:1` at 1.2.6 matches 1.2.7, so the 1.2.7 upgrade job covers that checksum. Pre-1.2.7 auth-mode rows are covered by `test_liquibase_codelist_auth_mode_swap.sh`. Already-applied 1.2.6 databases are unaffected.
+
 ## Troubleshooting During Release
 
 - **Malformed frontend environment object after bump**

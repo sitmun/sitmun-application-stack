@@ -1,0 +1,7 @@
+STM_LOG|LOG_APPID|integer||YES|
+STM_LOG|LOG_ID|integer||NO|
+STM_PAR_SER|PSE_NAME|character varying|30|NO|
+STM_SERVICE|SER_PROTOCOL|character varying|30|YES|
+STM_GEOINFO|SGI_LURL_FORMAT|character varying|80|YES|
+STM_BOTH|COL_NULL|boolean||NO|
+STM_ONLY_FIX|COL_B|integer||YES|

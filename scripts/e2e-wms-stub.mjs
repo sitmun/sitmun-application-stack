@@ -7,6 +7,8 @@
  * - GetCapabilities Style/LegendURL → /legend (distinct from /wms MapServer path)
  * - GetLegendGraphic on /wms fails (native SITNA getLegend path cannot paint)
  * - GET /legend returns a stable PNG (>100 bytes) for Capas + LegendURL fallback
+ * - GetFeatureInfo advertised in capabilities (application/json) so SITNA sets INFO_FORMAT;
+ *   wrap.getFeatureInfo only parses when Content-Type equals that param.
  * - GetFeatureInfo for 34_TOPO_TX / tu007rts_ccavalls → JSON FeatureCollection (or XML fixture)
  */
 import { createServer } from 'node:http';
@@ -183,6 +185,17 @@ const CAPABILITIES_XML = `<?xml version="1.0" encoding="UTF-8"?>
           </HTTP>
         </DCPType>
       </GetMap>
+      <GetFeatureInfo>
+        <Format>application/json</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="${STUB_WMS_URL}?"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
     </Request>
     <Layer>
       <Title>Root</Title>
@@ -227,6 +240,25 @@ const server = createServer((req, res) => {
   if (method === 'GET' && url.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('ok');
+    return;
+  }
+
+  if (method === 'GET' && url.pathname === '/embed/allow') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end('<!DOCTYPE html><html><body>e2e-embed-allow</body></html>');
+    return;
+  }
+
+  if (method === 'GET' && url.pathname === '/embed/deny') {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Frame-Options': 'DENY',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end('<!DOCTYPE html><html><body>e2e-embed-deny</body></html>');
     return;
   }
 

@@ -3,6 +3,7 @@ import { uniqueValue } from '../helpers/form';
 import {
   createPlantilla,
   executeNestedPlantillaCard,
+  expectSandboxedTemplateResult,
   linkNestedPlantilla,
   openPlantilla,
   renderPlantillaPreview,
@@ -109,9 +110,7 @@ test.describe('Admin nested Plantilla preview', () => {
 
     await openPlantilla(page, plantillaA.id);
     await executeNestedPlantillaCard(page, plantillaB.id);
-    await expect(page.locator('.template-result-panel')).toContainText(marker, {
-      timeout: 15_000,
-    });
+    await expectSandboxedTemplateResult(page, marker);
 
     await renderPlantillaPreview(page);
     await expect(page.locator('[data-testid="template-preview-html"]')).toContainText(marker, {

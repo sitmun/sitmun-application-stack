@@ -10,6 +10,7 @@ import {
   fetchCapabilities,
   hasProxyTokenInIndexedDb,
   isBackendRequest,
+  savePositionEvidence,
   TERRITORY_ID,
 } from './fixtures';
 
@@ -29,6 +30,7 @@ async function openPublicDashboard(page: import('@playwright/test').Page): Promi
   await page.getByRole('button', { name: /Acceso público|Public access/i }).click();
   await Promise.all([logout, dashboardApps]);
   await expect(page).toHaveURL(/\/public\/dashboard/);
+  await savePositionEvidence(page, '184-public.png');
 }
 
 async function openApplicationDetails(

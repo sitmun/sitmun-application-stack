@@ -47,6 +47,9 @@ COPY --chown=node:node front/viewer/sitmun-viewer-app/src/ ./src/
 COPY --chown=node:node front/viewer/environment.prod.ts.template ./src/environments/environment.prod.ts.template
 COPY --chown=node:node front/viewer/index.html.template ./src/index.html.template
 COPY --chown=node:node front/viewer/webpack.config.js.template ./webpack.config.js.template
+# Cap the viewer webpack heap so the build works when Docker VM RAM < 8 GiB.
+# Local npm run build uses 8192 MiB (the script default) when NODE_OPTIONS is unset.
+ENV NODE_OPTIONS="--openssl-legacy-provider --max-old-space-size=4096"
 RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
     export APP_VERSION=$(node -p "require('./package.json').version") && \
     if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \

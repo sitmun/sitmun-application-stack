@@ -12,10 +12,10 @@ export async function waitForFormReady(page: Page, primaryFieldName: string): Pr
   const primary = control(page, primaryFieldName);
   await primary.waitFor({ state: 'visible', timeout: 15_000 });
   await page.getByTestId('form-save').waitFor({ state: 'visible', timeout: 15_000 });
-  await page
-    .getByText('Loading...', { exact: false })
-    .waitFor({ state: 'hidden', timeout: 15_000 })
-    .catch(() => {});
+  const loading = page.getByText('Loading...', { exact: false });
+  if ((await loading.count()) > 0) {
+    await loading.first().waitFor({ state: 'hidden', timeout: 15_000 });
+  }
   return primary;
 }
 
@@ -39,7 +39,7 @@ export async function touchAndClear(page: Page, fieldName: string): Promise<void
 
 export async function saveAndCaptureId(
   page: Page,
-  collection: 'roles' | 'users' | 'territories' | 'tasks' | 'cartographies',
+  collection: 'roles' | 'users' | 'territories' | 'tasks' | 'cartographies' | 'trees',
 ): Promise<number> {
   const responsePromise = page.waitForResponse((response) => {
     try {
@@ -82,7 +82,8 @@ export async function saveUpdate(
     | 'applications'
     | 'tasks'
     | 'languages'
-    | 'cartographies',
+    | 'cartographies'
+    | 'trees',
   id: number,
 ): Promise<void> {
   const responsePromise = page.waitForResponse((response) => {

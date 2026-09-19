@@ -4,6 +4,7 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
   <include file="changelog/01_schema.oracle.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/25_fix_auth_mode_swap.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/02_codelists.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/03_task_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/04_seed_data.yaml" relativeToChangelogFile="true"/>
@@ -21,4 +22,10 @@
   <include file="changelog/16_add_translation_sequences.sql" relativeToChangelogFile="true"/>
   <include file="changelog/17_literal_translations_varchar.sql" relativeToChangelogFile="true"/>
   <include file="changelog/18_mia_chrome_literals.sql" relativeToChangelogFile="true"/>
+  <include file="changelog/19_add_tree_node_default.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/20_application_tree_order.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/21_align_schema_with_development.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/22_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/23_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/24_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -137,7 +137,7 @@ export async function loadCcavallsLeafIntoCapas(page: Page): Promise<void> {
   );
   await expect(leafLoad).toBeVisible({ timeout: 30_000 });
   if (!(await leafLoad.isChecked())) {
-    await leafLoad.click({ force: true });
+    await leafLoad.click();
   }
   // Capas row may stay CSS-hidden while the tools panel is folded; attached is enough.
   const capasRow = page.locator('#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id]').first();

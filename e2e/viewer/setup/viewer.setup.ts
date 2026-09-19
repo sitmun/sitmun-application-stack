@@ -22,6 +22,7 @@ import {
   MIA_PARENT_TASK_ID,
   NAV_BAR_TASK_ID,
   OVERVIEW_MAP_TASK_ID,
+  PRINT_MAP_TASK_ID,
   QUERYABLE_LEAF_CARTOGRAPHY_ID,
   SEARCH_TASK_ID,
   QUERYABLE_LEAF_MAX_SCALE_DENOMINATOR,
@@ -86,6 +87,196 @@ async function createUser(
   return { userId: userId as number, userSelf, apiOrigin };
 }
 
+type PositionHal = {
+  id?: number;
+  name?: string;
+  organization?: string;
+  email?: string;
+  createdDate?: string | null;
+  territoryId?: number;
+  _links?: { self?: { href?: string }; territory?: { href?: string } };
+};
+
+function localCivilNoonIso(dayOffset = 0): string {
+  const now = new Date();
+  return new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + dayOffset,
+    12,
+    0,
+    0,
+  ).toISOString();
+}
+
+async function findUserPosition(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<PositionHal> {
+  const positions = await request.get(
+    `/backend/api/users/${userId}/positions?size=50&projection=view`,
+    { headers: adminHeaders },
+  );
+  expect(
+    positions.ok(),
+    `list positions failed: ${positions.status()} ${await positions.text()}`,
+  ).toBeTruthy();
+  const body = (await positions.json()) as {
+    _embedded?: Record<string, PositionHal[]>;
+  };
+  const items = Object.values(body._embedded ?? {}).flat();
+  const match = items.find(
+    (item) =>
+      item.territoryId === territoryId ||
+      (item._links?.territory?.href ?? '').includes(`/territories/${territoryId}`),
+  );
+  expect(
+    match?._links?.self?.href,
+    `position for territory ${territoryId} missing in ${JSON.stringify(body)}`,
+  ).toBeTruthy();
+  return match as PositionHal;
+}
+
+function positionIdOf(match: PositionHal): number {
+  const selfHref = match._links?.self?.href;
+  const idMatch = selfHref?.match(/\/user-positions\/(\d+)/);
+  const positionId = match.id ?? (idMatch ? Number(idMatch[1]) : undefined);
+  expect(positionId, 'position id missing').toBeTruthy();
+  return positionId as number;
+}
+
+async function expireTerritoryPosition(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const patch = await request.patch(`/backend/api/user-positions/${positionIdOf(match)}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { expirationDate: '2020-01-01T00:00:00.000Z' },
+  });
+  expect(patch.ok(), `expire position failed: ${patch.status()} ${await patch.text()}`).toBeTruthy();
+}
+
+async function setExpirationToday(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const patch = await request.patch(`/backend/api/user-positions/${positionIdOf(match)}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { expirationDate: localCivilNoonIso(0) },
+  });
+  expect(
+    patch.ok(),
+    `set expirationDate to today failed: ${patch.status()} ${await patch.text()}`,
+  ).toBeTruthy();
+}
+
+async function clearCreatedDate(
+  request: APIRequestContext,
+  userId: number,
+  territoryId: number,
+  apiOrigin: string,
+): Promise<void> {
+  const match = await findUserPosition(request, userId, territoryId);
+  const positionId = positionIdOf(match);
+  const put = await request.put(`/backend/api/user-positions/${positionId}`, {
+    headers: adminHeaders,
+    data: {
+      user: `${apiOrigin}/api/users/${userId}`,
+      territory: `${apiOrigin}/api/territories/${territoryId}`,
+      name: 'e2e-null-dates',
+      organization: match.organization ?? 'org',
+      email: match.email ?? null,
+      createdDate: null,
+      expirationDate: null,
+    },
+  });
+  expect(put.ok(), `clear createdDate failed: ${put.status()} ${await put.text()}`).toBeTruthy();
+  const reloaded = await request.get(`/backend/api/user-positions/${positionId}`, {
+    headers: adminHeaders,
+  });
+  expect(reloaded.ok()).toBeTruthy();
+  const body = (await reloaded.json()) as {
+    createdDate?: string | null;
+    expirationDate?: string | null;
+  };
+  expect(body.createdDate, 'PUT createdDate: null must stay null').toBeNull();
+  expect(body.expirationDate, 'PUT expirationDate: null must stay null').toBeNull();
+}
+
+async function grantTerritory(
+  request: APIRequestContext,
+  apiOrigin: string,
+  userId: number,
+  territoryId: number,
+  appliesToChildrenTerritories = false,
+): Promise<void> {
+  const createConfig = await request.post('/backend/api/user-configurations', {
+    headers: adminHeaders,
+    data: {
+      user: `${apiOrigin}/api/users/${userId}`,
+      territory: `${apiOrigin}/api/territories/${territoryId}`,
+      role: `${apiOrigin}/api/roles/${ROLE_ID}`,
+      appliesToChildrenTerritories,
+    },
+  });
+  expect(
+    createConfig.status(),
+    `create user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
+  ).toBe(201);
+}
+
+async function createTerritory(
+  request: APIRequestContext,
+  name: string,
+): Promise<number> {
+  const types = await request.get('/backend/api/territory-types?size=1', {
+    headers: adminHeaders,
+  });
+  expect(types.ok(), `list territory-types failed: ${types.status()}`).toBeTruthy();
+  const typeBody = (await types.json()) as {
+    _embedded?: Record<string, Array<{ _links?: { self?: { href?: string } } }>>;
+  };
+  const typeHref = Object.values(typeBody._embedded ?? {}).flat()[0]?._links?.self?.href;
+  expect(typeHref, 'territory type href missing').toBeTruthy();
+  const created = await request.post('/backend/api/territories', {
+    headers: adminHeaders,
+    data: {
+      name,
+      code: name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20) || 'e2echild',
+      blocked: false,
+      territorialAuthorityName: 'E2E',
+      territorialAuthorityEmail: 'e2e@example.com',
+      type: typeHref,
+    },
+  });
+  if (created.status() !== 201) {
+    throw new Error(`create territory failed: ${created.status()} ${await created.text()}`);
+  }
+  const createdTerritory = (await created.json()) as {
+    id?: number;
+    _links?: { self?: { href?: string } };
+  };
+  let territoryId = createdTerritory.id;
+  if (!territoryId) {
+    const location = created.headers()['location'] ?? createdTerritory._links?.self?.href;
+    const match = location?.match(/\/territories\/(\d+)/);
+    territoryId = match ? Number(match[1]) : undefined;
+  }
+  expect(territoryId, 'created territory id missing').toBeTruthy();
+  return territoryId as number;
+}
+
 setup('provision viewer user and secured WMS service', async ({ request }) => {
   await mkdir(path.dirname(VIEWER_FIXTURE_FILE), { recursive: true });
 
@@ -128,6 +319,106 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
       createConfig.status(),
       `create user-configuration ter ${territoryId} failed: ${createConfig.status()}`,
     ).toBe(201);
+  }
+
+  const expiryUsername = uniqueViewerUsername();
+  const expiryPassword = generateViewerPassword();
+  const expiryUser = await createUser(request, {
+    username: expiryUsername,
+    password: expiryPassword,
+    email: 'e2e-viewer-expiry@example.com',
+    firstName: 'Expiry',
+  });
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    await grantTerritory(request, apiOrigin, expiryUser.userId, territoryId);
+  }
+  await expireTerritoryPosition(request, expiryUser.userId, MENORCA_TERRITORY_ID);
+
+  const destBaseline = process.env.SITMUN_DEST_BASELINE === '1';
+  let expirationTodayUsername = 'dest-skip';
+  let expirationTodayPassword = 'dest-skip';
+  let nullCreatedDateUsername = 'dest-skip';
+  let nullCreatedDatePassword = 'dest-skip';
+  let childrenUsername = 'dest-skip';
+  let childrenPassword = 'dest-skip';
+  let parentTerritoryId = TERRITORY_ID;
+  let childTerritoryId = MENORCA_TERRITORY_ID;
+
+  if (!destBaseline) {
+  const expirationTodayUsernameLive = uniqueViewerUsername();
+  const expirationTodayPasswordLive = generateViewerPassword();
+  const expirationTodayUser = await createUser(request, {
+    username: expirationTodayUsernameLive,
+    password: expirationTodayPasswordLive,
+    email: 'e2e-viewer-expiration-today@example.com',
+    firstName: 'ExpirationToday',
+  });
+  await grantTerritory(request, apiOrigin, expirationTodayUser.userId, TERRITORY_ID);
+  await setExpirationToday(request, expirationTodayUser.userId, TERRITORY_ID);
+  expirationTodayUsername = expirationTodayUsernameLive;
+  expirationTodayPassword = expirationTodayPasswordLive;
+
+  const nullCreatedDateUsernameLive = uniqueViewerUsername();
+  const nullCreatedDatePasswordLive = generateViewerPassword();
+  const nullCreatedDateUser = await createUser(request, {
+    username: nullCreatedDateUsernameLive,
+    password: nullCreatedDatePasswordLive,
+    email: 'e2e-viewer-null-created-date@example.com',
+    firstName: 'NullCreatedDate',
+  });
+  await grantTerritory(request, apiOrigin, nullCreatedDateUser.userId, TERRITORY_ID);
+  await clearCreatedDate(request, nullCreatedDateUser.userId, TERRITORY_ID, apiOrigin);
+  nullCreatedDateUsername = nullCreatedDateUsernameLive;
+  nullCreatedDatePassword = nullCreatedDatePasswordLive;
+
+  const enableChildrenAccess = await request.patch(`/backend/api/applications/${APP_ID}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: { accessParentTerritory: true, accessChildrenTerritory: true },
+  });
+  expect(
+    enableChildrenAccess.ok(),
+    `enable children access failed: ${enableChildrenAccess.status()} ${await enableChildrenAccess.text()}`,
+  ).toBeTruthy();
+
+  parentTerritoryId = await createTerritory(request, `e2e-parent-${Date.now()}`);
+  childTerritoryId = await createTerritory(request, `e2e-child-${Date.now()}`);
+  const linkMembers = await request.put(`/backend/api/territories/${parentTerritoryId}/members`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'text/uri-list',
+    },
+    data: `${apiOrigin}/api/territories/${childTerritoryId}`,
+  });
+  expect(
+    [200, 204].includes(linkMembers.status()),
+    `link territory members failed: ${linkMembers.status()} ${await linkMembers.text()}`,
+  ).toBeTruthy();
+
+  childrenUsername = uniqueViewerUsername();
+  childrenPassword = generateViewerPassword();
+  const childrenUser = await createUser(request, {
+    username: childrenUsername,
+    password: childrenPassword,
+    email: 'e2e-viewer-children@example.com',
+    firstName: 'Children',
+  });
+  await grantTerritory(request, apiOrigin, childrenUser.userId, parentTerritoryId, true);
+  }
+
+  const kickedUsername = uniqueViewerUsername();
+  const kickedPassword = generateViewerPassword();
+  const kickedUser = await createUser(request, {
+    username: kickedUsername,
+    password: kickedPassword,
+    email: 'e2e-viewer-kicked@example.com',
+    firstName: 'Kicked',
+  });
+  for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
+    await grantTerritory(request, apiOrigin, kickedUser.userId, territoryId);
+    await expireTerritoryPosition(request, kickedUser.userId, territoryId);
   }
 
   const makeApplicationPrivate = await request.patch(
@@ -243,6 +534,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
   // Profile tasks require territory availability. Seed STM_AVAIL_TSK omits
   // sitna.layerCatalog / sitna.legend / workLayerManager / sitna.basemapSelector
   // and map-chrome nav/fullscreen/streetView/overview needed for #135 checks.
+  // sitna.printMap is omitted too; print preview sizing is checked in #160.
   const mapChromeTaskIds = [
     LAYER_CATALOG_TASK_ID,
     LEGEND_TASK_ID,
@@ -257,6 +549,7 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
     FEATURE_INFO_TASK_ID,
     MIA_CONTROL_TASK_ID,
     MIA_PARENT_TASK_ID,
+    PRINT_MAP_TASK_ID,
     CCAVALLS_MIA_TASK_ID,
   ];
   for (const territoryId of [TERRITORY_ID, MENORCA_TERRITORY_ID]) {
@@ -276,6 +569,26 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
       ).toBeTruthy();
     }
   }
+
+  // Seed STM_TASK 20 carries a `div: "print"` parameter naming a container the
+  // viewer never renders, so api-sitna throws while building the control and no
+  // print button appears. The seed logo is an external URL; drop both so the print
+  // preview is exercised without leaving the local stack (#160).
+  const patchPrintTask = await request.patch(`/backend/api/tasks/${PRINT_MAP_TASK_ID}`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'application/merge-patch+json',
+    },
+    data: {
+      properties: {
+        parameters: [{ name: 'legend', type: 'object', value: '{"visible":true}' }],
+      },
+    },
+  });
+  expect(
+    patchPrintTask.ok(),
+    `patch print task failed: ${patchPrintTask.status()} ${await patchPrintTask.text()}`,
+  ).toBeTruthy();
 
   // Catalog matrix fixtures (#45): radio Ortofotos needs loadData for title activation;
   // clear Infrarrojo load-by-default so title-click selection is observable; enable
@@ -366,6 +679,18 @@ setup('provision viewer user and secured WMS service', async ({ request }) => {
         username,
         password,
         userId,
+        expiryUsername,
+        expiryPassword,
+        expirationTodayUsername,
+        expirationTodayPassword,
+        nullCreatedDateUsername,
+        nullCreatedDatePassword,
+        childrenUsername,
+        childrenPassword,
+        childrenParentTerritoryId: parentTerritoryId,
+        childrenChildTerritoryId: childTerritoryId,
+        kickedUsername,
+        kickedPassword,
         eligiblePocUserId: eligiblePoc.userId,
         blockedPocUserId: blockedPoc.userId,
       },

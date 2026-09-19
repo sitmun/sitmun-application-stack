@@ -1,0 +1,231 @@
+databaseChangeLog:
+  # Align production oracle schema lengths/FKs with development Liquibase.
+  # Do not rewrite sitmun:1. Idempotent via preConditions → MARK_RAN.
+
+  - changeSet:
+      id: 21-align-bac-name-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_BACKGRD
+            columnName: BAC_NAME
+      changes:
+        - modifyDataType:
+            tableName: STM_BACKGRD
+            columnName: BAC_NAME
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-pap-name-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_PAR_APP
+            columnName: PAP_NAME
+      changes:
+        - modifyDataType:
+            tableName: STM_PAR_APP
+            columnName: PAP_NAME
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-fgi-valuetype-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_FIL_GI
+            columnName: FGI_VALUETYPE
+      changes:
+        - modifyDataType:
+            tableName: STM_FIL_GI
+            columnName: FGI_VALUETYPE
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-geo-type-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_GEOINFO
+            columnName: GEO_TYPE
+      changes:
+        - modifyDataType:
+            tableName: STM_GEOINFO
+            columnName: GEO_TYPE
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-ggi-type-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_GRP_GI
+            columnName: GGI_TYPE
+      changes:
+        - modifyDataType:
+            tableName: STM_GRP_GI
+            columnName: GGI_TYPE
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-pse-name-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_PAR_SER
+            columnName: PSE_NAME
+      changes:
+        - modifyDataType:
+            tableName: STM_PAR_SER
+            columnName: PSE_NAME
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-ser-protocol-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_SERVICE
+            columnName: SER_PROTOCOL
+      changes:
+        - modifyDataType:
+            tableName: STM_SERVICE
+            columnName: SER_PROTOCOL
+            newDataType: VARCHAR2(50 CHAR)
+
+  - changeSet:
+      id: 21-align-sgi-lurl-format-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - columnExists:
+            tableName: STM_STY_GI
+            columnName: SGI_LURL_FORMAT
+      changes:
+        - modifyDataType:
+            tableName: STM_STY_GI
+            columnName: SGI_LURL_FORMAT
+            newDataType: VARCHAR2(255 CHAR)
+
+  - changeSet:
+      id: 21-align-stm-log-fk-appid-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            foreignKeyConstraintExists:
+              foreignKeyName: STM_LOG_FK_APPID
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: STM_LOG_FK_APPID
+            baseTableName: STM_LOG
+            baseColumnNames: LOG_APPID
+            referencedTableName: STM_APP
+            referencedColumnNames: APP_ID
+
+  - changeSet:
+      id: 21-align-stm-log-fk-giid-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            foreignKeyConstraintExists:
+              foreignKeyName: STM_LOG_FK_GIID
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: STM_LOG_FK_GIID
+            baseTableName: STM_LOG
+            baseColumnNames: LOG_GIID
+            referencedTableName: STM_GEOINFO
+            referencedColumnNames: GEO_ID
+
+  - changeSet:
+      id: 21-align-stm-log-fk-taskid-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            foreignKeyConstraintExists:
+              foreignKeyName: STM_LOG_FK_TASKID
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: STM_LOG_FK_TASKID
+            baseTableName: STM_LOG
+            baseColumnNames: LOG_TASKID
+            referencedTableName: STM_TASK
+            referencedColumnNames: TAS_ID
+
+  - changeSet:
+      id: 21-align-stm-log-fk-terid-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            foreignKeyConstraintExists:
+              foreignKeyName: STM_LOG_FK_TERID
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: STM_LOG_FK_TERID
+            baseTableName: STM_LOG
+            baseColumnNames: LOG_TERID
+            referencedTableName: STM_TERRITORY
+            referencedColumnNames: TER_ID
+
+  - changeSet:
+      id: 21-align-stm-log-fk-userid-oracle
+      author: sitmun
+      dbms: oracle
+      preConditions:
+        - onFail: MARK_RAN
+        - onError: MARK_RAN
+        - not:
+            foreignKeyConstraintExists:
+              foreignKeyName: STM_LOG_FK_USERID
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: STM_LOG_FK_USERID
+            baseTableName: STM_LOG
+            baseColumnNames: LOG_USERID
+            referencedTableName: STM_USER
+            referencedColumnNames: USE_ID
+
+  - changeSet:
+      id: 21-align-pgi-type-oracle
+      author: sitmun
+      dbms: oracle
+      changes:
+        - modifyDataType:
+            tableName: STM_PAR_GI
+            columnName: PGI_TYPE
+            newDataType: VARCHAR2(250 CHAR)

@@ -1,5 +1,6 @@
 --liquibase formatted sql
 --changeset sitmun:1 dbms:postgresql
+--validCheckSum: 9:5e70534cb73f2b7b81d9b8164e162036
 
 -- ===================================================================
 -- Application
@@ -80,15 +81,10 @@ CREATE TABLE STM_APP_ROL
 
 CREATE TABLE STM_APP_TREE
 (
-  ATR_ID     INT4 NOT NULL,
-  ATR_APPID  INT4 NOT NULL,
   ATR_TREEID INT4 NOT NULL,
-  ATR_ORDER  INT4,
-  PRIMARY KEY (ATR_ID)
+  ATR_APPID  INT4 NOT NULL,
+  PRIMARY KEY (ATR_APPID, ATR_TREEID)
 );
-
-ALTER TABLE STM_APP_TREE
-  ADD CONSTRAINT STM_ATR_UK UNIQUE (ATR_APPID, ATR_TREEID);
 
 -- ===================================================================
 -- Available Geographic Information
@@ -659,10 +655,9 @@ CREATE TABLE STM_TREE_NOD
   TNO_NAME       VARCHAR(80) NOT NULL,
   TNO_ABSTRACT   VARCHAR(250),
   TNO_TOOLTIP    VARCHAR(100),
-  TNO_ACTIVE     BOOLEAN NOT NULL DEFAULT TRUE,
+  TNO_ACTIVE     BOOLEAN,
   TNO_RADIO      BOOLEAN,
   TNO_LOAD_DATA  BOOLEAN NOT NULL DEFAULT FALSE,
-  TNO_DEFAULT    BOOLEAN NOT NULL DEFAULT FALSE,
   TNO_ORDER      INT4,
   TNO_METAURL    VARCHAR(4000),
   TNO_DATAURL    VARCHAR(4000),

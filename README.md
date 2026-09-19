@@ -1,7 +1,7 @@
 # SITMUN Application Stack
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.8-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.9-blue.svg)
 
 The **SITMUN Application Stack** is a comprehensive multi-container geospatial platform that provides a complete solution for territorial information management, geographical services, and spatial applications. This stack integrates all SITMUN components into a unified, containerized environment designed for development, testing, and production deployment.
 
@@ -108,7 +108,7 @@ The stack has four main components:
    ```
 
    Notes:
-   - The setup scripts create `.env` from `profiles/postgres.env` **only if** `.env` is missing.
+   - The setup scripts create `.env` from `profiles/development-postgres.env` **only if** `.env` is missing.
    - You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
 
 4. **Start the SITMUN Application Stack**
@@ -303,14 +303,12 @@ docker compose up -d
 cp profiles/development-oracle.env .env
 docker compose up -d
 
-# External PostgreSQL (edit .env first)
-cp profiles/postgres-external.env .env
-# Edit .env with your connection details
+# External PostgreSQL (set connection details in .env, then start app services only)
+# See "External Database" section below for the required variables
 docker compose up -d front backend proxy
 
-# External Oracle (edit .env first)
-cp profiles/oracle-external.env .env
-# Edit .env with your connection details
+# External Oracle (set connection details in .env, then start app services only)
+# See "External Database" section below for the required variables
 docker compose up -d front backend proxy
 ```
 
@@ -406,12 +404,17 @@ docker compose logs -f oracle
 
 For an external database not managed by Docker Compose:
 
-1. Copy the appropriate external profile to `.env` and edit with your connection details:
+1. Set the required variables in `.env` (no template file is provided; see the variables below):
 
-   ```bash
-   cp profiles/postgres-external.env .env
-   # Or: cp profiles/oracle-external.env .env
-   # Edit .env with your connection details
+   ```env
+   COMPOSE_PROFILES=
+   SPRING_PROFILES_ACTIVE=postgres
+   DATABASE_URL=jdbc:postgresql://your-host:5432/
+   DATABASE=sitmun3
+   DATABASE_USERNAME=sitmun3
+   DATABASE_PASSWORD=sitmun3
+   SITMUN_USER_SECRET=<32+ char random value>
+   MIDDLEWARE_SECRET=<32+ char random value>
    ```
 
 2. Start services without a database container:
@@ -719,7 +722,7 @@ For debugging issues in a Docker environment, use the `docker-dev` configuration
 
 ```bash
 # Build Docker image with source maps for debugging
-BUILD_MODE=docker-dev docker compose build front
+ENVIRONMENT=development docker compose build front
 ```
 
 This creates unoptimized builds with source maps enabled, while still using the template-based API URL configuration for Docker.
@@ -774,8 +777,8 @@ The SITMUN Backend Core provides comprehensive REST API functionality:
 POST /api/authenticate
 Content-Type: application/json
 {
-  "username": "NULL",
-  "password": "NULL"
+  "username": "admin",
+  "password": "admin"
 }
 
 GET /api/account
@@ -1023,7 +1026,7 @@ curl -b cookies.txt http://localhost:9001/api/account
 curl -X POST http://localhost:9001/api/authenticate \
   -c cookies.txt \
   -H "Content-Type: application/json" \
-  -d '{"username":"NULL","password":"NULL"}'
+  -d '{"username":"admin","password":"admin"}'
 ```
 
 #### Frontend Build Issues

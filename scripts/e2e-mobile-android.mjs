@@ -16,7 +16,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -454,10 +454,13 @@ async function provisionTouristicTree(gatewayBackend, cookieHeader) {
     throw new Error(`create touristic root node failed: ${node.res.status} ${node.text}`);
   }
 
-  const appTrees = await jsonFetch(`${gatewayBackend}/api/applications/6/trees`, {
-    method: 'PUT',
-    headers: uriHeaders,
-    body: treeUri,
+  const appTrees = await jsonFetch(`${gatewayBackend}/api/application-trees`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify({
+      application: `${gatewayBackend}/api/applications/${TOURISTIC_APP_ID}`,
+      tree: treeUri,
+    }),
   });
   if (!appTrees.res.ok) {
     throw new Error(`attach tree to app failed: ${appTrees.res.status} ${appTrees.text}`);
@@ -580,17 +583,17 @@ async function main() {
       ['e2e:mobile:gateway', 'http://127.0.0.1:18081/health'],
     ];
 
-    for (const [script] of webServers) {
+    const gradleOpts = [process.env.GRADLE_OPTS, '-Dorg.gradle.daemon=false']
+      .filter(Boolean)
+      .join(' ');
+    for (const [script, url] of webServers) {
       const child = spawn('npm', ['run', script], {
         cwd: stackRoot,
         stdio: 'inherit',
         detached: true,
-        env: process.env,
+        env: { ...process.env, GRADLE_OPTS: gradleOpts },
       });
       children.push(child);
-    }
-
-    for (const [, url] of webServers) {
       await waitFor(url);
     }
 
@@ -672,9 +675,21 @@ async function main() {
       join(stackRoot, 'e2e', 'mobile', 'android', 'edition-login.yaml'),
       join(stackRoot, 'e2e', 'mobile', 'android', 'touristic-public.yaml'),
     ];
-    run('adb', ['shell', 'am', 'kill-all']);
     for (const flow of flows) {
-      run('maestro', ['test', ...maestroEnv, flow]);
+      run('adb', ['shell', 'am', 'force-stop', 'edition.mobile.app']);
+      run('adb', ['shell', 'am', 'force-stop', 'touristic.mobile.app']);
+      const maestroOut = join(artifactDir, 'maestro', basename(flow, '.yaml'));
+      mkdirSync(maestroOut, { recursive: true });
+      run('maestro', [
+        'test',
+        '--debug-output',
+        maestroOut,
+        '--test-output-dir',
+        maestroOut,
+        '--flatten-debug-output',
+        ...maestroEnv,
+        flow,
+      ]);
     }
 
     console.error('[e2e-mobile-android] Maestro flows completed.');
