@@ -167,13 +167,15 @@ run_target() {
   # Determine ports from env file (grep exits 1 when no match — use || true to avoid set -e).
   local front_port
   front_port="$(grep -E '^LOCAL_PORT=' "$env_file" | cut -d= -f2 | tr -d '"' | head -1 || true)"
-  front_port="${front_port:-9000}"
 
   local backend_port proxy_port
   if [[ -n "$compose_file" ]]; then
+    # Standalone compose files use ${LOCAL_PORT:-80} for the front.
+    front_port="${front_port:-80}"
     backend_port=8080
     proxy_port=8081
   else
+    front_port="${front_port:-9000}"
     backend_port=9001
     proxy_port=9002
   fi
