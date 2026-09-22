@@ -129,7 +129,7 @@ Updates backend/proxy `build.gradle` and OpenAPI YAMLs, admin/viewer `package.js
 | **test_changelog_immutability.py** | Unit tests for the PR-diff Liquibase immutability gate. |
 | **test_prepare_extracted_liquibase.py** | Unit tests for 1.2.6 CSV width rewrite and case-alias copies. |
 | **test_seed_identity_swap.py** | Unit tests for the STM_CODELIST unique-key swap gate (`#45`). |
-| **test_liquibase_1.2.7_to_head_upgrade.sh** | Tag → HEAD upgrade. CI: postgres 1.2.7/1.2.8, Oracle 1.2.6–1.2.8, development Oracle 1.2.6. |
+| **test_liquibase_1.2.7_to_head_upgrade.sh** | Tag → HEAD upgrade. CI: postgres 1.2.7/1.2.8, Oracle 1.2.6–1.2.8, development Oracle 1.2.6, Oracle 1.2.7 on XE 21 (`#74`). `SITMUN_ORACLE_IMAGE` picks the server image (default `gvenzl/oracle-free:23-slim`), `SITMUN_ORACLE_WAIT_TRIES` the readiness budget. `gvenzl/oracle-xe:21-slim` is amd64 only. |
 | **test_liquibase_codelist_auth_mode_swap.sh** | Docker fixture for the 1.2.6→1.2.7 auth-mode ID swap. CI job `postgres-auth-mode-swap`. |
 
 ```bash
@@ -138,6 +138,8 @@ python3 tools/tests/test_changelog_immutability.py
 python3 tools/tests/test_prepare_extracted_liquibase.py
 python3 tools/tests/test_seed_identity_swap.py
 bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh postgres
+SITMUN_ORACLE_IMAGE=gvenzl/oracle-xe:21-slim \
+  bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from 1.2.7
 bash tools/tests/test_liquibase_scenarios.sh
 bash tools/tests/test_liquibase_scenarios_oracle.sh
 ```

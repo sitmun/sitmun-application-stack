@@ -99,6 +99,27 @@ jobs:
       - name: Upgrade Oracle ${{ matrix.source }} to HEAD
         run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from ${{ matrix.source }}
 
+  # Issue #74: DIBA runs the oracle profile on 19c, so that upgrade path also has
+  # to hold on a pre-23ai server. The development profile stays on Oracle Free.
+  # gvenzl/oracle-xe is amd64 only, which the ubuntu-latest runners are.
+  oracle-pre23-from:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Fetch 1.2.7 tag
+        run: git fetch --no-tags origin tag sitmun-application-stack/1.2.7
+
+      - name: Upgrade Oracle 1.2.7 to HEAD on XE 21
+        env:
+          SITMUN_ORACLE_IMAGE: gvenzl/oracle-xe:21-slim
+        run: bash tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh oracle-from 1.2.7
+
   dev-oracle-from:
     runs-on: ubuntu-latest
     timeout-minutes: 40

@@ -22,6 +22,12 @@ TAG_127=sitmun-application-stack/1.2.7
 TAG_128=sitmun-application-stack/1.2.8
 TARGET="${1:-both}"
 
+# Issue #74: set SITMUN_ORACLE_IMAGE=gvenzl/oracle-xe:21-slim to run an upgrade
+# path against a pre-23ai server. That image is amd64 only. Pre-23ai startup is
+# slower, hence the larger default wait.
+ORACLE_IMAGE="${SITMUN_ORACLE_IMAGE:-gvenzl/oracle-free:23-slim}"
+ORACLE_WAIT_TRIES="${SITMUN_ORACLE_WAIT_TRIES:-150}"
+
 PASS=0
 FAIL=0
 
@@ -399,10 +405,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -413,7 +419,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1
@@ -565,10 +571,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -579,7 +585,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1
@@ -695,10 +701,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -709,7 +715,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1

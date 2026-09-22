@@ -1,0 +1,115 @@
+# Replaces changelog/22_add_map_image_task_type.yaml in master.xml (issue #74).
+#
+# Changeset 22c_document_export_codelists is unparsable before Oracle 23ai:
+# it uses SELECT without FROM (ORA-00923) and TRUE literals for the
+# NUMBER(1,0) columns COD_SYSTEM / COD_DEFAULT. Changelog 22 shipped in 1.2.9
+# and stays byte-identical, so this file re-states its four changesets with SQL
+# valid from 19c onwards. Every changeset is guarded, so databases that already
+# applied 22 converge without duplicating rows; their 22_* history rows remain
+# as unreferenced entries in DATABASECHANGELOG.
+#
+# Keep this file in 22's old slot in master.xml: it must run before
+# changelog/23, which inserts tasks with TAS_TTASKID = 17.
+databaseChangeLog:
+  - changeSet:
+      id: 26_document_export_task_type
+      author: sitmun
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 17"
+      changes:
+        - insert:
+            tableName: STM_TSK_TYP
+            columns:
+              - column: { name: TTY_ID, valueNumeric: 17 }
+              - column: { name: TTY_NAME, value: "documentExport" }
+              - column: { name: TTY_TITLE, value: "Document Export" }
+              - column: { name: TTY_ENABLED, valueBoolean: true }
+              - column: { name: TTY_ORDER, valueNumeric: 18 }
+        - update:
+            tableName: STM_TSK_TYP
+            columns:
+              - column:
+                  name: TTY_SPEC
+                  valueClobFile: 22_add_map_image_task_type/07_DocumentExportTaskDefinition.json
+            where: TTY_ID = 17
+      rollback:
+        - delete:
+            tableName: STM_TSK_TYP
+            where: TTY_ID = 17
+  - changeSet:
+      id: 26_map_image_task_type
+      author: sitmun
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID = 18"
+      changes:
+        - insert:
+            tableName: STM_TSK_TYP
+            columns:
+              - column: { name: TTY_ID, valueNumeric: 18 }
+              - column: { name: TTY_NAME, value: "mapImage" }
+              - column: { name: TTY_TITLE, value: "Map Image" }
+              - column: { name: TTY_ENABLED, valueBoolean: true }
+              - column: { name: TTY_ORDER, valueNumeric: 19 }
+        - update:
+            tableName: STM_TSK_TYP
+            columns:
+              - column:
+                  name: TTY_SPEC
+                  valueClobFile: 22_add_map_image_task_type/18_MapImageTaskDefinition.json
+            where: TTY_ID = 18
+      rollback:
+        - delete:
+            tableName: STM_TSK_TYP
+            where: TTY_ID = 18
+  - changeSet:
+      id: 26b_map_image_task_type_seq
+      author: sitmun
+      changes:
+        # GREATEST keeps the counter from moving backwards when this runs on a
+        # database that already allocated TTY_IDs past MAX(TTY_ID) + 1.
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TTY_ID), 0) + 1 FROM STM_TSK_TYP))
+              WHERE SEQ_NAME = 'TTY_ID';
+      rollback:
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TTY_ID), 0) + 1 FROM STM_TSK_TYP))
+              WHERE SEQ_NAME = 'TTY_ID';
+  - changeSet:
+      id: 26c_document_export_codelists
+      author: sitmun
+      changes:
+        # FROM DUAL and numeric 1 for COD_SYSTEM / COD_DEFAULT: SELECT without
+        # FROM and SQL BOOLEAN literals both require 23ai.
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'documentExport.engine', 'openhtmltopdf', 1, 1, 'OpenHTMLToPDF'
+              FROM DUAL
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'documentExport.engine' AND COD_VALUE = 'openhtmltopdf');
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST), 'documentExport.output', 'pdf', 1, 1, 'PDF'
+              FROM DUAL
+              WHERE NOT EXISTS (SELECT 1 FROM STM_CODELIST WHERE COD_LIST = 'documentExport.output' AND COD_VALUE = 'pdf');
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST))
+              WHERE SEQ_NAME = 'COD_ID';
+      rollback:
+        - sql:
+            sql: >
+              DELETE FROM STM_CODELIST
+              WHERE (COD_LIST = 'documentExport.engine' AND COD_VALUE = 'openhtmltopdf')
+                 OR (COD_LIST = 'documentExport.output' AND COD_VALUE = 'pdf');
