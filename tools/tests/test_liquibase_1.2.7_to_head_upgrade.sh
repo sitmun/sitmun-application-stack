@@ -72,7 +72,9 @@ alias_csv_case() {
 }
 
 print_lb_snippet() {
-  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40 || true
+  # A tag → HEAD upgrade runs well over 40 changesets; keep the whole tail
+  # visible so a reviewer can see which changelogs ran.
+  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -150 || true
 }
 
 print_lb_errors() {
@@ -627,6 +629,24 @@ DOCKEREOF
   P2_ATR=$(sqlplus_q "SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME='STM_APP_TREE' AND COLUMN_NAME='ATR_ID';")
   assert_eq "Phase2 TNO_DEFAULT present" "1" "$P2_TNO"
   assert_eq "Phase2 ATR_ID present" "1" "$P2_ATR"
+
+  # Issue #74: the tail of the master, which changelog 26 unblocks on pre-23ai.
+  assert_eq "Phase2 changelog 26 applied" "4" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%26_map_image_task_type_pre23%';")"
+  assert_eq "Phase2 changelog 22 not applied" "0" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%22_add_map_image_task_type%';")"
+  assert_eq "Phase2 documentExport task type 17" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID=17 AND TTY_SPEC IS NOT NULL;")"
+  assert_eq "Phase2 mapImage task type 18" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID=18 AND TTY_SPEC IS NOT NULL;")"
+  assert_eq "Phase2 documentExport codelists as 1/0 flags" "2" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST LIKE 'documentExport.%' AND COD_SYSTEM=1 AND COD_DEFAULT=1;")"
+  assert_eq "Phase2 changelog 23 document export tasks" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TASK WHERE TAS_TTASKID=17 AND ROWNUM=1;")"
+  assert_eq "Phase2 changelog 24 template regions" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%24_add_default_template_regions%' AND ROWNUM=1;")"
+  assert_eq "Phase2 changelog 25 auth mode swap" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE ID='25-fix-auth-mode-swap';")"
 
   echo ""
   echo "── Oracle-from teardown ──"
