@@ -670,9 +670,9 @@ run_dev_oracle_from() {
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
   alias_csv_case "$LB_SRC"
-  if version_lt "$version" "1.2.7"; then
-    quote_csv_embedded_commas "$LB_SRC"
-  fi
+  # No quote_csv_embedded_commas here: the development tree's pre-1.2.7 loadData
+  # changesets declare quotchar: ' and hold JSON with commas and newlines, which
+  # the rewriter would re-quote with " and Liquibase could no longer parse.
   LB_HEAD="$TMP/head"
   mkdir -p "$LB_HEAD"
   cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
@@ -792,9 +792,9 @@ run_dev_postgres_from() {
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
   alias_csv_case "$LB_SRC"
-  if version_lt "$version" "1.2.7"; then
-    quote_csv_embedded_commas "$LB_SRC"
-  fi
+  # No quote_csv_embedded_commas here: the development tree's pre-1.2.7 loadData
+  # changesets declare quotchar: ' and hold JSON with commas and newlines, which
+  # the rewriter would re-quote with " and Liquibase could no longer parse.
   LB_HEAD="$TMP/head"
   mkdir -p "$LB_HEAD"
   cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
