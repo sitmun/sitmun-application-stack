@@ -44,6 +44,29 @@ class RewriteCsvWidthTest(unittest.TestCase):
             self.assertEqual(rows[1][-1], "JPEG (.jpg, .jpeg)")
             self.assertIn('"JPEG (.jpg, .jpeg)"', path.read_text(encoding="utf-8"))
 
+    def test_trailing_blank_line_is_dropped_not_padded(self) -> None:
+        # Padding it produced ",,,," and loadData inserted NULLs, failing with
+        # ORA-01400 on STM_TRANSLATION.TRA_ID for tag 1.2.6.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "STM_TRANSLATION_ES.csv"
+            path.write_text(
+                "TRA_ID,TRA_ELEID,TRA_COLUMN,TRA_LANID,TRA_NAME\n"
+                "2020104,104,description,2,URL\n"
+                "\n",
+                encoding="utf-8",
+            )
+            pel.rewrite_csv_width(Path(tmp))
+            lines = path.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(lines, ["TRA_ID,TRA_ELEID,TRA_COLUMN,TRA_LANID,TRA_NAME", "2020104,104,description,2,URL"])
+
+    def test_explicit_all_empty_row_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "empties.csv"
+            path.write_text("A,B,C\n,,\n", encoding="utf-8")
+            changed = pel.rewrite_csv_width(Path(tmp))
+            self.assertEqual(changed, 0)
+            self.assertEqual(path.read_text(encoding="utf-8"), "A,B,C\n,,\n")
+
     def test_short_row_is_padded_to_header_width(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "short.csv"
