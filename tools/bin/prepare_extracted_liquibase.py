@@ -30,6 +30,12 @@ def rewrite_csv_width(root: Path) -> int:
         out = [rows[0]]
         changed = False
         for row in rows[1:]:
+            if not row:
+                # A trailing blank line parses as []. Padding it to the header
+                # width would emit ",,,," and loadData inserts that as a row of
+                # NULLs, breaking NOT NULL keys. Liquibase skips blank lines.
+                changed = True
+                continue
             if len(row) > width:
                 row = row[: width - 1] + [",".join(row[width - 1 :])]
                 changed = True

@@ -25,7 +25,9 @@
   <include file="changelog/19_add_tree_node_default.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/20_application_tree_order.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/21_align_schema_with_development.yaml" relativeToChangelogFile="true"/>
-  <include file="changelog/22_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
+  <!-- 26 replaces 22 here (#74): 22c cannot be parsed before Oracle 23ai.
+       Keep this slot before 23, which inserts tasks with TAS_TTASKID = 17. -->
+  <include file="changelog/26_map_image_task_type_pre23.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/23_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/24_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

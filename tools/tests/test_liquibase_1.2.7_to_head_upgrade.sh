@@ -22,6 +22,12 @@ TAG_127=sitmun-application-stack/1.2.7
 TAG_128=sitmun-application-stack/1.2.8
 TARGET="${1:-both}"
 
+# Issue #74: set SITMUN_ORACLE_IMAGE=gvenzl/oracle-xe:21-slim to run an upgrade
+# path against a pre-23ai server. That image is amd64 only. Pre-23ai startup is
+# slower, hence the larger default wait.
+ORACLE_IMAGE="${SITMUN_ORACLE_IMAGE:-gvenzl/oracle-free:23-slim}"
+ORACLE_WAIT_TRIES="${SITMUN_ORACLE_WAIT_TRIES:-150}"
+
 PASS=0
 FAIL=0
 
@@ -66,7 +72,9 @@ alias_csv_case() {
 }
 
 print_lb_snippet() {
-  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -40 || true
+  # A tag → HEAD upgrade runs well over 40 changesets; keep the whole tail
+  # visible so a reviewer can see which changelogs ran.
+  echo "$LB_OUTPUT" | grep -E "^(Running Changeset|UPDATE SUMMARY|Run:|Previously|Liquibase command|ERROR|Validation)" | head -150 || true
 }
 
 print_lb_errors() {
@@ -399,10 +407,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -413,7 +421,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1
@@ -565,10 +573,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -579,7 +587,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1
@@ -622,6 +630,24 @@ DOCKEREOF
   assert_eq "Phase2 TNO_DEFAULT present" "1" "$P2_TNO"
   assert_eq "Phase2 ATR_ID present" "1" "$P2_ATR"
 
+  # Issue #74: the tail of the master, which changelog 26 unblocks on pre-23ai.
+  assert_eq "Phase2 changelog 26 applied" "4" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%26_map_image_task_type_pre23%';")"
+  assert_eq "Phase2 changelog 22 not applied" "0" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%22_add_map_image_task_type%';")"
+  assert_eq "Phase2 documentExport task type 17" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID=17 AND TTY_SPEC IS NOT NULL;")"
+  assert_eq "Phase2 mapImage task type 18" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TSK_TYP WHERE TTY_ID=18 AND TTY_SPEC IS NOT NULL;")"
+  assert_eq "Phase2 documentExport codelists as 1/0 flags" "2" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_CODELIST WHERE COD_LIST LIKE 'documentExport.%' AND COD_SYSTEM=1 AND COD_DEFAULT=1;")"
+  assert_eq "Phase2 changelog 23 document export tasks" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM STM_TASK WHERE TAS_TTASKID=17 AND ROWNUM=1;")"
+  assert_eq "Phase2 changelog 24 template regions" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE FILENAME LIKE '%24_add_default_template_regions%' AND ROWNUM=1;")"
+  assert_eq "Phase2 changelog 25 auth mode swap" "1" \
+    "$(sqlplus_q "SELECT COUNT(*) FROM DATABASECHANGELOG WHERE ID='25-fix-auth-mode-swap';")"
+
   echo ""
   echo "── Oracle-from teardown ──"
   docker rm -f "$CONTAINER" 2>/dev/null || true
@@ -644,9 +670,9 @@ run_dev_oracle_from() {
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
   alias_csv_case "$LB_SRC"
-  if version_lt "$version" "1.2.7"; then
-    quote_csv_embedded_commas "$LB_SRC"
-  fi
+  # No quote_csv_embedded_commas here: the development tree's pre-1.2.7 loadData
+  # changesets declare quotchar: ' and hold JSON with commas and newlines, which
+  # the rewriter would re-quote with " and Liquibase could no longer parse.
   LB_HEAD="$TMP/head"
   mkdir -p "$LB_HEAD"
   cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
@@ -695,10 +721,10 @@ DOCKEREOF
     -e APP_USER="$DB_USER" \
     -e APP_USER_PASSWORD="$DB_PASS" \
     -e ORACLE_DATABASE="$DB" \
-    gvenzl/oracle-free:23-slim
+    "$ORACLE_IMAGE"
 
-  echo -n "  Waiting for Oracle"
-  for i in $(seq 1 90); do
+  echo -n "  Waiting for Oracle ($ORACLE_IMAGE)"
+  for i in $(seq 1 "$ORACLE_WAIT_TRIES"); do
     result=$(docker exec "$CONTAINER" bash -c "
       printf 'SET HEADING OFF FEEDBACK OFF PAGESIZE 0 TRIMOUT ON;\nSELECT 42 FROM DUAL;\nEXIT;\n' \
       | sqlplus -s ${DB_USER}/${DB_PASS}@//localhost:1521/${DB} 2>/dev/null
@@ -709,7 +735,7 @@ DOCKEREOF
     fi
     sleep 3
     echo -n "."
-    if [[ $i -eq 90 ]]; then
+    if [[ $i -eq "$ORACLE_WAIT_TRIES" ]]; then
       echo " TIMEOUT"
       fail "Oracle container failed to become ready"
       return 1
@@ -766,9 +792,9 @@ run_dev_postgres_from() {
   local LB_SRC LB_HEAD
   LB_SRC=$(extract_tag_liquibase "$tag" development/backend "$TMP/src")
   alias_csv_case "$LB_SRC"
-  if version_lt "$version" "1.2.7"; then
-    quote_csv_embedded_commas "$LB_SRC"
-  fi
+  # No quote_csv_embedded_commas here: the development tree's pre-1.2.7 loadData
+  # changesets declare quotchar: ' and hold JSON with commas and newlines, which
+  # the rewriter would re-quote with " and Liquibase could no longer parse.
   LB_HEAD="$TMP/head"
   mkdir -p "$LB_HEAD"
   cp -R "$REPO_ROOT/profiles/development/backend/liquibase/." "$LB_HEAD/"
