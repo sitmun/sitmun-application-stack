@@ -79,4 +79,5 @@
   <include file="changelog/70_add_map_image_task_type.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/71_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/72_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/73_more_info_advanced_basic_task_grants.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

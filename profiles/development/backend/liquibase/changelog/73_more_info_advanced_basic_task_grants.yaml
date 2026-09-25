@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 73_more_info_advanced_basic_task_grants
+      author: sitmun
+      context: dev
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: "SELECT COUNT(*) FROM STM_TSK_UI WHERE TUI_NAME = 'sitna.moreInfoAdvanced'"
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_TASK
+              SET TAS_PARAMS = '{"parameters":[]}'
+              WHERE TAS_TTASKID = 1
+                AND TAS_PARAMS IS NULL
+                AND TAS_TUIID IN (
+                  SELECT TUI_ID FROM STM_TSK_UI WHERE TUI_NAME = 'sitna.moreInfoAdvanced'
+                );
+              INSERT INTO STM_ROL_TSK (RTS_TASKID, RTS_ROLEID)
+              SELECT task.TAS_ID, role.ROL_ID
+              FROM STM_TASK task
+              JOIN STM_TSK_UI ui ON task.TAS_TUIID = ui.TUI_ID
+              JOIN STM_ROLE role ON role.ROL_ID IN (180, 181)
+              WHERE task.TAS_TTASKID = 1
+                AND ui.TUI_NAME = 'sitna.moreInfoAdvanced'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_ROL_TSK existing
+                  WHERE existing.RTS_TASKID = task.TAS_ID
+                    AND existing.RTS_ROLEID = role.ROL_ID
+                );
+              INSERT INTO STM_AVAIL_TSK (ATS_ID, ATS_CREATED, ATS_TASKID, ATS_TERID)
+              SELECT (SELECT COALESCE(MAX(ATS_ID), 0) FROM STM_AVAIL_TSK) + ROW_NUMBER() OVER (ORDER BY territory.TER_ID),
+                     TIMESTAMP '2026-05-04 18:38:16.076',
+                     task.TAS_ID,
+                     territory.TER_ID
+              FROM STM_TASK task
+              JOIN STM_TSK_UI ui ON task.TAS_TUIID = ui.TUI_ID
+              CROSS JOIN STM_TERRITORY territory
+              WHERE task.TAS_TTASKID = 1
+                AND ui.TUI_NAME = 'sitna.moreInfoAdvanced'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_AVAIL_TSK existing
+                  WHERE existing.ATS_TASKID = task.TAS_ID
+                    AND existing.ATS_TERID = territory.TER_ID
+                );
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(ATS_ID), 0) + 1 FROM STM_AVAIL_TSK))
+              WHERE SEQ_NAME = 'ATS_ID';
