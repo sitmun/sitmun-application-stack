@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 26_more_info_advanced_basic_task
+      author: sitmun
+      context: dev,prod
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: "SELECT COUNT(*) FROM STM_TSK_UI WHERE TUI_NAME = 'sitna.moreInfoAdvanced'"
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_TASK (TAS_ID, TAS_NAME, TAS_CREATED, TAS_GTASKID, TAS_TTASKID, TAS_TUIID, TAS_PARAMS)
+              SELECT 32306, 'More Info Advanced', TIMESTAMP '2026-05-04 18:38:16.076', 1, 1, tui.TUI_ID, '{"parameters":[]}'
+              FROM STM_TSK_UI tui
+              WHERE tui.TUI_NAME = 'sitna.moreInfoAdvanced'
+                AND NOT EXISTS (SELECT 1 FROM STM_TASK WHERE TAS_ID = 32306)
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TASK x
+                  WHERE x.TAS_TUIID = tui.TUI_ID AND x.TAS_TTASKID = 1
+                );
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TAS_ID), 0) + 1 FROM STM_TASK))
+              WHERE SEQ_NAME = 'TAS_ID';
+      rollback:
+        - delete:
+            tableName: STM_TASK
+            where: TAS_ID = 32306 AND TAS_NAME = 'More Info Advanced' AND TAS_TTASKID = 1
