@@ -22,6 +22,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Plantilla query-table `data-sitmun-each`: visual TipTap edit keeps the attribute and ADMIN preview still expands row cells ([sitmun-admin-app#441](https://github.com/sitmun/sitmun-admin-app/issues/441); `e2e/admin/forms/template-table-each-preview.spec.ts`, project `admin-forms`)
 - Plantilla TipTap attribute mustaches: visual mustache `img` is a placeholder (`[data-sitmun-mustache-media="img"]`, no `img[src*="{{"]`); `src`/`href` stay literal after visual sibling edit + ADMIN preview; no-edit exact `templateHtml`; edited div/bare-table/authored-link shapes; attribute-safe unresolved `{{#APP_NAME}}` preview (`e2e/admin/forms/template-attr-mustache-preview.spec.ts`, project `admin-forms`)
 
+- Plantilla role and territory tabs: assigning a role and a territory on the task form persists after reload ([sitmun-admin-app#467](https://github.com/sitmun/sitmun-admin-app/issues/467); `e2e/admin/forms/template-task-relations.spec.ts`, project `admin-forms`)
 - More Info Advanced **Details**: validation, create with cartography + included query child 38, layout update persistence; cartography open-in-new; deep route `/#/tasks/42/16`; Parameters `app-relation-grid` add + reload persist; child parameter mapping UI round-trip + persists across a subsequent Parameters save; orphan `childTaskParameters` keys dropped on save; Add mapping disabled when included child has no parameters; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
@@ -226,7 +227,7 @@ npx playwright show-report
 
 - H2 only (not Postgres/Oracle)
 - No OIDC login
-- Admin suite does not cover Application / Layer / Task `app-relation-grid` **CRUD** except MIA Parameters add+reload in `mia-form.spec.ts`. Layers form now asserts lazy association GETs for Territories / Permissions / Trees (not grid CRUD). Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation-grid CRUD
+- Admin suite does not cover Application / Layer `app-relation-grid` **CRUD** except MIA Parameters add+reload in `mia-form.spec.ts` and Plantilla Roles/Territories add+reload in `template-task-relations.spec.ts`. Layers form now asserts lazy association GETs for Territories / Permissions / Trees (not grid CRUD). Role/User/Territory/MIA Details create/edit and application-contact (Application Details field) are separate and do not exercise relation-grid CRUD
 - Viewer suite covers configuration + proxy GetCapabilities, plus layer-catalog radio/`loadData` DOM contracts; not full SITNA tile painting
 - Mobile web suite is API-level (gateway + backend + proxy + MBTiles); it does not drive the Ionic UI in Chromium
 - Edition mobile WFS origin (`/proxy/...` vs Capacitor `https://localhost`) is covered by edition Jest, not `e2e:mobile:web`
