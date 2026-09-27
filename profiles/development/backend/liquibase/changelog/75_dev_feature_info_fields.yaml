@@ -1,0 +1,133 @@
+databaseChangeLog:
+  - changeSet:
+      id: 75-dev-feature-info-fields-postgresql
+      author: sitmun
+      context: dev
+      dbms: postgresql
+      comment: >
+        IDE genèric Menorca (application 12). Identify Trams del camí de cavalls
+        (cartography 1304, layer tu007rts_ccavalls) and Fotos de Menorca britànica
+        (cartography 4123, layer tu007rts_fotosbrt). English labels are PGI_VALUE;
+        Spanish and Catalan come from STM_TRANSLATION.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 4123
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_DIGITS, PGI_PAD, PGI_DATESTYLE
+              ) VALUES
+                (9101, 'nomruta', 'Route', 'T', 'INFO', 1304, 0, NULL, NULL, NULL),
+                (9102, 'dstipus', 'Kind', 'AUTO', 'INFO', 1304, 1, NULL, NULL, NULL),
+                (9103, 'etrsxmax', 'Max easting', 'N', 'INFO', 1304, 2, 0, FALSE, NULL),
+                (9104, 'link', 'Website', 'U', 'INFO', 1304, 3, NULL, NULL, NULL),
+                (9105, 'nom', 'Name', 'T', 'INFO', 4123, 0, NULL, NULL, NULL),
+                (9106, 'dsmun', 'Municipality', 'T', 'INFO', 4123, 1, NULL, NULL, NULL),
+                (9107, 'urlthumfo', 'Thumbnail', 'I', 'INFO', 4123, 2, NULL, NULL, NULL),
+                (9108, 'urlfoto', 'Photo', 'U', 'INFO', 4123, 3, NULL, NULL, NULL);
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+                (9101001, 9101, 'CartographyParameter.value', 2, 'Ruta'),
+                (9101002, 9101, 'CartographyParameter.value', 3, 'Ruta'),
+                (9101003, 9102, 'CartographyParameter.value', 2, 'Tipo'),
+                (9101004, 9102, 'CartographyParameter.value', 3, 'Tipus'),
+                (9101005, 9103, 'CartographyParameter.value', 2, 'Este máximo'),
+                (9101006, 9103, 'CartographyParameter.value', 3, 'Est màxim'),
+                (9101007, 9104, 'CartographyParameter.value', 2, 'Enlace'),
+                (9101008, 9104, 'CartographyParameter.value', 3, 'Enllaç'),
+                (9101009, 9105, 'CartographyParameter.value', 2, 'Nombre'),
+                (9101010, 9105, 'CartographyParameter.value', 3, 'Nom'),
+                (9101011, 9106, 'CartographyParameter.value', 2, 'Municipio'),
+                (9101012, 9106, 'CartographyParameter.value', 3, 'Municipi'),
+                (9101013, 9107, 'CartographyParameter.value', 2, 'Miniatura'),
+                (9101014, 9107, 'CartographyParameter.value', 3, 'Miniatura'),
+                (9101015, 9108, 'CartographyParameter.value', 2, 'Foto'),
+                (9101016, 9108, 'CartographyParameter.value', 3, 'Foto');
+              UPDATE STM_GEOINFO
+              SET GEO_QUERYABL = TRUE, GEO_QUERYACT = TRUE, GEO_QUERYLAY = 'tu007rts_fotosbrt'
+              WHERE GEO_ID = 4123;
+              UPDATE STM_TREE_NOD
+              SET TNO_QUERYACT = TRUE
+              WHERE TNO_ID IN (12084, 12633);
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
+  - changeSet:
+      id: 75-dev-feature-info-fields-oracle
+      author: sitmun
+      context: dev
+      dbms: oracle
+      comment: >
+        IDE genèric Menorca (application 12). Identify Trams del camí de cavalls
+        (cartography 1304) and Fotos de Menorca britànica (cartography 4123).
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 0
+            sql: SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 4123
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_DIGITS, PGI_PAD, PGI_DATESTYLE
+              )
+              SELECT 9101, 'nomruta', 'Route', 'T', 'INFO', 1304, 0, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9102, 'dstipus', 'Kind', 'AUTO', 'INFO', 1304, 1, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9103, 'etrsxmax', 'Max easting', 'N', 'INFO', 1304, 2, 0, 0, CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9104, 'link', 'Website', 'U', 'INFO', 1304, 3, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9105, 'nom', 'Name', 'T', 'INFO', 4123, 0, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9106, 'dsmun', 'Municipality', 'T', 'INFO', 4123, 1, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9107, 'urlthumfo', 'Thumbnail', 'I', 'INFO', 4123, 2, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL UNION ALL
+              SELECT 9108, 'urlfoto', 'Photo', 'U', 'INFO', 4123, 3, CAST(NULL AS NUMBER), CAST(NULL AS NUMBER), CAST(NULL AS VARCHAR2(20)) FROM DUAL;
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT 9101001, 9101, 'CartographyParameter.value', 2, 'Ruta' FROM DUAL UNION ALL
+              SELECT 9101002, 9101, 'CartographyParameter.value', 3, 'Ruta' FROM DUAL UNION ALL
+              SELECT 9101003, 9102, 'CartographyParameter.value', 2, 'Tipo' FROM DUAL UNION ALL
+              SELECT 9101004, 9102, 'CartographyParameter.value', 3, 'Tipus' FROM DUAL UNION ALL
+              SELECT 9101005, 9103, 'CartographyParameter.value', 2, 'Este máximo' FROM DUAL UNION ALL
+              SELECT 9101006, 9103, 'CartographyParameter.value', 3, 'Est màxim' FROM DUAL UNION ALL
+              SELECT 9101007, 9104, 'CartographyParameter.value', 2, 'Enlace' FROM DUAL UNION ALL
+              SELECT 9101008, 9104, 'CartographyParameter.value', 3, 'Enllaç' FROM DUAL UNION ALL
+              SELECT 9101009, 9105, 'CartographyParameter.value', 2, 'Nombre' FROM DUAL UNION ALL
+              SELECT 9101010, 9105, 'CartographyParameter.value', 3, 'Nom' FROM DUAL UNION ALL
+              SELECT 9101011, 9106, 'CartographyParameter.value', 2, 'Municipio' FROM DUAL UNION ALL
+              SELECT 9101012, 9106, 'CartographyParameter.value', 3, 'Municipi' FROM DUAL UNION ALL
+              SELECT 9101013, 9107, 'CartographyParameter.value', 2, 'Miniatura' FROM DUAL UNION ALL
+              SELECT 9101014, 9107, 'CartographyParameter.value', 3, 'Miniatura' FROM DUAL UNION ALL
+              SELECT 9101015, 9108, 'CartographyParameter.value', 2, 'Foto' FROM DUAL UNION ALL
+              SELECT 9101016, 9108, 'CartographyParameter.value', 3, 'Foto' FROM DUAL;
+              UPDATE STM_GEOINFO
+              SET GEO_QUERYABL = 1, GEO_QUERYACT = 1, GEO_QUERYLAY = 'tu007rts_fotosbrt'
+              WHERE GEO_ID = 4123;
+              UPDATE STM_TREE_NOD
+              SET TNO_QUERYACT = 1
+              WHERE TNO_ID IN (12084, 12633);
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';

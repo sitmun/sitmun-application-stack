@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Profile-level
 
 - **Liquibase**: PostgreSQL and Oracle changelog 27, and development changelog 74, add `PGI_DIGITS`, `PGI_PAD`, `PGI_DATESTYLE`, and format code `AUTO` ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+- **Liquibase**: Development changelog 75 seeds GetFeatureInfo fields on IDE genèric Menorca. Cartography 1304 (Trams del camí de cavalls) lists route, kind, max easting, and website. Cartography 4123 (Fotos de Menorca britànica) lists name, municipality, thumbnail, and photo, and is queryable. Spanish and Catalan labels are translations; English is the stored default ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 
 ### Fixed
 
