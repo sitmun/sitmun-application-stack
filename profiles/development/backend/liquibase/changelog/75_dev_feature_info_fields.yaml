@@ -11,12 +11,12 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
           sqlCheck:
-            expectedResult: 0
-            sql: SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101
-        - onFail: MARK_RAN
-          sqlCheck:
             expectedResult: 1
-            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
       changes:
         - sql:
             sql: |
@@ -54,12 +54,12 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
           sqlCheck:
-            expectedResult: 0
-            sql: SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101
-        - onFail: MARK_RAN
-          sqlCheck:
             expectedResult: 1
-            sql: SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
       changes:
         - sql:
             sql: |
