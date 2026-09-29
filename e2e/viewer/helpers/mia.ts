@@ -317,6 +317,41 @@ export async function openPublicDashboard(page: Page): Promise<void> {
 }
 
 /** Enable Capas GFI toggle so map clicks issue GetFeatureInfo for the loaded leaf. */
+/** Drive FeatureInfo.callback at the map center (stub GetFeatureInfo, not responseCallback). */
+export async function identifyAtMapCenter(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const w = window as unknown as {
+      TC?: {
+        Map?: {
+          get: (el: Element) => {
+            controls?: Array<{ callback?: (coords: number[]) => Promise<unknown> }>;
+            getCenter?: () => number[];
+            wrap?: { map?: { getView: () => { getCenter: () => number[] } } };
+          };
+        };
+        control?: { FeatureInfo?: new () => unknown };
+      };
+    };
+    const mapEl = document.querySelector('.tc-map');
+    if (!w.TC?.Map?.get || !mapEl) {
+      throw new Error('TC.Map not available');
+    }
+    const map = w.TC.Map.get(mapEl);
+    const FeatureInfo = w.TC.control?.FeatureInfo;
+    const fi = (map.controls || []).find(
+      (ctl) => FeatureInfo && ctl instanceof (FeatureInfo as unknown as Function),
+    );
+    if (!fi?.callback) {
+      throw new Error('FeatureInfo.callback not found');
+    }
+    const center = map.getCenter?.() || map.wrap?.map?.getView()?.getCenter() || null;
+    if (!center) {
+      throw new Error('map center unavailable');
+    }
+    await fi.callback(center);
+  });
+}
+
 export async function enableCapasGfi(page: Page): Promise<void> {
   const gfi = page.locator('#tc-slot-wlm sitna-toggle.sitmun-wlm-gfi, #tc-slot-wlm .sitmun-wlm-gfi').first();
   await expect(gfi).toBeVisible({ timeout: 30_000 });

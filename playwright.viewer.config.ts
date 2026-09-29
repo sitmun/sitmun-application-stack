@@ -104,5 +104,11 @@ export default defineConfig({
       testMatch: /gfi-html-embed\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'viewer-gfi-fields',
+      testMatch: /gfi-field-list\.spec\.ts/,
+      dependencies: ['viewer-setup'],
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
 });
