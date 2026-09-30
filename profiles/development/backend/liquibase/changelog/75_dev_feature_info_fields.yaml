@@ -1,0 +1,88 @@
+databaseChangeLog:
+  - changeSet:
+      id: 75-dev-feature-info-fields-postgresql
+      author: sitmun
+      context: dev
+      dbms: postgresql
+      comment: >
+        IDE genèric Menorca (application 12). Identify Trams del camí de cavalls
+        (cartography 1304, layer tu007rts_ccavalls). English labels are PGI_VALUE;
+        Spanish and Catalan come from STM_TRANSLATION.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              ) VALUES
+                (9101, 'nomruta', 'Route', 'T', 'INFO', 1304, 0, NULL),
+                (9102, 'dstipus', 'Kind', 'AUTO', 'INFO', 1304, 1, NULL),
+                (9103, 'etrsxmax', 'Max easting', 'N', 'INFO', 1304, 2, '{"fractionDigits":0}'),
+                (9104, 'link', 'Website', 'U', 'INFO', 1304, 3, NULL);
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+                (9101001, 9101, 'CartographyParameter.value', 2, 'Ruta'),
+                (9101002, 9101, 'CartographyParameter.value', 3, 'Ruta'),
+                (9101003, 9102, 'CartographyParameter.value', 2, 'Tipo'),
+                (9101004, 9102, 'CartographyParameter.value', 3, 'Tipus'),
+                (9101005, 9103, 'CartographyParameter.value', 2, 'Este máximo'),
+                (9101006, 9103, 'CartographyParameter.value', 3, 'Est màxim'),
+                (9101007, 9104, 'CartographyParameter.value', 2, 'Enlace'),
+                (9101008, 9104, 'CartographyParameter.value', 3, 'Enllaç');
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
+  - changeSet:
+      id: 75-dev-feature-info-fields-oracle
+      author: sitmun
+      context: dev
+      dbms: oracle
+      comment: >
+        IDE genèric Menorca (application 12). Identify Trams del camí de cavalls
+        (cartography 1304, layer tu007rts_ccavalls).
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9101) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              )
+              SELECT 9101, 'nomruta', 'Route', 'T', 'INFO', 1304, 0, NULL FROM DUAL UNION ALL
+              SELECT 9102, 'dstipus', 'Kind', 'AUTO', 'INFO', 1304, 1, NULL FROM DUAL UNION ALL
+              SELECT 9103, 'etrsxmax', 'Max easting', 'N', 'INFO', 1304, 2, '{"fractionDigits":0}' FROM DUAL UNION ALL
+              SELECT 9104, 'link', 'Website', 'U', 'INFO', 1304, 3, NULL FROM DUAL;
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT 9101001, 9101, 'CartographyParameter.value', 2, 'Ruta' FROM DUAL UNION ALL
+              SELECT 9101002, 9101, 'CartographyParameter.value', 3, 'Ruta' FROM DUAL UNION ALL
+              SELECT 9101003, 9102, 'CartographyParameter.value', 2, 'Tipo' FROM DUAL UNION ALL
+              SELECT 9101004, 9102, 'CartographyParameter.value', 3, 'Tipus' FROM DUAL UNION ALL
+              SELECT 9101005, 9103, 'CartographyParameter.value', 2, 'Este máximo' FROM DUAL UNION ALL
+              SELECT 9101006, 9103, 'CartographyParameter.value', 3, 'Est màxim' FROM DUAL UNION ALL
+              SELECT 9101007, 9104, 'CartographyParameter.value', 2, 'Enlace' FROM DUAL UNION ALL
+              SELECT 9101008, 9104, 'CartographyParameter.value', 3, 'Enllaç' FROM DUAL;
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';

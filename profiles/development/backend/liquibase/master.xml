@@ -80,4 +80,6 @@
   <include file="changelog/71_add_document_export_tasks.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/72_add_default_template_regions.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/73_more_info_advanced_basic_task_grants.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/74_feature_info_field_format.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/75_dev_feature_info_fields.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+#### Backend Core
+
+- **Profile**: Client profile layers publish ordered `featureInfoFields` for `INFO` cartography parameters. The list is omitted when empty. Labels come from `STM_TRANSLATION` on `CartographyParameter.value` ([sitmun-backend-core#268](https://github.com/sitmun/sitmun-backend-core/pull/268), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+
+#### Admin Application
+
+- **Layers**: The feature-information field grid is on the cartography form without the experimental query-layer flag. Labels translate per parameter. `N` and `P` edit fraction digits and padding. `F` chooses date or date and time. A WFS DescribeFeatureType request seeds top-level element names ([sitmun-admin-app#469](https://github.com/sitmun/sitmun-admin-app/pull/469), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+
+#### Viewer Application
+
+- **Map**: A non-empty field list replaces the full GetFeatureInfo property table, in order, with the translated label. `T`, `N`, `F`, `U`, `P`, and `I` follow the map locale. `AUTO` keeps API-SITNA detection. `feature.data` is not rewritten ([sitmun-viewer-app#179](https://github.com/sitmun/sitmun-viewer-app/pull/179), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+
+#### Profile-level
+
+- **Liquibase**: PostgreSQL and Oracle changelog 27, and development changelog 74, add `PGI_OPTIONS` and format code `AUTO` ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+- **Liquibase**: Development changelog 75 seeds GetFeatureInfo fields on IDE genèric Menorca cartography 1304, Trams del camí de cavalls (`tu007rts_ccavalls`): route, kind, max easting, and website. Spanish and Catalan labels are translations; English is the stored default ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+
 ### Fixed
 
 #### Stack-level
