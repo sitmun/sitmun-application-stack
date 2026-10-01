@@ -1,0 +1,146 @@
+databaseChangeLog:
+  - changeSet:
+      id: 77-dev-estades-feature-info-fields-h2-postgresql
+      author: sitmun
+      context: dev
+      dbms: h2,postgresql
+      comment: >
+        IDE genèric Menorca (application 12, territory 4). Make Estades
+        (cartography 1325, layer or007tur_estades, tree node 12047) queryable
+        and seed the eleven identify fields from the service property list.
+        English labels are PGI_VALUE. Spanish and Catalan come from STM_TRANSLATION.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9301) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1325) = 1
+                 AND (SELECT COUNT(*) FROM STM_TREE_NOD WHERE TNO_ID = 12047) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_GEOINFO
+              SET GEO_QUERYABL = TRUE, GEO_QUERYACT = TRUE
+              WHERE GEO_ID = 1325;
+              UPDATE STM_TREE_NOD
+              SET TNO_QUERYACT = TRUE
+              WHERE TNO_ID = 12047;
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              ) VALUES
+                (9301, 'Adreça', 'Address', 'T', 'INFO', 1325, 0, NULL),
+                (9302, 'Categoria', 'Category', 'T', 'INFO', 1325, 1, NULL),
+                (9303, 'Data_inici_activitat', 'Activity start date', 'F', 'INFO', 1325, 2, NULL),
+                (9304, 'Nom', 'Name', 'T', 'INFO', 1325, 3, NULL),
+                (9305, 'Nombre_Places', 'Number of places', 'N', 'INFO', 1325, 4, '{"fractionDigits":0}'),
+                (9306, 'Nombre_habitacions', 'Number of rooms', 'N', 'INFO', 1325, 5, '{"fractionDigits":0}'),
+                (9307, 'Nucli', 'Settlement', 'T', 'INFO', 1325, 6, NULL),
+                (9308, 'Numero_Registre', 'Register number', 'T', 'INFO', 1325, 7, NULL),
+                (9309, 'Població', 'Municipality', 'T', 'INFO', 1325, 8, NULL),
+                (9310, 'Pàgina_WEB', 'Web page', 'U', 'INFO', 1325, 9, NULL),
+                (9311, 'Referencia_cadastral', 'Cadastral reference', 'T', 'INFO', 1325, 10, NULL);
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+                (9301001, 9301, 'CartographyParameter.value', 2, 'Dirección'),
+                (9301002, 9301, 'CartographyParameter.value', 3, 'Adreça'),
+                (9301003, 9302, 'CartographyParameter.value', 2, 'Categoría'),
+                (9301004, 9302, 'CartographyParameter.value', 3, 'Categoria'),
+                (9301005, 9303, 'CartographyParameter.value', 2, 'Fecha de inicio de la actividad'),
+                (9301006, 9303, 'CartographyParameter.value', 3, 'Data d''inici de l''activitat'),
+                (9301007, 9304, 'CartographyParameter.value', 2, 'Nombre'),
+                (9301008, 9304, 'CartographyParameter.value', 3, 'Nom'),
+                (9301009, 9305, 'CartographyParameter.value', 2, 'Número de plazas'),
+                (9301010, 9305, 'CartographyParameter.value', 3, 'Nombre de places'),
+                (9301011, 9306, 'CartographyParameter.value', 2, 'Número de habitaciones'),
+                (9301012, 9306, 'CartographyParameter.value', 3, 'Nombre d''habitacions'),
+                (9301013, 9307, 'CartographyParameter.value', 2, 'Núcleo'),
+                (9301014, 9307, 'CartographyParameter.value', 3, 'Nucli'),
+                (9301015, 9308, 'CartographyParameter.value', 2, 'Número de registro'),
+                (9301016, 9308, 'CartographyParameter.value', 3, 'Número de registre'),
+                (9301017, 9309, 'CartographyParameter.value', 2, 'Población'),
+                (9301018, 9309, 'CartographyParameter.value', 3, 'Població'),
+                (9301019, 9310, 'CartographyParameter.value', 2, 'Página web'),
+                (9301020, 9310, 'CartographyParameter.value', 3, 'Pàgina web'),
+                (9301021, 9311, 'CartographyParameter.value', 2, 'Referencia catastral'),
+                (9301022, 9311, 'CartographyParameter.value', 3, 'Referència cadastral');
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
+  - changeSet:
+      id: 77-dev-estades-feature-info-fields-oracle
+      author: sitmun
+      context: dev
+      dbms: oracle
+      comment: >
+        IDE genèric Menorca (application 12, territory 4). Make Estades
+        (cartography 1325, layer or007tur_estades, tree node 12047) queryable
+        and seed the eleven identify fields from the service property list.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9301) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1325) = 1
+                 AND (SELECT COUNT(*) FROM STM_TREE_NOD WHERE TNO_ID = 12047) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_GEOINFO
+              SET GEO_QUERYABL = 1, GEO_QUERYACT = 1
+              WHERE GEO_ID = 1325;
+              UPDATE STM_TREE_NOD
+              SET TNO_QUERYACT = 1
+              WHERE TNO_ID = 12047;
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              )
+              SELECT 9301, 'Adreça', 'Address', 'T', 'INFO', 1325, 0, NULL FROM DUAL UNION ALL
+              SELECT 9302, 'Categoria', 'Category', 'T', 'INFO', 1325, 1, NULL FROM DUAL UNION ALL
+              SELECT 9303, 'Data_inici_activitat', 'Activity start date', 'F', 'INFO', 1325, 2, NULL FROM DUAL UNION ALL
+              SELECT 9304, 'Nom', 'Name', 'T', 'INFO', 1325, 3, NULL FROM DUAL UNION ALL
+              SELECT 9305, 'Nombre_Places', 'Number of places', 'N', 'INFO', 1325, 4, '{"fractionDigits":0}' FROM DUAL UNION ALL
+              SELECT 9306, 'Nombre_habitacions', 'Number of rooms', 'N', 'INFO', 1325, 5, '{"fractionDigits":0}' FROM DUAL UNION ALL
+              SELECT 9307, 'Nucli', 'Settlement', 'T', 'INFO', 1325, 6, NULL FROM DUAL UNION ALL
+              SELECT 9308, 'Numero_Registre', 'Register number', 'T', 'INFO', 1325, 7, NULL FROM DUAL UNION ALL
+              SELECT 9309, 'Població', 'Municipality', 'T', 'INFO', 1325, 8, NULL FROM DUAL UNION ALL
+              SELECT 9310, 'Pàgina_WEB', 'Web page', 'U', 'INFO', 1325, 9, NULL FROM DUAL UNION ALL
+              SELECT 9311, 'Referencia_cadastral', 'Cadastral reference', 'T', 'INFO', 1325, 10, NULL FROM DUAL;
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT 9301001, 9301, 'CartographyParameter.value', 2, 'Dirección' FROM DUAL UNION ALL
+              SELECT 9301002, 9301, 'CartographyParameter.value', 3, 'Adreça' FROM DUAL UNION ALL
+              SELECT 9301003, 9302, 'CartographyParameter.value', 2, 'Categoría' FROM DUAL UNION ALL
+              SELECT 9301004, 9302, 'CartographyParameter.value', 3, 'Categoria' FROM DUAL UNION ALL
+              SELECT 9301005, 9303, 'CartographyParameter.value', 2, 'Fecha de inicio de la actividad' FROM DUAL UNION ALL
+              SELECT 9301006, 9303, 'CartographyParameter.value', 3, 'Data d''inici de l''activitat' FROM DUAL UNION ALL
+              SELECT 9301007, 9304, 'CartographyParameter.value', 2, 'Nombre' FROM DUAL UNION ALL
+              SELECT 9301008, 9304, 'CartographyParameter.value', 3, 'Nom' FROM DUAL UNION ALL
+              SELECT 9301009, 9305, 'CartographyParameter.value', 2, 'Número de plazas' FROM DUAL UNION ALL
+              SELECT 9301010, 9305, 'CartographyParameter.value', 3, 'Nombre de places' FROM DUAL UNION ALL
+              SELECT 9301011, 9306, 'CartographyParameter.value', 2, 'Número de habitaciones' FROM DUAL UNION ALL
+              SELECT 9301012, 9306, 'CartographyParameter.value', 3, 'Nombre d''habitacions' FROM DUAL UNION ALL
+              SELECT 9301013, 9307, 'CartographyParameter.value', 2, 'Núcleo' FROM DUAL UNION ALL
+              SELECT 9301014, 9307, 'CartographyParameter.value', 3, 'Nucli' FROM DUAL UNION ALL
+              SELECT 9301015, 9308, 'CartographyParameter.value', 2, 'Número de registro' FROM DUAL UNION ALL
+              SELECT 9301016, 9308, 'CartographyParameter.value', 3, 'Número de registre' FROM DUAL UNION ALL
+              SELECT 9301017, 9309, 'CartographyParameter.value', 2, 'Población' FROM DUAL UNION ALL
+              SELECT 9301018, 9309, 'CartographyParameter.value', 3, 'Població' FROM DUAL UNION ALL
+              SELECT 9301019, 9310, 'CartographyParameter.value', 2, 'Página web' FROM DUAL UNION ALL
+              SELECT 9301020, 9310, 'CartographyParameter.value', 3, 'Pàgina web' FROM DUAL UNION ALL
+              SELECT 9301021, 9311, 'CartographyParameter.value', 2, 'Referencia catastral' FROM DUAL UNION ALL
+              SELECT 9301022, 9311, 'CartographyParameter.value', 3, 'Referència cadastral' FROM DUAL;
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';

@@ -19,11 +19,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Viewer Application
 
 - **Map**: A non-empty field list replaces the full GetFeatureInfo property table, in order, with the translated label. `T`, `N`, `F`, `U`, `P`, and `I` follow the map locale. `AUTO` keeps API-SITNA detection. `feature.data` is not rewritten ([sitmun-viewer-app#179](https://github.com/sitmun/sitmun-viewer-app/pull/179), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+- **Map**: The field list follows the profile layer id, including a WMS group child. Identify highlights do not persist. The identify popup is solid white after a drag. The MIA report docks to the map and closes when the next identify has no MIA layer ([sitmun-viewer-app#187](https://github.com/sitmun/sitmun-viewer-app/pull/187)).
 
 #### Profile-level
 
 - **Liquibase**: PostgreSQL and Oracle changelog 27, and development changelog 74, add `PGI_OPTIONS` and format code `AUTO` ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 - **Liquibase**: Development changelog 75 seeds GetFeatureInfo fields on IDE genèric Menorca cartography 1304, Trams del camí de cavalls (`tu007rts_ccavalls`): route, kind, max easting, and website. Spanish and Catalan labels are translations; English is the stored default ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
+- **Liquibase**: Development changelog 76 seeds seven GetFeatureInfo fields on cartography 4658, RPT Sòl Rústic (`OR007RPT_solrustic`): soil class, category, qualification, settlement names, area, and perimeter. Area and perimeter use two fraction digits.
+- **Liquibase**: Development changelog 77 turns on identify for cartography 1325 (`or007tur_estades`, tree node 12047) at layer and tree level, and seeds the eleven service properties: address, category, activity start date, name, places, rooms, settlement, register number, municipality, web page, and cadastral reference.
 
 ### Fixed
 

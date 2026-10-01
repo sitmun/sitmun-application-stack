@@ -82,4 +82,6 @@
   <include file="changelog/73_more_info_advanced_basic_task_grants.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/74_feature_info_field_format.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/75_dev_feature_info_fields.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/76_dev_sol_rustic_feature_info_fields.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/77_dev_estades_feature_info_fields.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
