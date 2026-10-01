@@ -1,0 +1,107 @@
+databaseChangeLog:
+  - changeSet:
+      id: 76-dev-sol-rustic-feature-info-fields-h2-postgresql
+      author: sitmun
+      context: dev
+      dbms: h2,postgresql
+      comment: >
+        IDE genèric Menorca. Identify Sòl Rústic (cartography 4658,
+        layer OR007RPT_solrustic). English labels are PGI_VALUE.
+        Spanish and Catalan come from STM_TRANSLATION.
+        Area and perimeter use two fraction digits.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9201) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 4658) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              ) VALUES
+                (9201, 'Classe_de_sòl', 'Soil class', 'T', 'INFO', 4658, 0, NULL),
+                (9202, 'Categoria_de_sòl', 'Soil category', 'T', 'INFO', 4658, 1, NULL),
+                (9203, 'Qualificació_de_sòl', 'Soil qualification', 'T', 'INFO', 4658, 2, NULL),
+                (9204, 'Nom_de_nucli', 'Settlement name', 'T', 'INFO', 4658, 3, NULL),
+                (9205, 'Nom_del_nucli_rural', 'Rural settlement', 'T', 'INFO', 4658, 4, NULL),
+                (9206, 'superficie', 'Area', 'N', 'INFO', 4658, 5, '{"fractionDigits":2,"padFractionDigits":true}'),
+                (9207, 'perimetre', 'Perimeter', 'N', 'INFO', 4658, 6, '{"fractionDigits":2,"padFractionDigits":true}');
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+                (9201001, 9201, 'CartographyParameter.value', 2, 'Clase de suelo'),
+                (9201002, 9201, 'CartographyParameter.value', 3, 'Classe de sòl'),
+                (9201003, 9202, 'CartographyParameter.value', 2, 'Categoría de suelo'),
+                (9201004, 9202, 'CartographyParameter.value', 3, 'Categoria de sòl'),
+                (9201005, 9203, 'CartographyParameter.value', 2, 'Calificación de suelo'),
+                (9201006, 9203, 'CartographyParameter.value', 3, 'Qualificació de sòl'),
+                (9201007, 9204, 'CartographyParameter.value', 2, 'Nombre del núcleo'),
+                (9201008, 9204, 'CartographyParameter.value', 3, 'Nom del nucli'),
+                (9201009, 9205, 'CartographyParameter.value', 2, 'Núcleo rural'),
+                (9201010, 9205, 'CartographyParameter.value', 3, 'Nucli rural'),
+                (9201011, 9206, 'CartographyParameter.value', 2, 'Superficie'),
+                (9201012, 9206, 'CartographyParameter.value', 3, 'Superfície'),
+                (9201013, 9207, 'CartographyParameter.value', 2, 'Perímetro'),
+                (9201014, 9207, 'CartographyParameter.value', 3, 'Perímetre');
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
+  - changeSet:
+      id: 76-dev-sol-rustic-feature-info-fields-oracle
+      author: sitmun
+      context: dev
+      dbms: oracle
+      comment: >
+        IDE genèric Menorca. Identify Sòl Rústic (cartography 4658,
+        layer OR007RPT_solrustic).
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_PAR_GI WHERE PGI_ID = 9201) = 0
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 4658) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              )
+              SELECT 9201, 'Classe_de_sòl', 'Soil class', 'T', 'INFO', 4658, 0, NULL FROM DUAL UNION ALL
+              SELECT 9202, 'Categoria_de_sòl', 'Soil category', 'T', 'INFO', 4658, 1, NULL FROM DUAL UNION ALL
+              SELECT 9203, 'Qualificació_de_sòl', 'Soil qualification', 'T', 'INFO', 4658, 2, NULL FROM DUAL UNION ALL
+              SELECT 9204, 'Nom_de_nucli', 'Settlement name', 'T', 'INFO', 4658, 3, NULL FROM DUAL UNION ALL
+              SELECT 9205, 'Nom_del_nucli_rural', 'Rural settlement', 'T', 'INFO', 4658, 4, NULL FROM DUAL UNION ALL
+              SELECT 9206, 'superficie', 'Area', 'N', 'INFO', 4658, 5, '{"fractionDigits":2,"padFractionDigits":true}' FROM DUAL UNION ALL
+              SELECT 9207, 'perimetre', 'Perimeter', 'N', 'INFO', 4658, 6, '{"fractionDigits":2,"padFractionDigits":true}' FROM DUAL;
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT 9201001, 9201, 'CartographyParameter.value', 2, 'Clase de suelo' FROM DUAL UNION ALL
+              SELECT 9201002, 9201, 'CartographyParameter.value', 3, 'Classe de sòl' FROM DUAL UNION ALL
+              SELECT 9201003, 9202, 'CartographyParameter.value', 2, 'Categoría de suelo' FROM DUAL UNION ALL
+              SELECT 9201004, 9202, 'CartographyParameter.value', 3, 'Categoria de sòl' FROM DUAL UNION ALL
+              SELECT 9201005, 9203, 'CartographyParameter.value', 2, 'Calificación de suelo' FROM DUAL UNION ALL
+              SELECT 9201006, 9203, 'CartographyParameter.value', 3, 'Qualificació de sòl' FROM DUAL UNION ALL
+              SELECT 9201007, 9204, 'CartographyParameter.value', 2, 'Nombre del núcleo' FROM DUAL UNION ALL
+              SELECT 9201008, 9204, 'CartographyParameter.value', 3, 'Nom del nucli' FROM DUAL UNION ALL
+              SELECT 9201009, 9205, 'CartographyParameter.value', 2, 'Núcleo rural' FROM DUAL UNION ALL
+              SELECT 9201010, 9205, 'CartographyParameter.value', 3, 'Nucli rural' FROM DUAL UNION ALL
+              SELECT 9201011, 9206, 'CartographyParameter.value', 2, 'Superficie' FROM DUAL UNION ALL
+              SELECT 9201012, 9206, 'CartographyParameter.value', 3, 'Superfície' FROM DUAL UNION ALL
+              SELECT 9201013, 9207, 'CartographyParameter.value', 2, 'Perímetro' FROM DUAL UNION ALL
+              SELECT 9201014, 9207, 'CartographyParameter.value', 3, 'Perímetre' FROM DUAL;
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
