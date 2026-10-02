@@ -217,4 +217,73 @@ test.describe('Viewer print preview', () => {
       }
     }
   });
+
+  /**
+   * Portrait A4 cutoff (#181). The page is 1034px under the header, and a short
+   * window clips it. Reloading after each resize matters. A resize of an
+   * already laid-out map stretches the preview and hides the cutoff.
+   */
+  test('scrolls a portrait A4 page that is taller than the window', async ({ page }) => {
+    const heights = [650, 800, 960, 1080] as const;
+    await page.setViewportSize({ width: 1276, height: heights[0] });
+    await loginAndOpenMap(page);
+
+    for (const height of heights) {
+      await page.setViewportSize({ width: 1276, height });
+      await page.goto(`/user/map/${APP_ID}/${TERRITORY_ID}`, {
+        waitUntil: 'domcontentloaded',
+      });
+      await page.locator('#tc-slot-print').waitFor({ state: 'attached', timeout: 90_000 });
+
+      const panel = page.locator('.tc-left-panel');
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await page.locator('#tools-tab').click();
+        const collapsed = await panel.evaluate((element) =>
+          element.classList.contains('tc-collapsed-left'),
+        );
+        if (!collapsed) {
+          break;
+        }
+      }
+      await expect(panel).not.toHaveClass(/tc-collapsed-left/);
+      await page.locator('#tc-slot-print > h2').click();
+      await expect(page.locator('#tc-slot-print')).not.toHaveClass(/tc-collapsed/);
+
+      await page.selectOption('#print-design', 'portrait');
+      await page.selectOption('#print-size', 'a4');
+      await page.locator('#tc-slot-print sitna-button.tc-ctl-prnmap-btn').click();
+      const map = page.locator('#mapa.tc-ctl-prnmap-printing.tc-ctl-prnmap-portrait-a4');
+      await map.waitFor({ timeout: 40_000 });
+      await expect(map, `portrait A4 at ${height}px keeps the page height`).toHaveCSS(
+        'height',
+        '1034px',
+      );
+
+      const before = await map.boundingBox();
+      expect(before, `portrait A4 at ${height}px`).not.toBeNull();
+      const beforeBottom = before!.y + before!.height;
+      expect(beforeBottom, `portrait A4 at ${height}px starts past the window`).toBeGreaterThan(
+        height,
+      );
+
+      let after = before!;
+      for (let step = 0; step < 12; step++) {
+        if (after.y + after.height <= height + 1) {
+          break;
+        }
+        const marginX = Math.max(after.x - 30, 8);
+        await page.mouse.move(marginX, Math.min(height / 2, height - 40));
+        await page.mouse.wheel(0, 500);
+        const next = await map.boundingBox();
+        expect(next, `portrait A4 at ${height}px while wheeling`).not.toBeNull();
+        after = next!;
+      }
+
+      expect(
+        after.y + after.height,
+        `portrait A4 at ${height}px bottom is inside the window`,
+      ).toBeLessThanOrEqual(height + 1);
+      expect(after.y, `portrait A4 at ${height}px moves up`).toBeLessThan(before!.y);
+    }
+  });
 });
