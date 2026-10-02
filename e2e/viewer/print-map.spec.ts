@@ -31,6 +31,21 @@ const PAGE_FORMATS = [
  */
 const WINDOW = { width: 1600, height: 700 };
 
+/** Widths named in sitmun-viewer-app#182. Tall enough to show the header and the page top. */
+const PREVIEW_WIDTHS = [1276, 1600, 1920] as const;
+const PREVIEW_WINDOW_HEIGHT = 1080;
+
+type Box = { x: number; y: number; width: number; height: number };
+
+function overlaps(a: Box, b: Box): boolean {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
+
 async function loginAndOpenMap(page: Page): Promise<void> {
   const credentials = await readViewerCredentials();
 
@@ -132,6 +147,74 @@ test.describe('Viewer print preview', () => {
         `${WINDOW.width}px`,
       );
       await expect(map).toHaveCSS('height', windowedHeight);
+    }
+  });
+
+  /**
+   * Preview buttons (#182). api-sitna pins `.tc-ctl-prnmap-tools` to the
+   * viewport origin. The map starts under the header, so those buttons must
+   * sit on the page and leave the header controls clickable.
+   */
+  test('keeps preview buttons on the page and off the header', async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: PREVIEW_WINDOW_HEIGHT });
+    await loginAndOpenMap(page);
+    await openPrintPanel(page);
+
+    const menu = page.locator('mat-toolbar button').filter({
+      has: page.locator('mat-icon', { hasText: 'menu' }),
+    });
+    const headerButtons = page.locator('mat-toolbar .toolbar-right button');
+
+    for (const width of PREVIEW_WIDTHS) {
+      await page.setViewportSize({ width, height: PREVIEW_WINDOW_HEIGHT });
+
+      for (const format of PAGE_FORMATS) {
+        const label = `${format.orientation} ${format.size.toUpperCase()} at ${width}px`;
+
+        await page.selectOption('#print-design', format.orientation);
+        await page.selectOption('#print-size', format.size);
+        await page.locator('#tc-slot-print sitna-button.tc-ctl-prnmap-btn').click();
+        const map = page.locator(
+          `#mapa.tc-ctl-prnmap-printing.tc-ctl-prnmap-${format.orientation}-${format.size}`,
+        );
+        await map.waitFor({ timeout: 40_000 });
+
+        const toolsBox = await page.locator('.tc-ctl-prnmap-tools').boundingBox();
+        const headerBox = await page.locator('mat-toolbar').boundingBox();
+        const mapBox = await map.boundingBox();
+        expect(toolsBox, `${label} tools`).not.toBeNull();
+        expect(headerBox, `${label} header`).not.toBeNull();
+        expect(mapBox, `${label} map`).not.toBeNull();
+
+        expect(overlaps(toolsBox!, headerBox!), `${label} tools overlap the header`).toBe(
+          false,
+        );
+
+        const buttonCount = await headerButtons.count();
+        for (let index = 0; index < buttonCount; index++) {
+          const buttonBox = await headerButtons.nth(index).boundingBox();
+          expect(buttonBox, `${label} header button ${index}`).not.toBeNull();
+          expect(
+            overlaps(toolsBox!, buttonBox!),
+            `${label} tools overlap a header button`,
+          ).toBe(false);
+        }
+
+        expect(Math.abs(toolsBox!.y - mapBox!.y), `${label} tools sit on the page top`).toBeLessThan(
+          12,
+        );
+        const rightGap = mapBox!.x + mapBox!.width - (toolsBox!.x + toolsBox!.width);
+        expect(rightGap, `${label} tools stay inside the page`).toBeGreaterThanOrEqual(0);
+        expect(rightGap, `${label} tools sit at the page's right edge`).toBeLessThan(32);
+
+        await menu.click();
+        await expect(page.getByRole('menu'), `${label} header menu opens`).toBeVisible();
+        await page.keyboard.press('Escape');
+        await expect(page.getByRole('menu')).toBeHidden();
+
+        await page.locator('.tc-ctl-prnmap-btn-close').click();
+        await page.locator('#mapa:not(.tc-ctl-prnmap-printing)').waitFor({ timeout: 20_000 });
+      }
     }
   });
 });
