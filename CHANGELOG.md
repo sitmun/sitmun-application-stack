@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+#### Viewer Application
+
+- **Map**: A long Available Layers name stays on one line, shortened with an ellipsis, and the metadata button stays visible. A folder's children start on the next line, including a one-letter name ([sitmun-viewer-app#186](https://github.com/sitmun/sitmun-viewer-app/issues/186)).
+
 #### Stack-level
 
 - **Liquibase (Oracle)**: `changelog/26_map_image_task_type_pre23.yaml` takes changelog 22's slot in `profiles/oracle/liquibase/master.xml`. Changeset `22c_document_export_codelists` used `SELECT` without `FROM` and SQL `TRUE` literals, both 23ai-only, so install and upgrade failed on 19c with `ORA-00923` ([#74](https://github.com/sitmun/sitmun-application-stack/issues/74)). Changelog 22 stays byte-identical and unreferenced; its `DATABASECHANGELOG` rows remain on databases that applied it, and 26 is guarded so those databases converge without duplicate rows.

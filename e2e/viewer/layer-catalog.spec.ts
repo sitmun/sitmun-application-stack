@@ -689,6 +689,111 @@ test.describe('Viewer layer catalog loadData / radio', () => {
   });
 });
 
+test.describe('Available Layers row overflow (#186)', () => {
+  test('long names ellipsize in the row and short folders keep children below', async ({
+    page,
+  }) => {
+    await loginAndOpenMap(page);
+    await expandNodeByTitle(page, NON_RADIO_ROOT_FOLDER_TITLE);
+    await expandNodeByTitle(page, RADIO_FOLDER_TITLE);
+    await expandNodeByTitle(page, CHECKBOX_LOAD_FOLDER_TITLE);
+    await page.locator('#tc-slot-toc').evaluate((slot) => {
+      slot.querySelectorAll('.tc-ctl-lcat, .tc-ctl-lcat-tree').forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        node.style.width = '400px';
+        node.style.maxWidth = '400px';
+        node.style.minWidth = '400px';
+        node.style.boxSizing = 'border-box';
+      });
+    });
+
+    const longName = 'Mapa topogràfic de referència de la comarca '.padEnd(65, 'x').slice(0, 65);
+    const leaf = page.locator(`#tc-slot-toc li[data-layer-name="${QUERYABLE_LEAF_NODE_ID}"]`);
+    await leaf
+      .locator(':scope > span, :scope > .tc-ctl-lcat-node-title')
+      .first()
+      .evaluate((el, name) => {
+        el.textContent = name;
+      }, longName);
+
+    const leafRow = await leaf.evaluate((li) => {
+      const title = li.querySelector(':scope > span, :scope > .tc-ctl-lcat-node-title') as HTMLElement;
+      const meta = li.querySelector(':scope > [data-sitmun-lcat-meta]') as HTMLElement;
+      const liRect = li.getBoundingClientRect();
+      const titleRect = title.getBoundingClientRect();
+      const metaRect = meta.getBoundingClientRect();
+      const inside = (rect: DOMRect) =>
+        rect.width > 1 &&
+        rect.height > 1 &&
+        rect.top >= liRect.top - 1 &&
+        rect.bottom <= liRect.bottom + 1 &&
+        rect.right <= liRect.right + 1;
+      return {
+        rowHeight: Math.round(liRect.height),
+        titleInside: inside(titleRect),
+        metaInside: inside(metaRect),
+        titleClientWidth: title.clientWidth,
+        titleScrollWidth: title.scrollWidth,
+        titleRight: titleRect.right,
+        metaLeft: metaRect.left,
+        metaCoversTitle: metaRect.left < titleRect.right - 1,
+      };
+    });
+    expect(leafRow.rowHeight).toBe(20);
+    expect(leafRow.titleInside).toBe(true);
+    expect(leafRow.metaInside).toBe(true);
+    expect(leafRow.titleScrollWidth).toBeGreaterThan(leafRow.titleClientWidth);
+    expect(leafRow.metaCoversTitle).toBe(false);
+
+    const folder = page.locator(
+      `#tc-slot-toc li[data-layer-name="${CHECKBOX_LOAD_FOLDER_NODE_ID}"]`,
+    );
+    await folder
+      .locator(':scope > span, :scope > .tc-ctl-lcat-node-title')
+      .first()
+      .evaluate((el) => {
+        el.textContent = 'L';
+      });
+    const native = await folder.evaluate((li) => {
+      const title = li.querySelector(':scope > span, :scope > .tc-ctl-lcat-node-title') as HTMLElement;
+      const branch = li.querySelector(':scope > ul') as HTMLElement;
+      const child = branch.querySelector(':scope > li') as HTMLElement;
+      const titleRect = title.getBoundingClientRect();
+      const branchRect = branch.getBoundingClientRect();
+      const styles = getComputedStyle(li);
+      const rootAlign = parseFloat(styles.getPropertyValue('--sitmun-lcat-root-align')) || 5;
+      const indent = parseFloat(styles.getPropertyValue('--sitmun-lcat-indent')) || 16;
+      const level = Number(li.getAttribute('data-sitmun-lcat-level') ?? '0');
+      const childLevel = Number(child.getAttribute('data-sitmun-lcat-level') ?? '0');
+      return {
+        childrenBelow: branchRect.top >= titleRect.bottom - 1,
+        paddingLeft: parseFloat(styles.paddingLeft),
+        expectedPadding: rootAlign + (level + 1) * indent,
+        branchMarginLeft: parseFloat(getComputedStyle(branch).marginLeft),
+        childPaddingLeft: parseFloat(getComputedStyle(child).paddingLeft),
+        expectedChildPadding: rootAlign + (childLevel + 1) * indent,
+      };
+    });
+    expect(native.childrenBelow).toBe(true);
+    expect(native.paddingLeft).toBeCloseTo(native.expectedPadding, 0);
+    expect(native.branchMarginLeft).toBeCloseTo(-native.paddingLeft, 0);
+    expect(native.childPaddingLeft).toBeCloseTo(native.expectedChildPadding, 0);
+
+    for (const level of [2, 3, 4, 5]) {
+      const below = await folder.evaluate((li, nextLevel) => {
+        li.setAttribute('data-sitmun-lcat-level', String(nextLevel));
+        li.style.setProperty('--sitmun-lcat-level', String(nextLevel));
+        const title = li.querySelector(':scope > span, :scope > .tc-ctl-lcat-node-title') as HTMLElement;
+        const branch = li.querySelector(':scope > ul') as HTMLElement;
+        const titleRect = title.getBoundingClientRect();
+        const branchRect = branch.getBoundingClientRect();
+        return branchRect.top >= titleRect.bottom - 1;
+      }, level);
+      expect(below, `folder level ${level}`).toBe(true);
+    }
+  });
+});
+
 test.describe('Capas WLM contrast and layout (#92 / #142)', () => {
   test('Capas notvisible path uses #777777 (#92)', async ({ page }) => {
     await loginAndOpenMap(page);
