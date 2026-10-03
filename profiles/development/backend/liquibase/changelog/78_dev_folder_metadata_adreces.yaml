@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 78-dev-folder-metadata-adreces
+      author: sitmun
+      context: dev
+      dbms: h2,postgresql,oracle
+      comment: >
+        Visor IDEBarcelona (application 15, tree 37). Folder Adreces (node 12339)
+        gets a description, a metadata URL, and a dataset URL so the viewer
+        catalog can open the folder information window. Gestió municipal
+        (node 12338) stays empty and has no button.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_TREE_NOD
+                      WHERE TNO_ID = 12339
+                        AND TNO_NAME = 'Adreces'
+                        AND TNO_METAURL IS NULL) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_TREE_NOD
+              SET TNO_ABSTRACT = 'Carrers, números de portal i illes urbanes del municipi.',
+                  TNO_METAURL = 'https://www.icgc.cat/ca/Geoinformacio-i-mapes/Geoinformacio/Geoinformacio-de-referencia',
+                  TNO_DATAURL = 'https://www.icgc.cat/ca/Descarregues'
+              WHERE TNO_ID = 12339;

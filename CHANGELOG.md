@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Profile-level
 
+- **Liquibase**: Development changelog 78 sets a description, a metadata URL, and a dataset URL on folder Adreces (tree node 12339) in Visor IDEBarcelona. Gestió municipal (node 12338) stays empty ([sitmun-viewer-app#173](https://github.com/sitmun/sitmun-viewer-app/issues/173)).
+- **Liquibase**: Development changelog 79 moves IDE Menorca folder download zips from `TNO_METAURL` to `TNO_DATAURL` and clears the metadata URL. Those zip names have no GeoNetwork record, so the catalog window shows the file under download data.
 - **Liquibase**: PostgreSQL and Oracle changelog 27, and development changelog 74, add `PGI_OPTIONS` and format code `AUTO` ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 - **Liquibase**: Development changelog 75 seeds GetFeatureInfo fields on IDE genèric Menorca cartography 1304, Trams del camí de cavalls (`tu007rts_ccavalls`): route, kind, max easting, and website. Spanish and Catalan labels are translations; English is the stored default ([#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 - **Liquibase**: Development changelog 76 seeds seven GetFeatureInfo fields on cartography 4658, RPT Sòl Rústic (`OR007RPT_solrustic`): soil class, category, qualification, settlement names, area, and perimeter. Area and perimeter use two fraction digits.
