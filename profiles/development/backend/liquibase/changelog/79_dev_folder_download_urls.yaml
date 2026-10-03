@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 79-dev-folder-download-urls
+      author: sitmun
+      context: dev
+      dbms: h2,postgresql,oracle
+      comment: >
+        IDE Menorca folder nodes store a descarregues zip in TNO_METAURL and
+        leave TNO_DATAURL empty, so the catalog window shows a ZIP under
+        metadata. Those zip names have no GeoNetwork record. Move the zip to
+        the dataset URL and clear the metadata URL.
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_TREE_NOD
+                      WHERE TNO_DATAURL IS NULL
+                        AND TNO_METAURL LIKE 'https://ide.cime.es/descarregues/%.zip') > 0
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              UPDATE STM_TREE_NOD
+              SET TNO_DATAURL = TNO_METAURL,
+                  TNO_METAURL = NULL
+              WHERE TNO_DATAURL IS NULL
+                AND TNO_METAURL LIKE 'https://ide.cime.es/descarregues/%.zip';
