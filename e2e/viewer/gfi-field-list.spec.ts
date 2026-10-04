@@ -35,7 +35,15 @@ async function identifyWithFieldList(page: Page, featureInfoFields: FieldSeed[])
       throw new Error(`profile has no layer whose names include ${LAYER_NAME}`);
     }
     layer.featureInfoFields = featureInfoFields;
-    body.tasks = body.tasks ?? [];
+    // Toponímia is the seeded MIA parent. MIA removes that layer from the attribute popup.
+    body.tasks = (body.tasks ?? []).filter((task) => {
+      const typeId = task['typeId'];
+      const cartographyId = task['cartographyId'];
+      return !(
+        typeId === 16 &&
+        String(cartographyId) === String(QUERYABLE_LEAF_CARTOGRAPHY_ID)
+      );
+    });
     body.tasks.push({
       id: 'e2e-more-info',
       name: TASK_NAME,
@@ -57,7 +65,7 @@ async function identifyWithFieldList(page: Page, featureInfoFields: FieldSeed[])
     (response) =>
       response.url().includes('/config/client/profile/') && response.ok(),
   );
-  await loginAndOpenMap(page);
+  await loginAndOpenMap(page, { requireMiaParent: false });
   const profileBody = (await (await profileSeen).json()) as ProfileBody;
   await loadQueryableLeafIntoCapas(page);
   await enableCapasGfi(page);

@@ -22,6 +22,8 @@ export async function loginAndOpenMap(
     territoryId?: number;
     /** Cartography id of the expected type-16 MIA parent (default Toponímia 6). */
     miaCartographyId?: number | string;
+    /** Set false when the spec removes that MIA parent so the attribute popup can render. */
+    requireMiaParent?: boolean;
   },
 ): Promise<void> {
   const appId = options?.appId ?? APP_ID;
@@ -73,12 +75,14 @@ export async function loginAndOpenMap(
     profileBody.tasks?.some((task) => task['ui-control'] === 'sitna.moreInfoAdvanced'),
     'profile must include sitna.moreInfoAdvanced (setup task-availability)',
   ).toBeTruthy();
-  expect(
-    profileBody.tasks?.some(
-      (task) => task.typeId === 16 && String(task.cartographyId) === miaCartographyId,
-    ),
-    `profile must include MIA parent on cartography ${miaCartographyId}`,
-  ).toBeTruthy();
+  if (options?.requireMiaParent !== false) {
+    expect(
+      profileBody.tasks?.some(
+        (task) => task.typeId === 16 && String(task.cartographyId) === miaCartographyId,
+      ),
+      `profile must include MIA parent on cartography ${miaCartographyId}`,
+    ).toBeTruthy();
+  }
   await page.locator('#tc-slot-toc').waitFor({ state: 'attached', timeout: 90_000 });
   await page.locator('.tc-tools-panel').evaluate((panel) => {
     panel.classList.remove('tc-collapsed-right');
