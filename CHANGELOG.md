@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Backend Core
 
+- **Map**: `POST /api/config/client/short-url` shortens a viewer map URL when the caller can open that application and territory. A public visitor with no cookie is allowed. `sitmun.short-url.provider` defaults to `none`. A provider I/O failure returns `Short URL provider failed` ([sitmun-backend-core#272](https://github.com/sitmun/sitmun-backend-core/issues/272)).
 - **Profile**: Client profile layers publish ordered `featureInfoFields` for `INFO` cartography parameters. The list is omitted when empty. Labels come from `STM_TRANSLATION` on `CartographyParameter.value` ([sitmun-backend-core#268](https://github.com/sitmun/sitmun-backend-core/pull/268), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 
 #### Admin Application
@@ -18,8 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
+- **Map**: A share link keeps the current map route and stores the view in `mapState`. Opening that link restores the extent, a non-default background, catalog layers that were turned on, reordered, or changed (including their opacity, sublayers, stacking order, and the selected layer of a radio group), drawings, an imported file, a shared feature, and the 3D camera. A missing background, layer, drawing, or file does not stop the rest of the restore. The browser does not call tinyurl.com. A failed shorten shows a map-language message ([sitmun-viewer-app#189](https://github.com/sitmun/sitmun-viewer-app/issues/189)).
 - **Map**: A non-empty field list replaces the full GetFeatureInfo property table, in order, with the translated label. `T`, `N`, `F`, `U`, `P`, and `I` follow the map locale. `AUTO` keeps API-SITNA detection. `feature.data` is not rewritten ([sitmun-viewer-app#179](https://github.com/sitmun/sitmun-viewer-app/pull/179), [#77](https://github.com/sitmun/sitmun-application-stack/issues/77)).
 - **Map**: The field list follows the profile layer id, including a WMS group child. Identify highlights do not persist. The identify popup is solid white after a drag. The MIA report docks to the map and closes when the next identify has no MIA layer ([sitmun-viewer-app#187](https://github.com/sitmun/sitmun-viewer-app/pull/187)).
+
+#### Stack
+
+- **Development**: `profiles/development-lvh.env` announces the stack as `http://lvh.me:9000`. The air-gapped default stays `localhost`.
 
 #### Profile-level
 

@@ -188,6 +188,9 @@ The stack has four main components:
    # For Oracle
    cp profiles/oracle.env .env
 
+   # Local named host (lvh.me resolves to 127.0.0.1). Open http://lvh.me:9000
+   cp profiles/development-lvh.env .env
+
    # Edit environment variables for production
    nano .env
    ```
@@ -478,15 +481,7 @@ Admin, viewer, and normal WMS/WFS proxy flows work without it. Root Playwright m
 
 #### Frontend Configuration
 
-```typescript
-// Environment configuration for Angular apps
-export const environment = {
-  production: boolean,
-  apiBaseURL: string,
-  logLevel: LogLevel,
-  hashLocationStrategy: boolean,
-};
-```
+Admin `environment.ts` uses `apiBaseURL`. Viewer `environment.ts` uses `apiUrl` and `hashLocationStrategy`. Viewer `hashLocationStrategy` is `false` in `environment.ts` and `true` in `environment.prod.ts`. The production configuration is the only Docker build that compiles `environment.prod.ts`.
 
 #### Backend Configuration
 
@@ -684,7 +679,7 @@ The frontend applications (Admin and Viewer) support three build configurations 
 | Configuration  | Use Case             | API URL                  | Source Maps | Optimization  |
 | -------------- | -------------------- | ------------------------ | ----------- | ------------- |
 | `development`  | Local `ng serve`     | `localhost:9000/backend` | Yes         | No            |
-| `docker-dev`   | Docker debugging     | Template-based           | Yes         | No            |
+| `docker-dev`   | Docker debugging     | `localhost:9000/backend` (`environment.ts`) | Yes         | No            |
 | `production`   | Docker production    | Template-based           | No          | Yes           |
 
 #### Local Development
@@ -725,7 +720,7 @@ For debugging issues in a Docker environment, use the `docker-dev` configuration
 ENVIRONMENT=development docker compose build front
 ```
 
-This creates unoptimized builds with source maps enabled, while still using the template-based API URL configuration for Docker.
+This creates unoptimized builds with source maps. `docker-dev` has no `fileReplacements` entry, so the image compiles `environment.ts` and calls `http://localhost:9000/backend`. The envsubst output in `environment.prod.ts` is compiled only by the production configuration.
 
 #### Environment Files
 
