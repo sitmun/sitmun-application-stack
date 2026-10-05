@@ -26,3 +26,7 @@
 	path = back/mbtiles/sitmun-mbtiles
 	url = https://github.com/sitmun/sitmun-mbtiles.git
 	branch = .
+[submodule "back/shared/sitmun-shared"]
+	path = back/shared/sitmun-shared
+	url = https://github.com/sitmun/sitmun-shared.git
+	branch = .

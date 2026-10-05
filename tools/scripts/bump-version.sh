@@ -13,7 +13,10 @@ VERSION_FILE="$REPO_ROOT/VERSION"
 # Path is relative to REPO_ROOT. One targeted pattern per file; no global replace.
 BUMP_ENTRIES=(
   "back/backend/sitmun-backend-core/build.gradle|project.version = '{{VERSION}}'|project.version = '{{NEW}}'"
+  "back/backend/sitmun-backend-core/build.gradle|org.sitmun:sitmun-spring-upstream:{{VERSION}}|org.sitmun:sitmun-spring-upstream:{{NEW}}"
   "back/proxy/sitmun-proxy-middleware/build.gradle|project.version = '{{VERSION}}'|project.version = '{{NEW}}'"
+  "back/shared/sitmun-shared/build.gradle|version = '{{VERSION}}'|version = '{{NEW}}'"
+  "back/shared/sitmun-shared/gradle.properties|version={{VERSION}}|version={{NEW}}"
   "front/admin/sitmun-admin-app/package.json|\"version\": \"{{VERSION}}\"|\"version\": \"{{NEW}}\""
   "front/viewer/sitmun-viewer-app/package.json|\"version\": \"{{VERSION}}\"|\"version\": \"{{NEW}}\""
   "back/backend/sitmun-backend-core/src/main/resources/application.yml|  version: {{VERSION}}|  version: {{NEW}}"

@@ -575,6 +575,7 @@ The SITMUN Application Stack uses Git submodules to include the source code of a
 | `back/backend/sitmun-backend-core`   | [SITMUN Backend Core](https://github.com/sitmun/sitmun-backend-core.git)         | `backend`      | Spring Boot 3, Java 17 |
 | `back/proxy/sitmun-proxy-middleware` | [SITMUN Proxy Middleware](https://github.com/sitmun/sitmun-proxy-middleware.git) | `proxy`        | Spring Boot 3, Java 17 |
 | `back/mbtiles/sitmun-mbtiles`        | [SITMUN MBTiles](https://github.com/sitmun/sitmun-mbtiles.git)                   | `mbtiles` (internal) | Spring Boot 3, Java 17 |
+| `back/shared/sitmun-shared`          | [SITMUN Shared](https://github.com/sitmun/sitmun-shared.git)                     | —                    | Java 17 library        |
 
 ### Profile-Based Development Environments
 

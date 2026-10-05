@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack
 
+- **Submodules**: The shared upstream library is checked out at `back/shared/sitmun-shared` ([sitmun-shared](https://github.com/sitmun/sitmun-shared)). It follows the stack branch. `tools/scripts/bump-version.sh` moves its `1.2.9` version with the backend dependency `org.sitmun:sitmun-spring-upstream`.
 - **Development**: `profiles/development-lvh.env` announces the stack as `http://lvh.me:9000`. The air-gapped default stays `localhost`.
 
 #### Profile-level
