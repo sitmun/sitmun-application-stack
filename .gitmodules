@@ -25,4 +25,4 @@
 [submodule "back/mbtiles/sitmun-mbtiles"]
 	path = back/mbtiles/sitmun-mbtiles
 	url = https://github.com/sitmun/sitmun-mbtiles.git
-	branch = main
+	branch = .
