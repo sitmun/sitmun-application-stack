@@ -90,7 +90,9 @@ services:
       retries: 3
 
   backend:
-    build: ./back/backend
+    build:
+      context: ./back
+      dockerfile: backend/Dockerfile
     ports:
       - "9001:8080"
     restart: always
@@ -132,7 +134,9 @@ services:
       retries: 5
 
   proxy:
-    build: ./back/proxy
+    build:
+      context: ./back
+      dockerfile: proxy/Dockerfile
     restart: always
     ports:
       - "9002:8080"

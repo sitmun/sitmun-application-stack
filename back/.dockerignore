@@ -1,0 +1,15 @@
+**/.gradle/
+**/build/
+**/.git/
+**/test/
+**/*Test.java
+**/*Tests.java
+**/*.md
+!**/README.md
+.idea/
+.vscode/
+**/*.iml
+.DS_Store
+**/.env
+logs/
+*.log

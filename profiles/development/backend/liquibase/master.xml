@@ -86,4 +86,5 @@
   <include file="changelog/77_dev_estades_feature_info_fields.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/78_dev_folder_metadata_adreces.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/79_dev_folder_download_urls.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/80_service_check.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
