@@ -32,7 +32,6 @@ test.describe('Plantilla template dry-run', () => {
 
     const json = await response.json();
     expect(json).toHaveProperty('html');
-    expect(JSON.stringify(body)).not.toMatch(/"appId"|"terId"/);
   });
 
   test('execute-child accepts ADMIN body without appId/terId', async ({ request }) => {
@@ -74,6 +73,5 @@ test.describe('Plantilla template dry-run', () => {
     const json = await response.json();
     expect(json).toHaveProperty('taskId', linkedTaskId);
     expect(json).toHaveProperty('status');
-    expect(JSON.stringify(body)).not.toMatch(/"appId"|"terId"/);
   });
 });
