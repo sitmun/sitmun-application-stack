@@ -150,44 +150,6 @@ export async function addMiaParameter(
   });
 }
 
-/** Ensure Plantilla exposes a child param label for MIA mapping UI. */
-export async function putPlantillaParameter(
-  request: APIRequestContext,
-  taskId: number,
-  options: { variable: string; label: string; templateHtml: string },
-): Promise<void> {
-  const get = await request.get(`/backend/api/tasks/${taskId}`, {
-    headers: { 'X-SITMUN-Client': 'admin' },
-  });
-  expect(get.ok(), await get.text()).toBeTruthy();
-  const task = (await get.json()) as {
-    name?: string;
-    properties?: Record<string, unknown>;
-  };
-  const put = await request.put(`/backend/api/tasks/${taskId}`, {
-    headers: {
-      'X-SITMUN-Client': 'admin',
-      'Content-Type': 'application/json',
-    },
-    data: {
-      name: task.name,
-      properties: {
-        ...(task.properties ?? {}),
-        templateHtml: options.templateHtml,
-        parameters: [
-          {
-            variable: options.variable,
-            label: options.label,
-            type: 'string',
-            required: false,
-          },
-        ],
-      },
-    },
-  });
-  expect(put.ok(), `put plantilla params: ${put.status()} ${await put.text()}`).toBeTruthy();
-}
-
 export async function gotoMiaDetailsTab(page: Page): Promise<void> {
   // common.form.details → "General information" / "Informació general" / …
   await page
