@@ -107,14 +107,12 @@ class ChangelogChecker:
         file_path_obj = Path(file_path)
         dir_path = file_path_obj.parent
         
-        # First, check if directory name contains a changelog number
         # e.g., "03_task_types" -> 3
         dir_name = dir_path.name
         dir_match = re.match(r"^(\d+)_", dir_name)
         if dir_match:
             return int(dir_match.group(1))
         
-        # Look for YAML or SQL files in the same directory
         for ext in ["*.yaml", "*.sql"]:
             for parent_file in dir_path.glob(ext):
                 if parent_file.name[0].isdigit():
@@ -122,10 +120,8 @@ class ChangelogChecker:
                     if num:
                         return num
         
-        # Look in parent directory (changelog root) for matching changelog
         parent_dir = dir_path.parent
         if parent_dir == self.changelog_dir:
-            # We're in a subdirectory, look for changelog file in parent
             for ext in ["*.yaml", "*.sql"]:
                 for parent_file in parent_dir.glob(ext):
                     if parent_file.name[0].isdigit():
@@ -138,7 +134,6 @@ class ChangelogChecker:
     def find_next_changelog(self, changelog_num: int) -> Optional[str]:
         """Find the next changelog file (N+1)"""
         next_num = changelog_num + 1
-        # Format with leading zero if needed
         pattern = f"{next_num:02d}_*"
         
         output = self.run_git_command([
@@ -146,7 +141,6 @@ class ChangelogChecker:
         ])
         
         files = [f for f in output.split("\n") if f]
-        # Return first matching file (should be only one)
         return files[0] if files else None
     
     def get_initial_commit(self, file_path: str) -> Optional[Tuple[str, str]]:
@@ -209,16 +203,11 @@ class ChangelogChecker:
         """Check a single file for violations"""
         file_path_obj = Path(file_path)
         
-        # For files in subdirectories, prefer directory-based changelog number
-        # For files directly in changelog dir, use filename-based number
         if file_path_obj.parent != self.changelog_dir:
-            # File is in a subdirectory, check directory name first
             changelog_num = self.find_parent_changelog(file_path)
             if changelog_num is None:
-                # Fallback to filename
                 changelog_num = self.get_changelog_number(file_path)
         else:
-            # File is directly in changelog directory, use filename
             changelog_num = self.get_changelog_number(file_path)
             if changelog_num is None:
                 changelog_num = self.find_parent_changelog(file_path)
@@ -226,29 +215,24 @@ class ChangelogChecker:
         if changelog_num is None:
             return None
         
-        # Check if file has modifications
         modifications = self.get_modifications(file_path)
         if not modifications:
             return None
         
-        # Find next changelog
         next_file = self.find_next_changelog(changelog_num)
         
         # If no next changelog, all modifications are valid
         if not next_file:
             return None
         
-        # Get next changelog's initial commit
         next_commit_info = self.get_initial_commit(next_file)
         if not next_commit_info:
             return None
         
         next_commit_hash, next_commit_date = next_commit_info
         
-        # Check each modification
         invalid_mods = []
         for mod in modifications:
-            # If modification is NOT an ancestor of next commit, it's invalid
             if not self.is_ancestor(mod.commit_hash, next_commit_hash):
                 invalid_mods.append(mod)
         
@@ -274,7 +258,6 @@ class ChangelogChecker:
             if violation:
                 violations.append(violation)
             else:
-                # Check if file has modifications (valid ones)
                 mods = self.get_modifications(file_path)
                 if mods:
                     valid_count += 1
