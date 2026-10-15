@@ -320,7 +320,6 @@ export async function openPublicDashboard(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/public\/dashboard/);
 }
 
-/** Enable Capas GFI toggle so map clicks issue GetFeatureInfo for the loaded leaf. */
 /** Drive FeatureInfo.callback at the map center (stub GetFeatureInfo, not responseCallback). */
 export async function identifyAtMapCenter(page: Page): Promise<void> {
   await page.evaluate(async () => {
@@ -356,6 +355,7 @@ export async function identifyAtMapCenter(page: Page): Promise<void> {
   });
 }
 
+/** Enable Capas GFI toggle so map clicks issue GetFeatureInfo for the loaded leaf. */
 export async function enableCapasGfi(page: Page): Promise<void> {
   const gfi = page.locator('#tc-slot-wlm sitna-toggle.sitmun-wlm-gfi, #tc-slot-wlm .sitmun-wlm-gfi').first();
   await expect(gfi).toBeVisible({ timeout: 30_000 });

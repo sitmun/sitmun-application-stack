@@ -229,7 +229,6 @@ def save_baseline(baseline_code: str, data: dict, tools_dir: Path | None = None)
     d = tools_dir or _TOOLS_DIR
     path = d / f"master-i18n.{baseline_code}.json"
 
-    # Detect format: if rows contain keys other than id and baseline_code, extract only ours
     entities_out: dict = {}
     for entity_name, entity_data in data["entities"].items():
         translations_out = []
