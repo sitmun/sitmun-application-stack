@@ -21,6 +21,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
+
       - name: Set up Node 20
         uses: actions/setup-node@v5
         with:
@@ -71,6 +76,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
+
       - name: Set up Node 20
         uses: actions/setup-node@v5
         with:
@@ -120,6 +130,11 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: gradle
+
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
       - name: Set up Node 20
         uses: actions/setup-node@v5
@@ -176,6 +191,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
+
       - name: Set up Node 20
         uses: actions/setup-node@v5
         with:
@@ -231,6 +251,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
+
       - name: Set up Node 20
         uses: actions/setup-node@v5
         with:
@@ -274,6 +299,11 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: gradle
+
+      - name: Publish sitmun-shared to the local Maven repository
+        run: |
+          chmod +x back/shared/sitmun-shared/gradlew
+          back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
       - name: Set up Node 20
         uses: actions/setup-node@v5
