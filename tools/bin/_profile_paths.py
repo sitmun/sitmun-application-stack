@@ -148,14 +148,11 @@ def load_all_baselines(tools_dir: Path | None = None) -> dict:
     if not codes:
         raise RuntimeError(f"No master-i18n.*.json files found in {d}.")
 
-    # Load all per-lang files
     per_lang: dict[str, dict] = {code: load_baseline(code, d) for code in codes}
 
-    # Use the en baseline (or first available) as the structural template
     primary_code = "en" if "en" in per_lang else codes[0]
     primary = per_lang[primary_code]
 
-    # Collect all entity names (union across all files)
     all_entity_names: list[str] = list(primary["entities"].keys())
     for code, data in per_lang.items():
         for name in data["entities"]:
@@ -165,16 +162,13 @@ def load_all_baselines(tools_dir: Path | None = None) -> dict:
     # Build merged entities
     merged_entities: dict = {}
     for entity_name in all_entity_names:
-        # Gather all ids from primary baseline
         primary_entity = primary["entities"].get(entity_name, {"field": "", "column": "", "translations": []})
         id_set = {e["id"] for e in primary_entity["translations"]}
 
-        # Index per-language rows by id
         lang_rows: dict[str, dict[int, str]] = {}
         for code, data in per_lang.items():
             entity = data["entities"].get(entity_name, {})
             lang_rows[code] = {e["id"]: e.get(code, "") for e in entity.get("translations", [])}
-            # Also collect any ids not in primary
             for e in entity.get("translations", []):
                 id_set.add(e["id"])
 

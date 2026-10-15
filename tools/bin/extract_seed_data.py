@@ -56,13 +56,11 @@ def read_csv(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         raise FileNotFoundError(f"Source CSV not found: {path}")
     with open(path, encoding="utf-8") as f:
-        # Handle both quoted and unquoted headers
         content = f.read()
     from io import StringIO
     reader = csv.DictReader(StringIO(content))
     rows = []
     for row in reader:
-        # Normalize keys to lower-case for consistent access
         rows.append({k.strip('"').strip().lower(): v.strip('"').strip() for k, v in row.items()})
     return rows
 
@@ -78,7 +76,6 @@ def normalize_row(row: dict[str, str]) -> dict[str, Any]:
         elif v.upper() in ("NULL", ""):
             result[k] = None
         else:
-            # Try numeric
             try:
                 result[k] = int(v)
             except ValueError:

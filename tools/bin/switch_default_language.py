@@ -100,10 +100,8 @@ def main() -> None:
     print(f"Dry-run: {args.dry_run}")
     print()
 
-    # Step 1: Update selector
     update_selector(baseline_code, args.dry_run)
 
-    # Step 2: Regenerate production profiles
     print("\nRegenerating production profiles...")
     regenerate_production(baseline_code, args.dry_run)
 

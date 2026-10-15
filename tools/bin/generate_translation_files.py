@@ -69,7 +69,7 @@ def generate_translation_rows(
     lang_position = sorted_langs.index(lang_code)  # 0-based
 
     # Collect all translatable (entity, entry_id) pairs in stable order
-    all_entries: list[tuple[str, int, str]] = []  # (entity_name, entry_id, column_name)
+    all_entries: list[tuple[str, int, str]] = []
     for entity_name, entity_data in master["entities"].items():
         if entity_data.get("seedDataOnly"):
             continue

@@ -56,7 +56,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Resolve and validate scenarios
     requested = [s.strip() for s in args.scenarios.split(",") if s.strip()]
     unknown = [s for s in requested if s not in all_scenarios]
     if unknown:

@@ -17,20 +17,16 @@ def sort_and_renumber_codelist(input_file: Path, output_file: Path = None) -> No
     if output_file is None:
         output_file = input_file
     
-    # Read all rows
     with open(input_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         header = reader.fieldnames
         rows = list(reader)
     
-    # Sort by COD_LIST, then COD_DESCRIPTION
     rows.sort(key=lambda r: (r['COD_LIST'], r['COD_DESCRIPTION']))
     
-    # Renumber COD_ID starting from 1
     for idx, row in enumerate(rows, start=1):
         row['COD_ID'] = str(idx)
     
-    # Write sorted and renumbered data
     with open(output_file, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=header, lineterminator='\n')
         writer.writeheader()
