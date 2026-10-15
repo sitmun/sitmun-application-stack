@@ -89,21 +89,19 @@ class AliasCsvCaseTest(unittest.TestCase):
             root = Path(tmp)
             data = root / "changelog" / "04_initial_data_prod"
             data.mkdir(parents=True)
+            (data / "probe").write_text("x", encoding="utf-8")
+            if (data / "PROBE").exists():
+                self.skipTest("filesystem is case-insensitive")
+            (data / "probe").unlink()
             (data / "STM_USER.csv").write_text("USE_ID\n1\n", encoding="utf-8")
             (root / "changelog" / "04_initial_data_prod.yaml").write_text(
                 "            file: 04_initial_data_prod/stm_user.csv\n",
                 encoding="utf-8",
             )
-            (data / "probe").write_text("x", encoding="utf-8")
-            case_sensitive = not (data / "PROBE").exists()
-            (data / "probe").unlink()
             created = pel.alias_csv_case(root)
-            if case_sensitive:
-                self.assertEqual(created, 1)
-                self.assertTrue(pel.exists_exact(data / "stm_user.csv"))
-                self.assertTrue(pel.exists_exact(data / "STM_USER.csv"))
-            else:
-                self.assertEqual(created, 0)
+            self.assertEqual(created, 1)
+            self.assertTrue(pel.exists_exact(data / "stm_user.csv"))
+            self.assertTrue(pel.exists_exact(data / "STM_USER.csv"))
 
 
 if __name__ == "__main__":

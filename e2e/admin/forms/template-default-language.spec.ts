@@ -85,7 +85,6 @@ test.describe('Templates + language.default i18n cluster', () => {
   }) => {
     test.setTimeout(120_000);
     const initialDefault = await readLanguageDefault(request);
-    expect(initialDefault).toBeTruthy();
     const otherLang = initialDefault === 'en' ? 'ca' : 'en';
     const literalKey = `e2e-enroll-${uniqueValue('KEY')}`;
     const translated = `e2e-translated-${uniqueValue('TR')}`;

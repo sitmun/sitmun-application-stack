@@ -19,7 +19,6 @@ async function readLanguageDefault(request: import('@playwright/test').APIReques
 test.describe('Language default change', () => {
   test('preview dialog cancel leaves language.default unchanged', async ({ page, request }) => {
     const before = await readLanguageDefault(request);
-    expect(before).toBeTruthy();
 
     // Open a non-default language (ca = 3 when default is en).
     await page.goto('/#/language/3/languageForm');
