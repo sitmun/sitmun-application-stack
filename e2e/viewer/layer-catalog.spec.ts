@@ -111,17 +111,6 @@ function folderByTitle(page: Page, title: string) {
   });
 }
 
-async function expandNode(page: Page, nodeId: string): Promise<void> {
-  const li = page.locator(`#tc-slot-toc li[data-layer-name="${nodeId}"]`);
-  await expect(li).toBeVisible({ timeout: 30_000 });
-  const branch = li.locator(':scope > ul').first();
-  if ((await branch.count()) > 0 && (await branch.isVisible())) {
-    return;
-  }
-  await li.locator('.tc-ctl-lcat-node-title, span').first().click();
-  await expect(branch).toBeVisible({ timeout: 15_000 });
-}
-
 async function patchTreeNodeLoadData(
   request: APIRequestContext,
   nodeDbId: number,

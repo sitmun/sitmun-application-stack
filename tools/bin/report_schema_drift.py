@@ -518,10 +518,6 @@ def backfill_update_sql(
     return f"UPDATE {table} SET {column} = {lit} WHERE {column} IS NULL"
 
 
-def _yaml_escape(s: str) -> str:
-    return s.replace('"', '\\"')
-
-
 def _append_not_null_with_backfill(
     lines: list[str],
     *,

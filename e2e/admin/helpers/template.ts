@@ -51,17 +51,6 @@ export async function switchTemplateEditorToVisual(page: Page): Promise<void> {
   await expect(editor.locator('textarea.template-editor-source')).toHaveCount(0);
 }
 
-/** Insert a sibling paragraph at the start of the visual TipTap document (triggers serialize). */
-export async function insertVisualSiblingParagraph(page: Page, text: string): Promise<void> {
-  await switchTemplateEditorToVisual(page);
-  const host = page.locator('app-template-editor .template-editor-host .ProseMirror').first();
-  await expect(host).toBeVisible({ timeout: 15_000 });
-  await host.click();
-  await page.keyboard.press('ControlOrMeta+Home');
-  await page.keyboard.type(text);
-  await page.keyboard.press('Enter');
-}
-
 export async function setTemplateHtml(page: Page, html: string): Promise<void> {
   await switchTemplateEditorToHtml(page);
   const source = page.locator('app-template-editor textarea.template-editor-source');
