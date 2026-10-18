@@ -233,6 +233,17 @@ function requestNameOf(url) {
   return (url.searchParams.get('REQUEST') || url.searchParams.get('request') || '').toLowerCase();
 }
 
+let lastQuery = { request: '', names: [] };
+const recentQueries = [];
+
+function rememberQuery(url) {
+  lastQuery = { request: requestNameOf(url), names: [...url.searchParams.keys()] };
+  recentQueries.push(lastQuery);
+  if (recentQueries.length > 20) {
+    recentQueries.shift();
+  }
+}
+
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://${HOST}:${PORT}`);
   const method = req.method ?? 'GET';
@@ -240,6 +251,12 @@ const server = createServer((req, res) => {
   if (method === 'GET' && url.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('ok');
+    return;
+  }
+
+  if (method === 'GET' && url.pathname === '/last-query') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ...lastQuery, recent: recentQueries }));
     return;
   }
 
@@ -292,6 +309,8 @@ const server = createServer((req, res) => {
     console.error(
       `[e2e-wms-stub] ${method} ${url.pathname} request=${requestName || 'capabilities'} basicAuth=${authorization ? (authorization === EXPECTED_AUTH ? 'accepted' : 'rejected') : 'none'}`,
     );
+
+    rememberQuery(url);
 
     if (!accepted) {
       res.writeHead(401, {

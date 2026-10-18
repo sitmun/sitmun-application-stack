@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 83-service-parameter-info-olparam-postgresql
+      author: sitmun
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'INFO', FALSE, FALSE, 'GetFeatureInfo'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'INFO'
+              );
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'OLPARAM', FALSE, FALSE, 'OpenLayers'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'OLPARAM'
+              );
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';

@@ -87,4 +87,8 @@
   <include file="changelog/78_dev_folder_metadata_adreces.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/79_dev_folder_download_urls.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/80_service_check.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/81_cartography_service_parameter.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/82_parameter_operation_scope.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/83_service_parameter_info_olparam.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/84_parameter_type_translations.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
