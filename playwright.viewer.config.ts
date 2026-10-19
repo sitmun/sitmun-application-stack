@@ -46,7 +46,7 @@ export default defineConfig({
     {
       command: 'npm run e2e:viewer:app',
       url: 'http://localhost:4400',
-      timeout: 180_000,
+      timeout: 420_000,
       reuseExistingServer: false,
       gracefulShutdown: { signal: 'SIGTERM', timeout: 10_000 },
     },
