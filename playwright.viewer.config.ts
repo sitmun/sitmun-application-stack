@@ -18,7 +18,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: process.env.SITMUN_E2E_VIDEO === '1' ? 'on' : 'retain-on-failure',
-    serviceWorkers: 'allow',
+    // Static e2e host has no SW update cycle; a cached worker can serve a stale
+    // "Not found" document for SPA routes such as /auth/login.
+    serviceWorkers: 'block',
   },
   webServer: [
     {

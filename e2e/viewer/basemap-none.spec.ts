@@ -140,9 +140,11 @@ test.describe('No base map (#167)', () => {
     await expect(noneNode).toBeVisible({ timeout: 30_000 });
     await noneNode.locator('label').click();
 
-    const bg = await page.locator('.ol-viewport').evaluate(
-      (el) => getComputedStyle(el).backgroundColor,
-    );
+    // Overview map also mounts an .ol-viewport; prefer the main map surface.
+    const bg = await page
+      .locator('.tc-map > .ol-viewport, .ol-viewport')
+      .first()
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(bg).toMatch(/rgb\(\s*255,\s*255,\s*255\s*\)|#fff/i);
 
     await expect(

@@ -29,6 +29,7 @@ test.describe('Viewer language chrome', () => {
     });
 
     await page.goto('/auth/login');
+    await expect(page.locator('h1')).toBeVisible({ timeout: 30_000 });
     const defaultLang = await readLanguageDefault(page);
     const expectedIso = toIso(defaultLang);
 
