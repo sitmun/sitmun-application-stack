@@ -1,0 +1,153 @@
+databaseChangeLog:
+  - changeSet:
+      id: 85-dev-wfs-menorca-fars-postgresql
+      author: sitmun
+      context: dev
+      dbms: postgresql
+      comment: >
+        IDE Menorca (application 12, tree 33). WFS lighthouses
+        (turisme:tu007poi_fars) as a sibling of node 12094 under folder 12062.
+        Public map http://localhost:9000/viewer/public/map/12/4
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_SERVICE WHERE SER_ID = 9401) = 0
+                 AND (SELECT COUNT(*) FROM STM_TREE_NOD WHERE TNO_ID = 12094) = 1
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_SERVICE (
+                SER_ID, SER_BLOCKED, SER_PROXIED, SER_CREATED, SER_NAME, SER_URL,
+                SER_PROJECTS, SER_PROTOCOL
+              ) VALUES (
+                9401, FALSE, TRUE, CURRENT_TIMESTAMP, 'IDE Menorca - Fars',
+                'https://ide.cime.es/geoserver/turisme/ows',
+                'EPSG:25831,EPSG:4326', 'WFS'
+              );
+              INSERT INTO STM_GEOINFO (
+                GEO_ID, GEO_FILTER_GFI, GEO_FILTER_GM, GEO_FILTER_SS, GEO_BLOCKED,
+                GEO_CREATED, GEO_LAYERS, GEO_LEGENDTIP, GEO_NAME, GEO_QUERYABL,
+                GEO_QUERYACT, GEO_SERID, GEO_STYUSEALL
+              ) VALUES (
+                9401, FALSE, FALSE, FALSE, FALSE, CURRENT_TIMESTAMP,
+                'turisme:tu007poi_fars', 'CAPABILITIES', 'Fars', TRUE, TRUE, 9401, FALSE
+              );
+              INSERT INTO STM_GGI_GI (GGG_GGIID, GGG_GIID) VALUES (1, 9401);
+              INSERT INTO STM_AVAIL_GI (AGI_ID, AGI_CREATED, AGI_GIID, AGI_TERID)
+              VALUES (9401, CURRENT_TIMESTAMP, 9401, 4);
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              ) VALUES
+                (9401, 'nom', 'Name', 'T', 'INFO', 9401, 0, NULL),
+                (9402, 'dstipus', 'Type', 'T', 'INFO', 9401, 1, NULL);
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME) VALUES
+                (9401001, 9401, 'CartographyParameter.value', 2, 'Nombre'),
+                (9401002, 9401, 'CartographyParameter.value', 3, 'Nom'),
+                (9401003, 9402, 'CartographyParameter.value', 2, 'Tipo'),
+                (9401004, 9402, 'CartographyParameter.value', 3, 'Tipus');
+              INSERT INTO STM_TREE_NOD (
+                TNO_ID, TNO_ACTIVE, TNO_NAME, TNO_ORDER, TNO_QUERYACT, TNO_TOOLTIP,
+                TNO_GIID, TNO_PARENTID, TNO_TREEID, TNO_TYPE, TNO_LOAD_DATA
+              ) VALUES (
+                9401, TRUE, 'Fars', 3, TRUE, 'Fars', 9401, 12062, 33, 'cartography', FALSE
+              );
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(SER_ID), 0) + 1 FROM STM_SERVICE))
+              WHERE SEQ_NAME = 'SER_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(GEO_ID), 0) + 1 FROM STM_GEOINFO))
+              WHERE SEQ_NAME = 'GEO_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TNO_ID), 0) + 1 FROM STM_TREE_NOD))
+              WHERE SEQ_NAME = 'TNO_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(AGI_ID), 0) + 1 FROM STM_AVAIL_GI))
+              WHERE SEQ_NAME = 'AGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';
+  - changeSet:
+      id: 85-dev-wfs-menorca-fars-oracle
+      author: sitmun
+      context: dev
+      dbms: oracle
+      comment: >
+        IDE Menorca (application 12, tree 33). WFS lighthouses
+        (turisme:tu007poi_fars) as a sibling of node 12094 under folder 12062.
+        Public map http://localhost:9000/viewer/public/map/12/4
+      preConditions:
+        - onFail: MARK_RAN
+          sqlCheck:
+            expectedResult: 1
+            sql: >
+              SELECT CASE
+                WHEN (SELECT COUNT(*) FROM STM_SERVICE WHERE SER_ID = 9401) = 0
+                 AND (SELECT COUNT(*) FROM STM_TREE_NOD WHERE TNO_ID = 12094) = 1
+                 AND (SELECT COUNT(*) FROM STM_GEOINFO WHERE GEO_ID = 1304) = 1
+                THEN 1 ELSE 0 END
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_SERVICE (
+                SER_ID, SER_BLOCKED, SER_PROXIED, SER_CREATED, SER_NAME, SER_URL,
+                SER_PROJECTS, SER_PROTOCOL
+              ) VALUES (
+                9401, 0, 1, CURRENT_TIMESTAMP, 'IDE Menorca - Fars',
+                'https://ide.cime.es/geoserver/turisme/ows',
+                'EPSG:25831,EPSG:4326', 'WFS'
+              );
+              INSERT INTO STM_GEOINFO (
+                GEO_ID, GEO_FILTER_GFI, GEO_FILTER_GM, GEO_FILTER_SS, GEO_BLOCKED,
+                GEO_CREATED, GEO_LAYERS, GEO_LEGENDTIP, GEO_NAME, GEO_QUERYABL,
+                GEO_QUERYACT, GEO_SERID, GEO_STYUSEALL
+              ) VALUES (
+                9401, 0, 0, 0, 0, CURRENT_TIMESTAMP,
+                'turisme:tu007poi_fars', 'CAPABILITIES', 'Fars', 1, 1, 9401, 0
+              );
+              INSERT INTO STM_GGI_GI (GGG_GGIID, GGG_GIID) VALUES (1, 9401);
+              INSERT INTO STM_AVAIL_GI (AGI_ID, AGI_CREATED, AGI_GIID, AGI_TERID)
+              VALUES (9401, CURRENT_TIMESTAMP, 9401, 4);
+              INSERT INTO STM_PAR_GI (
+                PGI_ID, PGI_NAME, PGI_VALUE, PGI_FORMAT, PGI_TYPE, PGI_GIID, PGI_ORDER,
+                PGI_OPTIONS
+              )
+              SELECT 9401, 'nom', 'Name', 'T', 'INFO', 9401, 0, NULL FROM DUAL UNION ALL
+              SELECT 9402, 'dstipus', 'Type', 'T', 'INFO', 9401, 1, NULL FROM DUAL;
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT 9401001, 9401, 'CartographyParameter.value', 2, 'Nombre' FROM DUAL UNION ALL
+              SELECT 9401002, 9401, 'CartographyParameter.value', 3, 'Nom' FROM DUAL UNION ALL
+              SELECT 9401003, 9402, 'CartographyParameter.value', 2, 'Tipo' FROM DUAL UNION ALL
+              SELECT 9401004, 9402, 'CartographyParameter.value', 3, 'Tipus' FROM DUAL;
+              INSERT INTO STM_TREE_NOD (
+                TNO_ID, TNO_ACTIVE, TNO_NAME, TNO_ORDER, TNO_QUERYACT, TNO_TOOLTIP,
+                TNO_GIID, TNO_PARENTID, TNO_TREEID, TNO_TYPE, TNO_LOAD_DATA
+              ) VALUES (
+                9401, 1, 'Fars', 3, 1, 'Fars', 9401, 12062, 33, 'cartography', 0
+              );
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(SER_ID), 0) + 1 FROM STM_SERVICE))
+              WHERE SEQ_NAME = 'SER_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(GEO_ID), 0) + 1 FROM STM_GEOINFO))
+              WHERE SEQ_NAME = 'GEO_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TNO_ID), 0) + 1 FROM STM_TREE_NOD))
+              WHERE SEQ_NAME = 'TNO_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(AGI_ID), 0) + 1 FROM STM_AVAIL_GI))
+              WHERE SEQ_NAME = 'AGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(PGI_ID), 0) + 1 FROM STM_PAR_GI))
+              WHERE SEQ_NAME = 'PGI_ID';
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = GREATEST(SEQ_COUNT, (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION))
+              WHERE SEQ_NAME = 'TRA_ID';

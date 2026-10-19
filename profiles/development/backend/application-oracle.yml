@@ -3,3 +3,4 @@ spring:
   jpa:
     properties:
       hibernate.dialect: org.hibernate.dialect.OracleDialect
+      hibernate.type.preferred_boolean_jdbc_type: INTEGER

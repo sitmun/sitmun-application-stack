@@ -1,0 +1,246 @@
+databaseChangeLog:
+  - changeSet:
+      id: 30-cartography-service-parameter-h2
+      author: sitmun
+      dbms: h2
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE STM_PAR_GS (
+                GS_ID INTEGER NOT NULL,
+                GS_GEOID INTEGER NOT NULL,
+                GS_NAME VARCHAR(50) NOT NULL,
+                GS_VALUE VARCHAR(250),
+                GS_TYPE VARCHAR(50) NOT NULL,
+                CONSTRAINT STM_GS_PK PRIMARY KEY (GS_ID),
+                CONSTRAINT STM_GS_FK_GEO FOREIGN KEY (GS_GEOID) REFERENCES STM_GEOINFO (GEO_ID) ON DELETE CASCADE
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_SEQUENCE(SEQ_NAME, SEQ_COUNT)
+              SELECT 'GS_ID', 1
+              WHERE NOT EXISTS (SELECT 1 FROM STM_SEQUENCE WHERE SEQ_NAME = 'GS_ID')
+
+  - changeSet:
+      id: 30-cartography-service-parameter-postgresql
+      author: sitmun
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE STM_PAR_GS (
+                GS_ID INT4 NOT NULL,
+                GS_GEOID INT4 NOT NULL,
+                GS_NAME VARCHAR(50) NOT NULL,
+                GS_VALUE VARCHAR(250),
+                GS_TYPE VARCHAR(50) NOT NULL,
+                CONSTRAINT STM_GS_PK PRIMARY KEY (GS_ID),
+                CONSTRAINT STM_GS_FK_GEO FOREIGN KEY (GS_GEOID) REFERENCES STM_GEOINFO (GEO_ID) ON DELETE CASCADE
+              )
+        - sql:
+            sql: |
+              INSERT INTO STM_SEQUENCE(SEQ_NAME, SEQ_COUNT)
+              SELECT 'GS_ID', 1
+              WHERE NOT EXISTS (SELECT 1 FROM STM_SEQUENCE WHERE SEQ_NAME = 'GS_ID')
+
+  - changeSet:
+      id: 30-cartography-service-parameter-oracle
+      author: sitmun
+      dbms: oracle
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE STM_PAR_GS (
+                GS_ID NUMBER(10, 0) NOT NULL,
+                GS_GEOID NUMBER(10, 0) NOT NULL,
+                GS_NAME VARCHAR2(50 CHAR) NOT NULL,
+                GS_VALUE VARCHAR2(250 CHAR),
+                GS_TYPE VARCHAR2(50 CHAR) NOT NULL,
+                CONSTRAINT STM_GS_PK PRIMARY KEY (GS_ID),
+                CONSTRAINT STM_GS_FK_GEO FOREIGN KEY (GS_GEOID) REFERENCES STM_GEOINFO (GEO_ID) ON DELETE CASCADE
+              )
+        - sql:
+            sql: |
+              MERGE INTO STM_SEQUENCE t
+              USING (SELECT 'GS_ID' n, 1 v FROM DUAL) s
+              ON (t.SEQ_NAME = s.n)
+              WHEN NOT MATCHED THEN INSERT (SEQ_NAME, SEQ_COUNT) VALUES (s.n, s.v)
+
+  - changeSet:
+      id: 30-service-parameter-info-olparam-h2
+      author: sitmun
+      dbms: h2
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'INFO', FALSE, FALSE, 'GetFeatureInfo'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'INFO'
+              );
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'OLPARAM', FALSE, FALSE, 'OpenLayers'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'OLPARAM'
+              );
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';
+
+  - changeSet:
+      id: 30-service-parameter-info-olparam-postgresql
+      author: sitmun
+      dbms: postgresql
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'INFO', FALSE, FALSE, 'GetFeatureInfo'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'INFO'
+              );
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'OLPARAM', FALSE, FALSE, 'OpenLayers'
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'OLPARAM'
+              );
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';
+
+  - changeSet:
+      id: 30-service-parameter-info-olparam-oracle
+      author: sitmun
+      dbms: oracle
+      changes:
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'INFO', 0, 0, 'GetFeatureInfo'
+              FROM DUAL
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'INFO'
+              );
+        - sql:
+            sql: >
+              INSERT INTO STM_CODELIST (COD_ID, COD_LIST, COD_VALUE, COD_SYSTEM, COD_DEFAULT, COD_DESCRIPTION)
+              SELECT (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST),
+                     'serviceParameter.type', 'OLPARAM', 0, 0, 'OpenLayers'
+              FROM DUAL
+              WHERE NOT EXISTS (
+                SELECT 1 FROM STM_CODELIST
+                WHERE COD_LIST = 'serviceParameter.type' AND COD_VALUE = 'OLPARAM'
+              );
+        - sql:
+            sql: >
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(COD_ID), 0) + 1 FROM STM_CODELIST)
+              WHERE SEQ_NAME = 'COD_ID';
+
+  - changeSet:
+      id: 30-service-parameter-info-olparam-translations
+      author: sitmun
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 2, 'GetFeatureInfo'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'INFO'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 2
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 3, 'GetFeatureInfo'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'INFO'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 3
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 4, 'GetFeatureInfo'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'INFO'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 4
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 5, 'GetFeatureInfo'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'INFO'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 5
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 2, 'OpenLayers'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'OLPARAM'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 2
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 3, 'OpenLayers'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'OLPARAM'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 3
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 4, 'OpenLayers'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'OLPARAM'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 4
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              INSERT INTO STM_TRANSLATION (TRA_ID, TRA_ELEID, TRA_COLUMN, TRA_LANID, TRA_NAME)
+              SELECT (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION),
+                     c.COD_ID, 'CodeListValue.description', 5, 'OpenLayers'
+              FROM STM_CODELIST c
+              WHERE c.COD_LIST = 'serviceParameter.type' AND c.COD_VALUE = 'OLPARAM'
+                AND NOT EXISTS (
+                  SELECT 1 FROM STM_TRANSLATION t
+                  WHERE t.TRA_ELEID = c.COD_ID AND t.TRA_LANID = 5
+                    AND t.TRA_COLUMN IN ('description', 'CodeListValue.description')
+                );
+              UPDATE STM_SEQUENCE
+              SET SEQ_COUNT = (SELECT COALESCE(MAX(TRA_ID), 0) + 1 FROM STM_TRANSLATION)
+              WHERE SEQ_NAME = 'TRA_ID';

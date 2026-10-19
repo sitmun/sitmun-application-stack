@@ -10,6 +10,9 @@
  * - GetFeatureInfo advertised in capabilities (application/json) so SITNA sets INFO_FORMAT;
  *   wrap.getFeatureInfo only parses when Content-Type equals that param.
  * - GetFeatureInfo for 34_TOPO_TX / tu007rts_ccavalls → JSON FeatureCollection (or XML fixture)
+ *
+ * /wfs (same process): WFS 2.0.0 GetCapabilities with GetFeature GET and no CountDefault,
+ * plus GetFeature GML2 for type e2e_wfs_point (include-list fields code and place, plus secret).
  */
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
@@ -69,6 +72,52 @@ const EXPECTED_AUTH = `Basic ${Buffer.from(`${USER}:${PASSWORD}`).toString('base
 // the public proxy path (empty OnlineResource made OL GetMap hit the viewer origin).
 const STUB_WMS_URL = `http://${HOST}:${PORT}/wms`;
 const STUB_LEGEND_URL = `http://${HOST}:${PORT}/legend`;
+const STUB_WFS_URL = `http://${HOST}:${PORT}/wfs`;
+const WFS_TYPE_NAME = 'e2e_wfs_point';
+
+const WFS_CAPABILITIES_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<wfs:WFS_Capabilities version="2.0.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${STUB_WFS_URL}"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="${STUB_WFS_URL}"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType>
+      <Name>${WFS_TYPE_NAME}</Name>
+      <Title>${WFS_TYPE_NAME}</Title>
+    </FeatureType>
+  </FeatureTypeList>
+</wfs:WFS_Capabilities>
+`;
+
+const WFS_GML = `<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:app="http://e2e.sitmun/wfs">
+  <gml:featureMember>
+    <app:${WFS_TYPE_NAME} fid="${WFS_TYPE_NAME}.1">
+      <gml:pointProperty>
+        <gml:Point srsName="EPSG:25831">
+          <gml:coordinates>422500,4608500</gml:coordinates>
+        </gml:Point>
+      </gml:pointProperty>
+      <code>E2E-1</code>
+      <place>e2e-wfs-place</place>
+      <secret>hidden-extra</secret>
+    </app:${WFS_TYPE_NAME}>
+  </gml:featureMember>
+</wfs:FeatureCollection>
+`;
 
 /** Seed WMS names used by catalog E2E leaves (GEO 4/5/6/7 + situation map). */
 const LAYER_NAMES = [
@@ -447,6 +496,43 @@ const server = createServer((req, res) => {
       ...cors,
     });
     res.end(CAPABILITIES_XML);
+    return;
+  }
+
+  if (method === 'OPTIONS' && url.pathname === '/wfs') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    });
+    res.end();
+    return;
+  }
+
+  if (method === 'GET' && url.pathname === '/wfs') {
+    const authorization = req.headers.authorization;
+    const accepted = !authorization || authorization === EXPECTED_AUTH;
+    const requestName = requestNameOf(url);
+    console.error(
+      `[e2e-wms-stub] ${method} /wfs request=${requestName || 'capabilities'} basicAuth=${authorization ? (authorization === EXPECTED_AUTH ? 'accepted' : 'rejected') : 'none'}`,
+    );
+    rememberQuery(url);
+    if (!accepted) {
+      res.writeHead(401, {
+        'Content-Type': 'text/plain',
+        'WWW-Authenticate': 'Basic realm="e2e-wms"',
+        'Access-Control-Allow-Origin': '*',
+      });
+      res.end('unauthorized');
+      return;
+    }
+    const body = requestName === 'getfeature' ? WFS_GML : WFS_CAPABILITIES_XML;
+    res.writeHead(200, {
+      'Content-Type': 'text/xml',
+      'X-E2E-Upstream': requestName === 'getfeature' ? 'wfs-feature' : 'wfs-capabilities',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.end(body);
     return;
   }
 

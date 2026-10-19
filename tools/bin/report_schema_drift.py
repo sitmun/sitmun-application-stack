@@ -263,9 +263,25 @@ def compare_schemas(
     right_cons: Iterable[Constraint],
     *,
     mode: str = "profiles",
+    dbms: str = "postgresql",
 ) -> Report:
     """mode: profiles | jpa — affects severity of some categories."""
     report = Report()
+    if dbms == "oracle":
+        for side, cols in (("reference", left_cols), ("fixable", right_cols)):
+            for (table, column), col in sorted(cols.items()):
+                if _normalize_type(col.data_type) != "boolean":
+                    continue
+                report.drifts.append(
+                    Drift(
+                        category="oracle_native_boolean",
+                        severity=SEVERITY_PROBLEM,
+                        table=table,
+                        column=column,
+                        detail=f"{column} is native BOOLEAN on {side}",
+                        data_type=col.data_type,
+                    )
+                )
     left_tables = {k[0] for k in left_cols}
     right_tables = {k[0] for k in right_cols}
 
@@ -788,7 +804,12 @@ def main(argv: list[str] | None = None) -> int:
     left_cons = load_constraints(args.left_constraints)
     right_cons = load_constraints(args.right_constraints)
     report = compare_schemas(
-        left_cols, right_cols, left_cons, right_cons, mode=args.mode
+        left_cols,
+        right_cols,
+        left_cons,
+        right_cons,
+        mode=args.mode,
+        dbms=args.dbms,
     )
     report.left_label = args.left_label
     report.right_label = args.right_label

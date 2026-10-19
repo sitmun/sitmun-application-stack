@@ -186,6 +186,32 @@ class CompareFixturesTest(unittest.TestCase):
         self.assertEqual(rc, 1)
 
 
+def _col(table: str, column: str, data_type: str) -> rsd.Column:
+    return rsd.Column(table, column, data_type, "", "YES")
+
+
+class OracleNativeBooleanTest(unittest.TestCase):
+    def test_boolean_on_either_side_is_problem(self) -> None:
+        left = {("STM_X", "FLAG"): _col("STM_X", "FLAG", "BOOLEAN")}
+        right = {("STM_X", "FLAG"): _col("STM_X", "FLAG", "NUMBER")}
+        for mode in ("profiles", "jpa"):
+            report = rsd.compare_schemas(left, right, [], [], mode=mode, dbms="oracle")
+            hits = [d for d in report.problems if d.category == "oracle_native_boolean"]
+            self.assertEqual(len(hits), 1, mode)
+            self.assertEqual(hits[0].column, "FLAG")
+
+        both = {
+            ("STM_X", "FLAG"): _col("STM_X", "FLAG", "BOOLEAN"),
+        }
+        report = rsd.compare_schemas(both, both, [], [], mode="jpa", dbms="oracle")
+        hits = [d for d in report.problems if d.category == "oracle_native_boolean"]
+        self.assertEqual(len(hits), 2)
+
+        report = rsd.compare_schemas(left, right, [], [], mode="jpa", dbms="postgresql")
+        hits = [d for d in report.problems if d.category == "oracle_native_boolean"]
+        self.assertEqual(hits, [])
+
+
 class JpaModeSeverityTest(unittest.TestCase):
     def test_liquibase_only_objects_are_info(self) -> None:
         left = rsd.load_columns(FIXTURES / "left.columns")

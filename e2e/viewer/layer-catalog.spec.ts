@@ -5,6 +5,7 @@ import {
   APP_ID,
   CHECKBOX_LOAD_FOLDER_NODE_ID,
   CHECKBOX_LOAD_FOLDER_TITLE,
+  CHECKBOX_LOAD_FOLDER_TREE_NODE_DB_ID,
   isBackendRequest,
   NON_RADIO_LEAF_NODE_ID,
   NON_RADIO_LEAF_TITLE,
@@ -20,6 +21,9 @@ import {
   RADIO_SECOND_CHILD_NODE_ID,
   readViewerCredentials,
   TERRITORY_ID,
+  UPSTREAM_PASSWORD,
+  UPSTREAM_URL,
+  UPSTREAM_USER,
 } from './fixtures';
 
 /**
@@ -1687,3 +1691,499 @@ test.describe('Map chrome responsive (#135)', () => {
     });
   }
 });
+
+const WFS_TYPE_NAME = 'e2e_wfs_point';
+const WFS_LEAF_TITLE = 'E2E WFS point';
+const WFS_POINT: [number, number] = [422500, 4608500];
+const WFS_FIELDS = [
+  { name: 'code', stored: 'Code', translated: 'Codi', value: 'E2E-1', order: 0 },
+  { name: 'place', stored: 'Place', translated: 'Lloc', value: 'e2e-wfs-place', order: 1 },
+] as const;
+const WFS_HIDDEN_VALUE = 'hidden-extra';
+
+const ADMIN_JSON = {
+  'X-SITMUN-Client': 'admin',
+  'Content-Type': 'application/json',
+};
+
+type WfsSeed = {
+  serviceId: number;
+  cartographyId: number;
+  nodeId: number;
+  parameterIds: number[];
+  translationIds: number[];
+  availabilityId: number;
+  uiLanguage: string;
+};
+
+test.describe('WFS catalog leaf (#91)', () => {
+  test('checkbox loads the layer, limits the popup to the include list, and shows a legend swatch', async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(180_000);
+    const seed = await seedWfsCatalogLeaf(request);
+    try {
+      await page.addInitScript((lang) => {
+        localStorage.setItem('language', lang);
+      }, seed.uiLanguage);
+      await loginAndOpenMap(page);
+      await expandNodeByTitle(page, NON_RADIO_ROOT_FOLDER_TITLE);
+      await expandNodeByTitle(page, CHECKBOX_LOAD_FOLDER_TITLE);
+
+      const leafLoad = page.locator(
+        `#tc-slot-toc input.sitmun-lcat-leaf-load[data-layer-name="node/${seed.nodeId}"]`,
+      );
+      await expect(leafLoad).toBeVisible({ timeout: 30_000 });
+      await expect(leafLoad).toHaveAttribute('aria-checked', 'false');
+
+      const featureResponse = page.waitForResponse(
+        (response) =>
+          /request=getfeature/i.test(response.url()) &&
+          new RegExp(WFS_TYPE_NAME, 'i').test(response.url()) &&
+          response.ok(),
+        { timeout: 60_000 },
+      );
+      await leafLoad.click();
+      await featureResponse;
+      await expect(leafLoad).toHaveAttribute('aria-checked', 'true', { timeout: 30_000 });
+
+      let workLayer: { id: string; count: number } | null = null;
+      await expect
+        .poll(
+          async () => {
+            workLayer = await wfsWorkLayer(page);
+            return workLayer?.count ?? 0;
+          },
+          { timeout: 30_000, message: 'WFS work layer must contain the stub point' },
+        )
+        .toBeGreaterThan(0);
+      const capasRow = page.locator(
+        `#tc-slot-wlm li.tc-ctl-wlm-elm[data-layer-id="${workLayer!.id}"]`,
+      );
+      await expect(capasRow).toBeVisible({ timeout: 30_000 });
+
+      const swatch = capasRow.locator('.tc-ctl-wlm-legend img, .tc-ctl-wlm-custom-legend img');
+      await expect(swatch.first()).toBeAttached({ timeout: 30_000 });
+      const swatchSrc =
+        (await swatch.first().getAttribute('src')) ||
+        (await swatch.first().getAttribute('data-img'));
+      expect(swatchSrc, 'Capas row must show a legend swatch').toBeTruthy();
+
+      await clickWfsPoint(page);
+      const table = page.locator('.tc-ctl-popup table').first();
+      await expect(table).toBeVisible({ timeout: 30_000 });
+      await expect(table.locator('th')).toHaveText(WFS_FIELDS.map((field) => field.translated));
+      for (const field of WFS_FIELDS) {
+        await expect(
+          table.locator('tr', { has: page.locator('th', { hasText: new RegExp(`^${field.translated}$`) }) }).locator('td'),
+        ).toHaveText(field.value);
+        await expect(table.locator('th', { hasText: new RegExp(`^${field.name}$`) })).toHaveCount(0);
+        await expect(table.locator('th', { hasText: new RegExp(`^${field.stored}$`) })).toHaveCount(0);
+      }
+      await expect(table.locator('th', { hasText: /^secret$/ })).toHaveCount(0);
+      await expect(table).not.toContainText(WFS_HIDDEN_VALUE);
+      await expect(table.locator('tr')).toHaveCount(WFS_FIELDS.length);
+    } finally {
+      await deleteWfsCatalogLeaf(request, seed);
+    }
+  });
+});
+
+async function seedWfsCatalogLeaf(admin: APIRequestContext): Promise<WfsSeed> {
+  const login = await admin.post('/backend/api/authenticate/admin', {
+    data: { username: 'admin', password: 'admin' },
+  });
+  expect(login.ok(), `admin login failed: ${login.status()}`).toBeTruthy();
+
+  const uiLanguage = await overlayLanguage(admin);
+  const createdService = await admin.post('/backend/api/services', {
+    headers: ADMIN_JSON,
+    data: {
+      name: `e2e-wfs-${Date.now()}`,
+      type: 'WFS',
+      serviceURL: UPSTREAM_URL.replace(/\/wms$/, '/wfs'),
+      isProxied: true,
+      blocked: false,
+      authenticationMode: 'HTTP Basic authentication',
+      user: UPSTREAM_USER,
+      password: UPSTREAM_PASSWORD,
+    },
+  });
+  expect(
+    createdService.ok(),
+    `create WFS service failed: ${createdService.status()} ${await createdService.text()}`,
+  ).toBeTruthy();
+  const serviceId = idFrom(createdService.headers().location ?? '', 'services');
+  const service = `http://localhost:18080/api/services/${serviceId}`;
+
+  const createdLayer = await admin.post('/backend/api/cartographies', {
+    headers: ADMIN_JSON,
+    data: {
+      name: WFS_LEAF_TITLE,
+      layers: [WFS_TYPE_NAME],
+      queryableFeatureAvailable: true,
+      queryableFeatureEnabled: true,
+      useAllStyles: false,
+      blocked: false,
+      service,
+    },
+  });
+  expect(
+    createdLayer.ok(),
+    `create WFS cartography failed: ${createdLayer.status()} ${await createdLayer.text()}`,
+  ).toBeTruthy();
+  const cartographyId = idFrom(createdLayer.headers().location ?? '', 'cartographies');
+  const cartography = `http://localhost:18080/api/cartographies/${cartographyId}`;
+
+  const permissions = await admin.get('/backend/api/cartographies/4/permissions', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(permissions.ok(), `permissions lookup failed: ${permissions.status()}`).toBeTruthy();
+  const permissionId = firstPermissionId(await permissions.json());
+  const linked = await admin.post(`/backend/api/cartography-groups/${permissionId}/members`, {
+    headers: {
+      'X-SITMUN-Client': 'admin',
+      'Content-Type': 'text/uri-list',
+    },
+    data: cartography,
+  });
+  expect(linked.ok(), `link permission failed: ${linked.status()} ${await linked.text()}`).toBeTruthy();
+
+  const availability = await admin.post('/backend/api/cartography-availabilities', {
+    headers: ADMIN_JSON,
+    data: {
+      cartography,
+      territory: `http://localhost:18080/api/territories/${TERRITORY_ID}`,
+    },
+  });
+  expect(
+    [201, 204, 409].includes(availability.status()),
+    `availability failed: ${availability.status()} ${await availability.text()}`,
+  ).toBeTruthy();
+  const availabilityId =
+    availability.status() === 201
+      ? idFrom(availability.headers().location ?? '', 'cartography-availabilities')
+      : 0;
+
+  const parameterIds: number[] = [];
+  const translationIds: number[] = [];
+  for (const field of WFS_FIELDS) {
+    const created = await admin.post('/backend/api/cartography-parameters', {
+      headers: ADMIN_JSON,
+      data: {
+        name: field.name,
+        value: field.stored,
+        format: 'T',
+        order: field.order,
+        type: 'INFO',
+        cartography,
+      },
+    });
+    expect(
+      created.ok(),
+      `create INFO ${field.name} failed: ${created.status()} ${await created.text()}`,
+    ).toBeTruthy();
+    const parameterId = idFrom(created.headers().location ?? '', 'cartography-parameters');
+    parameterIds.push(parameterId);
+    const translation = await admin.post('/backend/api/translations', {
+      headers: ADMIN_JSON,
+      data: {
+        element: parameterId,
+        column: 'CartographyParameter.value',
+        translation: field.translated,
+        language: `http://localhost:18080/api/languages/${uiLanguage.id}`,
+      },
+    });
+    expect(
+      translation.ok(),
+      `translate ${field.name} failed: ${translation.status()} ${await translation.text()}`,
+    ).toBeTruthy();
+    translationIds.push(idFrom(translation.headers().location ?? '', 'translations'));
+  }
+
+  const parentTree = await admin.get(
+    `/backend/api/tree-nodes/${CHECKBOX_LOAD_FOLDER_TREE_NODE_DB_ID}/tree`,
+    { headers: { 'X-SITMUN-Client': 'admin' } },
+  );
+  expect(parentTree.ok(), `parent tree failed: ${parentTree.status()}`).toBeTruthy();
+  const treeId = (await parentTree.json() as { id?: number }).id;
+  expect(treeId, 'parent tree id').toBeTruthy();
+
+  const createdNode = await admin.post('/backend/api/tree-nodes', {
+    headers: ADMIN_JSON,
+    data: {
+      name: WFS_LEAF_TITLE,
+      tree: `http://localhost:18080/api/trees/${treeId}`,
+      parent: `http://localhost:18080/api/tree-nodes/${CHECKBOX_LOAD_FOLDER_TREE_NODE_DB_ID}`,
+      cartography,
+      queryableActive: true,
+      visible: true,
+      active: false,
+      order: 90,
+    },
+  });
+  expect(
+    createdNode.ok(),
+    `create tree leaf failed: ${createdNode.status()} ${await createdNode.text()}`,
+  ).toBeTruthy();
+  const nodeId = idFrom(createdNode.headers().location ?? '', 'tree-nodes');
+
+  return {
+    serviceId,
+    cartographyId,
+    nodeId,
+    parameterIds,
+    translationIds,
+    availabilityId,
+    uiLanguage: uiLanguage.shortname,
+  };
+}
+
+async function deleteWfsCatalogLeaf(
+  admin: APIRequestContext,
+  seed: WfsSeed | undefined,
+): Promise<void> {
+  if (!seed?.serviceId) {
+    return;
+  }
+  let login;
+  try {
+    login = await admin.post('/backend/api/authenticate/admin', {
+      data: { username: 'admin', password: 'admin' },
+    });
+  } catch {
+    return;
+  }
+  expect(login.ok(), `admin cleanup login failed: ${login.status()}`).toBeTruthy();
+
+  if (seed.nodeId) {
+    await admin.delete(`/backend/api/tree-nodes/${seed.nodeId}/cartography`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    const removed = await admin.delete(`/backend/api/tree-nodes/${seed.nodeId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    expect(
+      removed.ok() || removed.status() === 404,
+      `delete tree leaf failed: ${removed.status()} ${await removed.text()}`,
+    ).toBeTruthy();
+  }
+  for (const translationId of seed.translationIds) {
+    const removed = await admin.delete(`/backend/api/translations/${translationId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    expect(removed.ok() || removed.status() === 404, `delete translation ${translationId}`).toBeTruthy();
+  }
+  for (const parameterId of seed.parameterIds) {
+    const removed = await admin.delete(`/backend/api/cartography-parameters/${parameterId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    expect(removed.ok() || removed.status() === 404, `delete parameter ${parameterId}`).toBeTruthy();
+  }
+  if (seed.availabilityId) {
+    await admin.delete(`/backend/api/cartography-availabilities/${seed.availabilityId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+  }
+  if (seed.cartographyId) {
+    await admin.put(`/backend/api/cartographies/${seed.cartographyId}/permissions`, {
+      headers: {
+        'X-SITMUN-Client': 'admin',
+        'Content-Type': 'text/uri-list',
+      },
+      data: '',
+    });
+    const removed = await admin.delete(`/backend/api/cartographies/${seed.cartographyId}`, {
+      headers: { 'X-SITMUN-Client': 'admin' },
+    });
+    expect(
+      removed.ok() || removed.status() === 404,
+      `delete cartography failed: ${removed.status()} ${await removed.text()}`,
+    ).toBeTruthy();
+  }
+  const removedService = await admin.delete(`/backend/api/services/${seed.serviceId}`, {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(
+    removedService.ok() || removedService.status() === 404,
+    `delete service failed: ${removedService.status()} ${await removedService.text()}`,
+  ).toBeTruthy();
+}
+
+async function overlayLanguage(
+  admin: APIRequestContext,
+): Promise<{ id: number; shortname: string }> {
+  const params = await admin.get('/backend/api/configuration-parameters', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(params.ok(), `configuration parameters failed: ${params.status()}`).toBeTruthy();
+  const paramsBody = await params.json();
+  const paramList = Array.isArray(paramsBody)
+    ? paramsBody
+    : paramsBody?._embedded?.['configuration-parameters'] || [];
+  const defaultLang =
+    paramList.find((item: { name?: string; value?: string }) => item?.name === 'language.default')
+      ?.value || 'en';
+
+  const langs = await admin.get('/backend/api/languages?size=100', {
+    headers: { 'X-SITMUN-Client': 'admin' },
+  });
+  expect(langs.ok(), `languages failed: ${langs.status()}`).toBeTruthy();
+  const langBody = await langs.json();
+  const langList = (
+    Array.isArray(langBody) ? langBody : langBody?._embedded?.languages || []
+  ) as Array<{ id?: number; shortname?: string; enabled?: boolean | null }>;
+  const enabled = langList.filter(
+    (item) => item.id != null && item.shortname && item.enabled !== false && item.shortname !== defaultLang,
+  );
+  const preferred = ['ca', 'en', 'es', 'fr'];
+  const picked =
+    preferred.map((name) => enabled.find((item) => item.shortname === name)).find(Boolean) ??
+    enabled[0];
+  expect(picked?.id, `enabled language other than ${defaultLang}`).toBeTruthy();
+  return { id: picked!.id as number, shortname: picked!.shortname as string };
+}
+
+function idFrom(location: string, collection: string): number {
+  const match = location.match(new RegExp(`/${collection}/(\\d+)`));
+  expect(match, `id missing from ${location}`).toBeTruthy();
+  return Number(match?.[1]);
+}
+
+function firstPermissionId(body: unknown): number {
+  const hrefs: string[] = [];
+  const walk = (value: unknown): void => {
+    if (typeof value === 'string' && value.includes('/cartography-groups/')) {
+      hrefs.push(value);
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(walk);
+      return;
+    }
+    if (value != null && typeof value === 'object') {
+      Object.values(value).forEach(walk);
+    }
+  };
+  walk(body);
+  expect(hrefs[0], `permission link missing: ${JSON.stringify(body).slice(0, 500)}`).toBeTruthy();
+  return idFrom(hrefs[0], 'cartography-groups');
+}
+
+async function wfsWorkLayer(page: Page): Promise<{ id: string; count: number } | null> {
+  return page.evaluate((typeName) => {
+    const mapEl = document.querySelector('.tc-map');
+    const map = (
+      window as unknown as {
+        TC?: {
+          Map?: {
+            get: (el: Element) => {
+              workLayers?: Array<{
+                id?: string;
+                type?: string;
+                featureType?: string | string[];
+                options?: { type?: string; featureType?: string | string[] };
+                features?: unknown[];
+              }>;
+            };
+          };
+        };
+      }
+    ).TC?.Map?.get(mapEl as Element);
+    const layer = (map?.workLayers ?? []).find((item) => {
+      const featureType = item.featureType ?? item.options?.featureType;
+      const name = Array.isArray(featureType) ? featureType[0] : featureType;
+      return item.type === 'WFS' || item.options?.type === 'WFS' || name === typeName;
+    });
+    if (!layer?.id) {
+      return null;
+    }
+    return { id: layer.id, count: layer.features?.length ?? 0 };
+  }, WFS_TYPE_NAME);
+}
+
+async function clickWfsPoint(page: Page): Promise<void> {
+  const target = await panToWfsPoint(page);
+  expect(target, 'WFS point must be inside the map viewport').toBeTruthy();
+  await page.mouse.click(target!.x, target!.y);
+}
+
+async function panToWfsPoint(page: Page): Promise<{ x: number; y: number } | null> {
+  await page.evaluate((coord) => {
+    const mapEl = document.querySelector('.tc-map');
+    const ol = (
+      window as unknown as {
+        TC?: {
+          Map?: {
+            get: (el: Element) => {
+              wrap?: { map?: { getView: () => { setCenter: (c: number[]) => void; setZoom: (z: number) => void; getZoom: () => number } } };
+            };
+          };
+        };
+      }
+    ).TC?.Map?.get(mapEl as Element)?.wrap?.map;
+    const view = ol?.getView();
+    if (!view) {
+      return;
+    }
+    view.setCenter(coord);
+    const zoom = view.getZoom();
+    if (typeof zoom === 'number' && zoom < 12) {
+      view.setZoom(12);
+    }
+  }, WFS_POINT);
+  let found: { x: number; y: number } | null = null;
+  await expect
+    .poll(
+      async () => {
+        found = await wfsClickPoint(page);
+        return found;
+      },
+      { timeout: 15_000, message: 'WFS point must enter the map viewport' },
+    )
+    .not.toBeNull();
+  return found;
+}
+
+async function wfsClickPoint(page: Page): Promise<{ x: number; y: number } | null> {
+  return page.evaluate((coord) => {
+    const mapEl = document.querySelector('.tc-map');
+    const ol = (
+      window as unknown as {
+        TC?: {
+          Map?: {
+            get: (el: Element) => {
+              wrap?: {
+                map?: {
+                  getPixelFromCoordinate: (c: number[]) => number[] | null;
+                  getSize: () => number[];
+                  getViewport: () => HTMLElement;
+                };
+              };
+            };
+          };
+        };
+      }
+    ).TC?.Map?.get(mapEl as Element)?.wrap?.map;
+    if (!ol) {
+      return null;
+    }
+    const pixel = ol.getPixelFromCoordinate(coord);
+    const size = ol.getSize();
+    if (!pixel || !size) {
+      return null;
+    }
+    if (pixel[0] < 8 || pixel[1] < 8 || pixel[0] > size[0] - 8 || pixel[1] > size[1] - 8) {
+      return null;
+    }
+    const rect = ol.getViewport().getBoundingClientRect();
+    const x = rect.left + pixel[0];
+    const y = rect.top + pixel[1];
+    const panel = document.querySelector('.tc-tools-panel')?.getBoundingClientRect();
+    if (panel && x >= panel.left && x <= panel.right && y >= panel.top && y <= panel.bottom) {
+      return null;
+    }
+    return { x, y };
+  }, WFS_POINT);
+}

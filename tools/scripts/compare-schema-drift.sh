@@ -141,43 +141,50 @@ liquibase_pg() {
   fi
 }
 
-run_jpa_pg() {
-  local network="$1" host="$2" db="$3" user="$4" pass="$5"
+jpa_reference_schema() {
+  local jdbc_url="$1" user="$2" pass="$3" dialect="$4"
+  shift 4
   local backend="$REPO_ROOT/back/backend/sitmun-backend-core"
+  local log=/tmp/sitmun-jpa-schema-export.log
   if [[ ! -d "$backend" ]]; then
     echo "sitmun-backend-core missing; cannot --against jpa" >&2
     return 2
   fi
+  local -a spring_args=(
+    --spring.main.web-application-type=none
+    --spring.main.lazy-initialization=true
+    --spring.liquibase.enabled=false
+    --spring.jpa.hibernate.ddl-auto=create
+    "--spring.datasource.url=${jdbc_url}"
+    "--spring.datasource.username=${user}"
+    "--spring.datasource.password=${pass}"
+    "--spring.jpa.properties.hibernate.dialect=${dialect}"
+  )
+  spring_args+=("$@")
   (
     cd "$backend"
-    ./gradlew --quiet bootRun \
-      -Dspring-boot.run.arguments="--spring.main.web-application-type=none" \
-      -Dspring.liquibase.enabled=false \
-      -Dspring.jpa.hibernate.ddl-auto=create \
-      -Dspring.datasource.url="jdbc:postgresql://${host}:5432/${db}" \
-      -Dspring.datasource.username="$user" \
-      -Dspring.datasource.password="$pass" \
-      -Dspring.datasource.driver-class-name=org.postgresql.Driver \
-      -Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect \
-      >/tmp/sitmun-jpa-schema-export.log 2>&1 &
+    SITMUN_USER_SECRET=verify-schema-drift-user-secret-32chars \
+      SITMUN_PROXY_MIDDLEWARE_SECRET=verify-schema-drift-middleware-secret-32 \
+      ./gradlew --quiet bootRun --args="${spring_args[*]}" >"$log" 2>&1 &
     local pid=$!
-    # Wait until STM_APP exists or timeout
-    for _ in $(seq 1 90); do
-      if docker exec "$host" psql -U "$user" -d "$db" -At -c \
-        "SELECT 1 FROM information_schema.tables WHERE table_name='stm_app'" 2>/dev/null | grep -q 1; then
+    local _
+    for _ in $(seq 1 180); do
+      if grep -q "Started Application in" "$log" 2>/dev/null; then
         kill "$pid" 2>/dev/null || true
         wait "$pid" 2>/dev/null || true
         return 0
       fi
       if ! kill -0 "$pid" 2>/dev/null; then
         wait "$pid" || true
-        echo "JPA export process exited early; see /tmp/sitmun-jpa-schema-export.log" >&2
+        echo "JPA export process exited early; see $log" >&2
+        tail -80 "$log" >&2 || true
         return 1
       fi
       sleep 2
     done
     kill "$pid" 2>/dev/null || true
-    echo "Timed out waiting for Hibernate schema" >&2
+    echo "Timed out waiting for Started Application in; see $log" >&2
+    tail -80 "$log" >&2 || true
     return 1
   )
 }
@@ -238,32 +245,10 @@ run_postgres() {
       PORT=55432
     fi
     echo "── Hibernate ddl-auto=create → sitmun_ref ──"
-    (
-      cd "$REPO_ROOT/back/backend/sitmun-backend-core"
-      ./gradlew --quiet bootRun \
-        --args="--spring.main.web-application-type=none --spring.main.lazy-initialization=true" \
-        -Dspring.liquibase.enabled=false \
-        -Dspring.jpa.hibernate.ddl-auto=create \
-        -Dspring.datasource.url="jdbc:postgresql://127.0.0.1:${PORT}/sitmun_ref" \
-        -Dspring.datasource.username="$DB_USER" \
-        -Dspring.datasource.password="$DB_PASS" \
-        >/tmp/sitmun-jpa-schema-export.log 2>&1 &
-      local pid=$!
-      for _ in $(seq 1 120); do
-        if docker exec "$CONTAINER" psql -U "$DB_USER" -d sitmun_ref -At -c \
-          "SELECT 1 FROM information_schema.tables WHERE table_name='stm_app'" 2>/dev/null | grep -q 1; then
-          kill "$pid" 2>/dev/null || true
-          wait "$pid" 2>/dev/null || true
-          break
-        fi
-        if ! kill -0 "$pid" 2>/dev/null; then
-          echo "JPA export failed; log:" >&2
-          tail -50 /tmp/sitmun-jpa-schema-export.log >&2 || true
-          return 1
-        fi
-        sleep 2
-      done
-    )
+    jpa_reference_schema \
+      "jdbc:postgresql://127.0.0.1:${PORT}/sitmun_ref" \
+      "$DB_USER" "$DB_PASS" \
+      org.hibernate.dialect.PostgreSQLDialect
     echo "── Liquibase postgres profile → sitmun_fix ──"
     liquibase_pg "$NETWORK" "$CONTAINER" sitmun_fix "$DB_USER" "$DB_PASS" "$PROD_LB"
   else
@@ -401,11 +386,6 @@ run_oracle() {
   local SERVICE=FREEPDB1
   mkdir -p "$OUT"
 
-  if [[ "$AGAINST" == "jpa" ]]; then
-    echo "Oracle --against jpa not implemented in v1 (use profiles mode)." >&2
-    return 2
-  fi
-
   echo ""
   echo "════════════════════════════════════════════════════"
   echo " Oracle schema drift (against=$AGAINST)"
@@ -414,9 +394,16 @@ run_oracle() {
   docker rm -f "$CONTAINER" 2>/dev/null || true
   docker network rm "$NETWORK" 2>/dev/null || true
   docker network create "$NETWORK"
-  docker run -d --name "$CONTAINER" --network "$NETWORK" \
-    -e ORACLE_PASSWORD="$SYS_PASS" \
-    gvenzl/oracle-free:23-slim >/dev/null
+  if [[ "$AGAINST" == "jpa" ]]; then
+    docker run -d --name "$CONTAINER" --network "$NETWORK" \
+      -p 21521:1521 \
+      -e ORACLE_PASSWORD="$SYS_PASS" \
+      gvenzl/oracle-free:23-slim >/dev/null
+  else
+    docker run -d --name "$CONTAINER" --network "$NETWORK" \
+      -e ORACLE_PASSWORD="$SYS_PASS" \
+      gvenzl/oracle-free:23-slim >/dev/null
+  fi
 
   echo "Waiting for Oracle..."
   for _ in $(seq 1 120); do
@@ -435,10 +422,25 @@ CREATE USER sitmun_fix IDENTIFIED BY sitmun3 QUOTA UNLIMITED ON USERS;
 GRANT CONNECT, RESOURCE TO sitmun_fix;
 \" | sqlplus -s sys/${SYS_PASS} as sysdba"
 
-  echo "── Liquibase development (contexts=dev) → sitmun_ref ──"
-  liquibase_oracle "$NETWORK" "$CONTAINER" sitmun_ref sitmun3 "$SERVICE" "$DEV_LB" "dev"
-  echo "── Liquibase oracle profile → sitmun_fix ──"
-  liquibase_oracle "$NETWORK" "$CONTAINER" sitmun_fix sitmun3 "$SERVICE" "$PROD_LB"
+  local mode_arg="profiles"
+  local left_label="development"
+  if [[ "$AGAINST" == "jpa" ]]; then
+    mode_arg="jpa"
+    left_label="jpa"
+    echo "── Hibernate ddl-auto=create → sitmun_ref ──"
+    jpa_reference_schema \
+      "jdbc:oracle:thin:@//127.0.0.1:21521/${SERVICE}" \
+      sitmun_ref sitmun3 \
+      org.hibernate.dialect.OracleDialect \
+      --spring.jpa.properties.hibernate.type.preferred_boolean_jdbc_type=INTEGER
+    echo "── Liquibase oracle profile → sitmun_fix ──"
+    liquibase_oracle "$NETWORK" "$CONTAINER" sitmun_fix sitmun3 "$SERVICE" "$PROD_LB"
+  else
+    echo "── Liquibase development (contexts=dev) → sitmun_ref ──"
+    liquibase_oracle "$NETWORK" "$CONTAINER" sitmun_ref sitmun3 "$SERVICE" "$DEV_LB" "dev"
+    echo "── Liquibase oracle profile → sitmun_fix ──"
+    liquibase_oracle "$NETWORK" "$CONTAINER" sitmun_fix sitmun3 "$SERVICE" "$PROD_LB"
+  fi
 
   dump_oracle_schema "$CONTAINER" sitmun_ref sitmun3 "$SERVICE" "$OUT/left"
   dump_oracle_schema "$CONTAINER" sitmun_fix sitmun3 "$SERVICE" "$OUT/right"
@@ -452,9 +454,9 @@ GRANT CONNECT, RESOURCE TO sitmun_fix;
     --right-columns "$OUT/right.columns" \
     --left-constraints "$OUT/left.constraints" \
     --right-constraints "$OUT/right.constraints" \
-    --left-label "development" \
+    --left-label "$left_label" \
     --right-label "oracle" \
-    --mode profiles \
+    --mode "$mode_arg" \
     --dbms oracle \
     --out-dir "$OUT" \
     --changeset-prefix "$CHANGESET_PREFIX" \

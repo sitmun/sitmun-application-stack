@@ -272,7 +272,7 @@ Docker frontend builds read each app's version from its submodule `package.json`
 
 ### Database Configuration
 
-The SITMUN Application Stack supports multiple database backends: **PostgreSQL 16** (default), **Oracle 23c**, and **H2** (development only). Three environment variables control setup:
+The SITMUN Application Stack supports multiple database backends: **PostgreSQL 16** (default), **Oracle 23c**, and **H2** (development only). JDBC task pagination uses `OFFSET n ROWS FETCH NEXT m ROWS ONLY`. PostgreSQL has accepted that clause since 8.4. Oracle has accepted it since 12.1. Three environment variables control setup:
 
 - **`SITMUN_PROFILE`** -- SITMUN scenario profile. Use `development` for local development scenarios.
 - **`SITMUN_DB_PROFILE`** -- Spring Boot database profile for the backend (`postgres` or `oracle`). Controls database dialect, Liquibase config, and which database service the backend depends on. Must always be set.

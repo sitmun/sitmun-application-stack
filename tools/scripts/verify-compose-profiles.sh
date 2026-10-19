@@ -8,6 +8,8 @@
 #   bash tools/scripts/verify-compose-profiles.sh
 #   bash tools/scripts/verify-compose-profiles.sh --skip-oracle   # skip oracle targets
 #   bash tools/scripts/verify-compose-profiles.sh --only-build    # build only, no up/down
+#   ONLY_TARGETS="dev/postgres dev/oracle" bash tools/scripts/verify-compose-profiles.sh
+#   VERIFY_DDL_AUTO=none bash tools/scripts/verify-compose-profiles.sh
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -55,6 +57,7 @@ make_env_file() {
     if [[ -n "$extra" ]]; then
       echo "$extra"
     fi
+    echo "SPRING_JPA_HIBERNATE_DDL_AUTO=${VERIFY_DDL_AUTO:-validate}"
   } > "$out"
 }
 
@@ -91,6 +94,7 @@ BACKEND_FAILURE_MARKERS=(
   "liquibase.exception"
   "Migration failed for changeset"
   "LiquibaseException"
+  "Schema-validation"
 )
 
 # Assert the backend container started cleanly:
@@ -107,8 +111,11 @@ assert_backend_log() {
   restarts="$(docker inspect -f '{{.RestartCount}}' "$cid" 2>/dev/null || echo 0)"
 
   for marker in "${BACKEND_FAILURE_MARKERS[@]}"; do
-    if echo "$log" | grep -q "$marker"; then
+    if [[ "$log" == *"$marker"* ]]; then
       fail "$label: backend log: failure marker '$marker'"
+      if [[ "$marker" == "Schema-validation" ]]; then
+        printf '%s\n' "$log" | grep "Schema-validation" || true
+      fi
       gate_ok=false
     fi
   done
@@ -137,6 +144,16 @@ assert_backend_log() {
 
 run_target() {
   local label="$1" env_file="$2" compose_file="${3:-}"
+  if [[ -n "${ONLY_TARGETS:-}" ]]; then
+    case " ${ONLY_TARGETS} " in
+      *" ${label} "*) ;;
+      *)
+        echo "=== $label skipped (not in ONLY_TARGETS) ==="
+        return
+        ;;
+    esac
+  fi
+
   local project
   project="$(project_for "$env_file")"
 
@@ -160,6 +177,7 @@ run_target() {
 
   if [[ "$up_ok" == "false" ]]; then
     fail "$label: up failed"
+    assert_backend_log "$label" "${compose_args[@]}"
     docker compose "${compose_args[@]}" down -v --remove-orphans 2>/dev/null || true
     return
   fi
@@ -196,6 +214,24 @@ run_target() {
 
   # Backend-log gate: assert Liquibase completed before accepting requests, no restarts.
   assert_backend_log "$label" "${compose_args[@]}"
+
+  if [[ "$project" == "$PROJECT_DEV" && "$ok" == "true" ]]; then
+    local jar
+    jar="$(mktemp)"
+    if ! curl -sf -c "$jar" -H 'Content-Type: application/json' \
+      -d '{"username":"admin","password":"admin"}' \
+      "http://localhost:${backend_port}/api/authenticate" >/dev/null; then
+      fail "$label: admin login failed before profile 12/4 check"
+      ok=false
+    elif ! curl -sf -b "$jar" -o "$jar.profile" "http://localhost:${backend_port}/api/config/client/profile/12/4"; then
+      fail "$label: profile 12/4 request failed"
+      ok=false
+    elif ! grep -q '/WFS/9401' "$jar.profile"; then
+      fail "$label: Menorca Fars layer missing from profile 12/4"
+      ok=false
+    fi
+    rm -f "$jar" "$jar.profile"
+  fi
 
   if [[ "$ok" == "true" ]]; then
     pass "$label"
