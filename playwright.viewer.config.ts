@@ -18,9 +18,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: process.env.SITMUN_E2E_VIDEO === '1' ? 'on' : 'retain-on-failure',
-    // Static e2e host has no SW update cycle; a cached worker can serve a stale
-    // "Not found" document for SPA routes such as /auth/login.
-    serviceWorkers: 'block',
+    // Password/catalog/proxy flows need the viewer SW for middleware + proxy_token.
+    serviceWorkers: 'allow',
   },
   webServer: [
     {
@@ -63,7 +62,12 @@ export default defineConfig({
       name: 'viewer-public',
       testMatch: /(public-access|language-chrome)\.spec\.ts/,
       dependencies: ['viewer-setup'],
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Public SPA routes only: a stale SW can serve Not found for /auth/login.
+        // Cache-Control no-store on HTML (viewer serve-e2e) is the other half.
+        serviceWorkers: 'block',
+      },
     },
     {
       name: 'viewer-password',
