@@ -100,21 +100,19 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
-      # (actions/setup-node does not install into nvm).
-      - name: Install viewer Node into nvm
-        shell: bash
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
         run: |
-          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-          fi
-          # shellcheck source=/dev/null
-          . "$NVM_DIR/nvm.sh"
-          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
-          VIEWER_NODE="${VIEWER_NODE#v}"
-          nvm install "$VIEWER_NODE"
-          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
 
       - name: Run viewer E2E suite
         run: npm run e2e:viewer
@@ -176,21 +174,19 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
-      # (actions/setup-node does not install into nvm).
-      - name: Install viewer Node into nvm
-        shell: bash
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
         run: |
-          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-          fi
-          # shellcheck source=/dev/null
-          . "$NVM_DIR/nvm.sh"
-          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
-          VIEWER_NODE="${VIEWER_NODE#v}"
-          nvm install "$VIEWER_NODE"
-          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
 
       - name: Run application-contact E2E suite
         run: npx playwright test --config=playwright.application-contact.config.ts
@@ -252,21 +248,19 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
-      # (actions/setup-node does not install into nvm).
-      - name: Install viewer Node into nvm
-        shell: bash
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
         run: |
-          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
-          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-          fi
-          # shellcheck source=/dev/null
-          . "$NVM_DIR/nvm.sh"
-          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
-          VIEWER_NODE="${VIEWER_NODE#v}"
-          nvm install "$VIEWER_NODE"
-          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
 
       - name: Run MIA cross E2E suite
         run: npm run e2e:mia-cross
