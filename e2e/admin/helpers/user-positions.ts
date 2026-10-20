@@ -151,6 +151,23 @@ export async function editBajaCell(page: Page, isoDate: string): Promise<void> {
   await editDateCell(page, 'expirationDate', isoDate);
 }
 
+/** Inline text editor on Position name (CommunityFeaturesModule text path). */
+export async function editPositionNameCell(page: Page, name: string): Promise<void> {
+  const cell = page.locator('app-relation-grid .ag-cell[col-id="name"]').first();
+  await expect(cell).toBeVisible({ timeout: 15_000 });
+  await cell.dblclick();
+  const editor = page.locator('app-relation-grid .ag-cell-inline-editing input').first();
+  if ((await editor.count()) === 0 || !(await editor.isVisible())) {
+    await cell.click();
+    await page.keyboard.press('F2');
+  }
+  await expect(page.locator('app-relation-grid .ag-cell-inline-editing input').first()).toBeVisible({
+    timeout: 5_000,
+  });
+  await page.locator('app-relation-grid .ag-cell-inline-editing input').first().fill(name);
+  await page.keyboard.press('Enter');
+}
+
 export async function savePositionUpdate(page: Page): Promise<void> {
   const putResponse = page.waitForResponse((response) => {
     try {

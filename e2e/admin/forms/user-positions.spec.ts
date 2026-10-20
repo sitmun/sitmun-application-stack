@@ -12,6 +12,7 @@ import {
   createUserViaForm,
   editAltaCell,
   editBajaCell,
+  editPositionNameCell,
   expectCreatedThenExpiration,
   headerTexts,
   openPositions,
@@ -86,6 +87,27 @@ test.describe('User Positions tab', () => {
       page.locator('app-relation-grid .ag-cell[col-id="expirationDate"]').first(),
     ).toContainText(/2028/);
     await saveShot(page, 'admin-edit-baja.png');
+  });
+
+  // Sibling: CommunityFeaturesModule text editor on the same Positions grid.
+  test('edits Position name and it persists after reload', async ({
+    page,
+    request,
+    createdResources,
+  }) => {
+    const { id } = await createUserViaForm(page, 'e2eposn');
+    createdResources.push({ collection: 'users', id });
+    await postPosition(request, id, { name: 'Cargo' });
+
+    await openPositions(page, id);
+    await editPositionNameCell(page, 'Cargo editado');
+    await savePositionUpdate(page);
+
+    await page.reload();
+    await openPositions(page, id);
+    await expect(page.locator('app-relation-grid .ag-cell[col-id="name"]').first()).toContainText(
+      'Cargo editado',
+    );
   });
 
   test('Baja header tooltip states the inclusive last civil day', async ({
