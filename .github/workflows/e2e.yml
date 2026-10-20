@@ -112,7 +112,15 @@ jobs:
         with:
           node-version: ${{ steps.viewer-nvmrc.outputs.version }}
       - name: Point ~/.nvm at setup-node-nvm install
-        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run viewer E2E suite
         run: npm run e2e:viewer
@@ -186,7 +194,15 @@ jobs:
         with:
           node-version: ${{ steps.viewer-nvmrc.outputs.version }}
       - name: Point ~/.nvm at setup-node-nvm install
-        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run application-contact E2E suite
         run: npx playwright test --config=playwright.application-contact.config.ts
@@ -260,7 +276,15 @@ jobs:
         with:
           node-version: ${{ steps.viewer-nvmrc.outputs.version }}
       - name: Point ~/.nvm at setup-node-nvm install
-        run: ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run MIA cross E2E suite
         run: npm run e2e:mia-cross
