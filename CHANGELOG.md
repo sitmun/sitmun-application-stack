@@ -75,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **Docker**: `docker compose build front` uses the Angular 22 viewer webpack config. `envsubst` replaces only `PUBLIC_BASE_PATH`, so the viewer image build keeps the `jszip`, `util`, and `@spz-loader` exclusions.
 - **Docker**: `sitmun-shared` checks out `gradlew` with LF line endings. On Windows with `core.autocrlf=true`, the backend and proxy image builds failed in `publishToMavenLocal` with `/bin/sh^M: bad interpreter` (exit code 126) ([#89](https://github.com/sitmun/sitmun-application-stack/issues/89)).
 - **E2E**: Each root E2E job publishes the pinned `sitmun-shared` to the local Maven repository before the suite starts. The backend resolves `sitmun-spring-upstream` and `sitmun-proxy-contract` `1.2.9` from that repository.
 - **Submodules**: `sitmun-mbtiles` follows the stack branch. `git submodule update --remote` on stack `dev` stays on mbtiles `dev`, the commit the stack already pins.
