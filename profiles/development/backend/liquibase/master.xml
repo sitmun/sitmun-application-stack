@@ -93,4 +93,5 @@
   <include file="changelog/84_parameter_type_translations.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/85_dev_wfs_menorca_fars.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/86_dev_service_parameter_info_olparam_oracle.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/87_restrict_service_types.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

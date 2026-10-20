@@ -35,4 +35,5 @@
   <include file="changelog/28_service_check.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/29_parameter_operation_scope.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/30_cartography_service_parameter.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/31_restrict_service_types.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
