@@ -11,6 +11,7 @@ import {
   POSITIONS_TAB,
   createUserViaForm,
   editAltaCell,
+  editBajaCell,
   expectCreatedThenExpiration,
   headerTexts,
   openPositions,
@@ -67,6 +68,24 @@ test.describe('User Positions tab', () => {
       /1995/,
     );
     await saveShot(page, 'admin-edit-alta.png');
+  });
+
+  // Sibling of Alta edit: same Instant ISO + datePicker path on expirationDate.
+  test('edits Baja and it persists after reload', async ({ page, request, createdResources }) => {
+    const { id } = await createUserViaForm(page, 'e2ebajaedt');
+    createdResources.push({ collection: 'users', id });
+    await postPosition(request, id, { expirationDate: '2030-12-31T00:00:00.000Z' });
+
+    await openPositions(page, id);
+    await editBajaCell(page, '2028-07-04');
+    await savePositionUpdate(page);
+
+    await page.reload();
+    await openPositions(page, id);
+    await expect(
+      page.locator('app-relation-grid .ag-cell[col-id="expirationDate"]').first(),
+    ).toContainText(/2028/);
+    await saveShot(page, 'admin-edit-baja.png');
   });
 
   test('Baja header tooltip states the inclusive last civil day', async ({

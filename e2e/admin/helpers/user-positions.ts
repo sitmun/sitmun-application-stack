@@ -123,8 +123,12 @@ export async function saveShot(page: Page, name: string): Promise<void> {
   await page.screenshot({ path: `test-results/${name}` });
 }
 
-export async function editAltaCell(page: Page, isoDate: string): Promise<void> {
-  const cell = page.locator('app-relation-grid .ag-cell[col-id="createdDate"]').first();
+export async function editDateCell(
+  page: Page,
+  colId: 'createdDate' | 'expirationDate',
+  isoDate: string,
+): Promise<void> {
+  const cell = page.locator(`app-relation-grid .ag-cell[col-id="${colId}"]`).first();
   await expect(cell).toBeVisible({ timeout: 15_000 });
   await cell.dblclick();
   const editor = page.locator('app-relation-grid .ag-cell-inline-editing input').first();
@@ -137,6 +141,14 @@ export async function editAltaCell(page: Page, isoDate: string): Promise<void> {
   });
   await page.locator('app-relation-grid .ag-cell-inline-editing input').first().fill(isoDate);
   await page.keyboard.press('Enter');
+}
+
+export async function editAltaCell(page: Page, isoDate: string): Promise<void> {
+  await editDateCell(page, 'createdDate', isoDate);
+}
+
+export async function editBajaCell(page: Page, isoDate: string): Promise<void> {
+  await editDateCell(page, 'expirationDate', isoDate);
 }
 
 export async function savePositionUpdate(page: Page): Promise<void> {
