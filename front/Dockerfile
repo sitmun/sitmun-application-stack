@@ -55,7 +55,7 @@ RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
     if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
     envsubst '$BUILD_TIMESTAMP,$APP_VERSION,$FRONT_ENV,$PUBLIC_BASE_PATH' < ./src/environments/environment.prod.ts.template > ./src/environments/environment.prod.ts
 RUN envsubst < ./src/index.html.template > ./src/index.html
-RUN envsubst < ./webpack.config.js.template > ./webpack.config.js
+RUN envsubst '$$PUBLIC_BASE_PATH' < ./webpack.config.js.template > ./webpack.config.js
 RUN if [ "${ENVIRONMENT}" = "development" ]; then \
       npm run build -- --configuration=docker-dev --base-href=${PUBLIC_BASE_PATH}viewer/; \
     else \
