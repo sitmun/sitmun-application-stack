@@ -100,6 +100,22 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
+      # (actions/setup-node does not install into nvm).
+      - name: Install viewer Node into nvm
+        shell: bash
+        run: |
+          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+          fi
+          # shellcheck source=/dev/null
+          . "$NVM_DIR/nvm.sh"
+          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          VIEWER_NODE="${VIEWER_NODE#v}"
+          nvm install "$VIEWER_NODE"
+          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
+
       - name: Run viewer E2E suite
         run: npm run e2e:viewer
         env:
@@ -160,6 +176,22 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
+      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
+      # (actions/setup-node does not install into nvm).
+      - name: Install viewer Node into nvm
+        shell: bash
+        run: |
+          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+          fi
+          # shellcheck source=/dev/null
+          . "$NVM_DIR/nvm.sh"
+          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          VIEWER_NODE="${VIEWER_NODE#v}"
+          nvm install "$VIEWER_NODE"
+          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
+
       - name: Run application-contact E2E suite
         run: npx playwright test --config=playwright.application-contact.config.ts
         env:
@@ -219,6 +251,22 @@ jobs:
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
+      # scripts/e2e-viewer.mjs requires the exact viewer .nvmrc Node under ~/.nvm
+      # (actions/setup-node does not install into nvm).
+      - name: Install viewer Node into nvm
+        shell: bash
+        run: |
+          export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+          if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+            curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+          fi
+          # shellcheck source=/dev/null
+          . "$NVM_DIR/nvm.sh"
+          VIEWER_NODE="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          VIEWER_NODE="${VIEWER_NODE#v}"
+          nvm install "$VIEWER_NODE"
+          test -x "$NVM_DIR/versions/node/v${VIEWER_NODE}/bin/node"
 
       - name: Run MIA cross E2E suite
         run: npm run e2e:mia-cross
