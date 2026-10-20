@@ -73,6 +73,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Map**: A long Available Layers name stays on one line, shortened with an ellipsis, and the metadata button stays visible. A folder's children start on the next line, including a one-letter name ([sitmun-viewer-app#186](https://github.com/sitmun/sitmun-viewer-app/issues/186)).
 
+#### Proxy Middleware
+
+- **WFS**: The stack points at proxy `dev`, which leaves GeoServer `text/xml; subtype=gml/2.1.2` on the response. Spring reads `text/xml` and any parameter it can parse ([sitmun-proxy-middleware#28](https://github.com/sitmun/sitmun-proxy-middleware/pull/28)).
+
 #### Stack-level
 
 - **Docker**: `docker compose build front` uses the Angular 22 viewer webpack config. `envsubst` replaces only `PUBLIC_BASE_PATH`, so the viewer image build keeps the `jszip`, `util`, and `@spz-loader` exclusions.
