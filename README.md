@@ -548,7 +548,7 @@ Admin App ───┘
 Root Playwright tests exercise the admin and viewer apps against backend-core on in-memory H2 (no Docker Compose). Viewer suite also starts proxy middleware and a local secured WMS stub. Mobile web suite covers edition Bearer login, proxy-token exchange, and authenticated MBTiles through middleware (no public `/mbtiles`). Details: [e2e/README.md](e2e/README.md).
 
 ```bash
-# prerequisites: Java 17, Node ≥ 20.19, submodules initialized
+# prerequisites: Java 17, Node ≥ 24.22.0 (mobile Android E2E needs Node 22), submodules initialized
 # admin: cd front/admin/sitmun-admin-app && npm ci
 # viewer: cd front/viewer/sitmun-viewer-app && npm ci
 npm ci
@@ -1036,7 +1036,7 @@ rm -rf node_modules package-lock.json
 npm ci
 
 # Check Node.js version
-node --version  # Should be 20.19.0 or higher
+node --version  # Should be 24.22.0 or higher (Node 22 for mobile Android E2E)
 ```
 
 #### Backend Build Issues

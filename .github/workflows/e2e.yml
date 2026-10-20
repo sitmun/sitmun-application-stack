@@ -26,10 +26,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -81,10 +81,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -99,6 +99,28 @@ jobs:
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
+        run: |
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run viewer E2E suite
         run: npm run e2e:viewer
@@ -136,10 +158,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -159,6 +181,28 @@ jobs:
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
+        run: |
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run application-contact E2E suite
         run: npx playwright test --config=playwright.application-contact.config.ts
@@ -196,10 +240,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -219,6 +263,28 @@ jobs:
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+
+      # e2e-viewer.mjs requires ~/.nvm/versions/node/v<nvmrc>/bin (setup-node does not).
+      # dcodeIO/setup-node-nvm installs into $HOME/mynvm; link that tree to ~/.nvm.
+      - name: Read viewer .nvmrc
+        id: viewer-nvmrc
+        run: |
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          echo "version=${ver#v}" >> "$GITHUB_OUTPUT"
+      - name: Install viewer Node into nvm
+        uses: dcodeIO/setup-node-nvm@v5
+        with:
+          node-version: ${{ steps.viewer-nvmrc.outputs.version }}
+      - name: Point ~/.nvm at setup-node-nvm install
+        run: |
+          # Ubuntu runners often ship ~/.nvm as a real directory; ln -sfn into a
+          # directory nests the link. Replace it so e2e-viewer.mjs finds node.
+          echo "NVM_DIR=${HOME}/mynvm" >> "$GITHUB_ENV"
+          rm -rf "${HOME}/.nvm"
+          ln -sfn "${HOME}/mynvm" "${HOME}/.nvm"
+          ver="$(tr -d '[:space:]' < front/viewer/sitmun-viewer-app/.nvmrc)"
+          ver="${ver#v}"
+          test -x "${HOME}/.nvm/versions/node/v${ver}/bin/node"
 
       - name: Run MIA cross E2E suite
         run: npm run e2e:mia-cross
@@ -256,10 +322,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -305,10 +371,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 22
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: |
             package-lock.json

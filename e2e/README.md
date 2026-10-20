@@ -10,7 +10,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 - Language chrome on login: cleared `lang` → closed BCP-47 ISO from `language.default`; open menu shows API endonyms; no language field on the login form (`e2e/admin/language-chrome.spec.ts`, project `login`)
 - Role form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
 - User form **Details**: validation, create, edit, reload persistence (relation tabs not exercised)
-- User form **Positions**: `Valid from` immediately before `Valid until` (ES `Fecha de alta` / `Fecha de baja`); empty `createdDate` is Not set / No informada; empty `expirationDate` is Active; Alta edit persist; inclusive last-day tooltip; hidden for `public`; pre-2000 Alta cell; viewer cannot write Alta; 20-row open under 3s ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462); `e2e/admin/forms/user-positions.spec.ts`, project `admin-forms`)
+- User form **Positions**: `Valid from` immediately before `Valid until` (ES `Fecha de alta` / `Fecha de baja`); empty `createdDate` is Not set / No informada; empty `expirationDate` is Active; Alta and Baja edit persist; Position name text edit persist; inclusive last-day tooltip; hidden for `public`; pre-2000 Alta cell; viewer cannot write Alta; 20-row open under 3s ([sitmun-admin-app#462](https://github.com/sitmun/sitmun-admin-app/issues/462); `e2e/admin/forms/user-positions.spec.ts`, project `admin-forms`)
 - Territory form **Details**: validation, create (with type), edit, reload persistence (relation tabs not exercised)
 - Tree form **Details** SVG local-file persist and touristic **Tree structure** node Appearance SVG persist: picker `accept` includes `.svg`; POST/PUT stores `data:image/svg+xml;base64,...` without raster scaling; reload preview stays SVG ([sitmun-admin-app#330](https://github.com/sitmun/sitmun-admin-app/issues/330); `e2e/admin/forms/tree-svg-image.spec.ts`, project `admin-forms`)
 - Layers form **Details**: validation, create, reload persistence; Feature Information character-count must not throw `raw.split` beside the queryable-layers CSV validator (`e2e/admin/forms/layers-form.spec.ts`, project `admin-forms`)
@@ -24,6 +24,7 @@ Browser E2E against backend-core on in-memory H2. No Docker Compose.
 
 - Plantilla role and territory tabs: assigning a role and a territory on the task form persists after reload ([sitmun-admin-app#467](https://github.com/sitmun/sitmun-admin-app/issues/467); `e2e/admin/forms/template-task-relations.spec.ts`, project `admin-forms`)
 - More Info Advanced **Details**: validation, create with cartography + included query child 38, layout update persistence; cartography open-in-new; deep route `/#/tasks/42/16`; Parameters `app-relation-grid` add + reload persist; child parameter mapping UI round-trip + persists across a subsequent Parameters save; orphan `childTaskParameters` keys dropped on save; Add mapping disabled when included child has no parameters; ADMIN `POST /api/tasks/template/more-info-advanced/render` for seeded parent 42 (`e2e/admin/forms/mia-form.spec.ts`, project `admin-forms`)
+- Cartography collection: ADMIN `GET /api/cartographies?size=10000` returns 200 (Boot 4.1.1 / Hibernate 7 EntityGraph+styles bag regression that blanked MIA cartography autocomplete) (`e2e/admin/forms/cartography-list.spec.ts`, project `admin-forms`)
 - Language default change: Set as Default preview dialog cancel leaves `language.default` unchanged; raw config PUT cannot freely replace it (`e2e/admin/forms/language-default.spec.ts`)
 - Language enabled/order: disable/reorder a non-default language, assert login chrome omits it, restore (`e2e/admin/forms/language-order.spec.ts`)
 - Literal translations grid CRUD (not `app-relation-grid`; no CSV): create row and reload persists (`e2e/admin/forms/literal-translation-form.spec.ts`)
@@ -99,7 +100,7 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 ## Prerequisites
 
 - Java 17
-- Node ≥ 20.19
+- Node ≥ 24.22.0 (admin, viewer, and root web E2E). Mobile Android E2E needs Node 22.
 - Initialized submodules: `git submodule update --init --recursive`
 - Admin dependencies: `cd front/admin/sitmun-admin-app && npm ci`
 - Viewer dependencies: `cd front/viewer/sitmun-viewer-app && npm ci`
