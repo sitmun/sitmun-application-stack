@@ -99,7 +99,7 @@ Shared H2 + admin + viewer + proxy + WMS stub. Do not run concurrently with admi
 ## Prerequisites
 
 - Java 17
-- Node ≥ 20.19
+- Node ≥ 24.22.0 (admin, viewer, and root web E2E). Mobile Android E2E needs Node 22.
 - Initialized submodules: `git submodule update --init --recursive`
 - Admin dependencies: `cd front/admin/sitmun-admin-app && npm ci`
 - Viewer dependencies: `cd front/viewer/sitmun-viewer-app && npm ci`

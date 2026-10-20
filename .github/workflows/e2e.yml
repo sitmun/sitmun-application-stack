@@ -26,10 +26,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -81,10 +81,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -136,10 +136,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -196,10 +196,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -256,10 +256,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 24.22.0
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24.22.0'
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -305,10 +305,10 @@ jobs:
           chmod +x back/shared/sitmun-shared/gradlew
           back/shared/sitmun-shared/gradlew -p back/shared/sitmun-shared publishToMavenLocal
 
-      - name: Set up Node 20
+      - name: Set up Node 22
         uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: |
             package-lock.json

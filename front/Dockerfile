@@ -1,6 +1,6 @@
 # Stage 0, "build-apps", based on Node.js, to build and compile both frontend apps sequentially
 # Each app's About-dialog version comes from its package.json at build time (not stack VERSION).
-FROM node:20 AS build-apps
+FROM node:24.22.0 AS build-apps
 ARG PUBLIC_BASE_PATH=/
 ARG ENVIRONMENT=development
 ENV PUBLIC_BASE_PATH=${PUBLIC_BASE_PATH}
@@ -49,7 +49,7 @@ COPY --chown=node:node front/viewer/index.html.template ./src/index.html.templat
 COPY --chown=node:node front/viewer/webpack.config.js.template ./webpack.config.js.template
 # Cap the viewer webpack heap so the build works when Docker VM RAM < 8 GiB.
 # Local npm run build uses 8192 MiB (the script default) when NODE_OPTIONS is unset.
-ENV NODE_OPTIONS="--openssl-legacy-provider --max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN export BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z") && \
     export APP_VERSION=$(node -p "require('./package.json').version") && \
     if [ "${ENVIRONMENT}" = "production" ]; then export FRONT_ENV=Production; export FRONT_PRODUCTION=true; else export FRONT_ENV=Development; export FRONT_PRODUCTION=false; fi && \
