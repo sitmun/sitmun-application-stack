@@ -67,12 +67,5 @@ server {
     location ${LOCAL_BASE_PATH}mbtiles/ {
       return 404;
     }
-
-    location ${LOCAL_BASE_PATH}catastro-inspire/ {
-      proxy_pass https://ovc.catastro.meh.es/INSPIRE/;
-      proxy_set_header Host ovc.catastro.meh.es;
-      proxy_ssl_server_name on;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
   }
 }
