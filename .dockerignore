@@ -58,3 +58,6 @@ __pycache__/
 # src/ (source code)
 # *.ts, *.js, *.java (source files)
 # docker-compose.yml, Dockerfile, .dockerignore
+# Dependencies (exclude installed, but KEEP package.json and package-lock.json)
+node_modules/
+**/node_modules/
