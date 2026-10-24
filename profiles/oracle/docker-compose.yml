@@ -42,8 +42,8 @@ services:
 
   backend:
     build:
-      context: ../../back/backend
-      dockerfile: Dockerfile
+      context: ../../back
+      dockerfile: backend/Dockerfile
     ports:
       - "8080:8080"
     restart: always
@@ -83,8 +83,8 @@ services:
 
   proxy:
     build:
-      context: ../../back/proxy
-      dockerfile: Dockerfile
+      context: ../../back
+      dockerfile: proxy/Dockerfile
     restart: always
     ports:
       - "8081:8080"
