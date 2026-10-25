@@ -78,6 +78,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Viewer Application
 
+- **About**: The About window shows the installed API SITNA and OpenLayers versions. The Docker production template no longer hardcodes `sitnaVersion` ([sitmun-viewer-app#218](https://github.com/sitmun/sitmun-viewer-app/issues/218), [sitmun-viewer-app#219](https://github.com/sitmun/sitmun-viewer-app/pull/219)).
 - **Map**: A long Available Layers name stays on one line, shortened with an ellipsis, and the metadata button stays visible. A folder's children start on the next line, including a one-letter name ([sitmun-viewer-app#186](https://github.com/sitmun/sitmun-viewer-app/issues/186)).
 
 #### Proxy Middleware
