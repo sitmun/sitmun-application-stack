@@ -39,9 +39,10 @@ ERRORS=()
 pass() { echo "[PASS] $*"; PASS=$((PASS + 1)); }
 fail() { echo "[FAIL] $*"; FAIL=$((FAIL + 1)); ERRORS+=("$*"); }
 
-# Ephemeral secrets injected for production and standalone profiles (required by :?).
+# Ephemeral secrets injected for every target (required by :?).
 EPHEMERAL_USER_SECRET="verify-compose-profiles-user-secret-32ch"
 EPHEMERAL_MIDDLEWARE_SECRET="verify-compose-profiles-middleware-secret-32"
+EPHEMERAL_MBTILES_JOB_HANDLE_SECRET="verify-compose-profiles-mbtiles-job-secret"
 
 # Fixed project names, one per ENVIRONMENT. All targets within a project share images,
 # so images are built once (not once per target as the old per-target project names caused).
@@ -54,6 +55,7 @@ make_env_file() {
     cat "$base"
     echo "SITMUN_USER_SECRET=${EPHEMERAL_USER_SECRET}"
     echo "MIDDLEWARE_SECRET=${EPHEMERAL_MIDDLEWARE_SECRET}"
+    echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=${EPHEMERAL_MBTILES_JOB_HANDLE_SECRET}"
     if [[ -n "$extra" ]]; then
       echo "$extra"
     fi
