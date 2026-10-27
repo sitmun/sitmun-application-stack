@@ -90,6 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Liquibase**: `service.type` is limited to `WMS`, `WFS`, and `WMTS` on the development, postgres, and oracle profiles. A stored service of another type is not deleted ([#101](https://github.com/sitmun/sitmun-application-stack/issues/101)).
 - **Docker**: `docker compose build front` uses the Angular 22 viewer webpack config. `envsubst` replaces only `PUBLIC_BASE_PATH`, so the viewer image build keeps the `jszip`, `util`, and `@spz-loader` exclusions.
+- **Docker**: The root `.dockerignore` excludes `node_modules/` and `**/node_modules/`. The front image build context is the repository root, so `front/.dockerignore` does not apply ([#114](https://github.com/sitmun/sitmun-application-stack/issues/114)).
 - **Docker**: `sitmun-shared` checks out `gradlew` with LF line endings. On Windows with `core.autocrlf=true`, the backend and proxy image builds failed in `publishToMavenLocal` with `/bin/sh^M: bad interpreter` (exit code 126) ([#89](https://github.com/sitmun/sitmun-application-stack/issues/89)).
 - **E2E**: Each root E2E job publishes the pinned `sitmun-shared` to the local Maven repository before the suite starts. The backend resolves `sitmun-spring-upstream` and `sitmun-proxy-contract` `1.2.9` from that repository.
 - **Submodules**: `sitmun-mbtiles` follows the stack branch. `git submodule update --remote` on stack `dev` stays on mbtiles `dev`, the commit the stack already pins.
@@ -99,6 +100,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Profile-level
 
 - **Liquibase**: Development changelog 89, and PostgreSQL and Oracle changelog 33, alter `STM_SERVICE_CHECK.SEC_OBSERVED` and `STM_SERVICE_CHECK_SAMPLE.SCS_OBSERVED` to `TIMESTAMP(6) WITH TIME ZONE` on Oracle ([sitmun-admin-app#516](https://github.com/sitmun/sitmun-admin-app/issues/516)).
+
+### Security
+
+#### Stack-level
+
+- **Docker**: Root Compose refuses to start when `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, or `SITMUN_MBTILES_JOB_HANDLE_SECRET` is unset. `setup.sh` and `setup.ps1` generate the three values into a new `.env` when those keys are absent. Profile files do not store them ([#113](https://github.com/sitmun/sitmun-application-stack/issues/113)).
+
+### Removed
+
+#### Stack-level
+
+- **Docker**: `profiles/postgres/docker-compose.yml` and `profiles/oracle/docker-compose.yml` are removed. PostgreSQL and Oracle start from the root Compose file after copying `profiles/postgres.env` or `profiles/oracle.env` to `.env` ([#110](https://github.com/sitmun/sitmun-application-stack/issues/110)).
 
 ## [1.2.9] - 2026-09-19
 

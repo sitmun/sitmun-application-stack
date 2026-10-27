@@ -16,13 +16,11 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 SKIP_ORACLE=false
-SKIP_STANDALONE=false
 SKIP_BUILD=false
 ONLY_BUILD=false
 for arg in "$@"; do
   case "$arg" in
     --skip-oracle)      SKIP_ORACLE=true      ;;
-    --skip-standalone)  SKIP_STANDALONE=true  ;;
     --skip-build)       SKIP_BUILD=true       ;;
     --only-build)       ONLY_BUILD=true       ;;
   esac
@@ -39,9 +37,10 @@ ERRORS=()
 pass() { echo "[PASS] $*"; PASS=$((PASS + 1)); }
 fail() { echo "[FAIL] $*"; FAIL=$((FAIL + 1)); ERRORS+=("$*"); }
 
-# Ephemeral secrets injected for production and standalone profiles (required by :?).
+# Ephemeral secrets injected for every target (required by :?).
 EPHEMERAL_USER_SECRET="verify-compose-profiles-user-secret-32ch"
 EPHEMERAL_MIDDLEWARE_SECRET="verify-compose-profiles-middleware-secret-32"
+EPHEMERAL_MBTILES_JOB_HANDLE_SECRET="verify-compose-profiles-mbtiles-job-secret"
 
 # Fixed project names, one per ENVIRONMENT. All targets within a project share images,
 # so images are built once (not once per target as the old per-target project names caused).
@@ -54,6 +53,7 @@ make_env_file() {
     cat "$base"
     echo "SITMUN_USER_SECRET=${EPHEMERAL_USER_SECRET}"
     echo "MIDDLEWARE_SECRET=${EPHEMERAL_MIDDLEWARE_SECRET}"
+    echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=${EPHEMERAL_MBTILES_JOB_HANDLE_SECRET}"
     if [[ -n "$extra" ]]; then
       echo "$extra"
     fi
@@ -370,30 +370,6 @@ if [[ "$SKIP_ORACLE" == "false" ]]; then
   make_env_file "profiles/oracle.env" "COMPOSE_PROFILES=oracle,demo,mbtiles" \
     "$TMPDIR_ENV/prod-oracle-demo-mbtiles.env"
   run_target "prod/oracle+demo+mbtiles" "$TMPDIR_ENV/prod-oracle-demo-mbtiles.env"
-fi
-
-# ---------------------------------------------------------------------------
-# Standalone profiles (their own docker-compose.yml, no root .env)
-# Standalone profiles bind standard ports (8080, 8081, 5432/1521).
-# Skip with --skip-standalone if those ports are already in use on the host.
-# ---------------------------------------------------------------------------
-
-if [[ "$SKIP_STANDALONE" == "false" ]]; then
-  echo ""
-  echo "=== Standalone profiles ==="
-
-  make_env_file /dev/null "" "$TMPDIR_ENV/standalone-postgres.env"
-  run_target "standalone/profiles/postgres" "$TMPDIR_ENV/standalone-postgres.env" \
-    "profiles/postgres/docker-compose.yml"
-
-  if [[ "$SKIP_ORACLE" == "false" ]]; then
-    make_env_file /dev/null "" "$TMPDIR_ENV/standalone-oracle.env"
-    run_target "standalone/profiles/oracle" "$TMPDIR_ENV/standalone-oracle.env" \
-      "profiles/oracle/docker-compose.yml"
-  fi
-else
-  echo ""
-  echo "=== Standalone profiles: skipped (--skip-standalone) ==="
 fi
 
 # ---------------------------------------------------------------------------

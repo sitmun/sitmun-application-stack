@@ -51,6 +51,10 @@ __pycache__/
 *$py.class
 *.pyc
 
+# Dependencies (exclude installed trees, keep package.json and package-lock.json)
+node_modules/
+**/node_modules/
+
 # Keep these files (DO NOT exclude):
 # package.json, package-lock.json (frontend)
 # build.gradle, settings.gradle, gradle.properties (backend)

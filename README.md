@@ -108,7 +108,15 @@ The stack has four main components:
    ```
 
    Notes:
-   - The setup scripts create `.env` from `profiles/development-postgres.env` **only if** `.env` is missing.
+   - The setup scripts create `.env` from `profiles/development-postgres.env` **only if** `.env` is missing. They then append `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` when those keys are absent.
+   - A manual copy must append the same three values before Compose will start:
+
+   ```bash
+   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+   ```
+
    - You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
 
 4. **Start the SITMUN Application Stack**
@@ -154,7 +162,12 @@ The stack has four main components:
    ```bash
    cp profiles/development-postgres.env .env
    # Or: cp profiles/development-oracle.env .env
+   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
    ```
+
+   `./setup.sh` and `./setup.ps1` append those three keys when they create `.env` and the keys are absent. Do not commit the values.
 
 4. **Start Services**
 
@@ -195,12 +208,13 @@ The stack has four main components:
    nano .env
    ```
 
-   The copied profile already sets the database, Spring, Liquibase, and frontend variables (all other compose variables have working defaults). The **only** variables you must add to boot are the two secrets — the compose profile marks them required (`:?`) and refuses to start without them:
+   The copied profile already sets the database, Spring, Liquibase, and frontend variables (all other compose variables have working defaults). The only variables you must add to boot are the three secrets. Compose marks them required (`:?`) and refuses to start without them:
 
    ```env
    # Secrets (mandatory, no default, min 32 chars each) -- see step 2
    SITMUN_USER_SECRET=<32+ char random value>
    MIDDLEWARE_SECRET=<32+ char random value>
+   SITMUN_MBTILES_JOB_HANDLE_SECRET=<32+ char random value>
    ```
 
    For a real production deployment you should also override the database credentials, which otherwise default to `sitmun3`/`sitmun3`:
@@ -213,12 +227,13 @@ The stack has four main components:
 
 2. **Secrets (mandatory)**
 
-   Production profiles (`profiles/postgres`, `profiles/oracle`) do **not** ship secret defaults. You must set both variables in `.env`, each at least 32 characters:
+   Production profiles (`profiles/postgres`, `profiles/oracle`) do **not** ship secret defaults. You must set these three variables in `.env`, each at least 32 characters:
 
    ```bash
-   # Backend JWT signing secret and backend-proxy shared secret
+   # Backend JWT signing secret, backend-proxy shared secret, and MBTiles job handle
    echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
    echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
    ```
 
    Enforcement is fail-fast, so misconfiguration is caught before the platform serves traffic:
@@ -226,7 +241,7 @@ The stack has four main components:
    - A missing variable makes Docker Compose refuse to start (`variable is required`).
    - A blank or shorter-than-32-character value aborts backend/proxy startup via `SecuritySecretValidator` / `ProxySecretValidator` (`IllegalStateException`), so the container never becomes healthy.
 
-   `MIDDLEWARE_SECRET` is shared: it is injected into the backend as `SITMUN_PROXY_MIDDLEWARE_SECRET` and into the proxy as `SITMUN_BACKEND_CONFIG_SECRET`. Both sides must match. Never commit secrets, and never reuse the development defaults.
+   `MIDDLEWARE_SECRET` is shared: it is injected into the backend as `SITMUN_PROXY_MIDDLEWARE_SECRET` and into the proxy as `SITMUN_BACKEND_CONFIG_SECRET`. Both sides must match. `SITMUN_MBTILES_JOB_HANDLE_SECRET` is the proxy job-handle secret. Never commit secrets, and never reuse a development default.
 
 3. **Database Setup**
 
@@ -264,8 +279,9 @@ The SITMUN Application Stack uses environment variables for configuration. Copy 
 | `DATABASE_PASSWORD`        | Database password                                     | `sitmun3`                           |
 | `FORCE_USE_OF_PROXY`       | Force proxy middleware                                | `false`                             |
 | `SITMUN_PROXY_MIDDLEWARE_VALIDATE_USER_ACCESS` | Enable proxy access validation (blocks access to blocked services) | `true` |
-| `SITMUN_USER_SECRET`       | Backend JWT signing secret (min 32 chars)             | Required in production profiles     |
-| `MIDDLEWARE_SECRET`        | Backend-proxy shared secret (min 32 chars)            | Required in production profiles     |
+| `SITMUN_USER_SECRET`       | Backend JWT signing secret (min 32 chars)             | Required                            |
+| `MIDDLEWARE_SECRET`        | Backend-proxy shared secret (min 32 chars)            | Required                            |
+| `SITMUN_MBTILES_JOB_HANDLE_SECRET` | Proxy MBTiles job-handle secret (min 32 chars) | Required                            |
 | `ENVIRONMENT`              | Frontend Docker build mode (development/production)   | `development`                       |
 
 Docker frontend builds read each app's version from its submodule `package.json` (admin and viewer independently). The About dialog shows that value at runtime.
@@ -418,6 +434,7 @@ For an external database not managed by Docker Compose:
    DATABASE_PASSWORD=sitmun3
    SITMUN_USER_SECRET=<32+ char random value>
    MIDDLEWARE_SECRET=<32+ char random value>
+   SITMUN_MBTILES_JOB_HANDLE_SECRET=<32+ char random value>
    ```
 
 2. Start services without a database container:
@@ -586,33 +603,25 @@ profiles/
   development/
     backend/           # Backend Spring config (application.yml, Liquibase migrations)
     proxy/             # Proxy Spring config
-  oracle/
-    docker-compose.yml # Backend + Oracle DB with schema + seed data
-  postgres/
-    docker-compose.yml # Backend + Postgres DB with schema + seed data
+  oracle/              # Oracle Liquibase and backend config, mounted by the root Compose file
+  postgres/            # PostgreSQL Liquibase and backend config, mounted by the root Compose file
 ```
 
-**Running a standalone profile:**
+PostgreSQL and Oracle start from the repository root. Copy the profile, append the three secrets when they are absent, then start the root Compose file. `SITMUN_CONFIG_DIR` mounts `profiles/postgres` or `profiles/oracle`.
 
 ```bash
-# Start Postgres profile (backend + database with dev seed data)
-cd profiles/postgres
-docker compose up -d --build
+cp profiles/postgres.env .env
+echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+docker compose up -d
 
-# Verify backend health
-curl http://localhost:8080/api/dashboard/health
-
-# Start Oracle profile (mutually exclusive - use different terminal or stop postgres first)
-cd ../oracle
-docker compose up -d --build
+cp profiles/oracle.env .env
+echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+docker compose up -d
 ```
-
-**Important notes:**
-
-- Profiles use `SPRING_LIQUIBASE_CONTEXTS=dev` to bootstrap schema + development seed data via Liquibase on startup.
-- Backend listens on port `8080`, databases on standard ports (`5432` for Postgres, `1521` for Oracle).
-- Profiles share the same container names and ports - run only one profile at a time locally.
-- For production or custom contexts, override `SPRING_LIQUIBASE_CONTEXTS` in the compose environment section.
 
 ### Development Workflow
 
@@ -881,12 +890,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
 #### Secrets
 
-Two secrets must be provided in production, each at least 32 characters:
+Three secrets must be provided, each at least 32 characters:
 
 ```env
 # .env file
 SITMUN_USER_SECRET=<32+ char random value>   # backend JWT signing secret
 MIDDLEWARE_SECRET=<32+ char random value>     # shared backend <-> proxy secret
+SITMUN_MBTILES_JOB_HANDLE_SECRET=<32+ char random value> # proxy MBTiles job handle
 ```
 
 ```bash
@@ -898,7 +908,8 @@ openssl rand -hex 32
 
 - `MIDDLEWARE_SECRET` is injected into the backend as `SITMUN_PROXY_MIDDLEWARE_SECRET` and into the proxy as `SITMUN_BACKEND_CONFIG_SECRET`; both sides must share the same value.
 - `SITMUN_USER_SECRET` signs user JWTs and is backend-only.
-- Startup is fail-fast: `SecuritySecretValidator` (backend) and `ProxySecretValidator` (proxy) reject blank or shorter-than-32-character secrets with an `IllegalStateException`, so the service never comes up misconfigured. Production compose profiles also mark the variables as required and refuse to start without them.
+- `SITMUN_MBTILES_JOB_HANDLE_SECRET` is the proxy job-handle secret.
+- Startup is fail-fast: `SecuritySecretValidator` (backend) and `ProxySecretValidator` (proxy) reject blank or shorter-than-32-character secrets with an `IllegalStateException`, so the service never comes up misconfigured. Root Compose marks `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` required and refuses to start without them.
 - Never commit secrets to version control, and never reuse the development defaults.
 
 #### JWT Configuration
