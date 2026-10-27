@@ -101,6 +101,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Docker**: Root Compose refuses to start when `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, or `SITMUN_MBTILES_JOB_HANDLE_SECRET` is unset. `setup.sh` and `setup.ps1` generate the three values into a new `.env` when those keys are absent. Profile files do not store them ([#113](https://github.com/sitmun/sitmun-application-stack/issues/113)).
 
+### Removed
+
+#### Stack-level
+
+- **Docker**: `profiles/postgres/docker-compose.yml` and `profiles/oracle/docker-compose.yml` are removed. PostgreSQL and Oracle start from the root Compose file after copying `profiles/postgres.env` or `profiles/oracle.env` to `.env` ([#110](https://github.com/sitmun/sitmun-application-stack/issues/110)).
+
 ## [1.2.9] - 2026-09-19
 
 ### Changed

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Root Compose must refuse to render when the three secrets are unset.
+# PostgreSQL and Oracle must start from that root file only.
 #
 # Uses profiles/postgres.env, which does not assign the secrets. Shell values
 # for those names are cleared so a developer .env cannot hide a default.
@@ -37,3 +38,28 @@ if ! grep -q 'is required' <<<"$output"; then
 fi
 
 echo "root compose refuses to render without the three secrets"
+
+standalone_fail=0
+for path in profiles/postgres/docker-compose.yml profiles/oracle/docker-compose.yml; do
+  if [[ -f "$path" ]]; then
+    echo "standalone compose file still present: $path" >&2
+    standalone_fail=1
+  fi
+done
+
+if grep -q 'cd profiles/postgres' README.md; then
+  echo "README still tells operators to cd profiles/postgres" >&2
+  standalone_fail=1
+fi
+
+if grep -q 'profiles/postgres/docker-compose.yml' tools/scripts/verify-compose-profiles.sh \
+  || grep -q 'profiles/oracle/docker-compose.yml' tools/scripts/verify-compose-profiles.sh; then
+  echo "verify-compose-profiles.sh still targets a standalone compose file" >&2
+  standalone_fail=1
+fi
+
+if [[ "$standalone_fail" -ne 0 ]]; then
+  exit 1
+fi
+
+echo "root compose is the only postgres and oracle entry point"

@@ -16,13 +16,11 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 SKIP_ORACLE=false
-SKIP_STANDALONE=false
 SKIP_BUILD=false
 ONLY_BUILD=false
 for arg in "$@"; do
   case "$arg" in
     --skip-oracle)      SKIP_ORACLE=true      ;;
-    --skip-standalone)  SKIP_STANDALONE=true  ;;
     --skip-build)       SKIP_BUILD=true       ;;
     --only-build)       ONLY_BUILD=true       ;;
   esac
@@ -372,30 +370,6 @@ if [[ "$SKIP_ORACLE" == "false" ]]; then
   make_env_file "profiles/oracle.env" "COMPOSE_PROFILES=oracle,demo,mbtiles" \
     "$TMPDIR_ENV/prod-oracle-demo-mbtiles.env"
   run_target "prod/oracle+demo+mbtiles" "$TMPDIR_ENV/prod-oracle-demo-mbtiles.env"
-fi
-
-# ---------------------------------------------------------------------------
-# Standalone profiles (their own docker-compose.yml, no root .env)
-# Standalone profiles bind standard ports (8080, 8081, 5432/1521).
-# Skip with --skip-standalone if those ports are already in use on the host.
-# ---------------------------------------------------------------------------
-
-if [[ "$SKIP_STANDALONE" == "false" ]]; then
-  echo ""
-  echo "=== Standalone profiles ==="
-
-  make_env_file /dev/null "" "$TMPDIR_ENV/standalone-postgres.env"
-  run_target "standalone/profiles/postgres" "$TMPDIR_ENV/standalone-postgres.env" \
-    "profiles/postgres/docker-compose.yml"
-
-  if [[ "$SKIP_ORACLE" == "false" ]]; then
-    make_env_file /dev/null "" "$TMPDIR_ENV/standalone-oracle.env"
-    run_target "standalone/profiles/oracle" "$TMPDIR_ENV/standalone-oracle.env" \
-      "profiles/oracle/docker-compose.yml"
-  fi
-else
-  echo ""
-  echo "=== Standalone profiles: skipped (--skip-standalone) ==="
 fi
 
 # ---------------------------------------------------------------------------
