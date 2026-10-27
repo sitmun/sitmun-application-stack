@@ -74,11 +74,22 @@ update_from_remote() {
     fi
 }
 
-# Copy default development profile to .env if .env does not exist
+append_compose_secret_if_missing() {
+    local key="$1"
+    if ! grep -q "^${key}=" .env; then
+        echo "${key}=$(openssl rand -hex 32)" >> .env
+    fi
+}
+
+# Copy default development profile to .env if .env does not exist.
+# Profile files do not store secrets. Generate any of the three that are absent.
 copy_env_file_if_missing() {
     if [ ! -f ".env" ]; then
         echo -e "${YELLOW}.env file is missing. Copying profiles/development-postgres.env to .env...${NC}"
         cp profiles/development-postgres.env .env
+        append_compose_secret_if_missing SITMUN_USER_SECRET
+        append_compose_secret_if_missing MIDDLEWARE_SECRET
+        append_compose_secret_if_missing SITMUN_MBTILES_JOB_HANDLE_SECRET
         echo -e "${GREEN}.env file created from profiles/development-postgres.env.${NC}"
     fi
 }
