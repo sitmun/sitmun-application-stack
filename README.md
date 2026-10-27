@@ -603,33 +603,25 @@ profiles/
   development/
     backend/           # Backend Spring config (application.yml, Liquibase migrations)
     proxy/             # Proxy Spring config
-  oracle/
-    docker-compose.yml # Backend + Oracle DB with schema + seed data
-  postgres/
-    docker-compose.yml # Backend + Postgres DB with schema + seed data
+  oracle/              # Oracle Liquibase and backend config, mounted by the root Compose file
+  postgres/            # PostgreSQL Liquibase and backend config, mounted by the root Compose file
 ```
 
-**Running a standalone profile:**
+PostgreSQL and Oracle start from the repository root. Copy the profile, append the three secrets when they are absent, then start the root Compose file. `SITMUN_CONFIG_DIR` mounts `profiles/postgres` or `profiles/oracle`.
 
 ```bash
-# Start Postgres profile (backend + database with dev seed data)
-cd profiles/postgres
-docker compose up -d --build
+cp profiles/postgres.env .env
+echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+docker compose up -d
 
-# Verify backend health
-curl http://localhost:8080/api/dashboard/health
-
-# Start Oracle profile (mutually exclusive - use different terminal or stop postgres first)
-cd ../oracle
-docker compose up -d --build
+cp profiles/oracle.env .env
+echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
+echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
+echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+docker compose up -d
 ```
-
-**Important notes:**
-
-- Profiles use `SPRING_LIQUIBASE_CONTEXTS=dev` to bootstrap schema + development seed data via Liquibase on startup.
-- Backend listens on port `8080`, databases on standard ports (`5432` for Postgres, `1521` for Oracle).
-- Profiles share the same container names and ports - run only one profile at a time locally.
-- For production or custom contexts, override `SPRING_LIQUIBASE_CONTEXTS` in the compose environment section.
 
 ### Development Workflow
 
