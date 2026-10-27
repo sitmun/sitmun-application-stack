@@ -44,6 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack
 
+- **CI**: `.github/workflows/liquibase-upgrade.yml` job `dev-postgres-from` upgrades the development profile on PostgreSQL from 1.2.6 to HEAD (`--contexts=dev`).
 - **Submodules**: The shared upstream library is checked out at `back/shared/sitmun-shared` ([sitmun-shared](https://github.com/sitmun/sitmun-shared)). It follows the stack branch. `tools/scripts/bump-version.sh` moves its `1.2.9` version with the backend dependency `org.sitmun:sitmun-spring-upstream`.
 - **Development**: `profiles/development-lvh.env` announces the stack as `http://lvh.me:9000`. The air-gapped default stays `localhost`.
 
@@ -95,6 +96,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Submodules**: `sitmun-mbtiles` follows the stack branch. `git submodule update --remote` on stack `dev` stays on mbtiles `dev`, the commit the stack already pins.
 - **Liquibase (Oracle)**: `changelog/26_map_image_task_type_pre23.yaml` takes changelog 22's slot in `profiles/oracle/liquibase/master.xml`. Changeset `22c_document_export_codelists` used `SELECT` without `FROM` and SQL `TRUE` literals, both 23ai-only, so install and upgrade failed on 19c with `ORA-00923` ([#74](https://github.com/sitmun/sitmun-application-stack/issues/74)). Changelog 22 stays byte-identical and unreferenced; its `DATABASECHANGELOG` rows remain on databases that applied it, and 26 is guarded so those databases converge without duplicate rows.
 - **Liquibase tests**: `test_liquibase_1.2.7_to_head_upgrade.sh` honours `SITMUN_ORACLE_IMAGE` and `SITMUN_ORACLE_WAIT_TRIES`. CI job `oracle-pre23-from` runs the Oracle 1.2.7 → HEAD upgrade on `gvenzl/oracle-xe:21-slim` ([#74](https://github.com/sitmun/sitmun-application-stack/issues/74)).
+
+#### Profile-level
+
+- **Liquibase**: Development changelog 89, and PostgreSQL and Oracle changelog 33, alter `STM_SERVICE_CHECK.SEC_OBSERVED` and `STM_SERVICE_CHECK_SAMPLE.SCS_OBSERVED` to `TIMESTAMP(6) WITH TIME ZONE` on Oracle ([sitmun-admin-app#516](https://github.com/sitmun/sitmun-admin-app/issues/516)).
 
 ### Security
 

@@ -95,4 +95,6 @@
   <include file="changelog/86_dev_service_parameter_info_olparam_oracle.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/87_restrict_service_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/88_geometry_code_lists.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/89_service_check_observed_timestamptz.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/90_service_check_detail_nullable.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

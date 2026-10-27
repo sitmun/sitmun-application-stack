@@ -35,4 +35,6 @@
   <include file="changelog/30_cartography_service_parameter.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/31_restrict_service_types.yaml" relativeToChangelogFile="true"/>
   <include file="changelog/32_geometry_code_lists.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/33_service_check_observed_timestamptz.yaml" relativeToChangelogFile="true"/>
+  <include file="changelog/34_service_check_detail_nullable.yaml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
