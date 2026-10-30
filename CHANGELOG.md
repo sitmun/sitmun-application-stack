@@ -88,6 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 #### Stack-level
 
+- **Docker**: Each `profiles/*.env` template names `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` and leaves them unset. Copying a profile to `.env` still requires generated values before Compose will start ([#134](https://github.com/sitmun/sitmun-application-stack/issues/134)).
 - **Liquibase**: `service.type` is limited to `WMS`, `WFS`, and `WMTS` on the development, postgres, and oracle profiles. A stored service of another type is not deleted ([#101](https://github.com/sitmun/sitmun-application-stack/issues/101)).
 - **Docker**: `docker compose build front` uses the Angular 22 viewer webpack config. `envsubst` replaces only `PUBLIC_BASE_PATH`, so the viewer image build keeps the `jszip`, `util`, and `@spz-loader` exclusions.
 - **Docker**: The root `.dockerignore` excludes `node_modules/` and `**/node_modules/`. The front image build context is the repository root, so `front/.dockerignore` does not apply ([#114](https://github.com/sitmun/sitmun-application-stack/issues/114)).

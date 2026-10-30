@@ -2,14 +2,37 @@
 # Root Compose must refuse to render when the three secrets are unset.
 # PostgreSQL and Oracle must start from that root file only.
 #
-# Uses profiles/postgres.env, which does not assign the secrets. Shell values
-# for those names are cleared so a developer .env cannot hide a default.
+# Every profiles/*.env names SITMUN_USER_SECRET, MIDDLEWARE_SECRET, and
+# SITMUN_MBTILES_JOB_HANDLE_SECRET and does not assign them. The Compose
+# check uses profiles/postgres.env. Shell values for those names are cleared
+# so a developer .env cannot hide a default.
 #
 #   bash tools/scripts/check-compose-secrets.sh
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$REPO_ROOT"
+
+template_fail=0
+secret_keys=(SITMUN_USER_SECRET MIDDLEWARE_SECRET SITMUN_MBTILES_JOB_HANDLE_SECRET)
+for envfile in profiles/*.env; do
+  for key in "${secret_keys[@]}"; do
+    if ! grep -qE "^#[[:space:]]*${key}=" "$envfile"; then
+      echo "${envfile} does not name ${key}" >&2
+      template_fail=1
+    fi
+    if grep -q "^${key}=" "$envfile"; then
+      echo "${envfile} assigns ${key}" >&2
+      template_fail=1
+    fi
+  done
+done
+
+if [[ "$template_fail" -ne 0 ]]; then
+  exit 1
+fi
+
+echo "profile env templates name the three secrets and do not assign them"
 
 tmp="$(mktemp)"
 cleanup() { rm -f "$tmp"; }
