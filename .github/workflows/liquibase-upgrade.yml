@@ -9,6 +9,7 @@ on:
       - 'tools/tests/test_liquibase_1.2.7_to_head_upgrade.sh'
       - 'tools/tests/test_liquibase_codelist_auth_mode_swap.sh'
       - 'tools/tests/test_prepare_extracted_liquibase.py'
+      - 'tools/tests/test_service_check_observed_rebuild_order.py'
       - 'tools/bin/prepare_extracted_liquibase.py'
       - '.github/workflows/liquibase-upgrade.yml'
   workflow_dispatch:
@@ -28,6 +29,9 @@ jobs:
 
       - name: Extracted-tree helper unit tests
         run: python3 tools/tests/test_prepare_extracted_liquibase.py
+
+      - name: Service-check observed rebuild order
+        run: python3 tools/tests/test_service_check_observed_rebuild_order.py
 
   postgres-1-2-7-to-head:
     runs-on: ubuntu-latest

@@ -101,6 +101,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 #### Profile-level
 
 - **Liquibase**: Development changelog 89, and PostgreSQL and Oracle changelog 33, alter `STM_SERVICE_CHECK.SEC_OBSERVED` and `STM_SERVICE_CHECK_SAMPLE.SCS_OBSERVED` to `TIMESTAMP(6) WITH TIME ZONE` on Oracle ([sitmun-admin-app#516](https://github.com/sitmun/sitmun-admin-app/issues/516)).
+- **Liquibase**: Development changelog 91, and PostgreSQL and Oracle changelog 35, copy populated `SEC_OBSERVED` and `SCS_OBSERVED` values as UTC before that `ALTER`. The `ALTER` changesets are unchanged ([#135](https://github.com/sitmun/sitmun-application-stack/issues/135)).
 
 ### Security
 
