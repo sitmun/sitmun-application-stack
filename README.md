@@ -81,7 +81,19 @@ The stack has four main components:
    cd sitmun-application-stack
    ```
 
-2. **Setup the environment**
+2. **Select a profile (`.env`)**
+
+   The stack is configured via `.env`. Copy a profile before setup. If `.env` is still missing, setup uses `profiles/development-postgres.env`.
+
+   ```bash
+   # Development (PostgreSQL)
+   cp profiles/development-postgres.env .env
+
+   # Development (Oracle)
+   # cp profiles/development-oracle.env .env
+   ```
+
+3. **Setup the environment**
 
    For Unix-based systems (Linux/macOS):
 
@@ -95,29 +107,9 @@ The stack has four main components:
    ./setup.ps1
    ```
 
-3. **Select a profile (`.env`)**
+   The scripts append `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` when those keys are absent, including when `.env` was copied from a profile first. An existing value is left as it is. Windows does not need `openssl`. Run the script again after replacing `.env` with another profile.
 
-   The stack is configured via `.env`. Recommended profiles are under `profiles/`:
-
-   ```bash
-   # Development (PostgreSQL)
-   cp profiles/development-postgres.env .env
-
-   # Development (Oracle)
-   # cp profiles/development-oracle.env .env
-   ```
-
-   Notes:
-   - The setup scripts create `.env` from `profiles/development-postgres.env` **only if** `.env` is missing. They then append `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` when those keys are absent.
-   - A manual copy must append the same three values before Compose will start:
-
-   ```bash
-   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
-   ```
-
-   - You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
+   You can keep local overrides in `.env.local` (not committed); Docker Compose loads `.env → .env.local → environment variables`.
 
 4. **Start the SITMUN Application Stack**
 
@@ -147,7 +139,14 @@ The stack has four main components:
    cd sitmun-application-stack
    ```
 
-2. **Setup Environment**
+2. **Select a development profile (`.env`)**
+
+   ```bash
+   cp profiles/development-postgres.env .env
+   # Or: cp profiles/development-oracle.env .env
+   ```
+
+3. **Setup Environment**
 
    ```bash
    # Unix-based systems
@@ -157,17 +156,7 @@ The stack has four main components:
    ./setup.ps1
    ```
 
-3. **Select a development profile (`.env`)**
-
-   ```bash
-   cp profiles/development-postgres.env .env
-   # Or: cp profiles/development-oracle.env .env
-   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
-   ```
-
-   `./setup.sh` and `./setup.ps1` append those three keys when they create `.env` and the keys are absent. Do not commit the values.
+   `./setup.sh` and `./setup.ps1` append `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` when those keys are absent. An existing value is kept. Do not commit the values.
 
 4. **Start Services**
 
@@ -227,14 +216,7 @@ The stack has four main components:
 
 2. **Secrets (mandatory)**
 
-   Production profiles (`profiles/postgres`, `profiles/oracle`) do **not** ship secret defaults. You must set these three variables in `.env`, each at least 32 characters:
-
-   ```bash
-   # Backend JWT signing secret, backend-proxy shared secret, and MBTiles job handle
-   echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
-   echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
-   ```
+   Production profiles (`profiles/postgres`, `profiles/oracle`) do **not** ship secret defaults. After the copy, run `./setup.sh` on Unix or `./setup.ps1` on Windows. The script appends `SITMUN_USER_SECRET`, `MIDDLEWARE_SECRET`, and `SITMUN_MBTILES_JOB_HANDLE_SECRET` when a key is absent. Each value is at least 32 characters. An existing value is kept. Windows does not need `openssl`.
 
    Enforcement is fail-fast, so misconfiguration is caught before the platform serves traffic:
 
@@ -607,21 +589,19 @@ profiles/
   postgres/            # PostgreSQL Liquibase and backend config, mounted by the root Compose file
 ```
 
-PostgreSQL and Oracle start from the repository root. Copy the profile, append the three secrets when they are absent, then start the root Compose file. `SITMUN_CONFIG_DIR` mounts `profiles/postgres` or `profiles/oracle`.
+PostgreSQL and Oracle start from the repository root. Copy the profile, run `./setup.sh` or `./setup.ps1` so the three secrets are appended when absent, then start the root Compose file. `SITMUN_CONFIG_DIR` mounts `profiles/postgres` or `profiles/oracle`.
 
 ```bash
 cp profiles/postgres.env .env
-echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
-echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
-echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+./setup.sh
 docker compose up -d
 
 cp profiles/oracle.env .env
-echo "SITMUN_USER_SECRET=$(openssl rand -hex 32)" >> .env
-echo "MIDDLEWARE_SECRET=$(openssl rand -hex 32)" >> .env
-echo "SITMUN_MBTILES_JOB_HANDLE_SECRET=$(openssl rand -hex 32)" >> .env
+./setup.sh
 docker compose up -d
 ```
+
+On Windows, run `./setup.ps1` instead of `./setup.sh`.
 
 ### Development Workflow
 
@@ -899,10 +879,7 @@ MIDDLEWARE_SECRET=<32+ char random value>     # shared backend <-> proxy secret
 SITMUN_MBTILES_JOB_HANDLE_SECRET=<32+ char random value> # proxy MBTiles job handle
 ```
 
-```bash
-# Generate secure random values
-openssl rand -hex 32
-```
+`./setup.sh` and `./setup.ps1` append a value for each missing key. Windows does not need `openssl`.
 
 **IMPORTANT for production**:
 

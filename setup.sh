@@ -81,22 +81,23 @@ append_compose_secret_if_missing() {
     fi
 }
 
-# Copy default development profile to .env if .env does not exist.
-# Profile files do not store secrets. Generate any of the three that are absent.
+# Create .env from the development PostgreSQL profile when it is absent.
+# Profile files do not store secrets. Append any of the three keys that are missing.
 copy_env_file_if_missing() {
     if [ ! -f ".env" ]; then
         echo -e "${YELLOW}.env file is missing. Copying profiles/development-postgres.env to .env...${NC}"
         cp profiles/development-postgres.env .env
-        append_compose_secret_if_missing SITMUN_USER_SECRET
-        append_compose_secret_if_missing MIDDLEWARE_SECRET
-        append_compose_secret_if_missing SITMUN_MBTILES_JOB_HANDLE_SECRET
         echo -e "${GREEN}.env file created from profiles/development-postgres.env.${NC}"
     fi
+    append_compose_secret_if_missing SITMUN_USER_SECRET
+    append_compose_secret_if_missing MIDDLEWARE_SECRET
+    append_compose_secret_if_missing SITMUN_MBTILES_JOB_HANDLE_SECRET
 }
 
-# Main logic
-display_banner
-check_git_repository
-check_repository_url
-update_from_remote
-copy_env_file_if_missing
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    display_banner
+    check_git_repository
+    check_repository_url
+    update_from_remote
+    copy_env_file_if_missing
+fi
