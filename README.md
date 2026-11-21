@@ -1,3 +1,5 @@
+> **Archived.** Since SITMUN 1.3.0 this code is maintained in the root of [sitmun/sitmun](https://github.com/sitmun/sitmun), which imported this repository's history. This repository is read-only and receives no further changes. Documentation: [https://sitmun.github.io](https://sitmun.github.io).
+
 # SITMUN Application Stack
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
