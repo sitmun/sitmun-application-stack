@@ -1,3 +1,5 @@
+> **Archived.** This branch holds the code up to its import into SITMUN 1.3.0, so it also contains fixes first released in 1.3.0. Since 1.3.0 it is maintained in the root of [sitmun/sitmun](https://github.com/sitmun/sitmun), which imported this repository's history. This repository is read-only and receives no further changes; the instructions below describe the archived code. Documentation: [https://sitmun.github.io](https://sitmun.github.io).
+
 # SITMUN Application Stack
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPL%20v1.2-blue.svg)](LICENSE)
